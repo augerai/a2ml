@@ -1,0 +1,45 @@
+
+#optional parameters
+#organization: <org name>
+#project: <project name>
+#experiment: iris
+
+cluster:
+  worker_nodes_count : 2
+  instance_type: c5.2xlarge
+  autoterminate_minutes: 120
+
+evaluation_options:
+  data_path: files/iris_data_sample.csv
+  # data_path: https://www.openml.org/data/download/8/dataset_8_liver-disorders.arff
+  # data_extension: ".csv"
+  # data_compression: gzip
+  feature_columns:
+    - sepal_length
+    - sepal_width
+    - petal_length
+    - petal_width
+  target_feature: class
+  categorical_features:
+    - class
+
+  label_encoding_features: []
+  datetime_features: []
+  time_series_features: []
+  classification: true
+  binary_classification: false
+  scoring: accuracy
+
+  cross_validation_folds: 5
+  max_total_time_mins: 60
+  max_eval_time_mins: 1
+  max_n_trials: 10
+
+  use_ensemble: true
+
+  # optimizers_names: []
+  # split_options: {}
+  # oversampling: {}
+  # search_space: 
+  # use_ensemble: true
+  # preprocessors: {}
