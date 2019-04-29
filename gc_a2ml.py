@@ -1,5 +1,6 @@
 import argparse 
 import os
+import csv
 from google.cloud import automl_v1beta1 as automl
 # if A2ML with Google Cloud AutoML tables then
 # insure that your GOOGLE_APPLICATION_CREDENTIALS environment variable 
@@ -33,7 +34,7 @@ def import_data(client,project_id,project_location,model_name,source):
     print("Imported data: {}".format(import_data_response))
     return dataset_id
 
-def train_model(client,project_id,project_location,dataset_name,target,model_name,training_budget):
+def train_model(client,project_id,project_location,dataset_name,target,model_name,excluded,training_budget):
     list_table_specs_response= client.list_table_specs(dataset_name)
 
     table_specs = [s for s in list_table_specs_response]
@@ -52,6 +53,8 @@ def train_model(client,project_id,project_location,dataset_name,target,model_nam
     print("Updated dataset response: {}".format(update_dataset_response))
     feat_list = list(column_specs.keys())
     feat_list.remove(target)
+    for exclude in excluded:
+        feat_list.remove(exclude)
     
     model_dict = {
     'display_name': model_name,
@@ -65,15 +68,16 @@ def train_model(client,project_id,project_location,dataset_name,target,model_nam
 
     print("Training model: {}".format(model_name))
     response = client.create_model(project_location, model_dict)
-    print("Training operation name: {}".format(response.operation.name))
+    op_name = response.operation.name
+    print("Training operation name: {}".format(op_name))
+    model_id =op_name.rsplit('/', 1)[-1]
+    print("Model ID: {}".format(model_id))
 
-    print("Waiting for model train: {}".format(response))
-
-    # dont wait for full training
+    # dont wait for full training now: just let people query later
     #model_response=response.result()
     #metadata = model_response.metadata()
     #print("Training completed: {}".format(metadata))
-    return response
+    return model_id
 
 def evaluate_model(client,project_id,model_id):
     # Get the full path of the model.
@@ -102,6 +106,33 @@ def deploy_model(client,project_id,model_id):
     # Deploy model
     response = client.deploy_model(model_full_id)
     print("Model deployed:{}".format(response))
+
+def predict_from_csv(client,project_id,model_id,file_path,score_threshold):
+
+    model_full_id = client.model_path(project_id, compute_region, model_id)
+
+    prediction_client = automl.PredictionServiceClient()
+
+    with open(file_path, "rt") as csv_file:
+        # Read each row of csv
+        content = csv.reader(csv_file)
+        for row in content:
+            # Create payload
+            values = []
+            for column in row:
+                print("Column {}".format(column))
+                values.append({'number_value': float(column)})
+            payload = {
+                'row': {'values': values}
+            }
+
+            # Query model
+            response = prediction_client.predict(model_full_id, payload)
+            print("Prediction results:")
+            for result in response.payload:
+                if (result.classification.score >= score_threshold): 
+                    print("Predicted class name: {}".format(result.display_name))
+                    print("Predicted class score: {}".format(result.classification.score))
 
 def main():
     client = automl.AutoMlClient()
@@ -139,6 +170,7 @@ def main():
     parser.add_argument('-t','--target',help='Target column from dataset')
     parser.add_argument('-b','--budget',type=int, help='Max training time in seconds')
     parser.add_argument('-x','--exclude',help='Excludes given columns from model')
+    parser.add_argument('-z','--score_threshold',help='Score threshold for prediction')
 
     args = parser.parse_args()
     if (args.project is not None):
@@ -161,16 +193,24 @@ def main():
         training_budget = 3600
     if (args.model_id):
         model_id = args.model_id
+    if (args.score_threshold is not None):
+        score_threshold = args.score_threshold
+    else: 
+        score_threshold = 0.0
+    if (args.exclude is not None):
+        excluded = args.exclude.split(',')
     
     project_location = client.location_path(project_id,"us-central1")
     if (args.IMPORT): 
         dataset_name=import_data(client,project_id, project_location,model_name,source)
     if (args.TRAIN):
-        train_model(client,project_id,project_location,dataset_name,target,model_name,training_budget)
+        train_model(client,project_id,project_location,dataset_name,target,model_name,excluded,training_budget)
     if (args.EVALUATE):
         evaluate_model(client,project_id,model_id)
     if (args.DEPLOY):
         deploy_model(client,project_id,model_id)
+    if (args.PREDICT):
+        predict_from_csv(client,project_id,model_id,source,score_threshold)
 
 if __name__ == '__main__':
     main()
