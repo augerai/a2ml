@@ -1,1 +1,0 @@
-python gc_a2ml.py -d TBL6121667327084724224 -m MoneyBall -t RS -s gs://moneyball/baseball.csv -p automl-test-237311 

@@ -63,27 +63,83 @@ def train_model(client,project_id,project_location,dataset_name,target,model_nam
         'train_budget_milli_node_hours': training_budget,
         'optimization_objective': 'MINIMIZE_MAE'}}
 
-    print(:"Training model: {}".format(model_name))
-    operation = client.create_model(project_location, model_dict)
-    model_response = operation.result()
+    print("Training model: {}".format(model_name))
+    response = client.create_model(project_location, model_dict)
+    print("Training operation name: {}".format(response.operation.name))
 
-    # Handle metadata.
-    metadata = model_response.metadata()
-    print("Model creation response: {}".format(metadata))
-    return metadata
+    print("Waiting for model train: {}".format(response))
+
+    # dont wait for full training
+    #model_response=response.result()
+    #metadata = model_response.metadata()
+    #print("Training completed: {}".format(metadata))
+    return response
+
+def evaluate_model(client,project_id,model_id):
+    # Get the full path of the model.
+    model_full_id = client.model_path(project_id, compute_region, model_id)
+
+    # List all the model evaluations in the model by applying filter.
+    response = client.list_model_evaluations(model_full_id)
+
+    print("List of model evaluations:")
+    for evaluation in response:
+        print("Model evaluation name: {}".format(evaluation.name))
+        print("Model evaluation id: {}".format(evaluation.name.split("/")[-1]))
+        print("Model evaluation example count: {}".format(
+            evaluation.evaluated_example_count))
+        print("Model evaluation time:")
+        print("\tseconds: {}".format(evaluation.create_time.seconds))
+        print("\tnanos: {}".format(evaluation.create_time.nanos))
+        print("\tevaluation:{}",evaluation
+            )
+        print("\n")
+
+def deploy_model(client,project_id,model_id):
+    client = automl.AutoMlClient()
+    # Get the full path of the model.
+    model_full_id = client.model_path(project_id, compute_region, model_id)
+    # Deploy model
+    response = client.deploy_model(model_full_id)
+    print("Model deployed:{}".format(response))
 
 def main():
-
     client = automl.AutoMlClient()
 
-    parser = argparse.ArgumentParser(description='Automate AutoML Pipeline.')
-    parser.add_argument('-p','--project',help='Google Cloud project ID')
+    parser = argparse.ArgumentParser(prog='GC_A2ML',
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description='''A2ML - Automating AutoML. 
+    
+    Uppercase P-R-E-D-I-C-T options run parts of the pipeline.  
+    
+    Lowercase options set project, dataset, model and others that span pipeline stages .''',
+        epilog='''A typical usage of the PREDICT pipeline would be successive invocations with the following options:
+        -- IMPORT
+        -- CONFIGURE
+        -- TRAIN
+        -- EVALUATE
+        -- DEPLOY
+        -- PREDICT
+        -- REVIEW''')
+           
+    # capital letter arguments are pipeline phases
+    parser.add_argument('-P','--PREDICT',help='Predict with deployed model',action='store_true')
+    parser.add_argument('-R','--REVIEW',help='Review specified model info',action='store_true')
+    parser.add_argument('-E','--EVALUATE',help='Evaluate models after training',action='store_true')
+    parser.add_argument('-D','--DEPLOY',help='Deploy model',action='store_true')
+    parser.add_argument('-I','--IMPORT',help='Import data for training',action='store_true')
+    parser.add_argument('-C','--CONFIGURE',help='Configure model options before training',action='store_true')
+    parser.add_argument('-T','--TRAIN',help='Train the model',action='store_true')
+    # lower case letter arguments apply to multiple phases
+    parser.add_argument('-p','--project',help='Google Cloud project ID, overrides PROJECT_ID env var')
     parser.add_argument('-d','--dataset',help='Google Cloud dataset ID')
-    parser.add_argument('-m','--model',help='Model name')
+    parser.add_argument('-m','--model',help='Model display name')
+    parser.add_argument('-i','--model_id',help='Model ID')
     parser.add_argument('-s','--source',help='Source path for loading dataset')
     parser.add_argument('-t','--target',help='Target column from dataset')
-    parser.add_argument('-b','--budget',type=int, help='Training time in seconds')
-    parser.add_argument('-i','--import_first',help='Perform import before training')
+    parser.add_argument('-b','--budget',type=int, help='Max training time in seconds')
+    parser.add_argument('-x','--exclude',help='Excludes given columns from model')
+
     args = parser.parse_args()
     if (args.project is not None):
         project_id = args.project
@@ -103,11 +159,18 @@ def main():
         training_budget = args.budget
     else:
         training_budget = 3600
+    if (args.model_id):
+        model_id = args.model_id
     
     project_location = client.location_path(project_id,"us-central1")
-    if (args.import_first): 
+    if (args.IMPORT): 
         dataset_name=import_data(client,project_id, project_location,model_name,source)
-    train_model(client,project_id,project_location,dataset_name,target,model_name,training_budget)
+    if (args.TRAIN):
+        train_model(client,project_id,project_location,dataset_name,target,model_name,training_budget)
+    if (args.EVALUATE):
+        evaluate_model(client,project_id,model_id)
+    if (args.DEPLOY):
+        deploy_model(client,project_id,model_id)
 
 if __name__ == '__main__':
     main()
