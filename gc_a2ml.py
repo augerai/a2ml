@@ -129,7 +129,8 @@ def predict_from_csv(client,project_id,model_id,file_path,score_threshold):
             # Query model
             response = prediction_client.predict(model_full_id, payload)
             print("Prediction results:")
-            for result in response.payload:
+            for result in response.pa
+            yload:
                 if (result.classification.score >= score_threshold): 
                     print("Predicted class name: {}".format(result.display_name))
                     print("Predicted class score: {}".format(result.classification.score))
