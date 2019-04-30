@@ -112,28 +112,32 @@ def predict_from_csv(client,project_id,model_id,file_path,score_threshold):
     model_full_id = client.model_path(project_id, compute_region, model_id)
 
     prediction_client = automl.PredictionServiceClient()
-
-    with open(file_path, "rt") as csv_file:
+    predictions_file = file_path.split('.')[0]+'_results.csv' 
+    predictions=open(predictions_file, "wt")  
+    with open(file_path,"rt") as csv_file:
         # Read each row of csv
         content = csv.reader(csv_file)
+
+        csvlist = ''
         for row in content:
             # Create payload
             values = []
             for column in row:
-                print("Column {}".format(column))
+                print("Column: {}".format(column))
                 values.append({'number_value': float(column)})
+            csvlist=",".join(row)
+            print ("CSVList: {}".format(csvlist))
             payload = {
                 'row': {'values': values}
             }
-
-            # Query model
             response = prediction_client.predict(model_full_id, payload)
             print("Prediction results:")
-            for result in response.pa
-            yload:
+            for result in response.payload:
                 if (result.classification.score >= score_threshold): 
-                    print("Predicted class name: {}".format(result.display_name))
-                    print("Predicted class score: {}".format(result.classification.score))
+                    prediction=result.tables.value.number_value
+            print("Prediction: {}".format(prediction))
+            csvlist += (',' + str(prediction) + '\n')
+            predictions.write(csvlist)    
 
 def main():
     client = automl.AutoMlClient()
