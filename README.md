@@ -1,5 +1,5 @@
 # a2ml - Automation of AutoML
-Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendor.  Data scientists can then train their datasets against multiple
+Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendors.  Data scientists can then train their datasets against multiple
 AutoML models to get the best possible predictive model.  May the best 
 "algorithm/hyperparameter search" win.
 
@@ -26,8 +26,6 @@ for each stage in the PREDICT Pipeline for the Google Cloud AutoML service.  Sup
 usage: GC_A2ML [-h] [-P] [-R] [-E] [-D] [-I] [-C] [-T] [-p PROJECT]
                [-d DATASET] [-m MODEL] [-i MODEL_ID] [-s SOURCE] [-t TARGET]
                [-b BUDGET] [-x EXCLUDE] [-z SCORE_THRESHOLD]
-
-A2ML - Automating AutoML. 
     
 Uppercase P-R-E-D-I-C-T options run parts of the pipeline:
 * -P, --PREDICT         Predict with deployed model
@@ -47,7 +45,7 @@ Lowercase options set project, dataset, model and others that span pipeline stag
 * -t TARGET, --target <Target column from dataset>
 * -b BUDGET, --budget <Max training time in seconds>
 * -x EXCLUDE, --exclude <Excludes given columns from model>
-* -z SCORE_THRESHOLD, <Score threshold for prediction>
+* -z SCORE_THRESHOLD, --threshold <Score threshold for prediction>
 
 ## Example Pipeliine
 A typical usage of the PREDICT pipeline would be successive invocations of the followiing stages:

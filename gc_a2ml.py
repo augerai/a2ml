@@ -2,6 +2,7 @@ import argparse
 import os
 import csv
 from google.cloud import automl_v1beta1 as automl
+from google.cloud.automl_v1beta1 import enums
 # if A2ML with Google Cloud AutoML tables then
 # insure that your GOOGLE_APPLICATION_CREDENTIALS environment variable 
 # points to the application credentials file given from your Google Cloud SDK
@@ -137,7 +138,31 @@ def predict_from_csv(client,project_id,model_id,file_path,score_threshold):
                     prediction=result.tables.value.number_value
             print("Prediction: {}".format(prediction))
             csvlist += (',' + str(prediction) + '\n')
-            predictions.write(csvlist)    
+            predictions.write(csvlist)   
+
+def review_model(client,project_id,model_id):
+    # Get the full path of the model.
+    model_full_id = client.model_path(project_id, compute_region, model_id)
+
+    # Get complete detail of the model.
+    model = client.get_model(model_full_id)
+
+    # Retrieve deployment state.
+    if model.deployment_state == enums.Model.DeploymentState.DEPLOYED:
+        deployment_state = "deployed"
+    else:
+        deployment_state = "undeployed"
+
+    # Display the model information.
+    print("Model name: {}".format(model.name))
+    print("Model id: {}".format(model.name.split("/")[-1]))
+    print("Model display name: {}".format(model.display_name))
+    print("Model metadata:")
+    print(model.tables_model_metadata)
+    print("Model create time:")
+    print("\tseconds: {}".format(model.create_time.seconds))
+    print("\tnanos: {}".format(model.create_time.nanos))
+    print("Model deployment state: {}".format(deployment_state))  
 
 def main():
     client = automl.AutoMlClient()
@@ -216,6 +241,8 @@ def main():
         deploy_model(client,project_id,model_id)
     if (args.PREDICT):
         predict_from_csv(client,project_id,model_id,source,score_threshold)
+    if (args.REVIEW):
+        review_model(client,project_id,model_id)
 
 if __name__ == '__main__':
     main()
