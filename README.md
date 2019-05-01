@@ -49,11 +49,17 @@ Lowercase options set project, dataset, model and others that span pipeline stag
 * -x EXCLUDE, --exclude <Excludes given columns from model>
 * -z SCORE_THRESHOLD, <Score threshold for prediction>
 
-A typical usage of the PREDICT pipeline would be successive invocations with the following options:
-* IMPORT
+## Example Pipeliine
+A typical usage of the PREDICT pipeline would be successive invocations of the followiing stages:
+* IMPORT 
+python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
 * CONFIGURE
 * TRAIN
+python gc_a2ml.py -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
 * EVALUATE
+python gc_a2ml.py -E -i TBL7363086323588005888  -p automl-test-237311 
 * DEPLOY
+python gc_a2ml.py -D -i TBL7363086323588005888 -p automl-test-237311 
 * PREDICT
+python gc_a2ml.py -P -i TBL9182681310534041600  -p automl-test-237311 -s baseball_predict.csv
 * REVIEW
