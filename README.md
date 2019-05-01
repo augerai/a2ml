@@ -51,15 +51,12 @@ Lowercase options set project, dataset, model and others that span pipeline stag
 
 ## Example Pipeliine
 A typical usage of the PREDICT pipeline would be successive invocations of the followiing stages:
-* IMPORT 
-python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
-* CONFIGURE
-* TRAIN
-python gc_a2ml.py -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
-* EVALUATE
-python gc_a2ml.py -E -i TBL7363086323588005888  -p automl-test-237311 
-* DEPLOY
-python gc_a2ml.py -D -i TBL7363086323588005888 -p automl-test-237311 
-* PREDICT
-python gc_a2ml.py -P -i TBL9182681310534041600  -p automl-test-237311 -s baseball_predict.csv
-* REVIEW
+* IMPORT: python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
+* CONFIGURE: python gc_a2ml.py -C -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
+* TRAIN: python gc_a2ml.py -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
+* EVALUATE: python gc_a2ml.py -E -i TBL7363086323588005888  -p automl-test-237311 
+* DEPLOY: python gc_a2ml.py -D -i TBL7363086323588005888 -p automl-test-237311 
+* PREDICT: python gc_a2ml.py -P -i TBL9182681310534041600  -p automl-test-237311 -s baseball_predict.csv
+* REVIEW: python gc_a2ml.py -R -i TBL9182681310534041600  
+
+These invocations are wrapped in various provided scripts: gc_import.sh, gc_train.sh, gc_evaluate.sh, gc_deploy.sh, gc_predict.sh, gc_review,sh
