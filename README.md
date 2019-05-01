@@ -39,15 +39,15 @@ Uppercase P-R-E-D-I-C-T options run parts of the pipeline:
 * -T, --TRAIN           Train the model
 
 Lowercase options set project, dataset, model and others that span pipeline stages .
-* -p PROJECT, --project PROJECT Google Cloud project ID, overrides PROJECT_ID env var
-* -d DATASET, --dataset DATASET Google Cloud dataset ID
-* -m MODEL, --model MODEL Model display name
-* -i MODEL_ID, --model_id MODEL_ID Model ID
-* -s SOURCE, --source SOURCE Source path for loading dataset
-* -t TARGET, --target TARGET Target column from dataset
-* -b BUDGET, --budget BUDGET Max training time in seconds
-* -x EXCLUDE, --exclude EXCLUDE Excludes given columns from model
-* -z SCORE_THRESHOLD, --score_threshold SCORE_THRESHOLD Score threshold for prediction
+* -p PROJECT, --project <Google Cloud project ID>, overrides PROJECT_ID env var
+* -d DATASET, --dataset <Google Cloud dataset ID>
+* -m MODEL, --model <Model name>
+* -i MODEL_ID, --model_id <Model ID>
+* -s SOURCE, --source <Source file path for loading dataset or prediction CSV>
+* -t TARGET, --target <Target column from dataset>
+* -b BUDGET, --budget <Max training time in seconds>
+* -x EXCLUDE, --exclude <Excludes given columns from model>
+* -z SCORE_THRESHOLD, <Score threshold for prediction>
 
 A typical usage of the PREDICT pipeline would be successive invocations with the following options:
 * IMPORT
