@@ -1,7 +1,5 @@
 # a2ml - Automation of AutoML
-Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendors.  Data scientists can then train their datasets against multiple
-AutoML models to get the best possible predictive model.  May the best 
-"algorithm/hyperparameter search" win.
+Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
 
 ## The PREDICT Pipeline
 Every AutoML vendor has their own API to manage the datasets and create and
@@ -18,9 +16,30 @@ common set of stages:
 Since ICTEDPR is hard to remember we refer to this pipeline as: PREDICT.  The A2ML
 project provides a command line interface and APIs that implement this pipeline. 
 
-## GC_A2ML
+## A2ML.PY
+The A2ML Model class abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel) and Auger.AI (Auger).   We will be adding support for Microsoft Azure AutoML soon. If you want to add support for another AutoML provider of your choice.  Implement a child class of Model as shown below (replacing each "pass" with your own code.
 
-This is the current primary functional script.  It provides command line options
+  class AnotherAutoMLModel(Model):  
+      def __init__(self):
+          pass     
+      def predict(self,filepath,score_threshold):
+          pass
+      def review(self):
+          pass
+      def evaluate(self):
+          pass
+      def deploy(self):
+          pass
+      def import_data(self):
+          pass
+      def config(self):
+          pass
+      def train(self):
+          pass
+
+## A2ML_CLI.PY
+
+This is the command line interface for the A2ML classes.  It provides command line options
 for each stage in the PREDICT Pipeline for the Google Cloud AutoML service.  Support for other Cloud AutoML providers with the same API will be added shortly (specifically Microsoft Azure AutoML and DeepLearn's Auger.AI service). 
 
 usage: GC_A2ML [-h] [-P] [-R] [-E] [-D] [-I] [-C] [-T] [-p PROJECT]
@@ -48,7 +67,8 @@ Lowercase options set project, dataset, model and others that span pipeline stag
 * -z SCORE_THRESHOLD, --threshold <Score threshold for prediction>
 
 ## Example Pipeliine
-A typical usage of the PREDICT pipeline would be successive invocations of the followiing stages:
+A typical usage of the PREDICT pipeline would be successive invocations of the following stages:
+
 * IMPORT: python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
 * CONFIGURE: python gc_a2ml.py -C -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
 * TRAIN: python gc_a2ml.py -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
@@ -57,4 +77,4 @@ A typical usage of the PREDICT pipeline would be successive invocations of the f
 * PREDICT: python gc_a2ml.py -P -i TBL9182681310534041600  -p automl-test-237311 -s baseball_predict.csv
 * REVIEW: python gc_a2ml.py -R -i TBL9182681310534041600  
 
-These invocations are wrapped in various provided scripts: gc_import.sh, gc_train.sh, gc_evaluate.sh, gc_deploy.sh, gc_predict.sh, gc_review,sh
+These invocations are wrapped in various provided scripts: gc_import.sh, gc_train.sh, gc_evaluate.sh, gc_deploy.sh, gc_predict.sh, gc_review.sh
