@@ -146,6 +146,7 @@ class GCModel(Model):
                 )
             print("\n")
 
+    # TODO: handle already deployed model exception (400)
     def deploy(self):
         self.full_id = self.client.model_path(self.project_id, self.compute_region, self.id)
         response = self.client.deploy_model(self.full_id)

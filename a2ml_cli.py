@@ -33,7 +33,7 @@ def main():
     # lower case letter arguments apply to multiple phases
     parser.add_argument('-p','--project',help='Google Cloud project ID, overrides PROJECT_ID env var')
     parser.add_argument('-d','--dataset',help='Google Cloud dataset ID')
-    parser.add_argument('-n','--name',help='Model display name')
+    parser.add_argument('-n','--name',help='Model name')
     parser.add_argument('-i','--model_id',help='Model ID')
     parser.add_argument('-s','--source',help='Source path for loading dataset')
     parser.add_argument('-t','--target',help='Target column from dataset')
@@ -45,13 +45,8 @@ def main():
     parser.add_argument('-a','--automl',help='AutoML provider')
 
     args = parser.parse_args()
-    if (args.project is not None):
-        project_id = args.project
-    else:  # default project read from environment
-        project_id = os.getenv('PROJECT_ID')
-
-    if (args.name is not None):
-        name = args.name
+    print("Parsed args: {}".format(args))
+    name = args.name
 
     if (args.project is not None):
         project_id = args.project
@@ -61,10 +56,17 @@ def main():
         region = args.region
     else:
         region = 'us-central1'
+
     if ((args.automl == "GC") or (args.automl is None)):
+        print("Creating Google Cloud AutoML client")
         model = a2ml.GCModel(project_id,region)
     elif (args.automl == "Auger"):
+        print("Creating Auger.AI client")
         model = a2ml.AugerModel()
+    if (args.project is not None):
+        project_id = args.project
+    else:  # default project read from environment
+        project_id = os.getenv('PROJECT_ID')
 
     if (args.dataset is not None):
         model.dataset_id = args.dataset 
