@@ -1,1 +1,1 @@
-python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
+python a2ml_cli.py -a GC -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311 
