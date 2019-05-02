@@ -19,6 +19,7 @@ project provides a command line interface and APIs that implement this pipeline.
 ## A2ML.PY
 The A2ML Model class abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel) and Auger.AI (Auger).   We will be adding support for Microsoft Azure AutoML soon. If you want to add support for another AutoML provider of your choice.  Implement a child class of Model as shown below (replacing each "pass" with your own code.
 
+```
   class AnotherAutoMLModel(Model):  
       def __init__(self):
           pass     
@@ -36,6 +37,7 @@ The A2ML Model class abstracts out the PREDICT (ICTEDPR) pipeline.  Implementati
           pass
       def train(self):
           pass
+```
 
 ## A2ML_CLI.PY
 
