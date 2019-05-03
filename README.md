@@ -13,8 +13,8 @@ common set of stages:
 * Predict results with new data against deployed models
 * Review performance of deployed models 
 
-Since ICTEDPR is hard to remember we refer to this pipeline as: PREDICT.  The A2ML
-project provides classes which implement this pipeline for various Cloud AutoML providers
+Since ICTEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDICT". 
+The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline. 
 
 ## A2ML Classes
