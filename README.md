@@ -14,10 +14,11 @@ common set of stages:
 * Review performance of deployed models 
 
 Since ICTEDPR is hard to remember we refer to this pipeline as: PREDICT.  The A2ML
-project provides a command line interface and APIs that implement this pipeline. 
+project provides classes which implement this pipeline for various Cloud AutoML providers
+and a command line interface that invokes stages of the pipeline. 
 
-## A2ML.PY
-The A2ML Model class abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel) and Auger.AI (Auger).   We will be adding support for Microsoft Azure AutoML soon. If you want to add support for another AutoML provider of your choice.  Implement a child class of Model as shown below (replacing each "pass" with your own code.
+## A2ML Classes
+The A2ML Model class in A2ML.PY abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel) and Auger.AI (Auger).   We will be adding support for Microsoft Azure AutoML soon. If you want to add support for another AutoML provider of your choice.  Implement a child class of Model as shown below (replacing each "pass" with your own code.
 
 ```
   class AnotherAutoMLModel(Model):  
@@ -39,7 +40,7 @@ The A2ML Model class abstracts out the PREDICT (ICTEDPR) pipeline.  Implementati
           pass
 ```
 
-## A2ML_CLI.PY
+## The A2ML CLI: A2ML_CLI.PY
 
 This is the command line interface for the A2ML classes.  It provides command line options
 for each stage in the PREDICT Pipeline for the Google Cloud AutoML service.  Support for other Cloud AutoML providers with the same API will be added shortly (specifically Microsoft Azure AutoML and DeepLearn's Auger.AI service). 
