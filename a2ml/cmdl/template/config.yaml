@@ -1,0 +1,4 @@
+---
+# experiment configuration
+
+datafile: 'some.data.file.csv'
