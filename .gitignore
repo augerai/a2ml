@@ -1,0 +1,27 @@
+*.pyc
+*.pyo
+*.py~
+*.egg*
+.DS_Store
+.idea
+metastore_db
+
+# Testing artifacts
+**/__pycache__/*
+coverage/*
+/htmlcov
+/.cache
+/.coverage
+/.env
+/.tox
+
+# Development artifacts
+**/aws-keys.yaml
+**/logs/*
+**/log/*
+Session.vim
+tags
+
+# Setuptools distribution and build folders
+/dist/
+/build
