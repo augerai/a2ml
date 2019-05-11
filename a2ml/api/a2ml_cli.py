@@ -1,6 +1,7 @@
 import argparse 
 import os
 import a2ml
+import gc_a2ml
 
 def main():
 
@@ -59,10 +60,10 @@ def main():
 
     if ((args.automl == "GC") or (args.automl is None)):
         print("Creating Google Cloud AutoML client")
-        model = a2ml.GCModel(project_id,region)
+        model = GCModel(project_id,region)
     elif (args.automl == "Auger"):
         print("Creating Auger.AI client")
-        model = a2ml.AugerModel()
+        model = a2ml.api.a2ml.AugerModel()
     if (args.project is not None):
         project_id = args.project
     else:  # default project read from environment
@@ -93,8 +94,8 @@ def main():
     if (args.IMPORT): 
         model.import_data(source,name)
     if (args.TRAIN):
-        model.config(target,excluded,training_budget,metric)
-        model.train
+        model.train(target,excluded,training_budget,metric)
+
     if (args.EVALUATE):
         model.evaluate()
     if (args.DEPLOY):

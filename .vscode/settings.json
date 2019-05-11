@@ -1,3 +1,9 @@
 {
-    "python.pythonPath": "/Users/adamblum/a2ml/a2ml/bin/python3.7"
+    "python.pythonPath": ".venv/bin/python",
+    "python.testing.pyTestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pyTestEnabled": true
 }

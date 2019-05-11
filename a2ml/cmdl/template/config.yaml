@@ -1,4 +1,11 @@
----
+pip ---
 # experiment configuration
+name: 
+# AutoML provider
+provider: 
+# can be local file or URL
+source: 
+project: 
+target:
+exclude:
 
-datafile: 'some.data.file.csv'

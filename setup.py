@@ -2,7 +2,8 @@ from setuptools import setup
 from setuptools import find_packages
 
 install_requires = [
-    'click'
+    'click','dill','google-cloud-automl','lightgbm','numpy','pandas',
+    'sklearn','wheel'
 ]
 
 extras = {

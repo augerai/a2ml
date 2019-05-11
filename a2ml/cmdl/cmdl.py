@@ -4,7 +4,6 @@ import click
 import logging
 log = logging.getLogger("a2ml")
 
-
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
 
 class Context(object):
@@ -56,3 +55,6 @@ class A2mlCli(click.MultiCommand):
 @pass_context
 def cmdl(ctx):
     """A2ML command line interface."""
+    print("Hello")
+
+

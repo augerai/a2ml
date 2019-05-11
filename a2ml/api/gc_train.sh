@@ -1,1 +1,1 @@
-python a2ml_cli.py -a GC -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
+python a2ml_cli.py -a GC -T -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year

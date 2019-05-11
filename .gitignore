@@ -5,15 +5,19 @@
 .DS_Store
 .idea
 metastore_db
-
+automl.json
+g
 # Testing artifacts
 **/__pycache__/*
+.pytest_cache/*
 coverage/*
 /htmlcov
 /.cache
 /.coverage
 /.env
 /.tox
+/.env
+/.venv
 
 # Development artifacts
 **/aws-keys.yaml
