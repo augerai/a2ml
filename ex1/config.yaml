@@ -1,0 +1,10 @@
+budget: 3600
+dataset_id: TBL4772768869943083008
+exclude: Team,League,Year
+metric: MINIMIZE_MAE
+name: moneyball
+project: automl-test-237311
+provider: GC
+region: us-central1
+source: gs://moneyball/baseball.csv
+target: RS
