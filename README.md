@@ -63,52 +63,32 @@ $ a2ml command --help
 
 ## Configuration Options
 
-After a new A2ML application created, application configuration stored in config.yaml. 
+After a new A2ML application created, application configuration stored in CONFIG.YAML. The options available include:
+* name - the name of the experiment
+* provider - the AutoML provider: GC (for Google Cloud), AZ (for Microsoft Azure), or Auger
+* project - the name of the project in the AutoML provider's environment
+* region - the compute region on the cloud provider
+* source - the CSV file to train with
+* dataset_id - the Google Cloud dataset after source import
+* target - the feature which is the target
+* exclude - features to exclude from the model
+* metric - how to measure the accuracy of the model
+* budget - the time budget in milliseconds to train 
 
-Options:
+Here is an example CONFIG.YAML for Google Cloud AutoML:
 
-
-
-## The A2ML CLI: A2ML_CLI.PY
-
-This is the command line interface for the A2ML classes.  It provides command line options
-for each stage in the PREDICT Pipeline for the Google Cloud AutoML service.  Support for other Cloud AutoML providers with the same API will be added shortly (specifically Microsoft Azure AutoML and DeepLearn's Auger.AI service).
-
-usage: GC_A2ML [-h] [-P] [-R] [-E] [-D] [-I] [-C] [-T] [-p PROJECT]
-               [-d DATASET] [-m MODEL] [-i MODEL_ID] [-s SOURCE] [-t TARGET]
-               [-b BUDGET] [-x EXCLUDE] [-z SCORE_THRESHOLD]
-
-Uppercase P-R-E-D-I-C-T options run parts of the pipeline:
-* -P, --PREDICT         Predict with deployed model
-* -R, --REVIEW          Review specified model info
-* -E, --EVALUATE        Evaluate models after training
-* -D, --DEPLOY          Deploy model
-* -I, --IMPORT          Import data for training
-* -T, --TRAIN           Train the model
-
-Lowercase options set project, dataset, model and others that span pipeline stages .
-* -p PROJECT, --project <Google Cloud project ID>, overrides PROJECT_ID env var
-* -d DATASET, --dataset <Google Cloud dataset ID>
-* -m MODEL, --model <Model name>
-* -i MODEL_ID, --model_id <Model ID>
-* -s SOURCE, --source <Source file path for loading dataset or prediction CSV>
-* -t TARGET, --target <Target column from dataset>
-* -b BUDGET, --budget <Max training time in seconds>
-* -x EXCLUDE, --exclude <Excludes given columns from model>
-* -z SCORE_THRESHOLD, --threshold <Score threshold for prediction>
-
-## Example Pipeliine
-A typical usage of the PREDICT pipeline would be successive invocations of the following stages:
-
-* IMPORT: python gc_a2ml.py -I -d TBL6121667327084724224 -m MoneyBall -s baseball.csv -p automl-test-237311
-* CONFIGURE: python gc_a2ml.py -C -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
-* TRAIN: python gc_a2ml.py -T -d TBL6121667327084724224 -m MoneyBall -t RS -p automl-test-237311 -xTeam,League,Year
-* EVALUATE: python gc_a2ml.py -E -i TBL7363086323588005888  -p automl-test-237311
-* DEPLOY: python gc_a2ml.py -D -i TBL7363086323588005888 -p automl-test-237311
-* PREDICT: python gc_a2ml.py -P -i TBL9182681310534041600  -p automl-test-237311 -s baseball_predict.csv
-* REVIEW: python gc_a2ml.py -R -i TBL9182681310534041600  
-
-These invocations are wrapped in various provided scripts: gc_import.sh, gc_train.sh, gc_evaluate.sh, gc_deploy.sh, gc_predict.sh, gc_review.sh
+```
+name: moneyball
+provider: GC
+project: automl-test-237311
+region: us-central1
+source: gs://moneyball/baseball.csv
+dataset_id: TBL4772768869943083008
+target: RS
+exclude: Team,League,Year
+metric: MINIMIZE_MAE
+budget: 3600
+```
 
 ## Development Setup
 
