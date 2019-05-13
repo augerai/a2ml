@@ -1,20 +1,19 @@
 # a2ml - Automation of AutoML
 Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
 
-## The PREDICT Pipeline
+## The PREDIT Pipeline
 Every AutoML vendor has their own API to manage the datasets and create and
 manage predictive models.  They are similar but not identical APIs.  But they share a
 common set of stages:
 * Importing data for training
-* Configuring the training parameters (targets, features, algorithms to consider)
 * Train models with multiple algorithms and hyperparameters
 * Evaluate model performance and choose one or more for deployment
 * Deploy selected models
 * Predict results with new data against deployed models
 * Review performance of deployed models
 
-Since ICTEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDICT".
-The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
+Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French
+for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
 
 ## A2ML Classes
@@ -33,8 +32,6 @@ The A2ML Model class in A2ML.PY abstracts out the PREDICT (ICTEDPR) pipeline.  I
       def deploy(self):
           pass
       def import_data(self):
-          pass
-      def config(self):
           pass
       def train(self):
           pass
@@ -87,7 +84,6 @@ Uppercase P-R-E-D-I-C-T options run parts of the pipeline:
 * -E, --EVALUATE        Evaluate models after training
 * -D, --DEPLOY          Deploy model
 * -I, --IMPORT          Import data for training
-* -C, --CONFIGURE       Configure model options before training
 * -T, --TRAIN           Train the model
 
 Lowercase options set project, dataset, model and others that span pipeline stages .
