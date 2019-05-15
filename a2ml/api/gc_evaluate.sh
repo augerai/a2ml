@@ -1,1 +1,0 @@
-python a2ml_cli.py -a GC -E -i TBL7363086323588005888  -p automl-test-237311 

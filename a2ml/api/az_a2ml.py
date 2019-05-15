@@ -12,13 +12,12 @@ from sklearn.model_selection import train_test_split
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 import azureml.dataprep as dprep
-import dill
 
-import a2ml
+from a2ml.api import a2ml
 
-class AzModel(a2ml.api.a2ml.Model):  
+class AZModel(a2ml.Model):  
 
-    def __init__(self,name,project_id,compute_region):
+    def __init__(self,name,project_id,compute_region,compute_name):
         self.name = name
         self.project_id = project_id
         if compute_region is None:
@@ -26,26 +25,32 @@ class AzModel(a2ml.api.a2ml.Model):
         self.compute_region = compute_region
         # check core SDK version number
         print("Azure ML SDK Version: ", azureml.core.VERSION)
-
-        self.subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+        subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
         try:  # get the preloaded workspace definition
             self.ws = Workspace.from_config()
         except:  # or create a new one
             resource_group = project_id + '_resources'
             self.ws = Workspace.create(name=project_id,
-                        subscription_id=self.subscription_id,	
+                        subscription_id=subscription_id,	
                         resource_group=resource_group,
                         create_resource_group=True,
                         location=compute_region 
                         )
         self.ws.write_config() 
         # choose a name for your cluster
-        self.compute_name = os.environ.get("AML_COMPUTE_CLUSTER_NAME", "cpucluster")
-        self.compute_min_nodes = os.environ.get("AML_COMPUTE_CLUSTER_MIN_NODES", 0)
-        self.compute_max_nodes = os.environ.get("AML_COMPUTE_CLUSTER_MAX_NODES", 4)
-
+        self.compute_name = compute_name
+        self.min_nodes =  0
+        self.max_nodes = 4
         # This example uses CPU VM. For using GPU VM, set SKU to STANDARD_NC6
         self.vm_size = os.environ.get("AML_COMPUTE_CLUSTER_SKU", "STANDARD_D2_V2")
+        try:
+            aml_compute = AmlCompute(ws, self.compute_name)
+            print('Found existing AML compute context.')
+        except:
+            print('Creating new AML compute context.')
+            aml_config = AmlCompute.provisioning_configuration(self.vm, self.min_nodes, self.max_nodes)
+            aml_compute = AmlCompute.create(ws, name = self.compute_name, provisioning_configuration = aml_config)
+            aml_compute.wait_for_completion(show_output = True)
 
     def import_data(self,source):
         self.source = source 
@@ -62,7 +67,7 @@ class AzModel(a2ml.api.a2ml.Model):
         pd.DataFrame(data=output, index=['']).T
 
     def generate_data_script(self):
-        template = open("data_script.template","r")
+        template = open("get_data.template","r")
         text = template.read()
         template.close 
         print("Replacing $SOURCE with: {}".format(self.source))

@@ -12,9 +12,11 @@ from sklearn.model_selection import train_test_split
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 import azureml.dataprep as dprep
+import yaml 
 
 # check core SDK version number
 print("Azure ML SDK Version: ", azureml.core.VERSION)
+
 try:  # get the preloaded workspace definition
     ws = Workspace.from_config()
 except:  # or create a new one
@@ -55,8 +57,8 @@ else:
      # For a more detailed view of current AmlCompute status, use get_status()
     print(compute_target.get_status().serialize())
 
-experiment_name = "heart" # a default experiment if no argument
-experiment_name = os.sys.argv[1]
+experiment_name = "baseball" # a default experiment if no argument
+#experiment_name = os.sys.argv[1]
 print("Experiment: "+experiment_name)
 exp = Experiment(workspace=ws, name=experiment_name)
 

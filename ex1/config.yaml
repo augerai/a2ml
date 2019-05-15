@@ -4,7 +4,10 @@ exclude: Team,League,Year
 metric: MINIMIZE_MAE
 name: moneyball
 project: automl-test-237311
-provider: GC
+providers: AZ
 region: us-central1
 source: gs://moneyball/baseball.csv
 target: RS
+azure_region: 'East US 2'
+azure_resource_group: autoautoml
+azure_compute_name: autoautoml
