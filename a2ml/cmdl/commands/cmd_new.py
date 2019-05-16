@@ -2,40 +2,44 @@ import os
 import errno
 import click
 
-from a2ml.cmdl.cmdl import pass_context
+from a2ml.cmdl.cmdl import pass_context, PROVIDERS, PROVIDERS_META
 from a2ml.cmdl.utils.template import Template
 
 class NewCmd(object):
 
-    def __init__(self, ctx, app_name):
+    def __init__(self, ctx, experiment_name, provider):
         self.ctx = ctx
-        self.app_name = app_name
+        self.experiment_name = experiment_name
+        self.provider = provider
 
-    def mk_app_folder(self):
-        app_path = os.path.abspath(os.path.join(os.getcwd(), self.app_name))
+    def mk_experiment_folder(self):
+        experiment_path = os.path.abspath(os.path.join(os.getcwd(), self.experiment_name))
         try:
-            os.makedirs(app_path)
+            os.makedirs(experiment_path)
         except OSError as e:
             if e.errno == errno.EEXIST:
-                raise Exception('Can\'t create \'%s\'. Folder already exists.' % self.app_name)
+                raise Exception('Can\'t create \'%s\'. Folder already exists.' % self.experiment_name)
             raise
-        self.ctx.log('Created application folder %s', self.app_name)
-        return app_path
+        self.ctx.log('Created experiment folder %s', self.experiment_name)
+        return experiment_path
 
-    def create_app(self):
+    def create_experiment(self):
         try:
-            app_path = self.mk_app_folder()
-            Template.copy(app_path)
-            self.ctx.log('To run application, please do: cd %s && a2ml train' % self.app_name)
+            experiment_path = self.mk_experiment_folder()
+            Template.copy(experiment_path, self.provider)
+            self.ctx.log('To run experiment, please do: cd %s && a2ml train' % self.experiment_name)
 
         except Exception as e:
             self.ctx.log('%s', str(e))
 
 
-@click.command('new', short_help='Create new A2ML application.')
-@click.argument('app-name', required=True, type=click.STRING)
+@click.command('new', short_help='Create new A2ML experiment.')
+@click.argument('experiment-name', required=True, type=click.STRING)
+@click.option('--provider', '-p', default='auger', metavar='',
+              type=click.Choice(PROVIDERS),
+              help='[%s]\nAutoML provider to use in this experiment.' % PROVIDERS_META)
 @pass_context
-def cmdl(ctx, app_name):
-    """Create new A2ML application."""
+def cmdl(ctx, experiment_name, provider):
+    """Create new A2ML experiment."""
     ctx.setup_logger(format='')
-    NewCmd(ctx, app_name).create_app()
+    NewCmd(ctx, experiment_name, provider).create_experiment()

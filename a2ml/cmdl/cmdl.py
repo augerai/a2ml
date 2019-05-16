@@ -2,17 +2,28 @@ import os
 import sys
 import click
 import logging
+
+from a2ml.cmdl.utils.config_yaml import ConfigYaml
+
 log = logging.getLogger("a2ml")
 
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
+PROVIDERS = ['auger', 'google', 'azure', 'h2o']
+PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
     def __init__(self):
-        pass
+        self.config = self.load_config()
 
     def log(self, msg, *args, **kwargs):
         log.info(msg, *args, **kwargs)
+
+    def load_config(self):
+        config = ConfigYaml()
+        if os.path.isfile('config.yaml'):
+            config.load_from_file('config.yaml')
+        return config
 
     @staticmethod
     def setup_logger(format='%(asctime)s %(name)s | %(message)s'):
@@ -55,6 +66,3 @@ class A2mlCli(click.MultiCommand):
 @pass_context
 def cmdl(ctx):
     """A2ML command line interface."""
-    print("Hello")
-
-
