@@ -12,13 +12,12 @@ from sklearn.model_selection import train_test_split
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 import azureml.dataprep as dprep
-import dill
 
-import a2ml
+from a2ml.api import a2ml
 
-class AzModel(a2ml.api.a2ml.Model):  
+class AZModel(a2ml.Model):  
 
-    def __init__(self,name,project_id,compute_region):
+    def __init__(self,name,project_id,compute_region,compute_name):
         self.name = name
         self.project_id = project_id
         if compute_region is None:
@@ -26,26 +25,37 @@ class AzModel(a2ml.api.a2ml.Model):
         self.compute_region = compute_region
         # check core SDK version number
         print("Azure ML SDK Version: ", azureml.core.VERSION)
-
-        self.subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+        subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
         try:  # get the preloaded workspace definition
-            self.ws = Workspace.from_config()
+            self.ws = Workspace.from_config(path='.azure/config.json')
         except:  # or create a new one
+
             resource_group = project_id + '_resources'
             self.ws = Workspace.create(name=project_id,
-                        subscription_id=self.subscription_id,	
+                        subscription_id=subscription_id,	
                         resource_group=resource_group,
                         create_resource_group=True,
                         location=compute_region 
                         )
+
+
         self.ws.write_config() 
         # choose a name for your cluster
-        self.compute_name = os.environ.get("AML_COMPUTE_CLUSTER_NAME", "cpucluster")
-        self.compute_min_nodes = os.environ.get("AML_COMPUTE_CLUSTER_MIN_NODES", 0)
-        self.compute_max_nodes = os.environ.get("AML_COMPUTE_CLUSTER_MAX_NODES", 4)
-
+        self.compute_name = compute_name
+        self.min_nodes =  0
+        self.max_nodes = 4
         # This example uses CPU VM. For using GPU VM, set SKU to STANDARD_NC6
         self.vm_size = os.environ.get("AML_COMPUTE_CLUSTER_SKU", "STANDARD_D2_V2")
+
+        if self.compute_name in self.ws.compute_targets:
+            compute_target = self.ws.compute_targets[compute_name]
+            if compute_target and type(compute_target) is AmlCompute:
+                print('found compute target. just use it. ' + compute_name)
+        else: 
+            print('Creating new AML compute context.')
+            provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.vm_size, min_nodes=self.min_nodes, max_nodes=self.max_nodes)
+            compute_target = ComputeTarget.create(self.ws, self.compute_name, provisioning_config)
+            compute_target.wait_for_completion(show_output = True)
 
     def import_data(self,source):
         self.source = source 
@@ -62,23 +72,23 @@ class AzModel(a2ml.api.a2ml.Model):
         pd.DataFrame(data=output, index=['']).T
 
     def generate_data_script(self):
-        template = open("data_script.template","r")
+        template = open("a2ml/api/get_data.template","r")
         text = template.read()
         template.close 
         print("Replacing $SOURCE with: {}".format(self.source))
-        text.replace("$SOURCE",self.source)
-        text.replace("$TARGET",self.target)
+        text=text.replace("SOURCE",self.source)
+        text=text.replace("TARGET",self.target)
         print("Generated data script contents: {}".format(text))
         script = open(self.data_script,"w")
         script.write(text)
         script.close
 
-    def train(self,target,excluded,budget,metric):
-        print("Loading stored model object")
- 
+    def train(self,source,target,excluded,budget,metric):
+
         if (metric is None):
             metric = 'spearman_correlation'
         self.target = target
+        self.source = source
         # TODO: use metric budget specified in seconds
         automl_settings = {
             "iteration_timeout_minutes" : 10,
@@ -93,7 +103,6 @@ class AzModel(a2ml.api.a2ml.Model):
         self.generate_data_script()
         self.automl_config = AutoMLConfig(task='regression',
                                     debug_log='automl_errors.log',
-                                    path=self.project_folder,
                                     compute_target = self.target,
                                     data_script= "get_data.py",
                                     **automl_settings

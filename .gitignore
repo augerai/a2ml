@@ -6,7 +6,8 @@
 .idea
 metastore_db
 automl.json
-g
+.azureml/config.json
+
 # Testing artifacts
 **/__pycache__/*
 .pytest_cache/*
