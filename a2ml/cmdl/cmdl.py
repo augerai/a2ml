@@ -55,6 +55,6 @@ class A2mlCli(click.MultiCommand):
 @pass_context
 def cmdl(ctx):
     """A2ML command line interface."""
-    print("Hello")
+
 
 
