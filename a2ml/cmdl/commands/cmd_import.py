@@ -12,12 +12,14 @@ class ImportCmd(object):
 
     def import_data(self):
         provider = self.ctx.config.get('provider', None)
-        if provider is None:
-            self.ctx.log('Please create experiment using "new" command'
-                ' and run import command from experiment folder...')
-        elif provider == 'auger':
-            AugerImport(self.ctx).import_data()
-
+        import_provider = {
+            'auger': AugerImport(self.ctx).import_data
+        }
+        runner = import_provider.get(provider, lambda:
+            self.ctx.log('Provider is not specified.'
+                         ' Please create experiment using "new" command'
+                         ' and run import command from experiment folder...'))
+        runner()
 
 @click.command('import', short_help='Import data for training.')
 @pass_context
