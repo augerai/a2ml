@@ -8,21 +8,23 @@ from a2ml.cmdl.utils.config_yaml import ConfigYaml
 log = logging.getLogger("a2ml")
 
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
-PROVIDERS = ['auger', 'google', 'azure', 'h2o']
+PROVIDERS = ['auger', 'google', 'azure']
 PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
     def __init__(self):
-        self.config = self.load_config()
+        self.config = {}
+        for name in ['config'] + PROVIDERS:
+            self.config[name] = self.load_config('%s.yaml' % name)
 
     def log(self, msg, *args, **kwargs):
         log.info(msg, *args, **kwargs)
 
-    def load_config(self):
+    def load_config(self, name):
         config = ConfigYaml()
-        if os.path.isfile('config.yaml'):
-            config.load_from_file('config.yaml')
+        if os.path.isfile(name):
+            config.load_from_file(name)
         return config
 
     @staticmethod

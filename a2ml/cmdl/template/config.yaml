@@ -1,11 +1,6 @@
-pip ---
-# experiment configuration
-name: 
-# AutoML provider
-provider: 
-# can be local file or URL
-source: 
-project: 
-target:
-exclude:
-
+---
+# list of providers
+providers:
+  - auger
+  - google
+  - azure

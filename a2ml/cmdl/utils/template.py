@@ -4,9 +4,10 @@ import shutil
 class Template(object):
 
     @staticmethod
-    def copy(experiment_path, provider):
+    def copy_config_files(experiment_path, providers):
         module_path = os.path.dirname(os.path.abspath(__file__))
-        default_config = os.path.abspath(os.path.join(
-            module_path, '../template/%s.yaml' % provider))
-        config_name = os.path.join(experiment_path, 'config.yaml')
-        shutil.copy2(default_config, config_name)
+        for provider in providers:
+            src_config = os.path.abspath(os.path.join(
+                module_path, '../template/%s.yaml' % provider))
+            dest_config = os.path.join(experiment_path, '%s.yaml' % provider)
+            shutil.copy2(src_config, dest_config)
