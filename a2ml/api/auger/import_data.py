@@ -97,7 +97,7 @@ class AugerImport(object):
             m = MultipartEncoder(fields={
                 'file':(basename, open(file_name, 'rb'), "application/octet-stream")})
             print(2)
-            r = requests.post(url, data=m, headers={'Content-Type': m.content_type}, auth=(user, token))
+            r = requests.post(url, data=m, headers={'Content-Type': m.content_type})
             return r
         except Exception as e:
             return {"error": e, "error_code": 503}
