@@ -1,6 +1,7 @@
 ---
 
-provider: 'auger'
+org_name:
+project_name:
 
 data_source:
   # Data source could be either local or remote file in csv or arff format

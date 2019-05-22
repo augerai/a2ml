@@ -1,6 +1,16 @@
 ---
+# experiment name
+name: moneyball
+
 # list of providers
 providers:
   - auger
   - google
   - azure
+
+data:
+  source: http://example.com/file.csv
+  target: RS
+  exclude: Team,League,Year
+
+  budget: 3600
