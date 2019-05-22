@@ -83,15 +83,14 @@ class AugerImport(object):
             print(upload_token)
             print(self.credentials.username)
 
-            ret = self.uploadFile(file_to_upload, upload_url,
-                self.credentials.username, upload_token)
+            ret = self.uploadFile(file_to_upload, upload_url)
             print(str(ret))
             # print(json.dumps(ret, indent = 2))
 
         except Exception as exc:
             self.ctx.log(str(exc))
 
-    def uploadFile(self, file_name, url, user, token):
+    def uploadFile(self, file_name, url):
         try:
             basename = os.path.basename(file_name)
             m = MultipartEncoder(fields={
