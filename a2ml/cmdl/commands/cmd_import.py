@@ -12,7 +12,6 @@ class ImportCmd(object):
 
     def import_data(self):
         providers = self.ctx.config['config'].get('providers', [])
-        self.ctx.log('Importing to %s' % ', '.join(providers))
         import_providers = {
             'auger': AugerImport(self.ctx).import_data
         }

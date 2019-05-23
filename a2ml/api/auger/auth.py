@@ -39,6 +39,7 @@ class AugerAuth(object):
             self.ctx.log('You are not loged in Auger.')
         else:
             self.credentials.token = None
+            self.credentials.api_url = None
             self.credentials.save()
             self.ctx.log('You are loged out of Auger.')
 

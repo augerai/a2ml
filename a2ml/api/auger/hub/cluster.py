@@ -35,8 +35,7 @@ class AugerClusterApi(object):
                 status=cluster['status'],
                 progress=[
                     'waiting', 'provisioning', 'bootstrapping'
-                ]
-            )
+                ])
 
         return cluster
 

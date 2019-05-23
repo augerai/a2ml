@@ -1,102 +1,99 @@
 import os
-import json
-import time
 import requests
+import shortuuid
+import urllib.parse
 from requests_toolbelt import MultipartEncoder
 
-from a2ml.api.auger.hub.hub_api import HubApi
-from a2ml.api.auger.hub.org import AugerOrgApi
-from a2ml.api.auger.hub.project import AugerProjectApi
+from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.cluster import AugerClusterApi
-from a2ml.api.auger.hub.hub_api import STATE_POLL_INTERVAL
+from a2ml.api.auger.hub.project_file import AugerProjectFileApi
 
-from a2ml.api.auger.credentials import Credentials
 
-class AugerImport(object):
+SUPPORTED_FORMATS = ['.csv', '.arff']
+
+class AugerImport(AugerBase):
     """Import data into Auger."""
     def __init__(self, ctx):
-        super(AugerImport, self).__init__()
-        self.ctx = ctx
-        self.credentials = Credentials(ctx.config['auger']).load()
+        super(AugerImport, self).__init__(ctx)
 
     def import_data(self):
         try:
-            file_to_upload = self.ctx.config['config'].get('data/source', None)
-            if file_to_upload is None:
-                raise Exception(
-                    'Please specify in config.yaml file to import to Auger...')
-            file_to_upload = os.path.abspath(
-                os.path.join(os.getcwd(), file_to_upload))
-            if not os.path.isfile(file_to_upload):
-                raise Exception(
-                    'Can\'t find file to import: %s' % file_to_upload)
+            # verify avalability of auger credentials
+            self.credentials.verify()
 
-            self.ctx.log('Importing to Auger file %s' % file_to_upload)
+            # verify there is a source file for importing
+            file_to_upload = self._get_source_file()
 
-            if self.credentials.token is None:
-                raise Exception(
-                    'Please provide your credentials to import data to Auger...')
+            self.ctx.log('Importing file %s' % file_to_upload)
 
-            org_name = self.ctx.config['auger'].get('org_name', None)
-            if org_name is None:
-                raise Exception(
-                    'Please specify your organization (org_name:) in auger.yaml...')
+            # ensure there are org, project and cluster to work with
+            self.ensure_org_and_project()
+            self.start_project()
 
-            project_name = self.ctx.config['auger'].get('project_name', None)
-            if project_name is None:
-                raise Exception(
-                    'Please specify your project (project_name:) in auger.yaml...')
-
-            hub_client = HubApi(
-                self.credentials.api_url, self.credentials.token,
-                self.ctx.log, self.ctx.config['auger'])
-
-            org = AugerOrgApi(hub_client, org_name).properties()
-            if org is None:
-                raise Exception('Can\'t find organization %s' % org_name)
-            org_id = org.get('id')
-
-            project_api = AugerProjectApi(hub_client, project_name, org_id)
-            project = project_api.properties()
-            if project is None:
-                self.ctx.log('Can\'t find project %s on the Auger Hub.'
-                    ' Creating...' % project_name)
-                project = project_api.create()
-            project_id = project.get('id')
-            cluster_id = project.get('cluster_id')
-
-            cluster_api = AugerClusterApi(hub_client, cluster_id)
-            if not cluster_api.is_running():
-                cluster_api.create(org_id, project_id)
-                # huck; for some reason file_uploader_service
-                # isn't filled right after cluster is created
-                time.sleep(STATE_POLL_INTERVAL)
-            cluster = cluster_api.properties()
-
-            print(cluster.get('id'))
-            print(cluster.get('status'))
-            file_uploader_service = cluster.get('file_uploader_service')
-            print(json.dumps(file_uploader_service, indent = 2))
-            upload_token = file_uploader_service.get('params').get('auger_token')
-            upload_url = '%s?auger_token=%s' % (file_uploader_service.get('url'), upload_token)
-            print(upload_url)
-            print(upload_token)
-            print(self.credentials.username)
-
-            ret = self.uploadFile(file_to_upload, upload_url)
-            print(str(ret))
-            # print(json.dumps(ret, indent = 2))
+            if self.cluster_mode == 'single_tenant':
+                self._upload_to_single_tenant(file_to_upload)
+            else:
+                self._upload_to_multi_tenant(file_to_upload)
 
         except Exception as exc:
             self.ctx.log(str(exc))
 
-    def uploadFile(self, file_name, url):
-        try:
-            basename = os.path.basename(file_name)
-            m = MultipartEncoder(fields={
-                'file':(basename, open(file_name, 'rb'), "application/octet-stream")})
-            print(2)
-            r = requests.post(url, data=m, headers={'Content-Type': m.content_type})
-            return r
-        except Exception as e:
-            return {"error": e, "error_code": 503}
+    def _upload_to_single_tenant(self, file_to_upload):
+        cluster_api = AugerClusterApi(self.hub_client, self.cluster_id)
+        cluster = cluster_api.properties()
+
+        # get file_uploader_service from the cluster
+        # and upload data to that service
+        file_uploader_service = cluster.get('file_uploader_service')
+        upload_token = file_uploader_service.get('params').get('auger_token')
+        upload_url = '%s?auger_token=%s' % (file_uploader_service.get('url'), upload_token)
+        file_url = self._upload_file(file_to_upload, upload_url)
+        self.ctx.log('Uploaded source file to Auger Hub file: %s' % file_url)
+
+        # create project_file business object on the Project
+        basename = os.path.basename(file_to_upload)
+        fn, fe = os.path.splitext(basename)
+        data_source_name = '%s-%s%s' % (fn, shortuuid.uuid(),fe)
+        res = AugerProjectFileApi(self.hub_client).create(
+            self.project_id, data_source_name, basename, file_url)
+        self.ctx.log('Created data source %s on Auger Hub.' % data_source_name)
+
+    def _upload_to_multi_tenant(self, file_to_upload):
+        print('uploading to multi tenant')
+
+
+    def _get_source_file(self):
+        file_to_upload = self.ctx.config['config'].get('data/source', None)
+
+        if file_to_upload is None:
+            raise Exception(
+                'Please specify in config.yaml file to import to Auger...')
+
+        file_to_upload = os.path.abspath(
+            os.path.join(os.getcwd(), file_to_upload))
+
+        filename, file_extension = os.path.splitext(file_to_upload)
+        if not file_extension in SUPPORTED_FORMATS:
+            raise Exception(
+                'Source file has to be one of the supported fomats: %s' %
+                ', '.join(SUPPORTED_FORMATS))
+
+        if not os.path.isfile(file_to_upload):
+            raise Exception(
+                'Can\'t find file to import: %s' % file_to_upload)
+
+        return file_to_upload
+
+    def _upload_file(self, file_name, url):
+        basename = os.path.basename(file_name)
+
+        m = MultipartEncoder(fields={
+            'file':(basename, open(file_name, 'rb'), "application/octet-stream")})
+        r = requests.post(url, data=m, headers={'Content-Type': m.content_type})
+
+        if r.status_code == 200:
+            rp = urllib.parse.parse_qs(r.text)
+            return ('files/%s' % rp.get('path')[0].split('files/')[-1])
+        else:
+            raise Exception(
+                'HTTP error [%s] while uploadin file to Auger Hub...' % r.status_code)

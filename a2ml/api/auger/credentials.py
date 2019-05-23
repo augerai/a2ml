@@ -37,6 +37,12 @@ class Credentials(object):
         with open(self.credentials_path, 'w') as file:
             file.write(json.dumps(content))
 
+    def verify(self):
+        if self.token is None:
+            raise Exception(
+                'Please provide your credentials to import data to Auger...')
+        return True
+
     def _path_to_credentials(self):
         default_path = '{home}/.a2ml'.format(home=os.getenv("HOME"))
         credentials_path = os.path.abspath(self.config.get('credentials_path', default_path))
