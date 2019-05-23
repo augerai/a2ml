@@ -32,7 +32,8 @@ class AugerAuth(object):
         self.credentials.api_url = url
         self.credentials.save()
 
-        self.ctx.log('You are sucessfully loged in Auger.')
+        self.ctx.log(
+            'You are now logged in on %s as %s.' % (url, username))
 
     def logout(self):
         if self.credentials.token is None:
@@ -47,4 +48,5 @@ class AugerAuth(object):
         if self.credentials.token is None:
             self.ctx.log('Please login to Auger...')
         else:
-            self.ctx.log('%s %s' % self.credentials.username, self.credentials.api_url)
+            self.ctx.log(
+                '%s %s' % (self.credentials.username, self.credentials.api_url))

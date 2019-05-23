@@ -17,7 +17,17 @@ class AugerBase(object):
             self.credentials.api_url, self.credentials.token,
             self.ctx.log, self.ctx.config['auger'])
 
-    def ensure_org_and_project(self):
+    def start_project(self):
+        self._ensure_org_and_project()
+
+        if self.cluster_mode == 'single_tenant':
+            self._create_cluster()
+
+        self._deploy_project()
+
+    def _ensure_org_and_project(self):
+        """Ensure there are org, project and cluster to work with"""
+
         org_name = self.ctx.config['auger'].get('org_name', None)
         if org_name is None:
             raise Exception(
@@ -35,7 +45,7 @@ class AugerBase(object):
                 'Please specify your project (project_name:) in auger.yaml...')
 
         project_api = AugerProjectApi(
-            self.hub_client, self.project_name, self.org_id)
+            self.hub_client, self.org_id, self.project_name)
         project = project_api.properties()
         if project is None:
             self.ctx.log(
@@ -45,19 +55,20 @@ class AugerBase(object):
         self.project_id = project.get('id')
         self.cluster_id = project.get('cluster_id')
 
-    def start_project(self):
-        if self.cluster_mode == 'single_tenant':
-            self._start_cluster()
+    def _deploy_project(self):
+        """Call to HUB API to deploy Project"""
 
         project_api = AugerProjectApi(
-            self.hub_client, self.project_name,
-            self.org_id, self.project_id)
+            self.hub_client, self.org_id,
+            self.project_name, self.project_id)
 
         if not project_api.is_running():
             self.ctx.log('Starting Project to process request...')
             project_api.deploy(self.cluster_mode)
 
-    def _start_cluster(self):
+    def _create_cluster(self):
+        """Call to HUB API to create Cluster"""
+
         cluster_api = AugerClusterApi(self.hub_client, self.cluster_id)
         if not cluster_api.is_running():
             self.ctx.log('Starting Cluster to process request...')

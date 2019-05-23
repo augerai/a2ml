@@ -4,7 +4,7 @@ from a2ml.api.auger.hub.cluster import AugerClusterApi
 
 class AugerProjectApi(object):
     """Wrapper around HubApi for Auger Project."""
-    def __init__(self, hub_client, name, org_id, project_id=None):
+    def __init__(self, hub_client, org_id, name, project_id=None):
         super(AugerProjectApi, self).__init__()
         self.name = name
         self.org_id = org_id

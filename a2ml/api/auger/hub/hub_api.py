@@ -34,6 +34,26 @@ class HubApi(object):
 
         raise Exception("Call of HUB API method %s failed." % keys)
 
+    def request_list(self, record_type, params):
+        offset = params.get('offset', 0)
+        limit = params.get('limit', REQUEST_LIMIT)
+        p = params.copy()
+        while limit > 0:
+            p['offset'] = offset
+            p['limit'] = limit
+            response = self.call_hub_api_ex('get_' + record_type, p)
+            if not 'data' in response or not 'meta' in response:
+                raise Exception("Read list of %s failed." % record_type)
+
+            for item in response['data']:
+                yield item
+
+            received = len(response['data'])
+            offset += received
+            limit -= received
+            if offset >= response['meta']['pagination']['total']:
+                break
+
     def wait_for_object_status(self, method, params,
         status, progress, status_name='status'):
 
