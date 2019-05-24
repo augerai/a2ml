@@ -50,8 +50,8 @@ Commands:
 * new       Create new A2ML application.
 * import    Import data for training.
 * train     Train the model.
-* deploy    Deploy trained model.
 * evaluate  Evaluate models after training.
+* deploy    Deploy trained model.
 * predict   Predict with deployed model.
 * review    Review specified model info.
 
