@@ -75,7 +75,12 @@ class HubApi(object):
                 result = self.call_hub_api(method, params=params)
                 status = result.get(status_name, 'failure')
 
+        if status == 'processed_with_error':
+            print(str(result))
+            raise Exception('%s processed with error' % object_type)    
+
         log_status(status)
+
         if status == "failure":
             raise Exception('Auger Hub API call {}({}) failed: {}'.format(result.get(
                 'name', ""), result.get('args', ""), result.get("exception", "")))

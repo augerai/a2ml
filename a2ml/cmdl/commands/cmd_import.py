@@ -2,6 +2,8 @@ import click
 
 from a2ml.cmdl.cmdl import pass_context
 from a2ml.api.auger.import_data import AugerImport
+from a2ml.cmdl.utils.test_task import TestTask
+from a2ml.cmdl.utils.provider_operations import ProviderOperations
 from a2ml.api import gc_a2ml
 # import yaml
 
@@ -12,15 +14,11 @@ class ImportCmd(object):
 
     def import_data(self):
         providers = self.ctx.config['config'].get('providers', [])
-        import_providers = {
-            'auger': AugerImport(self.ctx).import_data
+        operations = {
+            'auger': AugerImport(self.ctx).import_data,
+            'google': TestTask(self.ctx).iterate
         }
-        for provider in providers:
-            importer = import_providers.get(provider, lambda:
-                self.ctx.log(
-                    'Importer for %s is not implemented yet...'
-                    % provider.capitalize()))
-            importer()
+        ProviderOperations(self.ctx).execute(providers, operations)
 
 @click.command('import', short_help='Import data for training.')
 @pass_context
