@@ -1,11 +1,16 @@
-pip ---
-# experiment configuration
-name: 
-# AutoML provider
-provider: 
-# can be local file or URL
-source: 
-project: 
-target:
-exclude:
+---
+# experiment name
+name: moneyball
 
+# list of providers
+providers:
+  - auger
+  - google
+  - azure
+
+data:
+  source: http://example.com/file.csv
+  target: RS
+  exclude: Team,League,Year
+
+  budget: 3600
