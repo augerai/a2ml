@@ -1,42 +1,9 @@
 import os
 import sys
 import click
-import logging
-
-from a2ml.cmdl.utils.config_yaml import ConfigYaml
-
-log = logging.getLogger("a2ml")
-
-CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
-PROVIDERS = ['auger', 'google', 'azure']
-PROVIDERS_META = '|'.join(PROVIDERS)
-
-class Context(object):
-
-    def __init__(self):
-        self.config = {}
-        for name in ['config'] + PROVIDERS:
-            self.config[name] = self.load_config('%s.yaml' % name)
-
-    def log(self, msg, *args, **kwargs):
-        log.info(msg, *args, **kwargs)
-
-    def load_config(self, name):
-        config = ConfigYaml()
-        if os.path.isfile(name):
-            config.load_from_file(name)
-        return config
-
-    @staticmethod
-    def setup_logger(format='%(asctime)s %(name)s | %(message)s'):
-        logging.basicConfig(
-            stream=sys.stdout,
-            datefmt='%H:%M:%S',
-            format=format,
-            level=logging.INFO)
-
-
-pass_context = click.make_pass_decorator(Context, ensure=True)
+from a2ml.cmdl.utils.context import Context
+from a2ml.cmdl.utils.context import CONTEXT_SETTINGS
+from a2ml.cmdl.utils.context import pass_context
 
 
 class A2mlCli(click.MultiCommand):

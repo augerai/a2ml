@@ -1,6 +1,6 @@
 import click
 
-from a2ml.cmdl.cmdl import pass_context
+from a2ml.cmdl.utils.context import pass_context
 
 class EvaluateCmd(object):
 

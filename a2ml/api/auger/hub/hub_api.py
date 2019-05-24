@@ -76,7 +76,6 @@ class HubApi(object):
                 status = result.get(status_name, 'failure')
 
         if status == 'processed_with_error':
-            print(str(result))
             raise Exception('%s processed with error' % object_type)    
 
         log_status(status)

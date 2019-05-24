@@ -8,8 +8,8 @@ class AugerProjectApi(object):
         super(AugerProjectApi, self).__init__()
         self.name = name
         self.org_id = org_id
-        self.hub_client = hub_client
         self.project_id = project_id
+        self.hub_client = hub_client
 
     def is_running(self):
         self._ensure_project_id('Can\'t find project %s...' % self.name)

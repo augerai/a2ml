@@ -11,6 +11,7 @@ class ProviderOperations(object):
         with ThreadPoolExecutor(max_workers=len(operations)) as executor:
             futures = [executor.submit(operations[p])
                 for p in providers if p in operations]
+
             try:
                 for future in as_completed(futures):
                     future.result()

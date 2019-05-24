@@ -2,8 +2,9 @@ import os
 import errno
 import click
 
-from a2ml.cmdl.cmdl import pass_context, PROVIDERS
+from a2ml.cmdl.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
+from a2ml.cmdl.utils.context import pass_context
 
 class NewCmd(object):
 
