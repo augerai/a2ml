@@ -2,7 +2,6 @@ import os
 import requests
 import shortuuid
 import urllib.parse
-from requests_toolbelt import MultipartEncoder
 
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.cluster import AugerClusterApi
@@ -137,11 +136,9 @@ class AugerImport(AugerBase):
         return file_to_upload, True
 
     def _upload_file(self, file_name, url):
-        basename = os.path.basename(file_name)
 
-        m = MultipartEncoder(fields={
-            'file':(basename, open(file_name, 'rb'), "application/octet-stream")})
-        r = requests.post(url, data=m, headers={'Content-Type': m.content_type})
+        with open(file_name, 'rb') as f:
+            r = requests.post(url, data=f)
 
         if r.status_code == 200:
             rp = urllib.parse.parse_qs(r.text)
