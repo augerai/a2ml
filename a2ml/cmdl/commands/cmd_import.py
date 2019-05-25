@@ -13,6 +13,8 @@ class ImportCmd(object):
         self.ctx = ctx
 
     def import_data(self):
+        AugerImport(self.ctx.copy('auger')).import_data()
+        return
         providers = self.ctx.config['config'].get('providers', [])
         operations = {
             'auger': AugerImport(self.ctx.copy('auger')).import_data,

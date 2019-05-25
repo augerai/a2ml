@@ -13,6 +13,7 @@ SUPPORTED_FORMATS = ['.csv', '.arff']
 
 class AugerImport(AugerBase):
     """Import data into Auger."""
+
     def __init__(self, ctx):
         super(AugerImport, self).__init__(ctx)
 
@@ -48,7 +49,7 @@ class AugerImport(AugerBase):
 
     def _get_data_source_name(self, file_name):
         project_file_api = AugerProjectFileApi(
-            self.hub_client, self.project_id)
+            self.hub_client, self.project_api)
 
         all_similar_names, count = [], 0
         fname, fext = os.path.splitext(file_name)
@@ -74,7 +75,8 @@ class AugerImport(AugerBase):
         data_source_name, file_name, file_url, local_data_source):
         """Create project_file business object on the Project"""
 
-        project_file_api = AugerProjectFileApi(self.hub_client, self.project_id)
+        project_file_api = AugerProjectFileApi(
+            self.hub_client, self.project_api)
 
         try:
             project_file_api.create(data_source_name, file_name, file_url)
@@ -87,7 +89,7 @@ class AugerImport(AugerBase):
                 raise exc
 
     def _upload_to_hub(self, file_to_upload):
-        if self.cluster_mode == 'single_tenant':
+        if self.org_api.get_cluster_mode() == 'single_tenant':
             return self._upload_to_single_tenant(file_to_upload)
         else:
             return self._upload_to_multi_tenant(file_to_upload)
@@ -95,10 +97,13 @@ class AugerImport(AugerBase):
     def _upload_to_single_tenant(self, file_to_upload):
         # get file_uploader_service from the cluster
         # and upload data to that service
-        cluster_api = AugerClusterApi(self.hub_client, self.cluster_id)
-        cluster = cluster_api.properties()
+        project_properties = self.project_api.properties()
+        cluster_id = project_properties.get('cluster_id')
+        cluster_api = AugerClusterApi(
+            self.hub_client, self.project_api, cluster_id)
+        cluster_properties = cluster_api.properties()
 
-        file_uploader_service = cluster.get('file_uploader_service')
+        file_uploader_service = cluster_properties.get('file_uploader_service')
         upload_token = file_uploader_service.get('params').get('auger_token')
         upload_url = '%s?auger_token=%s' % (
             file_uploader_service.get('url'), upload_token)

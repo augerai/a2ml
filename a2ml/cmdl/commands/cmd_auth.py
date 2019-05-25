@@ -28,11 +28,16 @@ def cmdl(ctx):
     type=click.STRING, help='Auger username.')
 @click.password_option('--password', '-p', prompt='password',
     confirmation_prompt=False, help='Auger password.')
-@click.option('--url', default=None, type=click.STRING, help='Auger API endpoint.')
+@click.option('--system', '-s', default='production',
+    type=click.Choice(['production','staging']),
+    help='Auger API endpoint.')
 @pass_context
-def login(ctx, username, password, url):
+def login(ctx, username, password, system):
     """Login to Auger."""
-    AuthCmd(ctx).login(username, password, url)
+    urls = {
+        'production': 'https://app.auger.ai',
+        'staging': 'https://app-staging.auger.ai'}
+    AuthCmd(ctx).login(username, password, urls[system])
 
 @click.command(short_help='Logout from Auger.')
 @pass_context

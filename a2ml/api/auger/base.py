@@ -1,14 +1,15 @@
 import time
 
 from a2ml.api.auger.hub.hub_api import HubApi
-from a2ml.api.auger.hub.org import AugerOrgApi
 from a2ml.api.auger.credentials import Credentials
 from a2ml.api.auger.hub.project import AugerProjectApi
 from a2ml.api.auger.hub.cluster import AugerClusterApi
+from a2ml.api.auger.hub.org import AugerOrganizationApi
 
 
 class AugerBase(object):
     """Auger Base allows start Project and Cluster"""
+
     def __init__(self, ctx):
         super(AugerBase, self).__init__()
         self.ctx = ctx
@@ -19,11 +20,9 @@ class AugerBase(object):
 
     def start_project(self):
         self._ensure_org_and_project()
-
-        if self.cluster_mode == 'single_tenant':
-            self._create_cluster()
-
-        self._deploy_project()
+        if not self.project_api.is_running():
+            self.ctx.log('Starting Project to process request...')
+            self.project_api.deploy()
 
     def _ensure_org_and_project(self):
         """Ensure there are org, project and cluster to work with"""
@@ -33,44 +32,22 @@ class AugerBase(object):
             raise Exception(
                 'Please specify your organization (org_name:) in auger.yaml...')
 
-        org = AugerOrgApi(self.hub_client, org_name).properties()
-        if org is None:
+        self.org_api = AugerOrganizationApi(self.hub_client, org_name)
+        org_properties = self.org_api.properties()
+        if org_properties is None:
             raise Exception('Can\'t find organization %s' % org_name)
-        self.org_id = org.get('id')
-        self.cluster_mode = org.get('cluster_mode')
+        self.org_api.cluster_mode = org_properties.get('cluster_mode')
 
-        self.project_name = self.ctx.config['auger'].get('project_name', None)
-        if self.project_name is None:
+        project_name = self.ctx.config['auger'].get('project_name', None)
+        if project_name is None:
             raise Exception(
                 'Please specify your project (project_name:) in auger.yaml...')
 
-        project_api = AugerProjectApi(
-            self.hub_client, self.org_id, self.project_name)
-        project = project_api.properties()
-        if project is None:
+        self.project_api = AugerProjectApi(
+            self.hub_client, self.org_api, project_name)
+        project_properties = self.project_api.properties()
+        if project_properties is None:
             self.ctx.log(
-                'Can\'t find project %s on the Auger Hub. Creating...' %
-                self.project_name)
-            project = project_api.create()
-        self.project_id = project.get('id')
-        self.cluster_id = project.get('cluster_id')
-
-    def _deploy_project(self):
-        """Call to HUB API to deploy Project"""
-
-        project_api = AugerProjectApi(
-            self.hub_client, self.org_id,
-            self.project_name, self.project_id)
-
-        if not project_api.is_running():
-            self.ctx.log('Starting Project to process request...')
-            project_api.deploy(self.cluster_mode)
-
-    def _create_cluster(self):
-        """Call to HUB API to create Cluster"""
-
-        cluster_api = AugerClusterApi(self.hub_client, self.cluster_id)
-        if not cluster_api.is_running():
-            self.ctx.log('Starting Cluster to process request...')
-            cluster = cluster_api.create(self.org_id, self.project_id)
-            self.cluster_id = cluster.get('id')
+                'Can\'t find project %s on the Auger Hub.'
+                ' Creating...' % project_name)
+            self.project_api.create()
