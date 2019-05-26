@@ -56,14 +56,13 @@ class HubApi(object):
                 break
 
     def wait_for_object_status(
-        self, method, params, progress, status_name='status'):
+        self, method, params, progress,
+        object_readable_name, status_name='status'):
 
         def log_status(obj_status):
             if self.logger is not None:
                 self.logger(
-                    '%s %s is %s...' % (object_type, status_name, obj_status))
-
-        object_type = re.sub(r'\w+_', '', method).capitalize()
+                    '%s %s is %s...' % (object_readable_name, status_name, obj_status))
 
         result = self.call_hub_api(method, params=params)
         status = result.get(status_name, 'failure')
@@ -80,7 +79,8 @@ class HubApi(object):
                 status = result.get(status_name, 'failure')
 
         if status == 'processed_with_error':
-            raise AugerException('%s processed with error' % object_type)
+            raise AugerException(
+                '%s processed with error' % object_readable_name)
 
         log_status(status)
 

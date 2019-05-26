@@ -12,9 +12,6 @@ class TrainCmd(object):
         self.ctx = ctx
 
     def train(self):
-        AugerTrain(self.ctx.copy('auger')).train()
-        return
-    
         providers = self.ctx.config['config'].get('providers', [])
         operations = {
             'auger': AugerTrain(self.ctx.copy('auger')).train,

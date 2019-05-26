@@ -1,4 +1,4 @@
-import time
+import json
 
 from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.credentials import Credentials
@@ -22,7 +22,7 @@ class AugerBase(object):
         self._ensure_org_and_project()
         if not self.project_api.is_running():
             self.ctx.log('Starting Project to process request...')
-            self.project_api.deploy()
+            self.project_api.start()
 
     def _ensure_org_and_project(self):
         """Ensure there are org, project and cluster to work with"""

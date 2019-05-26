@@ -1,4 +1,4 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
+from a2ml.api.auger.hub.base import AugerBaseApi, AugerException
 
 
 class AugerOrganizationApi(AugerBaseApi):
@@ -13,3 +13,13 @@ class AugerOrganizationApi(AugerBaseApi):
         if not cluster_mode:
             self.cluster_mode = self.properties().get('cluster_mode')
         return self.cluster_mode
+
+    def create(self):
+        raise AugerException(
+            'You could\'t create organization using Auger HUB API.'
+            ' Please use Auger UI to do that...')
+
+    def deflete(self):
+        raise AugerException(
+            'You could\'t delete organization using Auger HUB API.'
+            ' Please use Auger UI to do that...')

@@ -12,14 +12,8 @@ class AugerProjectFileApi(AugerBaseApi):
             project_file_name, project_file_id)
         assert project_api is not None, 'Project must be set for Project File'
 
-    def create(self, data_source_name, filename, file_url):
-        project_file_properties = self.hub_client.call_hub_api(
-            'create_project_file', {'name': data_source_name,
+    def create(self, file_url, file_name=None):
+        return self._call_create({
+            'name': self.object_name,
             'project_id': self.parent_api.object_id,
-            'file_name': filename, 'url': file_url})
-
-        if project_file_properties:
-            self.object_id = project_file_properties.get('id')
-            project_file_properties = self.wait_for_status(['processing'])
-
-        return project_file_properties
+            'file_name': file_name, 'url': file_url}, ['processing'])

@@ -8,6 +8,12 @@ class ProviderOperations(object):
         self.ctx = ctx
 
     def execute(self, providers, operations):
+        # if there is single operation requested
+        # no need to run it on the thread
+        if len(providers) == 1:
+            operations[providers[0]]()
+            return
+
         with ThreadPoolExecutor(max_workers=len(operations)) as executor:
             futures = [executor.submit(operations[p])
                 for p in providers if p in operations]

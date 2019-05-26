@@ -19,15 +19,8 @@ class AugerClusterApi(AugerBaseApi):
             'project_id': self.parent_api.object_id,
             'organization_id': self.parent_api.parent_api.object_id}
         params.update(self.get_cluster_settings())
-        cluster_properties = self.hub_client.call_hub_api(
-            'create_cluster', params)
-
-        if cluster_properties:
-            self.object_id = cluster_properties.get('id')
-            cluster_properties = self.wait_for_status(
-                ['waiting', 'provisioning', 'bootstrapping'])
-
-        return cluster_properties
+        return self._call_create(params,
+            ['waiting', 'provisioning', 'bootstrapping'])
 
     def get_cluster_settings(self):
         config = self.hub_client.config

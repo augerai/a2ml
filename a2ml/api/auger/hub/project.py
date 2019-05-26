@@ -15,20 +15,23 @@ class AugerProjectApi(AugerBaseApi):
         return self.properties().get('status') == 'running'
 
     def create(self):
-        project_properties = self.hub_client.call_hub_api('create_project', {
+        return self._call_create({
             'name': self.object_name, 'organization_id': self.parent.object_id})
-        if project_properties:
-            self.object_id = project_properties.get('id')
-        return project_properties
 
     def delete(self):
         self.ensure_object_id()
         self.hub_client.call_hub_api('delete_project', {'id': self.object_id})
 
-    def deploy(self):
+    def start(self):
         self.ensure_object_id()
-
         project_properties = self.properties()
+
+        status = project_properties.get('status')
+        if status == 'running':
+            return project_properties
+        if status in ['deployed', 'deploying']:
+            return self.wait_for_status(['deployed', 'deploying'])
+
         cluster_id = project_properties.get('cluster_id')
         cluster_api = AugerClusterApi(self.hub_client, self, cluster_id)
 
