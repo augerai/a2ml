@@ -45,15 +45,6 @@ class AugerBaseApi(object):
 
         return None
 
-    def ensure_object_id(self):
-        if self.object_id is None:
-            obj_properties = self.properties()
-            if obj_properties is not None:
-                self.object_id = obj_properties.get('id')
-            else:
-                raise AugerException('Can\'t find id for %s' % self.object_name)
-        return self.object_id
-
     def wait_for_status(self, progress):
         return self.hub_client.wait_for_object_status(
             method='get_%s' % self.api_request_path,
@@ -73,6 +64,15 @@ class AugerBaseApi(object):
             if progress:
                 object_properties = self.wait_for_status(progress)
         return object_properties
+
+    def _ensure_object_id(self):
+        if self.object_id is None:
+            obj_properties = self.properties()
+            if obj_properties is not None:
+                self.object_id = obj_properties.get('id')
+            else:
+                raise AugerException('Can\'t find id for %s' % self.object_name)
+        return self.object_id
 
     def _set_api_request_path(self, patch_name=None):
         def to_snake_case(name):

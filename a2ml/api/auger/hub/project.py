@@ -19,11 +19,11 @@ class AugerProjectApi(AugerBaseApi):
             'name': self.object_name, 'organization_id': self.parent.object_id})
 
     def delete(self):
-        self.ensure_object_id()
+        self._ensure_object_id()
         self.hub_client.call_hub_api('delete_project', {'id': self.object_id})
 
     def start(self):
-        self.ensure_object_id()
+        self._ensure_object_id()
         project_properties = self.properties()
 
         status = project_properties.get('status')
