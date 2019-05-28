@@ -24,9 +24,18 @@ class AugerImport(AugerBase):
                 self.hub_client, self.project_api)
             data_source_api.create(file_to_upload)
 
+            # modify original yaml and
+            # save it preserving commets
+            auger_config = self.ctx.config['auger']
+            auger_config.yaml['data_source']['name'] = \
+                data_source_api.object_name
+            auger_config.write()
+
             self.ctx.log(
                 'Created Data Source %s on Auger Hub.' % \
                  data_source_api.object_name)
+            self.ctx.log(
+                'Data Source name stored in auger.yaml/data_source/name')
 
         except Exception as exc:
             # TODO refactor into reusable exception handler

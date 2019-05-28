@@ -19,7 +19,6 @@ class AugerTrain(AugerBase):
             self.start_project()
 
             data_source_name = self.ctx.config['auger'].get('data_source/name')
-            print(data_source_name)
             if data_source_name is None:
                 raise AugerException('Plese specify Data Source Name'
                     ' (data_source/name option).')

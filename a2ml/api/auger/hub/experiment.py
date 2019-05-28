@@ -60,9 +60,9 @@ class AugerExperimentApi(AugerBaseApi):
             'crossValidationFolds':
                 auger_config.get('experiment/cross_validation_folds', 5),
             'max_total_time_mins':
-                auger_config.get('experiment/max_total_time_mins', 60),
+                auger_config.get('experiment/max_total_time', 60),
             'max_eval_time_mins':
-                auger_config.get('experiment/max_eval_time_mins', 1),
+                auger_config.get('experiment/max_eval_time', 1),
             'max_n_trials':
                 auger_config.get('experiment/max_n_trials', 1000),
             'use_ensemble':
@@ -96,6 +96,7 @@ class AugerExperimentApi(AugerBaseApi):
                     ' to build time series model'
                     ' (experiment/time_series option).')
 
+        print(json.dumps(options, indent = 2))
         return {'evaluation_options': options}, model_type
 
     def _fill_data_options(self, options, stats, target, exclude):
