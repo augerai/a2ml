@@ -73,7 +73,7 @@ After a new A2ML application created, application configuration stored in CONFIG
 * target - the feature which is the target
 * exclude - features to exclude from the model
 * metric - how to measure the accuracy of the model
-* budget - the time budget in milliseconds to train 
+* budget - the time budget in milliseconds to train
 
 Here is an example CONFIG.YAML for Google Cloud AutoML:
 
@@ -89,6 +89,31 @@ exclude: Team,League,Year
 metric: MINIMIZE_MAE
 budget: 3600
 ```
+
+## Data Source specification
+Auger Data Source will analyze some portion of the input data in order to infer data
+types of the features. Features could be one of the following datatypes:
+- numeric
+- string
+- date
+
+#numeric
+Numeric feature can be real or integer numbers.
+
+#string
+By default String features will be one-hot encoded by the model training preprocessor.
+String features may be hashed instead of one-hot encoded.
+Please add them to label_encoding_features list.
+
+#date
+The default date string accepts the ISO-8601 combined date and time format: "yyyy-MM-dd'T'HH:mm:ss".
+
+You may decide to exclude some features from the training.
+Please add them to exclude_features list.
+
+#time series
+If data contains more then one date features, please specify which feature to
+use to build Time Series using time_series setting.
 
 ## Development Setup
 

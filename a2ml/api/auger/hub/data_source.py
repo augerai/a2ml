@@ -94,7 +94,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
             file_uploader_service.get('url'), upload_token)
 
         file_url = self._upload_file(file_to_upload, upload_url)
-        self.hub_client.logger(
+        self.hub_client.ctx.log(
             'Uploaded local file to Auger Hub file: %s' % file_url)
         return file_url
 
@@ -114,23 +114,5 @@ class AugerDataSourceApi(AugerProjectFileApi):
                 'HTTP error [%s] while uploadin file to Auger Hub...' % r.status_code)
 
     def _get_data_source_name(self, file_name):
-
-        all_similar_names, count = [], 0
         fname, fext = os.path.splitext(file_name)
-        for item in iter(self.list()):
-            if fname in item.get('name'):
-                all_similar_names.append(item.get('name'))
-                count += 1
-
-        if count == 0:
-            return file_name
-
-        max_tries = count + 100
-        while count < max_tries:
-            name = '%s-%s%s' % (fname, count, fext)
-            if name in all_similar_names:
-                count += 1
-            else:
-                return name
-
-        return '%s-%s%s' % (fname, shortuuid.uuid(), fext)
+        return self._get_uniq_object_name(fname, fext)

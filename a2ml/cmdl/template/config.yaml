@@ -1,16 +1,13 @@
 ---
-# experiment name
-name: moneyball
-
 # list of providers
-providers:
-  - auger
-  - google
-  - azure
+providers: [auger]
 
-data:
-  source: http://example.com/file.csv
-  target: RS
-  exclude: Team,League,Year
-
-  budget: 3600
+source: ../iris.csv
+exclude: []
+target: 'species'
+# Model type: classification|regression|timeseries
+model_type: classification
+# source: https://www.openml.org/data/download/8/dataset_8_liver-disorders.arff
+# exclude:
+# target:
+# model_type: 'classification'

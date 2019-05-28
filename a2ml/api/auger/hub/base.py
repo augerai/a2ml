@@ -17,8 +17,8 @@ class AugerBaseApi(object):
         self.object_name = object_name
         self._set_api_request_path()
 
-    def list(self):
-        params = {}
+    def list(self, params=None):
+        params = {} if params is None else params 
         if self.parent_api:
             api_request_path = self.parent_api.api_request_path
             params['%s_id' % api_request_path] = self.parent_api.object_id
@@ -73,6 +73,26 @@ class AugerBaseApi(object):
             else:
                 raise AugerException('Can\'t find id for %s' % self.object_name)
         return self.object_id
+
+    def _get_uniq_object_name(self, prefix, suffix):
+        all_similar_names, count = [], 0
+        for item in iter(self.list()):
+            if prefix in item.get('name'):
+                all_similar_names.append(item.get('name'))
+                count += 1
+
+        if count == 0:
+            return '%s%s' % (prefix, suffix)
+
+        max_tries = count + 100
+        while count < max_tries:
+            name = '%s-%s%s' % (prefix, count, suffix)
+            if name in all_similar_names:
+                count += 1
+            else:
+                return name
+
+        return '%s-%s%s' % (prefix, shortuuid.uuid(), suffix)
 
     def _set_api_request_path(self, patch_name=None):
         def to_snake_case(name):

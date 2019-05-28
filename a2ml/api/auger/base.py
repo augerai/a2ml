@@ -15,8 +15,7 @@ class AugerBase(object):
         self.ctx = ctx
         self.credentials = Credentials(ctx.config['auger']).load()
         self.hub_client = HubApi(
-            self.credentials.api_url, self.credentials.token,
-            self.ctx.log, self.ctx.config['auger'])
+            self.ctx, self.credentials.api_url, self.credentials.token)
 
     def start_project(self):
         self._ensure_org_and_project()

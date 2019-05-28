@@ -23,7 +23,7 @@ class AugerClusterApi(AugerBaseApi):
             ['waiting', 'provisioning', 'bootstrapping'])
 
     def get_cluster_settings(self):
-        config = self.hub_client.config
+        config = self.hub_client.get_config('auger')
 
         default_stack = "stable"
         if 'staging' in self.hub_client.api_url:

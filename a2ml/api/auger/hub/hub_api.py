@@ -10,12 +10,14 @@ STATE_POLL_INTERVAL = 10
 
 class HubApi(object):
     """Auger Hub Api call wrapper."""
-    def __init__(self, url, token, logger=None, config=None):
+    def __init__(self, ctx, url, token):
         super(HubApi, self).__init__()
-        self.hub_client = HubApiClient(hub_app_url=url,token=token)
+        self.hub_client = HubApiClient(hub_app_url=url, token=token)
         self.api_url = url
-        self.logger = logger
-        self.config = config
+        self.ctx = ctx
+
+    def get_config(self, name):
+        return self.ctx.config[name]
 
     def call_hub_api_ex(self, method, params={}):
         params = params.copy()
@@ -60,8 +62,8 @@ class HubApi(object):
         object_readable_name, status_name='status'):
 
         def log_status(obj_status):
-            if self.logger is not None:
-                self.logger(
+            if self.ctx is not None:
+                self.ctx.log(
                     '%s %s is %s...' % (object_readable_name, status_name, obj_status))
 
         result = self.call_hub_api(method, params=params)

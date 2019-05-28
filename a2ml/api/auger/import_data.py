@@ -1,9 +1,3 @@
-import os
-import time
-import requests
-import shortuuid
-import urllib.parse
-
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.data_source import AugerDataSourceApi
 
@@ -42,7 +36,7 @@ class AugerImport(AugerBase):
             self.ctx.log(str(exc))
 
     def _get_source_file(self):
-        file_to_upload = self.ctx.config['config'].get('data/source', None)
+        file_to_upload = self.ctx.config['config'].get('source', None)
 
         if file_to_upload is None:
             raise Exception(
