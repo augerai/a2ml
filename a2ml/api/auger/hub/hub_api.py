@@ -3,18 +3,24 @@ import sys
 import time
 
 from auger.hub_api_client import HubApiClient
-from a2ml.api.auger.hub.base import AugerException
+from a2ml.api.auger.hub.utils.singleton import Singleton
+from a2ml.api.auger.hub.utils.exception import AugerException
+
 
 REQUEST_LIMIT = 100
 STATE_POLL_INTERVAL = 10
 
-class HubApi(object):
+class HubApi(Singleton):
     """Auger Hub Api call wrapper."""
-    def __init__(self, ctx, url, token):
+
+    def __init__(self):
         super(HubApi, self).__init__()
+
+    def setup(self, ctx, url, token):
         self.hub_client = HubApiClient(hub_app_url=url, token=token)
         self.api_url = url
         self.ctx = ctx
+        return self
 
     def get_config(self, name):
         return self.ctx.config[name]

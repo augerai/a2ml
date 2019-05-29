@@ -5,7 +5,9 @@ class AugerAuthApi(object):
     def __init__(self):
         super(AugerAuthApi, self).__init__()
 
-    def login(self, username, password, url):
-        res = HubApi(None, url, None).call_hub_api_ex(
+    def login(self, ctx, username, password, url):
+        hub_api = HubApi().setup(ctx, url, None)
+        hub_api.call_hub_api_ex(
             'create_token', {'email': username, 'password': password})
+        hub_api.setup(ctx, url, res['data']['token'])
         return res['data']['token']

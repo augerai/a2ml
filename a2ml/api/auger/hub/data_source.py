@@ -4,8 +4,8 @@ import requests
 import shortuuid
 import urllib.parse
 
-from a2ml.api.auger.hub.base import AugerException
 from a2ml.api.auger.hub.cluster import AugerClusterApi
+from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.hub.project_file import AugerProjectFileApi
 
 SUPPORTED_FORMATS = ['.csv', '.arff']
@@ -14,12 +14,10 @@ SUPPORTED_FORMATS = ['.csv', '.arff']
 class AugerDataSourceApi(AugerProjectFileApi):
     """Wrapper around ProjectFileApi for Auger Data Source."""
 
-    def __init__(self,
-        hub_client, project_api=None,
+    def __init__(self, project_api=None,
         data_source_name=None, data_source_id=None):
         super(AugerDataSourceApi, self).__init__(
-            hub_client, project_api,
-            data_source_name, data_source_id)
+            project_api, data_source_name, data_source_id)
         # patch request path
         self._set_api_request_path('AugerProjectFileApi')
 
@@ -84,8 +82,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
         # and upload data to that service
         project_properties = self.parent_api.properties()
         cluster_id = project_properties.get('cluster_id')
-        cluster_api = AugerClusterApi(
-            self.hub_client, self.parent_api, cluster_id)
+        cluster_api = AugerClusterApi(self.parent_api, cluster_id)
         cluster_properties = cluster_api.properties()
 
         file_uploader_service = cluster_properties.get('file_uploader_service')

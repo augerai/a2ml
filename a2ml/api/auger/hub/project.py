@@ -5,10 +5,10 @@ from a2ml.api.auger.hub.cluster import AugerClusterApi
 class AugerProjectApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Project."""
 
-    def __init__(self, hub_client, org_api,
+    def __init__(self, org_api,
         project_name=None, project_id=None):
         super(AugerProjectApi, self).__init__(
-            hub_client, org_api, project_name, project_id)
+            org_api, project_name, project_id)
         assert org_api is not None, 'Organization must be set for Project'
 
     def is_running(self):
@@ -33,7 +33,7 @@ class AugerProjectApi(AugerBaseApi):
             return self.wait_for_status(['deployed', 'deploying'])
 
         cluster_id = project_properties.get('cluster_id')
-        cluster_api = AugerClusterApi(self.hub_client, self, cluster_id)
+        cluster_api = AugerClusterApi(self, cluster_id)
 
         if self.parent_api.get_cluster_mode() == 'single_tenant':
             if not cluster_api.is_running():

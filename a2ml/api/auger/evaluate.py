@@ -2,7 +2,7 @@ import json
 import sys
 
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.base import AugerException
+from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.hub.experiment import AugerExperimentSessionApi
 from a2ml.api.utils.formatter import print_table
 
@@ -27,7 +27,7 @@ class AugerEvaluate(AugerBase):
                     ' (auger.yaml/experiment/experiment_session_id option).')
 
             experiment_session_api = AugerExperimentSessionApi(
-                self.hub_client, None, None, experiment_session_id)
+                None, None, experiment_session_id)
             print_table(self.ctx.log, experiment_session_api.get_leaderboard())
 
         except Exception as exc:

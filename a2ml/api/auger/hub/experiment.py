@@ -1,6 +1,6 @@
 import json
 from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.base import AugerException
+from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.hub.data_source import AugerDataSourceApi
 from a2ml.api.auger.hub.experiment_session import AugerExperimentSessionApi
 
@@ -9,15 +9,15 @@ MODEL_TYPES = ['classification', 'regression', 'timeseries']
 class AugerExperimentApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Experiment Api."""
 
-    def __init__(self,
-        hub_client, project_api, experiment_name=None, experiment_id=None):
+    def __init__(self, project_api,
+        experiment_name=None, experiment_id=None):
         super(AugerExperimentApi, self).__init__(
-            hub_client, project_api, experiment_name, experiment_id)
+            project_api, experiment_name, experiment_id)
         assert project_api is not None, 'Project must be set for Experiment'
 
     def run(self):
         experiment_session_api = \
-            AugerExperimentSessionApi(self.hub_client, self)
+            AugerExperimentSessionApi(self)
         experimeny_session_properties = \
             experiment_session_api.create()
         experiment_session_api.run()
@@ -28,7 +28,7 @@ class AugerExperimentApi(AugerBaseApi):
             'Data Source Name is required to create Experiment'
 
         data_source_api = AugerDataSourceApi(
-            self.hub_client, self.parent_api, data_source_name)
+            self.parent_api, data_source_name)
         data_source_properties = data_source_api.properties()
 
         if not self.object_name:
@@ -78,7 +78,7 @@ class AugerExperimentApi(AugerBaseApi):
 
         data_source_id = self.properties()['project_file_id']
         data_source_api = AugerDataSourceApi(
-            self.hub_client, self.parent_api, None, data_source_id)
+            self.parent_api, None, data_source_id)
         data_source_properties = data_source_api.properties()
         stats = data_source_properties['statistics']
 

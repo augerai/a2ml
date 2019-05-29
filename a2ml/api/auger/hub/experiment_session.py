@@ -5,11 +5,10 @@ from a2ml.api.auger.hub.trial import AugerTrialApi
 class AugerExperimentSessionApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Experiment Api."""
 
-    def __init__(self,
-        hub_client, experiment_api,
+    def __init__(self, experiment_api,
         session_name=None, session_id=None):
         super(AugerExperimentSessionApi, self).__init__(
-            hub_client, experiment_api, session_name, session_id)
+            experiment_api, session_name, session_id)
 
     def list(self, params=None):
         return super().list({
@@ -30,7 +29,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
             'model_type': model_type})
 
     def get_leaderboard(self):
-        trial_api = AugerTrialApi(self.hub_client, self)
+        trial_api = AugerTrialApi(self)
         leaderboard, score_name = [], None
         for item in iter(trial_api.list()):
             score_name = item.get('score_name')

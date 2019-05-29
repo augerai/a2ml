@@ -1,24 +1,22 @@
 import re
+from a2ml.api.auger.hub.hub_api import HubApi
 
-
-class AugerException(Exception):
-    pass
 
 class AugerBaseApi(object):
     """Wrapper around HubApi for basic common calls."""
 
     def __init__(
-        self, hub_client, parent_api,
+        self, parent_api,
         object_name=None, object_id=None):
         super(AugerBaseApi, self).__init__()
         self.parent_api = parent_api
-        self.hub_client = hub_client
         self.object_id = object_id
         self.object_name = object_name
+        self.hub_client = HubApi()
         self._set_api_request_path()
 
     def list(self, params=None):
-        params = {} if params is None else params 
+        params = {} if params is None else params
         if self.parent_api:
             api_request_path = self.parent_api.api_request_path
             params['%s_id' % api_request_path] = self.parent_api.object_id

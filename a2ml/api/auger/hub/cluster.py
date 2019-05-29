@@ -4,9 +4,9 @@ from a2ml.api.auger.hub.base import AugerBaseApi
 class AugerClusterApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Cluster."""
 
-    def __init__(self, hub_client, project_api, cluster_id=None):
+    def __init__(self, project_api, cluster_id=None):
         super(AugerClusterApi, self).__init__(
-            hub_client, project_api, None, cluster_id)
+            project_api, None, cluster_id)
         assert project_api is not None, 'Project must be set for Cluster'
 
     def is_running(self):

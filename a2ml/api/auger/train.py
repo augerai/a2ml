@@ -2,8 +2,9 @@ import json
 import sys
 
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.base import AugerException
 from a2ml.api.auger.hub.experiment import AugerExperimentApi
+from a2ml.api.auger.hub.utils.exception import AugerException
+
 
 class AugerTrain(AugerBase):
     """Train you Model on Auger."""
@@ -23,8 +24,7 @@ class AugerTrain(AugerBase):
                 raise AugerException('Plese specify Data Source Name'
                     ' (auger.yaml/data_source/name option).')
 
-            experiment_api = AugerExperimentApi(
-                self.hub_client, self.project_api)
+            experiment_api = AugerExperimentApi(self.project_api)
             experiment_api.create(data_source_name)
             self.ctx.log(
                 'Created Experiment %s ' % experiment_api.object_name)

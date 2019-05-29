@@ -14,7 +14,7 @@ class AugerBase(object):
         super(AugerBase, self).__init__()
         self.ctx = ctx
         self.credentials = Credentials(ctx.config['auger']).load()
-        self.hub_client = HubApi(
+        HubApi().setup(
             self.ctx, self.credentials.api_url, self.credentials.token)
 
     def start_project(self):
@@ -31,7 +31,7 @@ class AugerBase(object):
             raise Exception(
                 'Please specify your organization (org_name:) in auger.yaml...')
 
-        self.org_api = AugerOrganizationApi(self.hub_client, org_name)
+        self.org_api = AugerOrganizationApi(org_name)
         org_properties = self.org_api.properties()
         if org_properties is None:
             raise Exception('Can\'t find organization %s' % org_name)
@@ -43,7 +43,7 @@ class AugerBase(object):
                 'Please specify your project (project_name:) in auger.yaml...')
 
         self.project_api = AugerProjectApi(
-            self.hub_client, self.org_api, project_name)
+            self.org_api, project_name)
         project_properties = self.project_api.properties()
         if project_properties is None:
             self.ctx.log(
