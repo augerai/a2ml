@@ -1,6 +1,6 @@
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.data_source import AugerDataSourceApi
-
+from a2ml.api.auger.config import AugerConfig
 
 class AugerImport(AugerBase):
     """Import data into Auger."""
@@ -22,13 +22,7 @@ class AugerImport(AugerBase):
 
             data_source_api = AugerDataSourceApi(self.project_api)
             data_source_api.create(file_to_upload)
-
-            # modify original yaml and
-            # save it preserving commets
-            auger_config = self.ctx.config['auger']
-            auger_config.yaml['data_source']['name'] = \
-                data_source_api.object_name
-            auger_config.write()
+            AugerConfig(ctx).set_data_source(data_source_api.object_name)
 
             self.ctx.log(
                 'Created Data Source %s on Auger Hub.' % \

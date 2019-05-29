@@ -1,16 +1,24 @@
 ---
 
-org_name: auger
-# org_name: mt_org
-project_name: cli-test-1
+# Name of organisation on the Auger Hub
+org_name:
+# Name of the project on Auger Hub
+project_name:
 
+# Data Source Name on the Auger Hub
 data_source:
-  name: iris-1.csv
+  name:
 
 experiment:
+  # Latest experiment name
+  name:
+  # Latest experiment session
+  experiment_session_id:
   # Time series feature. If Data Source contains more then one DATETIME feature
   # you will have to explicitly specify feature to use as time series
   time_series:
+  # List of columns which should be used as label encoded features
+  label_encoded: []
   # Number of folds used for k-folds validation of individual trial
   cross_validation_folds: 5
   # Maximum time to run experiment in minutes
@@ -31,6 +39,3 @@ experiment:
 cluster:
   worker_type_id: 1
   workers_count: 2
-  # worker_nodes_count: 2
-  # instance_type: c5.large
-  # autoterminate_minutes: 120

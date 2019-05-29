@@ -58,7 +58,7 @@ class AugerExperimentApi(AugerBaseApi):
             'timeSeriesFeatures': [],
             'binaryClassification': False,
             'labelEncodingFeatures':
-                auger_config.get('experiment/label_encoding', []),
+                auger_config.get('experiment/label_encoded', []),
             'crossValidationFolds':
                 auger_config.get('experiment/cross_validation_folds', 5),
             'max_total_time_mins':

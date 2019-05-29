@@ -4,6 +4,7 @@ import sys
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.experiment import AugerExperimentApi
 from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.config import AugerConfig
 
 
 class AugerTrain(AugerBase):
@@ -33,12 +34,8 @@ class AugerTrain(AugerBase):
             self.ctx.log(
                 'Started Experiment %s training.' % experiment_api.object_name)
 
-            auger_config = self.ctx.config['auger']
-            auger_config.yaml['experiment']['name'] = \
-                experiment_api.object_name
-            auger_config.yaml['experiment']['experiment_session_id'] = \
-                experiment_session_id
-            auger_config.write()
+            AugerConfig(ctx).set_experiment(
+                experiment_api.object_name, experiment_session_id)
 
         except Exception as exc:
             # TODO refactor into reusable exception handler

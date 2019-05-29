@@ -15,9 +15,7 @@ class Context(object):
 
     def __init__(self, name=''):
         super(Context, self).__init__()
-        self.config = {}
-        for provider in ['config'] + PROVIDERS:
-            self.config[provider] = self.load_config('%s.yaml' % provider)
+        self.load_config()
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
@@ -36,7 +34,15 @@ class Context(object):
     def error(self, msg, *args, **kwargs):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
 
-    def load_config(self, name):
+    def load_config(self, path=None):
+        self.config = {}
+        if path is None:
+            path = os.getcwd()
+        for provider in ['config'] + PROVIDERS:
+            self.config[provider] = self._load_config(
+                 os.path.abspath(os.path.join(path, '%s.yaml' % provider)))
+
+    def _load_config(self, name):
         config = ConfigYaml()
         if os.path.isfile(name):
             config.load_from_file(name)
