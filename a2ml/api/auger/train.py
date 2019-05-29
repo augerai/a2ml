@@ -21,7 +21,7 @@ class AugerTrain(AugerBase):
             data_source_name = self.ctx.config['auger'].get('data_source/name')
             if data_source_name is None:
                 raise AugerException('Plese specify Data Source Name'
-                    ' (data_source/name option).')
+                    ' (auger.yaml/data_source/name option).')
 
             experiment_api = AugerExperimentApi(
                 self.hub_client, self.project_api)
@@ -29,9 +29,16 @@ class AugerTrain(AugerBase):
             self.ctx.log(
                 'Created Experiment %s ' % experiment_api.object_name)
 
-            experiment_api.run()
+            experiment_session_id = experiment_api.run()
             self.ctx.log(
-                'Running Experiment %s ' % experiment_api.object_name)
+                'Started Experiment %s training.' % experiment_api.object_name)
+
+            auger_config = self.ctx.config['auger']
+            auger_config.yaml['experiment']['name'] = \
+                experiment_api.object_name
+            auger_config.yaml['experiment']['experiment_session_id'] = \
+                experiment_session_id
+            auger_config.write()
 
         except Exception as exc:
             # TODO refactor into reusable exception handler

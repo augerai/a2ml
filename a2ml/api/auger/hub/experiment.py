@@ -18,8 +18,10 @@ class AugerExperimentApi(AugerBaseApi):
     def run(self):
         experiment_session_api = \
             AugerExperimentSessionApi(self.hub_client, self)
-        experiment_session_api.create()
+        experimeny_session_properties = \
+            experiment_session_api.create()
         experiment_session_api.run()
+        return experimeny_session_properties.get('id')
 
     def create(self, data_source_name):
         assert data_source_name is not None, \
@@ -96,7 +98,7 @@ class AugerExperimentApi(AugerBaseApi):
                     ' to build time series model'
                     ' (experiment/time_series option).')
 
-        print(json.dumps(options, indent = 2))
+        # print(json.dumps(options, indent = 2))
         return {'evaluation_options': options}, model_type
 
     def _fill_data_options(self, options, stats, target, exclude):

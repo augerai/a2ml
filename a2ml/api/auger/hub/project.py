@@ -16,7 +16,7 @@ class AugerProjectApi(AugerBaseApi):
 
     def create(self):
         return self._call_create({
-            'name': self.object_name, 'organization_id': self.parent.object_id})
+            'name': self.object_name, 'organization_id': self.parent_api.object_id})
 
     def delete(self):
         self._ensure_object_id()

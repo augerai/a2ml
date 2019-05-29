@@ -33,8 +33,8 @@ class NewCmd(object):
             self.ctx.log('%s', str(e))
 
 
-@click.command('new', short_help='Create new A2ML experiment.')
-@click.argument('experiment-name', required=True, type=click.STRING)
+@click.command('new', short_help='Create new A2ML project.')
+@click.argument('project-name', required=True, type=click.STRING)
 @pass_context
 def cmdl(ctx, experiment_name):
     """Create new A2ML experiment."""

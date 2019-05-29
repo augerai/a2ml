@@ -40,8 +40,8 @@ class AugerImport(AugerBase):
         except Exception as exc:
             # TODO refactor into reusable exception handler
             # with comprehensible user output
-            # import traceback
-            # traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             self.ctx.log(str(exc))
 
     def _get_source_file(self):
