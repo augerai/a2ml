@@ -20,7 +20,18 @@ class AugerConfig(object):
             kwargs.get('data_source_name', '')
         yaml['experiment']['experiment_session_id'] = \
             kwargs.get('experiment_session_id', '')
+
         yaml['project_name'] = kwargs.get('project_name', '')
+        yaml['org_name'] = kwargs.get('organisation_name', '')
+
+        model_type = kwargs.get('model_type', None)
+        if model_type:
+            yaml['experiment']['metric'] = \
+                'f1_macro' if model_type == 'classification' else 'r2'
+
+    @_with_auger_yaml
+    def set_organisation_name(self, yaml, name):
+        yaml['org_name'] = name
 
     @_with_auger_yaml
     def set_data_source(self, yaml, data_source_name):

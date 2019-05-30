@@ -20,6 +20,19 @@ class Context(object):
             name = "{:<9}".format('[%s]' % name)
         self.name = name
 
+    def get_providers(self):
+        providers = self.config['config'].get('providers', [])
+        if isinstance(providers, (list,)):
+            for p in providers:
+                if p not in PROVIDERS:
+                    raise Exception('Provider %s is not supported.' % p)
+            return providers
+        elif isinstance(providers, (str,)):
+            if providers in PROVIDERS:
+                return [providers]
+
+        raise Exception('Expecting list of providers in config.yaml\providers')
+
     def copy(self, name):
         new = Context(name)
         new.config = self.config

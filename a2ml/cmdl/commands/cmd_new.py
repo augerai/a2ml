@@ -7,6 +7,8 @@ from a2ml.cmdl.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.cmdl.utils.context import pass_context
 from a2ml.api.auger.hub.data_source import AugerDataSourceApi
+from a2ml.api.auger.credentials import Credentials
+
 
 class NewCmd(object):
 
@@ -53,7 +55,13 @@ class NewCmd(object):
             config.yaml['model_type'] = self.model_type
             config.write()
 
-            AugerConfig(self.ctx).config(project_name=self.project_name)
+            AugerConfig(self.ctx).config(
+                target = self.target,
+                source = self.source,
+                model_type = self.model_type,
+                project_name = self.project_name,
+                organisation_name = \
+                    Credentials(self.ctx.config['auger']).load().organisation)
 
         except Exception as e:
             # import traceback

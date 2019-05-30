@@ -8,6 +8,7 @@ class Credentials(object):
         super(Credentials, self).__init__()
         self.config = config
         self.credentials_path = self._path_to_credentials()
+        self.organisation = None
         self.username = None
         self.api_url = None
         self.token = None
@@ -19,6 +20,7 @@ class Credentials(object):
             content = json.loads(file.read())
 
         self.username = content.get('username')
+        self.organisation = content.get('organisation')
         self.api_url = content.get('url')
         if self.api_url is None:
             self.api_url = 'https://app.auger.ai'
@@ -33,6 +35,7 @@ class Credentials(object):
         content['username'] = self.username
         content['url'] = self.api_url
         content['token'] = self.token
+        content['organisation'] = self.organisation
 
         with open(self.credentials_path, 'w') as file:
             file.write(json.dumps(content))
@@ -40,7 +43,7 @@ class Credentials(object):
     def verify(self):
         if self.token is None:
             raise Exception(
-                'Please provide your credentials to import data to Auger...')
+                'Please provide your credentials to Auger...')
         return True
 
     def _path_to_credentials(self):

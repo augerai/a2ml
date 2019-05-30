@@ -10,11 +10,11 @@ class EvaluateCmd(object):
         self.ctx = ctx
 
     def evaluate(self):
-        providers = self.ctx.config['config'].get('providers', [])
         operations = {
             'auger': AugerEvaluate(self.ctx.copy('auger')).evaluate
         }
-        ProviderOperations(self.ctx).execute(providers, operations)
+        ProviderOperations(self.ctx).execute(
+            self.ctx.get_providers(), operations)
 
 @click.command('evaluate', short_help='Evaluate models after training.')
 @pass_context

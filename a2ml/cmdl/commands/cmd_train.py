@@ -12,13 +12,13 @@ class TrainCmd(object):
         self.ctx = ctx
 
     def train(self):
-        providers = self.ctx.config['config'].get('providers', [])
         operations = {
             'auger': AugerTrain(self.ctx.copy('auger')).train,
             'google': TestTask(self.ctx.copy('google')).iterate,
             'azure': TestTask(self.ctx.copy('azure')).iterate
         }
-        ProviderOperations(self.ctx).execute(providers, operations)
+        ProviderOperations(self.ctx).execute(
+            self.ctx.get_providers(), operations)
 
 @click.command('train', short_help='Train the model.')
 @pass_context

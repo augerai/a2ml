@@ -8,8 +8,8 @@ class AuthCmd(object):
     def __init__(self, ctx):
         self.ctx = ctx
 
-    def login(self,username, password, url):
-        AugerAuth(self.ctx).login(username, password, url)
+    def login(self, username, password, organisation, url):
+        AugerAuth(self.ctx).login(username, password, organisation, url)
 
     def logout(self):
         AugerAuth(self.ctx).logout()
@@ -26,18 +26,20 @@ def cmdl(ctx):
 @click.command(short_help='Login to Auger.')
 @click.option('--username', '-u', default=None, prompt='username',
     type=click.STRING, help='Auger username.')
+@click.option('--organisation', '-o', default=None, prompt='organisation',
+    type=click.STRING, help='Auger organisation.')
 @click.password_option('--password', '-p', prompt='password',
     confirmation_prompt=False, help='Auger password.')
 @click.option('--system', '-s', default='production',
     type=click.Choice(['production','staging']),
     help='Auger API endpoint.')
 @pass_context
-def login(ctx, username, password, system):
+def login(ctx, username, password, organisation, system):
     """Login to Auger."""
     urls = {
         'production': 'https://app.auger.ai',
         'staging': 'https://app-staging.auger.ai'}
-    AuthCmd(ctx).login(username, password, urls[system])
+    AuthCmd(ctx).login(username, password, organisation, urls[system])
 
 @click.command(short_help='Logout from Auger.')
 @pass_context

@@ -3,6 +3,8 @@ import sys
 from auger.hub_api_client import HubApiClient
 from a2ml.api.auger.hub.auth import AugerAuthApi
 from a2ml.api.auger.credentials import Credentials
+from a2ml.api.auger.hub.utils.exception import AugerException
+
 
 class AugerAuth(object):
 
@@ -10,30 +12,31 @@ class AugerAuth(object):
         self.ctx = ctx
         self.credentials = Credentials(ctx.config['auger']).load()
 
-    def login(self, username, password, url=None):
-        self.credentials.token = None
-        self.credentials.save()
-
-        if url is None:
-            url = self.credentials.api_url
-
+    def login(self, username, password, organisation, url=None):
         try:
-            token = AugerAuthApi().login(username, password, url)
+            self.credentials.token = None
+            self.credentials.save()
 
-        except (HubApiClient.FatalApiError,
-                HubApiClient.InvalidParamsError,
-                HubApiClient.RetryableApiError,
-                HubApiClient.MissingParamError) as exc:
-            self.ctx.log(str(exc))
-            return
+            if url is None:
+                url = self.credentials.api_url
 
-        self.credentials.token = token
-        self.credentials.username = username
-        self.credentials.api_url = url
-        self.credentials.save()
+            token = AugerAuthApi().login(
+                self.ctx, username, password, organisation, url)
 
-        self.ctx.log(
-            'You are now logged in on %s as %s.' % (url, username))
+            self.credentials.token = token
+            self.credentials.username = username
+            self.credentials.api_url = url
+            self.credentials.organisation = organisation
+            self.credentials.save()
+
+            self.ctx.log(
+                'You are now logged in on %s as %s.' % (url, username))
+
+        except Exception as exc:
+            exc_text = str(exc)
+            if 'Email or password incorrect' in exc_text:
+                exc_text = 'Email or password incorrect...'
+            self.ctx.log(exc_text)
 
     def logout(self):
         if self.credentials.token is None:
@@ -41,6 +44,7 @@ class AugerAuth(object):
         else:
             self.credentials.token = None
             self.credentials.api_url = None
+            self.credentials.organisation = None
             self.credentials.save()
             self.ctx.log('You are loged out of Auger.')
 
@@ -49,4 +53,7 @@ class AugerAuth(object):
             self.ctx.log('Please login to Auger...')
         else:
             self.ctx.log(
-                '%s %s' % (self.credentials.username, self.credentials.api_url))
+                '%s %s %s' % (
+                    self.credentials.username,
+                    self.credentials.organisation,
+                    self.credentials.api_url))
