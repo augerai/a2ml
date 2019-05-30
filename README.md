@@ -16,26 +16,6 @@ Since ITEDPR is hard to remember we refer to this pipeline by its conveniently m
 for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
 
-## A2ML Classes
-The A2ML Model class in A2ML.PY abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel) and Auger.AI (Auger).   We will be adding support for Microsoft Azure AutoML soon. If you want to add support for another AutoML provider of your choice.  Implement a child class of Model as shown below (replacing each "pass" with your own code.
-
-```
-  class AnotherAutoMLModel(Model):  
-      def __init__(self):
-          pass     
-      def predict(self,filepath,score_threshold):
-          pass
-      def review(self):
-          pass
-      def evaluate(self):
-          pass
-      def deploy(self):
-          pass
-      def import_data(self):
-          pass
-      def train(self):
-          pass
-```
 
 ## The A2ML CLI
 
@@ -139,4 +119,25 @@ Running tests and getting test coverage:
 
 ```
 $ pytest pytest --cov='a2ml' --cov-report html tests/  
+```
+
+## A2ML Classes
+The A2ML Model class in A2ML.PY abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
+
+```
+  class AnotherAutoMLModel(Model):  
+      def __init__(self):
+          pass     
+      def predict(self,filepath,score_threshold):
+          pass
+      def review(self):
+          pass
+      def evaluate(self):
+          pass
+      def deploy(self):
+          pass
+      def import_data(self):
+          pass
+      def train(self):
+          pass
 ```
