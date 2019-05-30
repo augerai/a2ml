@@ -29,6 +29,8 @@ class AugerEvaluate(AugerBase):
             experiment_session_api = AugerExperimentSessionApi(
                 None, None, experiment_session_id)
             print_table(self.ctx.log, experiment_session_api.get_leaderboard())
+            self.ctx.log('Search status is %s' % \
+                experiment_session_api.properties().get('status'))
 
         except Exception as exc:
             # TODO refactor into reusable exception handler

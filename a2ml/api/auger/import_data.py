@@ -22,7 +22,7 @@ class AugerImport(AugerBase):
 
             data_source_api = AugerDataSourceApi(self.project_api)
             data_source_api.create(file_to_upload)
-            AugerConfig(ctx).set_data_source(data_source_api.object_name)
+            AugerConfig(self.ctx).set_data_source(data_source_api.object_name)
 
             self.ctx.log(
                 'Created Data Source %s on Auger Hub.' % \

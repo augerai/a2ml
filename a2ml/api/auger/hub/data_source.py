@@ -3,6 +3,7 @@ import time
 import requests
 import shortuuid
 import urllib.parse
+import xml.etree.ElementTree as ET
 
 from a2ml.api.auger.hub.cluster import AugerClusterApi
 from a2ml.api.auger.hub.utils.exception import AugerException
@@ -95,10 +96,6 @@ class AugerDataSourceApi(AugerProjectFileApi):
             'Uploaded local file to Auger Hub file: %s' % file_url)
         return file_url
 
-    def _upload_to_multi_tenant(self, file_to_upload):
-        print('uploading to multi tenant')
-        return None
-
     def _upload_file(self, file_name, url):
         with open(file_name, 'rb') as f:
             r = requests.post(url, data=f)
@@ -108,7 +105,33 @@ class AugerDataSourceApi(AugerProjectFileApi):
             return ('files/%s' % rp.get('path')[0].split('files/')[-1])
         else:
             raise AugerException(
-                'HTTP error [%s] while uploadin file to Auger Hub...' % r.status_code)
+                'HTTP error [%s] while uploading file to Auger Hub...' % r.status_code)
+
+    def _upload_to_multi_tenant(self, file_to_upload):
+        file_path = 'workspace/projects/%s/files/%s-%s' % \
+            (self.parent_api.object_name, shortuuid.uuid(),
+             os.path.basename(file_to_upload))
+
+        res = self.hub_client.call_hub_api('create_project_file_url', {
+            'project_id': self.parent_api.object_id,
+            'file_path': file_path})
+        if res is None:
+            raise AugerException(
+                'Error while uploading file to Auger Hub...')
+
+        with open(file_to_upload, 'rb') as f:
+            files = {'file': (file_path, f)}
+            res = requests.post(res['url'], data=res['fields'], files=files)
+
+        print(str(res.text))
+
+        if res.status_code == 201:
+            return 's3://%s/%s' % \
+                (ET.fromstring(res.content).find('Bucket').text, file_path)
+        else:
+            raise AugerException(
+                'HTTP error [%s] while uploading file'
+                    ' to Auger Hub...' % res.status_code)
 
     def _get_data_source_name(self, file_name):
         fname, fext = os.path.splitext(file_name)

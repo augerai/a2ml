@@ -34,7 +34,7 @@ class AugerTrain(AugerBase):
             self.ctx.log(
                 'Started Experiment %s training.' % experiment_api.object_name)
 
-            AugerConfig(ctx).set_experiment(
+            AugerConfig(self.ctx).set_experiment(
                 experiment_api.object_name, experiment_session_id)
 
         except Exception as exc:
