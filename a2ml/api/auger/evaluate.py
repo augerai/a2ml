@@ -18,8 +18,6 @@ class AugerEvaluate(AugerBase):
             # verify avalability of auger credentials
             self.credentials.verify()
 
-            # self.start_project()
-
             experiment_session_id = self.ctx.config['auger'].get(
                 'experiment/experiment_session_id')
             if experiment_session_id is None:
@@ -29,8 +27,18 @@ class AugerEvaluate(AugerBase):
             experiment_session_api = AugerExperimentSessionApi(
                 None, None, experiment_session_id)
             print_table(self.ctx.log, experiment_session_api.get_leaderboard())
-            self.ctx.log('Search status is %s' % \
-                experiment_session_api.properties().get('status'))
+
+            status = experiment_session_api.properties().get('status')
+            messages = {
+                'preprocess': 'Search is preprocessing data for traing...',
+                'started': 'Search is in progress...',
+                'completed': 'Search is completed.'
+            }
+            message = messages.get(status, None)
+            if message:
+                self.ctx.log(message)
+            else:
+                self.ctx.log('Search status is %s' % status)
 
         except Exception as exc:
             # TODO refactor into reusable exception handler
