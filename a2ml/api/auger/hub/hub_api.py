@@ -3,18 +3,27 @@ import sys
 import time
 
 from auger.hub_api_client import HubApiClient
+from a2ml.api.auger.hub.utils.singleton import Singleton
+from a2ml.api.auger.hub.utils.exception import AugerException
+
 
 REQUEST_LIMIT = 100
 STATE_POLL_INTERVAL = 10
 
-class HubApi(object):
+class HubApi(Singleton):
     """Auger Hub Api call wrapper."""
-    def __init__(self, url, token, logger=None, config=None):
+
+    def __init__(self):
         super(HubApi, self).__init__()
-        self.hub_client = HubApiClient(hub_app_url=url,token=token)
+
+    def setup(self, ctx, url, token):
+        self.hub_client = HubApiClient(hub_app_url=url, token=token)
         self.api_url = url
-        self.logger = logger
-        self.config = config
+        self.ctx = ctx
+        return self
+
+    def get_config(self, name):
+        return self.ctx.config[name]
 
     def call_hub_api_ex(self, method, params={}):
         params = params.copy()
@@ -32,7 +41,7 @@ class HubApi(object):
         if 'data' in result:
             return result['data']
 
-        raise Exception("Call of HUB API method %s failed." % keys)
+        raise AugerException("Call of HUB API method %s failed." % keys)
 
     def request_list(self, record_type, params):
         offset = params.get('offset', 0)
@@ -43,7 +52,7 @@ class HubApi(object):
             p['limit'] = limit
             response = self.call_hub_api_ex('get_' + record_type, p)
             if not 'data' in response or not 'meta' in response:
-                raise Exception("Read list of %s failed." % record_type)
+                raise AugerException("Read list of %s failed." % record_type)
 
             for item in response['data']:
                 yield item
@@ -54,16 +63,18 @@ class HubApi(object):
             if offset >= response['meta']['pagination']['total']:
                 break
 
-    def wait_for_object_status(self, method, params,
-        status, progress, status_name='status'):
+    def wait_for_object_status(
+        self, method, params, progress,
+        object_readable_name, status_name='status'):
 
         def log_status(obj_status):
-            if self.logger is not None:
-                self.logger(
-                    '%s %s is %s...' % (object_type, status_name, obj_status))
+            if self.ctx is not None:
+                self.ctx.log(
+                    '%s %s is %s...' % (object_readable_name, status_name, obj_status))
 
+        result = self.call_hub_api(method, params=params)
+        status = result.get(status_name, 'failure')
         last_status = ''
-        object_type = re.sub(r'\w+_', '', method).capitalize()
 
         while status in progress:
             if status != last_status:
@@ -76,16 +87,21 @@ class HubApi(object):
                 status = result.get(status_name, 'failure')
 
         if status == 'processed_with_error':
-            raise Exception('%s processed with error' % object_type)    
+            raise AugerException(
+                '%s processed with error' % object_readable_name)
 
         log_status(status)
 
         if status == "failure":
-            raise Exception('Auger Hub API call {}({}) failed: {}'.format(result.get(
-                'name', ""), result.get('args', ""), result.get("exception", "")))
+            raise AugerException(
+                'Auger Hub API call {}({}) failed: {}'.format(
+                result.get('name', ""), result.get('args', ""),
+                result.get("exception", "")))
         if status == 'error':
             if result.get('errorMessage'):
-                raise Exception('Auger Hub API return error: {}'.format(result.get('errorMessage')))
-            raise Exception('Auger Hub API return error: {}'.format(result))
+                raise AugerException(
+                    'Auger Hub API return error: {}'.format(
+                    result.get('errorMessage')))
+            raise AugerException('Auger Hub API return error: {}'.format(result))
 
         return result

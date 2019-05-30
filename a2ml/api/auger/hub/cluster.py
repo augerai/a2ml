@@ -1,46 +1,29 @@
-from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.base import AugerBaseApi
 
 
-class AugerClusterApi(object):
+class AugerClusterApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Cluster."""
-    def __init__(self, hub_client, cid=None):
-        super(AugerClusterApi, self).__init__()
-        self.cid = cid
-        self.hub_client = hub_client
 
-    def properties(self):
-        return self.hub_client.call_hub_api('get_cluster', {'id': self.cid})
+    def __init__(self, project_api, cluster_id=None):
+        super(AugerClusterApi, self).__init__(
+            project_api, None, cluster_id)
+        assert project_api is not None, 'Project must be set for Cluster'
 
     def is_running(self):
-        if self.cid is None:
+        if self.object_id is None:
             return False
         return self.properties().get('status') == 'running'
 
-    def create(self, org_id, project_id, cluster_settings=None):
+    def create(self):
         params = {
-            'organization_id': org_id,
-            'project_id': project_id
-        }
-        if cluster_settings is None:
-            cluster_settings = self.get_cluster_settings()
-        params.update(cluster_settings)
-
-        cluster = self.hub_client.call_hub_api('create_cluster', params)
-
-        if 'id' in cluster:
-            self.cid = cluster['id']
-            cluster = self.hub_client.wait_for_object_status(
-                method='get_cluster',
-                params={'id': cluster['id']},
-                status=cluster['status'],
-                progress=[
-                    'waiting', 'provisioning', 'bootstrapping'
-                ])
-
-        return cluster
+            'project_id': self.parent_api.object_id,
+            'organization_id': self.parent_api.parent_api.object_id}
+        params.update(self.get_cluster_settings())
+        return self._call_create(params,
+            ['waiting', 'provisioning', 'bootstrapping'])
 
     def get_cluster_settings(self):
-        config = self.hub_client.config
+        config = self.hub_client.get_config('auger')
 
         default_stack = "stable"
         if 'staging' in self.hub_client.api_url:

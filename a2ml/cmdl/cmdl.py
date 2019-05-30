@@ -25,6 +25,8 @@ class A2mlCli(click.MultiCommand):
             mod = __import__('a2ml.cmdl.commands.cmd_' + name,
                              None, None, ['cli'])
         except ImportError as e:
+            # import traceback
+            # traceback.print_exc()
             return
         return mod.cmdl
 

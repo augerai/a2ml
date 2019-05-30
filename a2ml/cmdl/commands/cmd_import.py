@@ -13,13 +13,13 @@ class ImportCmd(object):
         self.ctx = ctx
 
     def import_data(self):
-        providers = self.ctx.config['config'].get('providers', [])
         operations = {
             'auger': AugerImport(self.ctx.copy('auger')).import_data,
             'google': TestTask(self.ctx.copy('google')).iterate,
             'azure': TestTask(self.ctx.copy('azure')).iterate
         }
-        ProviderOperations(self.ctx).execute(providers, operations)
+        ProviderOperations(self.ctx).execute(
+            self.ctx.get_providers(), operations)
 
 @click.command('import', short_help='Import data for training.')
 @pass_context

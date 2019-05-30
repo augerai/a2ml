@@ -9,13 +9,24 @@ from argparse import Namespace
 class ConfigYaml(Namespace):
     def __init__(self):
         super(ConfigYaml, self).__init__()
+        self.filename = None
 
     def load_from_file(self, filename):
         if not isinstance(filename, str) or len(filename) == 0:
             raise ValueError("please provide yaml file name")
+        self.filename = filename
         with open(filename, 'r') as f:
             self.load_to_namespace(
                 self, ruamel.yaml.load(f, Loader=ruamel.yaml.Loader))
+        with open(filename, 'r') as f:
+            self.yaml = ruamel.yaml.load(f,
+                Loader=ruamel.yaml.RoundTripLoader)
+
+    def write(self, filename=None):
+        filename = filename if filename else self.filename
+        with open(self.filename, 'w') as out:
+            out.write(ruamel.yaml.dump(self.yaml,
+                Dumper=ruamel.yaml.RoundTripDumper))
 
     def merge_namespace(self, namespace):
         for name in vars(namespace):
@@ -43,7 +54,7 @@ class ConfigYaml(Namespace):
     @staticmethod
     def _get(options, path, default):
         if len(path) == 0:
-            return options
+            return options if options else default
         if hasattr(options, path[0]):
             return ConfigYaml._get(
                 getattr(options, path[0]), path[1:], default)

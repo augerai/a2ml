@@ -1,28 +1,26 @@
-from a2ml.api.auger.hub.hub_api import HubApi
-from a2ml.api.auger.hub.hub_api import REQUEST_LIMIT
+from a2ml.api.auger.hub.base import AugerBaseApi
+from a2ml.api.auger.hub.utils.exception import AugerException
 
 
-class AugerOrgApi(object):
+class AugerOrganizationApi(AugerBaseApi):
     """Wrapper around HubApi for Auger Organization."""
-    def __init__(self, hub_client, name):
-        super(AugerOrgApi, self).__init__()
-        self.name  = name
-        self.hub_client = hub_client
 
-    def properties(self):
-        orgs_list = self.hub_client.call_hub_api(
-            'get_organizations', {
-                'name': self.name,
-                'limit': REQUEST_LIMIT})
+    def __init__(self, org_name=None, org_id=None):
+        super(AugerOrganizationApi, self).__init__(
+            None, org_name, org_id)
 
-        alt_org_name = self.name.replace('_', '-')
+    def get_cluster_mode(self):
+        cluster_mode = getattr(self, 'cluster_mode', None)
+        if not cluster_mode:
+            self.cluster_mode = self.properties().get('cluster_mode')
+        return self.cluster_mode
 
-        if len(orgs_list) > 0:
-            for item in orgs_list:
-                if item['name'] == self.name:
-                    return item
+    def create(self):
+        raise AugerException(
+            'You could\'t create organization using Auger HUB API.'
+            ' Please use Auger UI to do that...')
 
-                if item['name'] == alt_org_name:
-                    return item
-
-        return None
+    def deflete(self):
+        raise AugerException(
+            'You could\'t delete organization using Auger HUB API.'
+            ' Please use Auger UI to do that...')
