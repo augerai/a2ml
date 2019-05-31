@@ -1,6 +1,3 @@
-import json
-import sys
-
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.experiment import AugerExperimentApi
 from a2ml.api.auger.hub.utils.exception import AugerException
@@ -9,9 +6,9 @@ from a2ml.api.auger.config import AugerConfig
 
 class AugerTrain(AugerBase):
     """Train you Model on Auger."""
+
     def __init__(self, ctx):
         super(AugerTrain, self).__init__(ctx)
-        self.ctx = ctx
 
     def train(self):
         try:

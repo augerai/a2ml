@@ -7,15 +7,15 @@ class ProviderOperations(object):
         super(ProviderOperations, self).__init__()
         self.ctx = ctx
 
-    def execute(self, providers, operations):
+    def execute(self, providers, operations, *args, **kwargs):
         # if there is single operation requested
         # no need to run it on the thread
         if len(providers) == 1:
-            operations[providers[0]]()
+            operations[providers[0]](*args, **kwargs)
             return
 
         with ThreadPoolExecutor(max_workers=len(operations)) as executor:
-            futures = [executor.submit(operations[p])
+            futures = [executor.submit(operations[p], *args, **kwargs)
                 for p in providers if p in operations]
 
             try:

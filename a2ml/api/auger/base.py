@@ -24,7 +24,7 @@ class AugerBase(object):
             self.project_api.start()
 
     def _ensure_org_and_project(self):
-        """Ensure there are org, project and cluster to work with"""
+        """Ensure there are org and project to work with"""
 
         org_name = self.ctx.config['auger'].get('org_name', None)
         if org_name is None:

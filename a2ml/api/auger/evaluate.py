@@ -1,6 +1,3 @@
-import json
-import sys
-
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.hub.experiment import AugerExperimentSessionApi
@@ -9,9 +6,9 @@ from a2ml.api.utils.formatter import print_table
 
 class AugerEvaluate(AugerBase):
     """Evaluate you Model on Auger."""
+
     def __init__(self, ctx):
         super(AugerEvaluate, self).__init__(ctx)
-        self.ctx = ctx
 
     def evaluate(self):
         try:

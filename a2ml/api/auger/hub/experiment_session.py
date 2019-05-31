@@ -34,7 +34,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
         for item in iter(trial_api.list()):
             score_name = item.get('score_name')
             leaderboard.append({
-                'id': item.get('id'),
+                'model id': item.get('id'),
                 item.get('score_name'):\
                     '{0:.2f}'.format(item.get('score_value')),
                 'algorithm': item.get('hyperparameter').\
