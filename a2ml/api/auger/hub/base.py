@@ -32,7 +32,7 @@ class AugerBaseApi(object):
 
         if self.object_name is None:
             raise AugerException(
-                'No name or id wasn\'t specified'
+                'No name or id was specified'
                 ' to get %s properties...' % self.get_readable_name())
 
         alt_name = self.object_name.replace('_', '-')
