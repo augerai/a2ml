@@ -16,6 +16,7 @@ class AugerBase(object):
         self.credentials = Credentials(ctx.config['auger']).load()
         HubApi().setup(
             self.ctx, self.credentials.api_url, self.credentials.token)
+        # self.organisation_name = self.credentials.organisation
 
     def start_project(self):
         self._ensure_org_and_project()
@@ -50,3 +51,17 @@ class AugerBase(object):
                 'Can\'t find project %s on the Auger Hub.'
                 ' Creating...' % project_name)
             self.project_api.create()
+
+    @classmethod
+    def _error_handler(cls, decorated):
+        def wrapper(self, *args, **kwargs):
+            try:
+                return decorated(self, *args, **kwargs)
+            except Exception as exc:
+                # TODO refactor into reusable exception handler
+                # with comprehensible user output
+                if self.ctx.debug:
+                    import traceback
+                    traceback.print_exc()
+                self.ctx.log(str(exc))
+        return wrapper

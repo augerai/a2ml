@@ -9,23 +9,16 @@ class AugerDeploy(AugerBase):
     def __init__(self, ctx):
         super(AugerDeploy, self).__init__(ctx)
 
-    def deploy(self, model_id=None):
-        try:
-            # verify avalability of auger credentials
-            self.credentials.verify()
+    @AugerBase._error_handler
+    def deploy(self, model_id):
+        # verify avalability of auger credentials
+        self.credentials.verify()
 
-            self.ctx.log('Deploying model %s' % model_id)
+        self.ctx.log('Deploying model %s' % model_id)
 
-            self.start_project()
+        self.start_project()
 
-            pipeline_properties = AugerPipelineApi(None).create(model_id)
+        pipeline_properties = AugerPipelineApi(None).create(model_id)
 
-            self.ctx.log('Deployed model as Auger pipeline %s' % \
-                pipeline_properties.get('id'))
-
-        except Exception as exc:
-            # TODO refactor into reusable exception handler
-            # with comprehensible user output
-            # import traceback
-            # traceback.print_exc()
-            self.ctx.log(str(exc))
+        self.ctx.log('Deployed model as Auger pipeline %s' % \
+            pipeline_properties.get('id'))

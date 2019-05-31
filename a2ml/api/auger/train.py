@@ -10,33 +10,26 @@ class AugerTrain(AugerBase):
     def __init__(self, ctx):
         super(AugerTrain, self).__init__(ctx)
 
+    @AugerBase._error_handler
     def train(self):
-        try:
-            # verify avalability of auger credentials
-            self.credentials.verify()
+        # verify avalability of auger credentials
+        self.credentials.verify()
 
-            self.start_project()
+        self.start_project()
 
-            data_source_name = self.ctx.config['auger'].get('data_source/name')
-            if data_source_name is None:
-                raise AugerException('Plese specify Data Source Name'
-                    ' (auger.yaml/data_source/name option).')
+        data_source_name = self.ctx.config['auger'].get('data_source/name')
+        if data_source_name is None:
+            raise AugerException('Plese specify Data Source Name'
+                ' (auger.yaml/data_source/name option).')
 
-            experiment_api = AugerExperimentApi(self.project_api)
-            experiment_api.create(data_source_name)
-            self.ctx.log(
-                'Created Experiment %s ' % experiment_api.object_name)
+        experiment_api = AugerExperimentApi(self.project_api)
+        experiment_api.create(data_source_name)
+        self.ctx.log(
+            'Created Experiment %s ' % experiment_api.object_name)
 
-            experiment_session_id = experiment_api.run()
-            self.ctx.log(
-                'Started Experiment %s training.' % experiment_api.object_name)
+        experiment_session_id = experiment_api.run()
+        self.ctx.log(
+            'Started Experiment %s training.' % experiment_api.object_name)
 
-            AugerConfig(self.ctx).set_experiment(
-                experiment_api.object_name, experiment_session_id)
-
-        except Exception as exc:
-            # TODO refactor into reusable exception handler
-            # with comprehensible user output
-            import traceback
-            traceback.print_exc()
-            self.ctx.log(str(exc))
+        AugerConfig(self.ctx).set_experiment(
+            experiment_api.object_name, experiment_session_id)
