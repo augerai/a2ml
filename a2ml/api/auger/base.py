@@ -1,5 +1,3 @@
-import json
-
 from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.credentials import Credentials
 from a2ml.api.auger.hub.project import AugerProjectApi
