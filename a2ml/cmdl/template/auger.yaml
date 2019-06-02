@@ -39,3 +39,4 @@ experiment:
 cluster:
   worker_type_id: 1
   workers_count: 2
+  kubernetes_stack: experimental

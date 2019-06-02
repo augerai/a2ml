@@ -33,7 +33,7 @@ class AugerBaseApi(object):
         if self.object_name is None:
             raise AugerException(
                 'No name or id was specified'
-                ' to get %s properties...' % self.get_readable_name())
+                ' to get %s properties...' % self._get_readable_name())
 
         alt_name = self.object_name.replace('_', '-')
         for item in iter(self.list()):
@@ -48,11 +48,27 @@ class AugerBaseApi(object):
             method='get_%s' % self.api_request_path,
             params={'id': self.object_id},
             progress=progress,
-            object_readable_name=self.get_readable_name())
+            object_readable_name=self._get_readable_name(),
+            status_name=self._get_status_name(),
+            post_check_status=self._post_check_status,
+            log_status=self._log_status)
 
-    def get_readable_name(self):
+    def _get_readable_name(self):
         s = self.api_request_path
         return ' '.join([w.capitalize() for w in s.split('_')])
+
+    def _get_status_name(self):
+        return 'status'
+
+    def _log_status(self, status):
+        if self.hub_client.ctx is None:
+            return
+        self.hub_client.ctx.log(
+            '%s %s is %s...' % \
+            (self._get_readable_name(), self._get_status_name(), status))
+
+    def _post_check_status(self, status, result):
+        self._log_status(status)
 
     def _call_create(self, params=None, progress=None):
         object_properties = self.hub_client.call_hub_api(

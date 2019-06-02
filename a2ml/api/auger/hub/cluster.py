@@ -1,3 +1,4 @@
+from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.hub.base import AugerBaseApi
 
 
@@ -22,16 +23,19 @@ class AugerClusterApi(AugerBaseApi):
         return self._call_create(params,
             ['waiting', 'provisioning', 'bootstrapping'])
 
-    def get_cluster_settings(self):
-        config = self.hub_client.get_config('auger')
+    @staticmethod
+    def get_cluster_settings():
+        config = HubApi().get_config('auger')
 
         default_stack = "stable"
-        if 'staging' in self.hub_client.api_url:
+        if 'staging' in HubApi().api_url:
             default_stack = 'experimental'
 
         settings = {
-            "kubernetes_stack": config.get('cluster/kubernetes_stack', default_stack),
-            "autoterminate_minutes": config.get('cluster/autoterminate_minutes', 30)
+            "kubernetes_stack":
+                config.get('cluster/kubernetes_stack', default_stack),
+            "autoterminate_minutes":
+                config.get('cluster/autoterminate_minutes', 30)
         }
 
         docker_image_tag = config.get('cluster/docker_image_tag', None)
@@ -51,7 +55,7 @@ class AugerClusterApi(AugerBaseApi):
 
             settings.update({
                 "worker_nodes_count": worker_nodes_count,
-                "instance_type": config.get('cluster/instance_type', 'c5.large'),
+                "instance_type": config.get('cluster/instance_type', 'c5.large')
             })
             workers_per_node_count = config.get(
                 'cluster/workers_per_node_count', None)

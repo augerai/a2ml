@@ -47,7 +47,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
                     'Data Source already exists for %s' % file_url)
             raise exc
 
-    def get_readable_name(self):
+    def _get_readable_name(self):
         # patch readable name
         return 'Data Source'
 

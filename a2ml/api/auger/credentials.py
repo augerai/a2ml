@@ -52,12 +52,12 @@ class Credentials(object):
         return os.path.join(credentials_path, 'auger')
 
     def _ensure_credentials_file(self):
-        file = self.credentials_path
-        dir = os.path.dirname(file)
+        creds_file = self.credentials_path
+        creds_path = os.path.dirname(creds_file)
 
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        if not os.path.exists(creds_path):
+            os.makedirs(creds_path)
 
-        if not os.path.exists(file):
-            with open(file, 'w') as file:
-                file.write('{}')
+        if not os.path.exists(creds_file):
+            with open(creds_file, 'w') as f:
+                f.write('{}')

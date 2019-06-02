@@ -29,9 +29,9 @@ class HubApi(Singleton):
         params = params.copy()
 
         if params.get('id') and not method.startswith('create_'):
-            id = params['id']
+            oid = params['id']
             del params['id']
-            return getattr(self.hub_client, method)(id, **params)
+            return getattr(self.hub_client, method)(oid, **params)
         else:
             return getattr(self.hub_client, method)(**params)
 
@@ -65,12 +65,13 @@ class HubApi(Singleton):
 
     def wait_for_object_status(
         self, method, params, progress,
-        object_readable_name, status_name='status'):
+        object_readable_name, status_name='status',
+        post_check_status=None, log_status=None):
 
-        def log_status(obj_status):
-            if self.ctx is not None:
-                self.ctx.log(
-                    '%s %s is %s...' % (object_readable_name, status_name, obj_status))
+        def _log_status(obj_status):
+            pass
+
+        log_status  = log_status if log_status else _log_status
 
         result = self.call_hub_api(method, params=params)
         status = result.get(status_name, 'failure')
@@ -89,19 +90,19 @@ class HubApi(Singleton):
         if status == 'processed_with_error':
             raise AugerException(
                 '%s processed with error' % object_readable_name)
-
-        log_status(status)
-
-        if status == "failure":
+        elif status == "failure":
             raise AugerException(
                 'Auger Hub API call {}({}) failed: {}'.format(
                 result.get('name', ""), result.get('args', ""),
                 result.get("exception", "")))
-        if status == 'error':
+        elif status == 'error':
             if result.get('errorMessage'):
                 raise AugerException(
                     'Auger Hub API return error: {}'.format(
                     result.get('errorMessage')))
             raise AugerException('Auger Hub API return error: {}'.format(result))
+
+        if post_check_status:
+            post_check_status(status, result)
 
         return result
