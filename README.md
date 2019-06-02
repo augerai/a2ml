@@ -43,7 +43,7 @@ $ a2ml command --help
 
 ## Configuration Options
 
-After a new A2ML application created, application configuration stored in CONFIG.YAML. The options available include:
+After a new A2ML application is created, application configuration for all providers are stored in CONFIG.YAML. The options available include:
 * name - the name of the experiment
 * provider - the AutoML provider: GC (for Google Cloud), AZ (for Microsoft Azure), or Auger
 * project - the name of the project in the AutoML provider's environment
@@ -55,7 +55,7 @@ After a new A2ML application created, application configuration stored in CONFIG
 * metric - how to measure the accuracy of the model
 * budget - the time budget in milliseconds to train
 
-Here is an example CONFIG.YAML for Google Cloud AutoML:
+Here is an example CONFIG.YAML:
 
 ```
 name: moneyball
@@ -66,8 +66,12 @@ source: gs://moneyball/baseball.csv
 dataset_id: TBL4772768869943083008
 target: RS
 exclude: Team,League,Year
-metric: MINIMIZE_MAE
 budget: 3600
+```
+Here is a provider specific config file (GOOGLE.YAML) file for this project:
+```
+region: us-central1
+metric: MINIMIZE_MAE
 ```
 
 ## Data Source specification
