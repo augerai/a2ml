@@ -17,10 +17,10 @@ class AugerOrganizationApi(AugerBaseApi):
 
     def create(self):
         raise AugerException(
-            'You could\'t create organization using Auger HUB API.'
+            'You could\'t create organization using Auger Cloud API.'
             ' Please use Auger UI to do that...')
 
     def deflete(self):
         raise AugerException(
-            'You could\'t delete organization using Auger HUB API.'
+            'You could\'t delete organization using Auger Cloud API.'
             ' Please use Auger UI to do that...')

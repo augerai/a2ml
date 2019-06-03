@@ -46,7 +46,7 @@ class AugerBase(object):
         project_properties = self.project_api.properties()
         if project_properties is None:
             self.ctx.log(
-                'Can\'t find project %s on the Auger Hub.'
+                'Can\'t find project %s on the Auger Cloud.'
                 ' Creating...' % project_name)
             self.project_api.create()
 
