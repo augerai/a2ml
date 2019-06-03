@@ -26,7 +26,7 @@ class AugerImport(AugerBase):
         AugerConfig(self.ctx).set_data_source(data_source_api.object_name)
 
         self.ctx.log(
-            'Created Data Source %s on Auger Hub.' % \
+            'Created Data Source %s on Auger Cloud.' % \
              data_source_api.object_name)
         self.ctx.log(
             'Data Source name stored in auger.yaml/data_source/name')

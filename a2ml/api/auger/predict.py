@@ -101,7 +101,8 @@ class AugerPredict(AugerBase):
         except subprocess.CalledProcessError as e:
             raise AugerException('Error running Docker container...')
 
-        return os.path.join(data_path, "%s_predicted.csv" % result_file)
+        return os.path.join(data_path,
+            os.path.splitext(result_file)[0] + "_predicted.csv")
 
     def _docker_pull_image(self):
         cluster_settings = AugerClusterApi.get_cluster_settings()

@@ -93,7 +93,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
 
         file_url = self._upload_file(file_to_upload, upload_url)
         self.hub_client.ctx.log(
-            'Uploaded local file to Auger Hub file: %s' % file_url)
+            'Uploaded local file to Auger Cloud file: %s' % file_url)
         return file_url
 
     def _upload_file(self, file_name, url):
@@ -105,7 +105,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
             return ('files/%s' % rp.get('path')[0].split('files/')[-1])
         else:
             raise AugerException(
-                'HTTP error [%s] while uploading file to Auger Hub...' % r.status_code)
+                'HTTP error [%s] while uploading file to Auger Cloud...' % r.status_code)
 
     def _upload_to_multi_tenant(self, file_to_upload):
         file_path = 'workspace/projects/%s/files/%s-%s' % \
@@ -117,7 +117,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
             'file_path': file_path})
         if res is None:
             raise AugerException(
-                'Error while uploading file to Auger Hub...')
+                'Error while uploading file to Auger Cloud...')
 
         with open(file_to_upload, 'rb') as f:
             files = {'file': (file_path, f)}
@@ -129,7 +129,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
         else:
             raise AugerException(
                 'HTTP error [%s] while uploading file'
-                    ' to Auger Hub...' % res.status_code)
+                    ' to Auger Cloud...' % res.status_code)
 
     def _get_data_source_name(self, file_name):
         fname, fext = os.path.splitext(file_name)

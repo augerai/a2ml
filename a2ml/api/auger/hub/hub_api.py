@@ -11,7 +11,7 @@ REQUEST_LIMIT = 100
 STATE_POLL_INTERVAL = 10
 
 class HubApi(Singleton):
-    """Auger Hub Api call wrapper."""
+    """Auger Cloud Api call wrapper."""
 
     def __init__(self):
         super(HubApi, self).__init__()
@@ -92,15 +92,15 @@ class HubApi(Singleton):
                 '%s processed with error' % object_readable_name)
         elif status == "failure":
             raise AugerException(
-                'Auger Hub API call {}({}) failed: {}'.format(
+                'Auger Cloud API call {}({}) failed: {}'.format(
                 result.get('name', ""), result.get('args', ""),
                 result.get("exception", "")))
         elif status == 'error':
             if result.get('errorMessage'):
                 raise AugerException(
-                    'Auger Hub API return error: {}'.format(
+                    'Auger Cloud API return error: {}'.format(
                     result.get('errorMessage')))
-            raise AugerException('Auger Hub API return error: {}'.format(result))
+            raise AugerException('Auger Cloud API return error: {}'.format(result))
 
         if post_check_status:
             post_check_status(status, result)
