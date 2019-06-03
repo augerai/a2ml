@@ -20,7 +20,7 @@ extras['all'] = all_deps
 setup(
     name='a2ml',
     version='0.1',
-    description=('Th A2ML ("Automate AutoML") project is a set of scripts to automate '
+    description=('The A2ML ("Automate AutoML") project is a set of scripts to automate '
                  'Automated Machine Learning tools from multiple vendors.'),
     author='Deep Learn',
     author_email='augerai@dplrn.com',
