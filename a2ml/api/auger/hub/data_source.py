@@ -123,7 +123,7 @@ class AugerDataSourceApi(AugerProjectFileApi):
             files = {'file': (file_path, f)}
             res = requests.post(res['url'], data=res['fields'], files=files)
 
-        if res.status_code == 201:
+        if res.status_code == 201 or res.status_code == 200:
             return 's3://%s/%s' % \
                 (ET.fromstring(res.content).find('Bucket').text, file_path)
         else:
