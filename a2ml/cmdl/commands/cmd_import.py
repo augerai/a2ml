@@ -5,7 +5,7 @@ from a2ml.cmdl.utils.context import pass_context
 from a2ml.api.auger.import_data import AugerImport
 from a2ml.cmdl.utils.provider_operations import ProviderOperations
 from a2ml.api import gc_a2ml
-# import yaml
+from a2ml.api.google.import_data import GoogleImport
 
 class ImportCmd(object):
 
@@ -15,7 +15,7 @@ class ImportCmd(object):
     def import_data(self):
         operations = {
             'auger': AugerImport(self.ctx.copy('auger')).import_data,
-            'google': TestTask(self.ctx.copy('google')).iterate,
+            'google': GoogleImport(self.ctx.copy('google')).import_data,
             'azure': TestTask(self.ctx.copy('azure')).iterate
         }
         ProviderOperations(self.ctx).execute(

@@ -1,0 +1,5 @@
+region: us-central1
+metric: MINIMIZE_MAE
+project: automl-test-237311
+source: gs://moneyball/baseball.csv
+

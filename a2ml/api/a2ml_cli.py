@@ -9,14 +9,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description='''A2ML - Automating AutoML. 
     
-    Uppercase P-R-E-D-I-C-T options run parts of the pipeline. They generally
+    Uppercase P-R-E-D-I-T options run parts of the pipeline. They generally
     correspond to Model methods.  
     
     Lowercase options set project, dataset, model and others that span pipeline stages
     (geneerally correspond to Model instance variables).''',
         epilog='''A typical usage of the PREDICT pipeline would be successive invocations with the following options:
         -- IMPORT
-        -- CONFIGURE
         -- TRAIN
         -- EVALUATE
         -- DEPLOY
