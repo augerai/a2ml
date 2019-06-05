@@ -62,7 +62,7 @@ name: moneyball
 provider: GC
 project: automl-test-237311
 region: us-central1
-source: gs://moneyball/baseball.csv
+source: ../baseball.csv
 dataset_id: TBL4772768869943083008
 target: RS
 exclude: Team,League,Year
@@ -72,6 +72,7 @@ Here is a provider specific config file (GOOGLE.YAML) file for this project:
 ```
 region: us-central1
 metric: MINIMIZE_MAE
+source: gs://moneyball/baseball.csv
 ```
 
 ## Data Source specification
