@@ -117,7 +117,7 @@ $ git clone https://github.com/deeplearninc/a2ml.git
 Setup dependencies and A2ML command line:
 
 ```
-$ pip install -e .[all]
+$ pip install -e ".[all]"
 ```
 
 Running tests and getting test coverage:
