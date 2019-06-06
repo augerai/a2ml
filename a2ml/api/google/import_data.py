@@ -13,11 +13,15 @@ class GoogleImport:
         self.project_location = self.client.location_path(self.project_id,self.compute_region)
         self.dataset_id = ctx.config['google'].get('dataset_id',None)
         self.dataset_name = ctx.config['google'].get('dataset_name',None)
-        self.source = ctx.config['google'].get('source', None)
+        self.source = ctx.config['config'].get('source', None)
         self.name = ctx.config['config'].get('name',None)
 
     def import_data(self):
         print("Creating dataset for project location: {}".format(self.project_location))
+        if self.source is None:
+            print("Please specify a source (URL or local file)")
+            return
+            
         create_dataset_response = self.client.create_dataset(
             self.project_location,
             {'display_name': self.name,

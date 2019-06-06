@@ -36,11 +36,11 @@ class GoogleEvaluate:
         response=authed_session.get(cmd)
         print("Response content: {}".format(response.content))
         result=json.loads(response.content)
-        self.model_name = result["response"]["name"]
-        print("Model: {}".format(self.model_name))
-        done = result["done"]
-        print("Done: {}".format(done))     
-        if done:   
+        self.model_name = result["name"]
+        print("Model: {}".format(self.model_name))   
+        if (("done" in result.keys()) and result["done"]): 
+            self.ctx.config['google'].yaml['model_name'] = self.model_name
+            self.ctx.config['google'].write()  
             response = self.client.list_model_evaluations(self.model_name)
             print("List of model evaluations:")
             for evaluation in response:
