@@ -20,9 +20,9 @@ class AugerDeploy(AugerBase):
         if locally:
             self.depoly_model_locally(model_id)
         else:
-            self.depoly_model_on_hub(model_id)
+            self.deploy_model_on_hub(model_id)
 
-    def depoly_model_on_hub(self, model_id):
+    def deploy_model_on_hub(self, model_id):
         self.ctx.log('Deploying model %s' % model_id)
 
         self.start_project()

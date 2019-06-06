@@ -1,17 +1,18 @@
-# Name of organisation on the Auger Hub
-org_name: auger-mt
-# Name of the project on Auger Hub
-project_name: adam-test1
 
-# Data Source Name on the Auger Hub
+# Name of organisation on the Auger Cloud
+org_name: auger-mt
+# Name of the project on Auger Cloud
+project_name: test2
+
+# Data Source Name on the Auger Cloud
 data_source:
-  name: moneyball-2.csv
+  name: ''
 
 experiment:
   # Latest experiment name
-  name: moneyball-2.csv-experiment
+  name: ''
   # Latest experiment session
-  experiment_session_id: 4d926d51eae1a4ae
+  experiment_session_id: ''
   # Time series feature. If Data Source contains more then one DATETIME feature
   # you will have to explicitly specify feature to use as time series
   time_series:
@@ -32,7 +33,7 @@ experiment:
   # Supported scores for classification: accuracy, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, precision_weighted, recall_macro, recall_micro, recall_weighted
   # Supported scores for binary classification: accuracy, average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, precision_weighted, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
   # Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
-  metric: neg_mean_absolute_error
+  metric: f1_macro
 
 cluster:
   worker_type_id: 1

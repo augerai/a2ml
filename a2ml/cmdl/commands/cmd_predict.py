@@ -3,7 +3,7 @@ import click
 from a2ml.api.auger.predict import AugerPredict
 from a2ml.cmdl.utils.context import pass_context
 from a2ml.cmdl.utils.provider_operations import ProviderOperations
-
+from a2ml.api.google.predict import GooglePredict
 class PredictCmd(object):
 
     def __init__(self, ctx):
@@ -11,7 +11,8 @@ class PredictCmd(object):
 
     def predict(self, filename, model_id, threshold, locally):
         operations = {
-            'auger': AugerPredict(self.ctx.copy('auger')).predict
+            'auger': AugerPredict(self.ctx.copy('auger')).predict,
+            'google': GooglePredict(self.ctx.copy('google')).predict
         }
         ProviderOperations(self.ctx).execute(
             self.ctx.get_providers(), operations,

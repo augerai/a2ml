@@ -3,7 +3,6 @@ from a2ml.api.auger.hub.experiment import AugerExperimentApi
 from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.config import AugerConfig
 
-
 class AugerTrain(AugerBase):
     """Train you Model on Auger."""
 

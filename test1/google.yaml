@@ -2,4 +2,6 @@ region: us-central1
 metric: MINIMIZE_MAE
 project: automl-test-237311
 source: gs://moneyball/baseball.csv
-
+dataset_id: TBL5754659141826117632
+operation_id: TBL2145477039279308800
+operation_name: projects/291533092938/locations/us-central1/operations/TBL6824717052117254144

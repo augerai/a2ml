@@ -3,7 +3,7 @@ import click
 from a2ml.api.auger.deploy import AugerDeploy
 from a2ml.cmdl.utils.context import pass_context
 from a2ml.cmdl.utils.provider_operations import ProviderOperations
-
+from a2ml.api.google.deploy import GoogleDeploy
 
 class DeployCmd(object):
 

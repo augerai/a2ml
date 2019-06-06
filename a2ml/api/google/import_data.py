@@ -1,11 +1,13 @@
 from google.cloud import automl_v1beta1 as automl
 from google.cloud.automl_v1beta1 import enums
+from a2ml.cmdl.utils.config_yaml import ConfigYaml
 
 class GoogleImport:
     """Import data into Google's dataset."""
 
     def __init__(self,ctx):
         self.client = automl.AutoMlClient()
+        self.ctx=ctx
         self.project_id = ctx.config['google'].get('project',None)
         self.compute_region = ctx.config['google'].get('region',None)
         self.project_location = self.client.location_path(self.project_id,self.compute_region)
@@ -21,6 +23,9 @@ class GoogleImport:
             {'display_name': self.name,
             'tables_dataset_metadata': {}})
         self.dataset_id = create_dataset_response.name.split('/')[-1]
+        self.ctx.config['google'].yaml['dataset_id'] = self.dataset_id
+        self.ctx.config['google'].write()
+
         print ("Dataset ID: {}".format(self.dataset_id))
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
         print('Dataset name: {}'.format(self.dataset_name))
@@ -38,5 +43,6 @@ class GoogleImport:
         # synchronous check of operation status.
         import_data_response = operation.result()
         print("Imported data: {}".format(import_data_response))
+        
         return self
 

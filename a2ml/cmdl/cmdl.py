@@ -5,7 +5,6 @@ from a2ml.cmdl.utils.context import Context
 from a2ml.cmdl.utils.context import CONTEXT_SETTINGS
 from a2ml.cmdl.utils.context import pass_context
 
-
 class A2mlCli(click.MultiCommand):
     cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), 'commands'))
 

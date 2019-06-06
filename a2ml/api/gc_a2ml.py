@@ -127,6 +127,7 @@ class GCModel(a2ml.Model):
         print("Training operation name: {}".format(self.op_name))
         self.operation_id =self.op_name.rsplit('/', 1)[-1]
         print("Training operation: {}".format(self.operation_id))
+    
 
         # dont wait for full training now: evaluate later
         #model_response=response.result()
