@@ -11,3 +11,4 @@ class GoogleDeploy:
 
     def deploy(self, model_id, locally=False):
         response = self.client.deploy_model(self.model_name)
+        print("Response: {}".format(response))

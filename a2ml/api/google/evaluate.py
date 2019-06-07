@@ -34,11 +34,13 @@ class GoogleEvaluate:
         basename="https://automl.googleapis.com/v1beta1/"
         cmd = basename + self.operation_name
         response=authed_session.get(cmd)
-        print("Response content: {}".format(response.content))
+        #print("Response content: {}".format(response.content))
         result=json.loads(response.content)
-        self.model_name = result["name"]
-        print("Model: {}".format(self.model_name))   
+
         if (("done" in result.keys()) and result["done"]): 
+            print("Model training complete.")
+            self.model_name = result["response"]["name"]
+            print("Model full name: {}".format(self.model_name))   
             self.ctx.config['google'].yaml['model_name'] = self.model_name
             self.ctx.config['google'].write()  
             response = self.client.list_model_evaluations(self.model_name)
@@ -53,4 +55,6 @@ class GoogleEvaluate:
                 print("\tnanos: {}".format(evaluation.create_time.nanos))
                 print("\tevaluation:{}",evaluation)
                 print("\n")
+        else:
+            print("Model still training...")
 

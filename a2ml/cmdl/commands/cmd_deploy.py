@@ -12,7 +12,8 @@ class DeployCmd(object):
 
     def deploy(self, model_id, locally):
         operations = {
-            'auger': AugerDeploy(self.ctx.copy('auger')).deploy
+            'auger': AugerDeploy(self.ctx.copy('auger')).deploy,
+            'google': GoogleDeploy(self.ctx.copy('google')).deploy
         }
         ProviderOperations(self.ctx).execute(
             self.ctx.get_providers(), operations,
@@ -20,7 +21,7 @@ class DeployCmd(object):
 
 
 @click.command('deploy', short_help='Deploy trained model.')
-@click.argument('model-id', required=True, type=click.STRING)
+@click.argument('model-id', required=False, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
 @pass_context
