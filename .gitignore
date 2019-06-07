@@ -21,6 +21,7 @@ coverage/*
 /.venv
 
 # Development artifacts
+**/test*/
 **/aws-keys.yaml
 **/logs/*
 **/log/*
