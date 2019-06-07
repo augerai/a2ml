@@ -1,1 +1,0 @@
-python a2ml_cli.py -h

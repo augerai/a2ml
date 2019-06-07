@@ -18,18 +18,19 @@ class Context(object):
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
-        self.debug = self.config['config'].get('debug', False) 
+        self.debug = self.config['config'].get('debug', False)
 
     def get_providers(self):
         providers = self.config['config'].get('providers', [])
+
+        if isinstance(providers, (str,)):
+            providers = [p.strip() for p in providers.split(',')]
+
         if isinstance(providers, (list,)):
             for p in providers:
                 if p not in PROVIDERS:
                     raise Exception('Provider %s is not supported.' % p)
             return providers
-        elif isinstance(providers, (str,)):
-            if providers in PROVIDERS:
-                return [providers]
 
         raise Exception('Expecting list of providers in config.yaml\providers')
 

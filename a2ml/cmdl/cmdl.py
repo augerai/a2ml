@@ -1,9 +1,9 @@
 import os
 import sys
 import click
-from a2ml.cmdl.utils.context import Context
-from a2ml.cmdl.utils.context import CONTEXT_SETTINGS
-from a2ml.cmdl.utils.context import pass_context
+from a2ml.api.utils.context import Context
+from a2ml.api.utils.context import CONTEXT_SETTINGS
+from a2ml.api.utils.context import pass_context
 
 class A2mlCli(click.MultiCommand):
     cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), 'commands'))
@@ -24,8 +24,8 @@ class A2mlCli(click.MultiCommand):
             mod = __import__('a2ml.cmdl.commands.cmd_' + name,
                              None, None, ['cli'])
         except ImportError as e:
-            # import traceback
-            # traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             return
         return mod.cmdl
 
