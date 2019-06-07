@@ -4,4 +4,4 @@ project: automl-test-237311
 dataset_id: TBL8947429802655088640
 operation_id: TBL2145477039279308800
 operation_name: projects/291533092938/locations/us-central1/operations/TBL353748075027628032
-model_name: projects/291533092938/locations/us-central1/models/TBL5415235504285155328
+model_name: projects/291533092938/locations/us-central1/models/TBL1517370026795991040
