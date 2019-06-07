@@ -1,7 +1,7 @@
 import click
 
 from a2ml.api.auger.auth import AugerAuth
-from a2ml.cmdl.utils.context import pass_context
+from a2ml.api.utils.context import pass_context
 
 class AuthCmd(object):
 

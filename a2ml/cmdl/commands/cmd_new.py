@@ -3,9 +3,9 @@ import errno
 import click
 
 from a2ml.api.auger.config import AugerConfig
-from a2ml.cmdl.utils.context import PROVIDERS
+from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
-from a2ml.cmdl.utils.context import pass_context
+from a2ml.api.utils.context import pass_context
 from a2ml.api.auger.hub.data_source import AugerDataSourceApi
 from a2ml.api.auger.credentials import Credentials
 

@@ -1,22 +1,6 @@
 import click
-
-from a2ml.api.auger.deploy import AugerDeploy
-from a2ml.cmdl.utils.context import pass_context
-from a2ml.cmdl.utils.provider_operations import ProviderOperations
-from a2ml.api.google.deploy import GoogleDeploy
-
-class DeployCmd(object):
-
-    def __init__(self, ctx):
-        self.ctx = ctx
-
-    def deploy(self, model_id, locally):
-        operations = {
-            'auger': AugerDeploy(self.ctx.copy('auger')).deploy
-        }
-        ProviderOperations(self.ctx).execute(
-            self.ctx.get_providers(), operations,
-            model_id=model_id, locally=locally)
+from a2ml.api.a2ml import A2ML
+from a2ml.api.utils.context import pass_context
 
 
 @click.command('deploy', short_help='Deploy trained model.')
@@ -27,4 +11,4 @@ class DeployCmd(object):
 def cmdl(ctx, model_id, locally):
     """Deploy trained model."""
     ctx.setup_logger(format='')
-    DeployCmd(ctx).deploy(model_id, locally)
+    A2ML(ctx).deploy(model_id, locally)

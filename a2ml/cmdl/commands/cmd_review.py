@@ -1,14 +1,6 @@
 import click
-
-from a2ml.cmdl.utils.context import pass_context
-
-class ReviewCmd(object):
-
-    def __init__(self, ctx):
-        self.ctx = ctx
-
-    def review(self):
-        pass
+from a2ml.api.a2ml import A2ML
+from a2ml.api.utils.context import pass_context
 
 
 @click.command('review', short_help='Review specified model info.')
@@ -16,4 +8,4 @@ class ReviewCmd(object):
 def cmdl(ctx):
     """Review specified model info."""
     ctx.setup_logger(format='')
-    ReviewCmd(ctx).review()
+    A2ML(ctx).review()
