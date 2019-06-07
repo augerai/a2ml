@@ -19,7 +19,6 @@ class DeployCmd(object):
             self.ctx.get_providers(), operations,
             model_id=model_id, locally=locally)
 
-
 @click.command('deploy', short_help='Deploy trained model.')
 @click.argument('model-id', required=False, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
@@ -28,4 +27,4 @@ class DeployCmd(object):
 def cmdl(ctx, model_id, locally):
     """Deploy trained model."""
     ctx.setup_logger(format='')
-    DeployCmd(ctx).deploy(model_id, locally)
+    A2ML(ctx).deploy(model_id, locally)

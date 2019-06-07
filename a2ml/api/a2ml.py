@@ -1,42 +1,27 @@
-import argparse 
-import os
-import csv
-from google.cloud import automl_v1beta1 as automl
-from google.cloud.automl_v1beta1 import enums
-# if using A2ML with Google Cloud AutoML tables then
-# insure that your GOOGLE_APPLICATION_CREDENTIALS environment variable 
-# points to the application credentials file given from your Google Cloud SDK
-# you can also set a default PROJECT_ID for Google Cloud in your environment
-import abc
-from abc import ABC, abstractmethod 
-class Model:
-    def predict(self):
-        pass
-    def review(self):
-        pass
-    def evaluate(self):
-        pass
-    def deploy(self):
-        pass
-    def import_data(self,source):
-        pass
-    def train(self):
-        pass
+from a2ml.api.utils.provider_runner import ProviderRunner
 
-# TODO: implement these for Auger
-class AugerModel(Model):  
-    def __init__(self):
-        pass      
-    def predict(self,filepath,score_threshold):
-        pass
-    def review(self):
-        pass
-    def evaluate(self):
-        pass
-    def deploy(self):
-        pass
+class A2ML(object):
+    """Facade to A2ML providers."""
+
+    def __init__(self, ctx):
+        super(A2ML, self).__init__()
+        self.ctx = ctx
+        self.runner = ProviderRunner(ctx)
+
     def import_data(self):
-        pass
-    def train(self):
-        pass
+        self.runner.execute('import_data')
 
+    def train(self):
+        self.runner.execute('train')
+
+    def evaluate(self):
+        self.runner.execute('evaluate')
+
+    def deploy(self, model_id, locally=False):
+        self.runner.execute('deploy', model_id, locally)
+
+    def predict(self, filename, model_id, threshold=None, locally=False):
+        self.runner.execute('predict', filename, model_id, threshold, locally)
+
+    def review(self):
+        self.runner.execute('review')

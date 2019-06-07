@@ -119,13 +119,14 @@ class AugerDataSourceApi(AugerProjectFileApi):
             raise AugerException(
                 'Error while uploading file to Auger Cloud...')
 
+        url = res['url']
         with open(file_to_upload, 'rb') as f:
             files = {'file': (file_path, f)}
-            res = requests.post(res['url'], data=res['fields'], files=files)
+            res = requests.post(url, data=res['fields'], files=files)
 
         if res.status_code == 201 or res.status_code == 200:
-            return 's3://%s/%s' % \
-                (ET.fromstring(res.content).find('Bucket').text, file_path)
+            bucket = urllib.parse.urlparse(url).netloc.split('.')[0]
+            return 's3://%s/%s' % (bucket, file_path)
         else:
             raise AugerException(
                 'HTTP error [%s] while uploading file'
