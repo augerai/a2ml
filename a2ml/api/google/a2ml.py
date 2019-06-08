@@ -185,7 +185,7 @@ class GoogleA2ML(object):
                 response = prediction_client.predict(self.model_name, payload)
                 self.ctx.log("Prediction results:")
                 for result in response.payload:
-                    if (result.classification.score >= score_threshold): 
+                    if ((threshold is None) or (result.classification.score >= score_threshold)): 
                         prediction=result.tables.value.number_value
                 self.ctx.log("Prediction: {}".format(prediction))
                 csvlist += (',' + str(prediction) + '\n')
