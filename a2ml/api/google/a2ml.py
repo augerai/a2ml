@@ -193,3 +193,21 @@ class GoogleA2ML(object):
 
     def review(self):
         self.ctx.log('Google Review')
+
+        # Get complete detail of the model.
+        model = self.client.get_model(self.model_name)
+
+        # Retrieve deployment state.
+        if model.deployment_state == enums.Model.DeploymentState.DEPLOYED:
+            deployment_state = "deployed"
+        else:
+            deployment_state = "undeployed"
+
+        # Display the model information.
+        self.ctx.log("Model name: {}".format(self.model_name))
+        self.ctx.log("Model id: {}".format(model.name.split("/")[-1]))
+        self.ctx.log("Model display name: {}".format(model.display_name))
+        self.ctx.log("Model metadata:")
+        self.ctx.log(model.tables_model_metadata)
+        self.ctx.log("Model create time (seconds): {}".format(model.create_time.seconds))
+        self.ctx.log("Model deployment state: {}".format(deployment_state))
