@@ -3,5 +3,5 @@ metric: MINIMIZE_MAE
 project: automl-test-237311
 dataset_id: TBL3255442823612203008
 operation_id: TBL2145477039279308800
-operation_name: projects/291533092938/locations/us-central1/operations/TBL6382379126216458240
+operation_name: projects/291533092938/locations/us-central1/operations/TBL8202959275580981248
 model_name: projects/291533092938/locations/us-central1/models/TBL1517370026795991040

@@ -94,9 +94,9 @@ class GoogleA2ML(object):
         for exclude in excluded:
             self.ctx.log("Removing: {}".format(exclude))
             try: 
-                self.feapwdt_list.remove(exclude)
-            except:
-                self.ctx.log("Can't find: {}".format(exclude))
+                self.feat_list.remove(exclude)
+            except Exception as inst:
+                self.ctx.log("Can't find: {}: {}".format(exclude,inst))
 
         model_dict = {
         'display_name': self.name,
