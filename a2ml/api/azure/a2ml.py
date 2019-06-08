@@ -15,51 +15,53 @@ import azureml.dataprep as dprep
 
 from a2ml.api import a2ml
 
-class AZModel(a2ml.Model):  
+class AzureA2ML(object):  
 
-    def __init__(self,name,project_id,compute_region,compute_name):
-        self.name = name
-        self.project_id = project_id
-        if compute_region is None:
-            compute_region = 'eastus2'
-        self.compute_region = compute_region
+    def __init__(self):
+        self.ctx = ctx
+        self.name = ctf.config['config'].get('name',None)
+        self.source = ctx.config['config'].get('source', None)
+        self.target = ctx.config['config'].get('target',None)
+        self.exclude = ctx.config['config'].get('exclude',None)
+        self.budget = ctx.config['config'].get('budget',None)
+        self.metric = ctx.config['google'].get('metric','spearman_correlation')
+        self.subscription_id = ctx.config['azure'].get('subscription_id',os.environ.get("AZURE_SUBSCRIPTION_ID"))
+        self.workspace = ctx.config['azure'].get('workspace',self.name+'_ws')
+        self.resource_group = ctx.config['azure'].get('resource_group',self.name+'_resources')
+
+        self.compute_region = ctx.config['azure'].get('region','eastus2')
+        self.compute_cluster = ctf.config['azure'].get('compute_cluster','cpucluster)
+        self.compute_min_nodes = ctx.config['azure'].get('compute_min_nodes', 0)
+        self.compute_max_nodes = ctx.config['azure'].get('compute_max_nodes', 4)
+        self.compute_sku = ctx.config['azure'].get('compute_sku','STANDARD_D2_V2')
+ 
         # check core SDK version number
         print("Azure ML SDK Version: ", azureml.core.VERSION)
-        subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
         try:  # get the preloaded workspace definition
-            self.ws = Workspace.from_config(path='.azure/config.json')
+            self.ws = Workspace.from_config(path='../.azure/config.json')
         except:  # or create a new one
-
-            resource_group = project_id + '_resources'
-            self.ws = Workspace.create(name=project_id,
-                        subscription_id=subscription_id,	
-                        resource_group=resource_group,
+            self.ws = Workspace.create(name=self.workspace,
+                        subscription_id=self.subscription_id,	
+                        resource_group=self.resource_group,
                         create_resource_group=True,
-                        location=compute_region 
+                        location=self.compute_region 
                         )
 
 
         self.ws.write_config() 
-        # choose a name for your cluster
-        self.compute_name = compute_name
-        self.min_nodes =  0
-        self.max_nodes = 4
-        # This example uses CPU VM. For using GPU VM, set SKU to STANDARD_NC6
-        self.vm_size = os.environ.get("AML_COMPUTE_CLUSTER_SKU", "STANDARD_D2_V2")
 
-        if self.compute_name in self.ws.compute_targets:
+        if self.compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[compute_name]
             if compute_target and type(compute_target) is AmlCompute:
-                print('found compute target. just use it. ' + compute_name)
+                print('found compute target. just use it. ' + compute_cluster)
         else: 
             print('Creating new AML compute context.')
-            provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.vm_size, min_nodes=self.min_nodes, max_nodes=self.max_nodes)
-            compute_target = ComputeTarget.create(self.ws, self.compute_name, provisioning_config)
+            provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.compute_sku, min_nodes=self.compute_min_nodes, max_nodes=self.compute_max_nodes)
+            compute_target = ComputeTarget.create(self.workspace, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
     def import_data(self,source):
-        self.source = source 
-        self.exp = Experiment(workspace=self.ws, name=self.name)
+        self.exp = Experiment(workspace=ws, name=self.name)
         self.project_folder = './project'
         output = {}
         output['SDK version'] = azureml.core.VERSION
@@ -72,7 +74,7 @@ class AZModel(a2ml.Model):
         pd.DataFrame(data=output, index=['']).T
 
     def generate_data_script(self):
-        template = open("a2ml/api/get_data.template","r")
+        template = open("../a2ml/api/azure/get_data.template","r")
         text = template.read()
         template.close 
         print("Replacing $SOURCE with: {}".format(self.source))
@@ -83,12 +85,8 @@ class AZModel(a2ml.Model):
         script.write(text)
         script.close
 
-    def train(self,source,target,excluded,budget,metric):
+    def train(self):
 
-        if (metric is None):
-            metric = 'spearman_correlation'
-        self.target = target
-        self.source = source
         # TODO: use metric budget specified in seconds
         automl_settings = {
             "iteration_timeout_minutes" : 10,
