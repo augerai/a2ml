@@ -84,8 +84,10 @@ class AugerExperimentApi(AugerBaseApi):
 
         self._fill_data_options(options, stats, target, exclude)
 
-        if options['targetFeature'] is None:
+        if target == '':
             raise AugerException('Please set target to build model.')
+        elif options['targetFeature'] is None:
+            raise AugerException('Provided target `{}` not found in the data set.'.format(target))
 
         if model_type is not 'timeseries':
             options['timeSeriesFeatures'] = []
