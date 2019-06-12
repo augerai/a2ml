@@ -2,7 +2,7 @@ from builtins import str
 from builtins import object
 from argparse import Namespace
 
-from a2ml.cmdl.utils.config_yaml import ConfigYaml
+from a2ml.api.utils.config_yaml import ConfigYaml
 
 
 class TestConfigYaml(object):
@@ -36,7 +36,9 @@ class TestConfigYaml(object):
         self.yaml.yaml_attribyte = "yaml value"
         self.yaml.merge_namespace(ns)
         assert vars(self.yaml) == {
-            'ns_attribute': 'ns value', 'yaml_attribyte': 'yaml value'}
+            'ns_attribute': 'ns value',
+            'yaml_attribyte': 'yaml value',
+            'filename': None}
 
     def test_get_with_path(self):
         value = 'value of attr2'
