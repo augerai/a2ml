@@ -8,13 +8,11 @@ import google.auth
 from a2ml.api.utils.config_yaml import ConfigYaml
 from google.auth.transport.requests import AuthorizedSession
 
-
 class GoogleA2ML(object):
     """Google A2ML implementation."""
 
-    def __init__(self, ctx):
+    def __init__(self,ctx):
         super(GoogleA2ML, self).__init__()
-        self.ctx = ctx
         self.client = automl.AutoMlClient()
         self.name = ctx.config['config'].get('name',None)
         self.project_id = ctx.config['google'].get('project',None)

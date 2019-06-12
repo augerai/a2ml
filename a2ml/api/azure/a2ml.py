@@ -17,7 +17,7 @@ from a2ml.api import a2ml
 
 class AzureA2ML(object):  
 
-    def __init__(self):
+    def __init__(self,ctx):
         self.ctx = ctx
         self.name = ctf.config['config'].get('name',None)
         self.source = ctx.config['config'].get('source', None)
@@ -30,7 +30,7 @@ class AzureA2ML(object):
         self.resource_group = ctx.config['azure'].get('resource_group',self.name+'_resources')
 
         self.compute_region = ctx.config['azure'].get('region','eastus2')
-        self.compute_cluster = ctf.config['azure'].get('compute_cluster','cpucluster)
+        self.compute_cluster = ctf.config['azure'].get('compute_cluster','cpucluster')
         self.compute_min_nodes = ctx.config['azure'].get('compute_min_nodes', 0)
         self.compute_max_nodes = ctx.config['azure'].get('compute_max_nodes', 4)
         self.compute_sku = ctx.config['azure'].get('compute_sku','STANDARD_D2_V2')
@@ -60,7 +60,7 @@ class AzureA2ML(object):
             compute_target = ComputeTarget.create(self.workspace, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
-    def import_data(self,source):
+    def import_data(self):
         self.exp = Experiment(workspace=ws, name=self.name)
         self.project_folder = './project'
         output = {}
