@@ -2,14 +2,14 @@ from setuptools import setup
 from setuptools import find_packages
 
 install_requires = [
-    'click','dill','google-cloud-automl','lightgbm','numpy','pandas',
-    'sklearn','wheel', 'requests', 'requests-toolbelt', 'shortuuid',
-    'auger-hub-api-client>=0.5.6', 'ruamel.yaml','azureml','azureml.core',
-    'azureml.train','azureml.train.automl'
+    'click','sklearn','wheel', 'requests', 'requests-toolbelt', 'shortuuid',
+    'auger-hub-api-client>=0.5.6', 'ruamel.yaml'
 ]
 
 extras = {
-    'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock']
+    'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock'],
+    'azure': ['lightgbm','numpy','pandas','azureml','azureml.core','azureml.train','azureml.train.automl'],
+    'google': ['google-cloud-automl']
 }
 
 # Meta dependency groups.
