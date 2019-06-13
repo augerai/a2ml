@@ -1,5 +1,5 @@
-from a2ml.api.auger.cloud.base import AugerBaseApi
-from a2ml.api.auger.cloud.cluster import AugerClusterApi
+from .base import AugerBaseApi
+from .cluster import AugerClusterApi
 
 
 class AugerProjectApi(AugerBaseApi):

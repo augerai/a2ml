@@ -1,6 +1,6 @@
-from a2ml.api.auger.cloud.base import AugerBaseApi
-from a2ml.api.auger.cloud.prediction import AugerPredictionApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from .base import AugerBaseApi
+from .prediction import AugerPredictionApi
+from .utils.exception import AugerException
 
 
 class AugerPipelineApi(AugerBaseApi):

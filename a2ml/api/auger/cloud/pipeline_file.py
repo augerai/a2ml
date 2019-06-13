@@ -2,8 +2,8 @@ import os
 import urllib.parse
 import urllib.request
 
-from a2ml.api.auger.cloud.base import AugerBaseApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from .base import AugerBaseApi
+from .utils.exception import AugerException
 
 
 class AugerPipelineFileApi(AugerBaseApi):

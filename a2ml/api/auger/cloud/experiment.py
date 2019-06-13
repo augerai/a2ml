@@ -1,7 +1,7 @@
-from a2ml.api.auger.cloud.base import AugerBaseApi
-from a2ml.api.auger.cloud.data_set import AugerDataSetApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
-from a2ml.api.auger.cloud.experiment_session import AugerExperimentSessionApi
+from .base import AugerBaseApi
+from .data_set import AugerDataSetApi
+from .utils.exception import AugerException
+from .experiment_session import AugerExperimentSessionApi
 
 MODEL_TYPES = ['classification', 'regression', 'timeseries']
 

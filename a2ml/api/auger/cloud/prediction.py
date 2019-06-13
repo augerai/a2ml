@@ -1,4 +1,4 @@
-from a2ml.api.auger.cloud.base import AugerBaseApi
+from .base import AugerBaseApi
 
 
 class AugerPredictionApi(AugerBaseApi):

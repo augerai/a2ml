@@ -3,7 +3,7 @@ import sys
 import time
 
 from auger.hub_api_client import HubApiClient
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from .utils.exception import AugerException
 
 
 REQUEST_LIMIT = 100

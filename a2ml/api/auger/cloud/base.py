@@ -1,5 +1,5 @@
 import re
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from .utils.exception import AugerException
 
 
 class AugerBaseApi(object):

@@ -5,9 +5,9 @@ import shortuuid
 import urllib.parse
 import xml.etree.ElementTree as ET
 
-from a2ml.api.auger.cloud.cluster import AugerClusterApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
-from a2ml.api.auger.cloud.project_file import AugerProjectFileApi
+from .cluster import AugerClusterApi
+from .utils.exception import AugerException
+from .project_file import AugerProjectFileApi
 
 SUPPORTED_FORMATS = ['.csv', '.arff']
 

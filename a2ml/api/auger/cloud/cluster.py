@@ -1,5 +1,5 @@
-from a2ml.api.auger.cloud.base import AugerBaseApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from .base import AugerBaseApi
+from .utils.exception import AugerException
 
 
 class AugerClusterApi(AugerBaseApi):
