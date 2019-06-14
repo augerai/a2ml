@@ -20,7 +20,7 @@ class AugerOrganizationApi(AugerBaseApi):
             'You could\'t create organization using Auger Cloud API.'
             ' Please use Auger UI to do that...')
 
-    def deflete(self):
+    def delete(self):
         raise AugerException(
             'You could\'t delete organization using Auger Cloud API.'
             ' Please use Auger UI to do that...')

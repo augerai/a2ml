@@ -7,7 +7,7 @@ from a2ml.api.utils.context import pass_context
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--threshold', '-t', default=None, type=float,
     help='Threshold.')
-@click.option('--model-id', '-m', type=click.STRING, required=True,
+@click.option('--model-id', '-m', type=click.STRING, required=False,
     help='Deployed model id.')
 @click.option('--locally', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
