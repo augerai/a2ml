@@ -14,7 +14,7 @@ automl.json
 coverage/*
 /htmlcov
 /.cache
-/.coverage
+/.coverage*
 /.env
 /.tox
 /.env
