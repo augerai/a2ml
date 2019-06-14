@@ -1,0 +1,10 @@
+# List of providers: auger, google, azure
+providers: auger
+# Local file name or remote url to the data source file
+source: /Users/vtrv101/Projects/dplrn/a2ml/tests/data/iris.csv
+# List of columns to be excluded from the training data
+exclude:
+# Target column name
+target: species
+# Model type: classification|regression|timeseries
+model_type: classification
