@@ -2,20 +2,35 @@
 import os
 from a2ml.api.a2ml import A2ML
 from a2ml.api.google.a2ml import GoogleA2ML
-from a2ml.api.utils.context import pass_context
+from a2ml.api.utils.context import Context
 
 class TestGoogleA2ML():
-    def test_import_data():
+    def test_init(self):
+        print("Current directory: {}".format(os.getcwd()))
+        fulldir=os.getcwd()+"/tests/test_app"
+        os.chdir(fulldir)
+        # load config(s) from test app
         ctx = Context()
-        client = GoogleA2ML(ctx)
-        result = client.import_data()
-        assert(len(result.dataset_id)>0)
 
-    def test_train(ctx):
+        a2ml = A2ML(ctx)
+        assert len(a2ml.runner.providers)==1
+        assert isinstance(a2ml.runner.providers[0], GoogleA2ML)
+    
+    def test_import_data(self): 
+        print("Current directory: {}".format(os.getcwd()))
+
+        # load config(s) from test app
         ctx = Context()
-        client = GoogleA2ML(ctx)
-        result = client.train(dataset_id,"RS",excluded.split(','),budget,metric)
-        self.ctx.log("Train result: {}",format(result))
-        assert(len(result.operation_name)>0)
+
+        a2ml = GoogleA2ML(ctx)
+        result = a2ml.import_data()
+        assert(len(result.dataset_id)>0)
+    
+    def test_train(self):
+        ctx = Context()
+        a2ml = GoogleA2ML(ctx)
+        result = a2ml.train()
+        print("Train result: {}",format(result))
+ 
 
 

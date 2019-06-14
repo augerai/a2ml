@@ -13,6 +13,7 @@ class GoogleA2ML(object):
 
     def __init__(self,ctx):
         super(GoogleA2ML, self).__init__()
+        self.ctx = ctx
         self.client = automl.AutoMlClient()
         self.name = ctx.config['config'].get('name',None)
         self.project_id = ctx.config['google'].get('project',None)

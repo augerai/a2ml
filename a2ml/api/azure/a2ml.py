@@ -19,7 +19,7 @@ class AzureA2ML(object):
 
     def __init__(self,ctx):
         self.ctx = ctx
-        self.name = ctf.config['config'].get('name',None)
+        self.name = ctx.config['config'].get('name',None)
         self.source = ctx.config['config'].get('source', None)
         self.target = ctx.config['config'].get('target',None)
         self.exclude = ctx.config['config'].get('exclude',None)
