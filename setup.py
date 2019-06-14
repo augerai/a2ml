@@ -2,14 +2,15 @@ from setuptools import setup
 from setuptools import find_packages
 
 install_requires = [
-    'click','sklearn','wheel', 'requests', 'requests-toolbelt', 'shortuuid',
-    'auger-hub-api-client>=0.5.6', 'ruamel.yaml'
-]
+    'click', 'scikit-learn<=0.20.3,>=0.19.0', 'sklearn', 'wheel==0.30.0',
+    'requests', 'requests-toolbelt', 'shortuuid', 'pandas<=0.23.4,>=0.21.0',
+    'lightgbm<=2.2.1,>=2.0.11', 'scipy<=1.1.0,>=1.0.0', 'numpy<=1.16.2,>=1.11.0',
+    'ruamel.yaml<=0.15.89,>=0.15.35', 'auger-hub-api-client>=0.5.6',
+    'azureml', 'azureml.core', 'azureml.train', 'azureml.train.automl',
+    'google-cloud-automl']
 
 extras = {
-    'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock'],
-    'azure': ['lightgbm','numpy','pandas','azureml','azureml.core','azureml.train','azureml.train.automl'],
-    'google': ['google-cloud-automl']
+    'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock']
 }
 
 # Meta dependency groups.
