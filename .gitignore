@@ -14,13 +14,15 @@ automl.json
 coverage/*
 /htmlcov
 /.cache
-/.coverage
+/.coverage*
 /.env
 /.tox
 /.env
 /.venv
 
 # Development artifacts
+/*.csv
+/*.log
 /test_*/*
 **/aws-keys.yaml
 **/logs/*

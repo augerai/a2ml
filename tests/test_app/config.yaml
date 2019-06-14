@@ -11,4 +11,3 @@ target: 'RS'
 # Model type: classification|regression|timeseries
 model_type: regression
 budget: 3600
-
