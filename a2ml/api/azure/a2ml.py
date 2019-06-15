@@ -36,9 +36,10 @@ class AzureA2ML(object):
         self.compute_sku = ctx.config['azure'].get('compute_sku','STANDARD_D2_V2')
  
         # check core SDK version number
-        print("Azure ML SDK Version: ", azureml.core.VERSION)
+        print("Azure ML SDK Version: {}".format(azureml.core.VERSION))
+        print("Current directory: {}".format(os.getcwd()))
         try:  # get the preloaded workspace definition
-            self.ws = Workspace.from_config(path='../.azure/config.json')
+            self.ws = Workspace.from_config(path='../../.azure/config.json')
         except:  # or create a new one
             self.ws = Workspace.create(name=self.workspace,
                         subscription_id=self.subscription_id,	
@@ -51,9 +52,9 @@ class AzureA2ML(object):
         self.ws.write_config() 
 
         if self.compute_cluster in self.ws.compute_targets:
-            compute_target = self.ws.compute_targets[compute_name]
+            compute_target = self.ws.compute_targets[self.compute_cluster]
             if compute_target and type(compute_target) is AmlCompute:
-                print('found compute target. just use it. ' + compute_cluster)
+                print('found compute target. just use it. ' + self.compute_cluster)
         else: 
             print('Creating new AML compute context.')
             provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.compute_sku, min_nodes=self.compute_min_nodes, max_nodes=self.compute_max_nodes)
@@ -61,7 +62,7 @@ class AzureA2ML(object):
             compute_target.wait_for_completion(show_output = True)
 
     def import_data(self):
-        self.exp = Experiment(workspace=ws, name=self.name)
+        self.exp = Experiment(workspace=self.ws, name=self.name)
         self.project_folder = './project'
         output = {}
         output['SDK version'] = azureml.core.VERSION

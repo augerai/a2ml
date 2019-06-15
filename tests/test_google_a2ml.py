@@ -13,16 +13,16 @@ class TestGoogleA2ML():
         ctx = Context()
 
         a2ml = A2ML(ctx)
-        assert len(a2ml.runner.providers)==1
+        assert len(a2ml.runner.providers)==3
         assert isinstance(a2ml.runner.providers[0], GoogleA2ML)
     
     def test_import_data(self): 
         print("Current directory: {}".format(os.getcwd()))
 
         # load config(s) from test app
-        ctx = Context()
+        self.ctx = Context()
 
-        a2ml = GoogleA2ML(ctx)
+        a2ml = GoogleA2ML(self.ctx)
         result = a2ml.import_data()
         assert(len(result.dataset_id)>0)
     
