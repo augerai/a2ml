@@ -10,7 +10,7 @@ class TestAzureA2ML():
 
     def test_import_data(self):
         ctx = Context()
-        print("Name of model: {}".format(ctx.config['config'].name))
+        #print("Name of model: {}".format(ctx.config['config'].name))
         a2ml=AzureA2ML(ctx)
         a2ml.import_data()
     
