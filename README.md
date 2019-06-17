@@ -1,5 +1,5 @@
 # a2ml - Automation of AutoML
-Th A2ML ("Automate AutoML") project is a set of scripts to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
+Th A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
 
 ## The PREDIT Pipeline
 Every AutoML vendor has their own API to manage the datasets and create and
@@ -12,15 +12,89 @@ common set of stages:
 * Predict results with new data against deployed models
 * Review performance of deployed models
 
-Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French
-for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
+Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
 
+## Command Line Interface
 
-## The A2ML CLI
+The command line is a convenient way to start an A2ML project even if you plan to use 
+the API.  
 
-This is the command line interface for the A2ML classes. It provides command line options
-for each stage in the PREDICT Pipeline.
+### Creating a New A2ML Project
+Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure. 
+
+```
+a2ml new test_appp
+```
+### Configuring Your A2ML Project
+
+Before you use the Python API or the command line interface for the specific PREDIT pipeline steps you will need to configure your particular project. This includes both general options that apply to all vendors and vendor specific options in separate YAML files.  
+
+After a new A2ML application is created, application configuration for all providers are stored in CONFIG.YAML. The options available include:
+* name - the name of the project
+* provider - the AutoML provider: GC (for Google Cloud), AZ (for Microsoft Azure), or Auger
+* source - the CSV file to train with. Can be a local file path  (for Auger or Azure). Can be a hosted file URL.  Can be URL for Google Cloud Storage ("gs://...") for 
+Google Cloud AutoML.  
+* exclude - features from the dataset to exclude from the model
+* target - the feature which is the target
+* model_type - Can be regression, classification or timeseries
+* budget - the time budget in milliseconds to train
+
+Examples of options which apply to specific vendors include:
+* region - the region for the AutoML providers compute clusters, each vendor has different names for their regions
+* metric - how to measure the accuracy of the model to perform the search of algorithms, each vendor has different names for their regions
+
+Here is an example CONFIG.YAML with options that apply to all AutoML providers:
+
+```
+name: moneyball
+providers: google,azure,auger
+source: gs://moneyball/baseball.csv
+exclude: Team,League,Year
+target: 'RS'
+model_type: regression
+budget: 3600
+```
+
+#### GOOGLE.YAML Configuration
+Here is an example specific configuration file (google.yaml) for Google AutoML for this project:
+```
+region: us-central1
+metric: MINIMIZE_MAE
+project: automl-test-237311
+dataset_id: TBL1889796605356277760
+operation_id: TBL2145477039279308800
+operation_name: projects/291533092938/locations/us-central1/operations/TBL4473943599746121728
+model_name: projects/291533092938/locations/us-central1/models/TBL1517370026795991040
+```
+
+#### AUGER.YAML
+Here's an example configuration file for Auger.AI
+``` auger.yaml
+project: test_app
+dataset: some_test_data
+
+experiment:
+  cross_validation_folds: 5
+  max_total_time: 60
+  max_eval_time: 1
+  max_n_trials: 10
+  use_ensemble: true
+  metric: f1_macro
+
+cluster:
+  type: high_memory
+  min_nodes: 1
+  max_nodes: 4
+  stack_type: experimental
+```
+
+Once you project is configured with these YAML files you can skip ahead to the 
+[Using the A2ML API](#Using_the_A2ML_API) section if you want to start using the
+A2ML Python API. 
+
+### The A2ML CLI Commands Available
+Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.
 
 Usage:
 ```
@@ -41,64 +115,58 @@ To get detailed information on available options for each command, please run:
 $ a2ml command --help
 ```
 
-## Configuration Options
+## Using the A2ML API
+After you have configured the YAML files as shown above (whether from scratch 
+or using the templates provided by "a2ml new") you can use the API to 
+import, train, evaluate, deploy, predict and review (the PREDIT pipeline).
 
-After a new A2ML application is created, application configuration for all providers are stored in CONFIG.YAML. The options available include:
-* name - the name of the experiment
-* provider - the AutoML provider: GC (for Google Cloud), AZ (for Microsoft Azure), or Auger
-* project - the name of the project in the AutoML provider's environment
-* region - the compute region on the cloud provider
-* source - the CSV file to train with
-* dataset_id - the Google Cloud dataset after source import
-* target - the feature which is the target
-* exclude - features to exclude from the model
-* metric - how to measure the accuracy of the model
-* budget - the time budget in milliseconds to train
-
-Here is an example CONFIG.YAML:
+In your Python code, you will first need retrieve the configuration by referring
+to a Context() object.  Then you can create a client for the A2ML class. 
+From that client object you will execute the various PREDIT pipeline methods
+(starting from "import_data". Below is example Python code for this. 
 
 ```
-name: moneyball
-provider: GC
-project: automl-test-237311
-region: us-central1
-source: ../baseball.csv
-dataset_id: TBL4772768869943083008
-target: RS
-exclude: Team,League,Year
-budget: 3600
-```
-Here is a provider specific config file (GOOGLE.YAML) file for this project:
-```
-region: us-central1
-metric: MINIMIZE_MAE
-source: gs://moneyball/baseball.csv
+    import os
+    from a2ml.api.a2ml import A2ML
+    from a2ml.api.google.a2ml import GoogleA2ML
+    from a2ml.api.utils.context import Context
+    self.ctx = Context()
+    a2ml = GoogleA2ML(self.ctx)
+    result = a2ml.import_data()
 ```
 
-## Data Source specification
-Auger Data Source will analyze some portion of the input data in order to infer data
-types of the features. Features could be one of the following datatypes:
-- numeric
-- string
-- date
+## Implementing Your Own A2ML Classes
 
-#numeric
-Numeric feature can be real or integer numbers.
+### The Base Pattern
+The following class sets pattern for all implementations of A2ML.
+```
+class A2ML(object):
+    def __init__(self, ctx):
+        super(A2ML, self).__init__()
+        self.ctx = ctx
+        self.runner = ProviderRunner(ctx)
 
-#string
-By default String features will be one-hot encoded by the model training preprocessor.
-String features may be hashed instead of one-hot encoded.
-Please add them to label_encoding_features list.
+    def import_data(self):
+        self.runner.execute('import_data')
 
-#date
-The default date string accepts the ISO-8601 combined date and time format: "yyyy-MM-dd'T'HH:mm:ss".
+    def train(self):
+        self.runner.execute('train')
 
-You may decide to exclude some features from the training.
-Please add them to exclude_features list.
+    def evaluate(self):
+        self.runner.execute('evaluate')
 
-#time series
-If data contains more then one date features, please specify which feature to
-use to build Time Series using time_series setting.
+    def deploy(self, model_id, locally=False):
+        self.runner.execute('deploy', model_id, locally)
+
+    def predict(self, filename, model_id, threshold=None, locally=False):
+        self.runner.execute('predict', filename, model_id, threshold, locally)
+
+    def review(self):
+        self.runner.execute('review')
+```
+Each implementation should subclass A2ML and provide implementations of the the PREDIT
+methods.
+
 
 ## Development Setup
 
