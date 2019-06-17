@@ -53,6 +53,10 @@ class AugerBaseApi(object):
             post_check_status=self._post_check_status,
             log_status=self._log_status)
 
+    @property
+    def name(self):
+        return self.object_name
+
     def _get_readable_name(self):
         s = self.api_request_path
         return ' '.join([w.capitalize() for w in s.split('_')])
