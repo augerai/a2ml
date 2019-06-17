@@ -6,7 +6,7 @@ from a2ml.api.auger.config import AugerConfig
 from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
-from a2ml.api.auger.hub.data_source import AugerDataSourceApi
+from a2ml.api.auger.hub.data_set import AugerDataSetApi
 from a2ml.api.auger.credentials import Credentials
 
 
@@ -38,7 +38,7 @@ class NewCmd(object):
     def create_project(self):
         try:
             if self.source:
-                self.source = AugerDataSourceApi.verify(self.source)[0]
+                self.source = AugerDataSetApi.verify(self.source)[0]
 
             project_path = self.mk_project_folder()
             Template.copy_config_files(project_path, ['config'] + PROVIDERS)

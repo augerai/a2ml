@@ -1,14 +1,12 @@
 ---
 
-# Name of organisation on the Auger Cloud
+# Name of organisation on Auger Cloud
 org_name:
 # Name of the project on Auger Cloud
 project_name:
-
-# Data Source Name on the Auger Cloud
-data_source:
-  name:
-
+# Data Set Name on Auger Cloud
+data_set_name:
+# Experiment settings
 experiment:
   # Latest experiment name
   name:
