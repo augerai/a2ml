@@ -28,7 +28,7 @@ class AugerImport(AugerBase):
             'Created Data Set %s on Auger Cloud.' % \
              data_set_api.object_name)
         self.ctx.log(
-            'Data Set name stored in auger.yaml/data_set_name')
+            'Data Set name stored in auger.yaml/dataset')
 
     def _get_source_file(self):
         file_to_upload = self.ctx.config['config'].get('source', None)

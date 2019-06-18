@@ -14,7 +14,6 @@ class AugerBase(object):
         self.credentials = Credentials(ctx.config['auger']).load()
         HubApi().setup(
             self.ctx, self.credentials.api_url, self.credentials.token)
-        # self.organisation_name = self.credentials.organisation
 
     def start_project(self):
         self._ensure_org_and_project()
@@ -25,10 +24,10 @@ class AugerBase(object):
     def _ensure_org_and_project(self):
         """Ensure there are org and project to work with"""
 
-        org_name = self.ctx.config['auger'].get('org_name', None)
+        org_name = self.credentials.organisation
         if org_name is None:
             raise Exception(
-                'Please specify your organization (org_name:) in auger.yaml...')
+                'Please specify your organization...')
 
         self.org_api = AugerOrganizationApi(org_name)
         org_properties = self.org_api.properties()
@@ -36,10 +35,10 @@ class AugerBase(object):
             raise Exception('Can\'t find organization %s' % org_name)
         self.org_api.cluster_mode = org_properties.get('cluster_mode')
 
-        project_name = self.ctx.config['auger'].get('project_name', None)
+        project_name = self.ctx.config['auger'].get('project', None)
         if project_name is None:
             raise Exception(
-                'Please specify your project (project_name:) in auger.yaml...')
+                'Please specify your project in auger.yaml/project...')
 
         self.project_api = AugerProjectApi(
             self.org_api, project_name)

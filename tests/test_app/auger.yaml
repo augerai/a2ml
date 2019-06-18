@@ -1,14 +1,10 @@
 
 
-# Name of organisation on the Auger Cloud
-org_name: auger-mt
 # Name of the project on Auger Cloud
-project_name: test_app
-
+project: test_app
 # Data Source Name on the Auger Cloud
-data_source:
-  name: ''
-
+dataset:
+# Experiment
 experiment:
   # Latest experiment name
   name: ''
@@ -37,6 +33,8 @@ experiment:
   metric: f1_macro
 
 cluster:
-  worker_type_id: 1
-  workers_count: 2
-  kubernetes_stack: experimental
+  # Type could be standard or high_memory
+  type: standard
+  min_nodes: 2
+  max_nodes: 2
+  stack_version: experimental
