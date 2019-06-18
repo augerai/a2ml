@@ -1,5 +1,6 @@
 import re
 from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerBaseApi(object):
