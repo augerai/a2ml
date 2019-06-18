@@ -12,27 +12,27 @@ from a2ml.api.auger.hub.project_file import AugerProjectFileApi
 SUPPORTED_FORMATS = ['.csv', '.arff']
 
 
-class AugerDataSourceApi(AugerProjectFileApi):
-    """Wrapper around ProjectFileApi for Auger Data Source."""
+class AugerDataSetApi(AugerProjectFileApi):
+    """Wrapper around ProjectFileApi for Auger Data Set."""
 
     def __init__(self, project_api=None,
-        data_source_name=None, data_source_id=None):
-        super(AugerDataSourceApi, self).__init__(
-            project_api, data_source_name, data_source_id)
+        data_set_name=None, data_set_id=None):
+        super(AugerDataSetApi, self).__init__(
+            project_api, data_set_name, data_set_id)
         # patch request path
         self._set_api_request_path('AugerProjectFileApi')
 
-    def create(self, data_source_file, data_source_name=None):
+    def create(self, data_source_file, data_set_name=None):
         data_source_file, local_data_source = \
-            AugerDataSourceApi.verify(data_source_file)
+            AugerDataSetApi.verify(data_source_file)
 
         if local_data_source:
             file_url = self._upload_to_hub(data_source_file)
             file_name = os.path.basename(data_source_file)
-            if data_source_name:
-                self.object_name = data_source_name
+            if data_set_name:
+                self.object_name = data_set_name
             else:
-                self.object_name = self._get_data_source_name(file_name)
+                self.object_name = self._get_data_set_name(file_name)
         else:
             file_url = data_source_file
             url_path = urllib.parse.urlparse(file_url).path
@@ -44,12 +44,12 @@ class AugerDataSourceApi(AugerProjectFileApi):
         except Exception as exc:
             if 'en.errors.project_file.url_not_uniq' in str(exc):
                 raise AugerException(
-                    'Data Source already exists for %s' % file_url)
+                    'Data Set already exists for %s' % file_url)
             raise exc
 
     def _get_readable_name(self):
         # patch readable name
-        return 'Data Source'
+        return 'Data Set'
 
     @staticmethod
     def verify(data_source_file):
@@ -132,6 +132,6 @@ class AugerDataSourceApi(AugerProjectFileApi):
                 'HTTP error [%s] while uploading file'
                     ' to Auger Cloud...' % res.status_code)
 
-    def _get_data_source_name(self, file_name):
+    def _get_data_set_name(self, file_name):
         fname, fext = os.path.splitext(file_name)
         return self._get_uniq_object_name(fname, fext)

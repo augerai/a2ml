@@ -6,7 +6,7 @@ from a2ml.api.auger.config import AugerConfig
 from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
-from a2ml.api.auger.hub.data_source import AugerDataSourceApi
+from a2ml.api.auger.hub.data_set import AugerDataSetApi
 from a2ml.api.auger.credentials import Credentials
 
 
@@ -38,7 +38,7 @@ class NewCmd(object):
     def create_project(self):
         try:
             if self.source:
-                self.source = AugerDataSourceApi.verify(self.source)[0]
+                self.source = AugerDataSetApi.verify(self.source)[0]
 
             project_path = self.mk_project_folder()
             Template.copy_config_files(project_path, ['config'] + PROVIDERS)
@@ -59,9 +59,7 @@ class NewCmd(object):
                 target = self.target,
                 source = self.source,
                 model_type = self.model_type,
-                project_name = self.project_name,
-                organisation_name = \
-                    Credentials(self.ctx.config['auger']).load().organisation)
+                project_name = self.project_name)
 
         except Exception as e:
             # import traceback
@@ -70,7 +68,7 @@ class NewCmd(object):
 
 
 @click.command('new', short_help='Create new A2ML project.')
-@click.argument('project-name', required=True, type=click.STRING)
+@click.argument('project', required=True, type=click.STRING)
 @click.option('--providers', '-p', default='auger',
     type=click.Choice(['all','auger','google','azure']),
     help='Model Provider.')
@@ -82,8 +80,8 @@ class NewCmd(object):
 @click.option('--target', '-t',  default='', type=click.STRING,
     help='Target column name in data source.')
 @pass_context
-def cmdl(ctx, project_name, providers, source, model_type, target):
+def cmdl(ctx, project, providers, source, model_type, target):
     """Create new A2ML project."""
     ctx.setup_logger(format='')
-    NewCmd(ctx, project_name, providers,
+    NewCmd(ctx, project, providers,
         target, source, model_type).create_project()

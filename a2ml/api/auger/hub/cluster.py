@@ -1,5 +1,6 @@
 from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.hub.base import AugerBaseApi
+from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerClusterApi(AugerBaseApi):
@@ -31,9 +32,13 @@ class AugerClusterApi(AugerBaseApi):
         if 'staging' in HubApi().api_url:
             default_stack = 'experimental'
 
+        kubernetes_stack = config.get('cluster/kubernetes_stack', None)
+        if kubernetes_stack is None:
+            kubernetes_stack = config.get(
+                'cluster/stack_version', default_stack)
+
         settings = {
-            "kubernetes_stack":
-                config.get('cluster/kubernetes_stack', default_stack),
+            "kubernetes_stack": kubernetes_stack,
             "autoterminate_minutes":
                 config.get('cluster/autoterminate_minutes', 30)
         }
@@ -42,13 +47,16 @@ class AugerClusterApi(AugerBaseApi):
         if docker_image_tag is not None:
             settings["docker_image_tag"] = docker_image_tag
 
-        worker_type_id = config.get('cluster/worker_type_id', None)
-        if worker_type_id is not None:
+        cluster_type = config.get('cluster/type', None)
+        if cluster_type is not None:
+            if cluster_type not in ['standard', 'high_memory']:
+                raise AugerException(
+                    'Cluster type \'%s\' is not supported' % cluster_type)
             settings.update({
-                "worker_type_id": worker_type_id,
-                "workers_count": config.get('cluster/workers_count', 2),
+                "worker_type_id": 1 if cluster_type == 'standard' else 2,
+                "workers_count": config.get('cluster/max_nodes', 2),
             })
-        else:
+        else: # single tenant settings
             worker_nodes_count = config.get('cluster/worker_count', 2)
             worker_nodes_count = config.get(
                 'cluster/worker_nodes_count', worker_nodes_count)

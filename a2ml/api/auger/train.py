@@ -16,13 +16,13 @@ class AugerTrain(AugerBase):
 
         self.start_project()
 
-        data_source_name = self.ctx.config['auger'].get('data_source/name')
-        if data_source_name is None:
-            raise AugerException('Plese specify Data Source Name'
-                ' (auger.yaml/data_source/name option).')
+        data_set_name = self.ctx.config['auger'].get('dataset')
+        if data_set_name is None:
+            raise AugerException('Plese specify Data Set Name'
+                ' (auger.yaml/dataset option).')
 
         experiment_api = AugerExperimentApi(self.project_api)
-        experiment_api.create(data_source_name)
+        experiment_api.create(data_set_name)
         self.ctx.log(
             'Created Experiment %s ' % experiment_api.object_name)
 

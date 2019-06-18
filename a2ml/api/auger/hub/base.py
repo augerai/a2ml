@@ -1,5 +1,6 @@
 import re
 from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerBaseApi(object):
@@ -52,6 +53,10 @@ class AugerBaseApi(object):
             status_name=self._get_status_name(),
             post_check_status=self._post_check_status,
             log_status=self._log_status)
+
+    @property
+    def name(self):
+        return self.object_name
 
     def _get_readable_name(self):
         s = self.api_request_path

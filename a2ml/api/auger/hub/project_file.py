@@ -15,3 +15,8 @@ class AugerProjectFileApi(AugerBaseApi):
             'name': self.object_name,
             'project_id': self.parent_api.object_id,
             'file_name': file_name, 'url': file_url}, ['processing'])
+
+    def delete(self):
+        self._ensure_object_id()
+        self.hub_client.call_hub_api(
+            'delete_%s' % self.api_request_path, {'id': self.object_id})

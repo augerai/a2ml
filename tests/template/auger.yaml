@@ -1,6 +1,4 @@
 ---
-# Name of organisation on the Auger Cloud
-org_name:
 # Name of the project on Auger Cloud
 project:
 # Data Source Name on the Auger Cloud
@@ -8,7 +6,7 @@ dataset:
 
 experiment:
   # Latest experiment name
-  name: auger_experiment
+  name:
   # Latest experiment session
   experiment_session_id:
   # Time series feature. If Data Source contains more then one DATETIME feature
@@ -31,12 +29,10 @@ experiment:
   # Supported scores for classification: accuracy, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, precision_weighted, recall_macro, recall_micro, recall_weighted
   # Supported scores for binary classification: accuracy, average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, precision_weighted, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
   # Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
-  metric: neg_mean_absolute_error
+  metric:
 
 cluster:
-  worker_type_id: 1
-  workers_count: 2
-  kubernetes_stack: experimental
-  min_nodes: 1
-  max_nodes: 4
-  type: high-memory
+  type: standard
+  min_nodes: 2
+  max_nodes: 2
+  stack_version: experimental

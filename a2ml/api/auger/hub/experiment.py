@@ -1,7 +1,7 @@
 import json
 from a2ml.api.auger.hub.base import AugerBaseApi
 from a2ml.api.auger.hub.utils.exception import AugerException
-from a2ml.api.auger.hub.data_source import AugerDataSourceApi
+from a2ml.api.auger.hub.data_set import AugerDataSetApi
 from a2ml.api.auger.hub.experiment_session import AugerExperimentSessionApi
 
 MODEL_TYPES = ['classification', 'regression', 'timeseries']
@@ -23,22 +23,22 @@ class AugerExperimentApi(AugerBaseApi):
         experiment_session_api.run()
         return experimeny_session_properties.get('id')
 
-    def create(self, data_source_name):
-        assert data_source_name is not None, \
-            'Data Source Name is required to create Experiment'
+    def create(self, data_set_name):
+        assert data_set_name is not None, \
+            'Data Set Name is required to create Experiment'
 
-        data_source_api = AugerDataSourceApi(
-            self.parent_api, data_source_name)
-        data_source_properties = data_source_api.properties()
+        data_set_api = AugerDataSetApi(
+            self.parent_api, data_set_name)
+        data_set_properties = data_set_api.properties()
 
         if not self.object_name:
             self.object_name = self._get_uniq_object_name(
-                data_source_name, '-experiment')
+                data_set_name, '-experiment')
 
         return self._call_create({
             'name': self.object_name,
             'project_id': self.parent_api.object_id,
-            'data_path': data_source_properties.get('url')})
+            'data_path': data_set_properties.get('url')})
 
     def get_experiment_settings(self):
         config = self.hub_client.get_config('config')
@@ -76,11 +76,11 @@ class AugerExperimentApi(AugerBaseApi):
                     'f1_macro' if model_type == 'classification' else 'r2')
         }
 
-        data_source_id = self.properties()['project_file_id']
-        data_source_api = AugerDataSourceApi(
-            self.parent_api, None, data_source_id)
-        data_source_properties = data_source_api.properties()
-        stats = data_source_properties['statistics']
+        data_set_id = self.properties()['project_file_id']
+        data_set_api = AugerDataSetApi(
+            self.parent_api, None, data_set_id)
+        data_set_properties = data_set_api.properties()
+        stats = data_set_properties['statistics']
 
         self._fill_data_options(options, stats, target, exclude)
 
