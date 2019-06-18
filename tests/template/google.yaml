@@ -1,0 +1,7 @@
+project: automl-test-237311
+
+experiment:
+  metric: MINIMIZE_MAE
+
+cluster:
+  region: us-central1

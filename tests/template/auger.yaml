@@ -1,10 +1,9 @@
 ---
-
-# Name of the Project on Auger Cloud
+# Name of the project on Auger Cloud
 project:
-# Name of the DataSet on Auger Cloud
+# Data Source Name on the Auger Cloud
 dataset:
-# Experiment settings
+
 experiment:
   # Latest experiment name
   name:
@@ -33,7 +32,6 @@ experiment:
   metric:
 
 cluster:
-  # Type could be standard or high_memory
   type: standard
   min_nodes: 2
   max_nodes: 2

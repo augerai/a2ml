@@ -11,3 +11,7 @@ class Template(object):
                 module_path, '../template/%s.yaml' % provider))
             dest_config = os.path.join(experiment_path, '%s.yaml' % provider)
             shutil.copy2(src_config, dest_config)
+        src_config = os.path.abspath(os.path.join(
+            module_path, '../template/get_data.template'))
+        dest_config = os.path.join(experiment_path, 'get_data.template')
+        shutil.copy2(src_config,dest_config)
