@@ -51,3 +51,9 @@ class AugerProjectApi(AugerBaseApi):
                 'kubernetes_stack': cluster_settings.get('kubernetes_stack')})
 
         return self.wait_for_status(['undeployed', 'deployed', 'deploying'])
+
+    def stop(self):
+        if self.status() != 'undeployed':
+            self.hub_client.call_hub_api(
+                'undeploy_project', {'id': self.object_id})
+            return self.wait_for_status(['running', 'undeploying'])

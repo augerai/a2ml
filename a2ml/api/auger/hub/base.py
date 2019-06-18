@@ -44,13 +44,16 @@ class AugerBaseApi(object):
 
         return None
 
+    def status(self):
+        self._ensure_object_id()
+        return self.hub_client.get_status(
+            self.object_in_camel_case, self.object_id).\
+                get('data').get('status')
+
     def wait_for_status(self, progress):
         return self.hub_client.wait_for_object_status(
-            method='get_%s' % self.api_request_path,
-            params={'id': self.object_id},
-            progress=progress,
+            get_status=self.status, progress=progress,
             object_readable_name=self._get_readable_name(),
-            status_name=self._get_status_name(),
             post_check_status=self._post_check_status,
             log_status=self._log_status)
 
@@ -72,7 +75,7 @@ class AugerBaseApi(object):
             '%s %s is %s...' % \
             (self._get_readable_name(), self._get_status_name(), status))
 
-    def _post_check_status(self, status, result):
+    def _post_check_status(self, status):
         self._log_status(status)
 
     def _call_create(self, params=None, progress=None):
@@ -117,8 +120,12 @@ class AugerBaseApi(object):
         def to_snake_case(name):
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
             return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+        def to_camel_case(name):
+            return ''.join(x.capitalize() for x in name.split('_'))
         def get_api_request_path(name):
             return '_'.join(to_snake_case(name).split('_')[1:-1])
 
         self.api_request_path = get_api_request_path(
             patch_name if patch_name else type(self).__name__)
+        self.object_in_camel_case = to_camel_case(
+            self.api_request_path)
