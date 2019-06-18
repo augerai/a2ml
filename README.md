@@ -135,39 +135,6 @@ From that client object you will execute the various PREDIT pipeline methods
     result = a2ml.import_data()
 ```
 
-## Implementing Your Own A2ML Classes
-
-### The Base Pattern
-The following class sets pattern for all implementations of A2ML.
-```
-class A2ML(object):
-    def __init__(self, ctx):
-        super(A2ML, self).__init__()
-        self.ctx = ctx
-        self.runner = ProviderRunner(ctx)
-
-    def import_data(self):
-        self.runner.execute('import_data')
-
-    def train(self):
-        self.runner.execute('train')
-
-    def evaluate(self):
-        self.runner.execute('evaluate')
-
-    def deploy(self, model_id, locally=False):
-        self.runner.execute('deploy', model_id, locally)
-
-    def predict(self, filename, model_id, threshold=None, locally=False):
-        self.runner.execute('predict', filename, model_id, threshold, locally)
-
-    def review(self):
-        self.runner.execute('review')
-```
-Each implementation should subclass A2ML and provide implementations of the the PREDIT
-methods.
-
-
 ## Development Setup
 
 We strongly recommend to install Python virtual environment:
@@ -194,8 +161,8 @@ Running tests and getting test coverage:
 $ pytest pytest --cov='a2ml' --cov-report html tests/  
 ```
 
-## A2ML Classes
-The A2ML Model class in A2ML.PY abstracts out the PREDICT (ICTEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
+## Implementing A2ML for Another AutoML Provider
+The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
 
 ```
   class AnotherAutoMLModel(Model):  

@@ -12,7 +12,7 @@ class TestAzureA2ML():
     def test_import_data(self):
         print("Current directory: {}".format(os.getcwd()))
         self.ctx = Context()
-        print("Name of model: {}".format(self.ctx.config['config'].name))
+        print("Project name: {}".format(self.ctx.config['config'].name))
         a2ml=AzureA2ML(self.ctx)
         a2ml.import_data()
     
