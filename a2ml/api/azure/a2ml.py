@@ -26,9 +26,9 @@ class AzureA2ML(object):
         self.metric = ctx.config['azure'].get('experiment/metric','spearman_correlation')
         self.cross_validation_folds = ctx.config['azure'].get('experiment/cross_validation_folds',5)
         self.max_total_time = ctx.config['azure'].get('experiment/max_total_time',60)
-        self.max_eval_time = ctx.config['azure'].get('experiment/max_eval_time',10)
+        self.iteration_timeout_minutes = ctx.config['azure'].get('experiment/iteration_timeout_minutes',10)
         self.max_n_trials = ctx.config['azure'].get('experiment/max_n_trials',10)
-        self.use_ensemble = ctx.config['azure'].get('experiment/use_ensemble',10)
+        self.use_ensemble = ctx.config['azure'].get('experiment/use_ensemble',False)
         # per provider compute settings
         self.subscription_id = ctx.config['azure'].get('subscription_id',os.environ.get("AZURE_SUBSCRIPTION_ID"))
         self.workspace = ctx.config['azure'].get('workspace',self.name+'_ws')
@@ -89,11 +89,9 @@ class AzureA2ML(object):
 
     def train(self):   
         automl_settings = {
-           "iteration_timeout_minutes" : self.max_eval_time,
+            "iteration_timeout_minutes" : self.iteration_timeout_minutes,
             "iterations" : self.max_n_trials,
-            "experiment_timeout_minutes": 60,
             "primary_metric" : self.metric,
-            "preprocess" : True,
             "verbosity" : logging.DEBUG,
             "n_cross_validations": self.cross_validation_folds,
             "enable_stack_ensemble": self.use_ensemble

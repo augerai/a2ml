@@ -5,11 +5,9 @@ experiment:
   max_n_trials: 10
   metric: spearman_correlation
 
-workspace: autoautoml
-resource_group: autoautoml
 cluster: 
   region: eastus2
-  name: a2ml
+  name: cpucluster
   min_nodes: 0
   max_nodes: 4
   type: STANDARD_D2_V2

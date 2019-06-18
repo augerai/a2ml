@@ -1,3 +1,4 @@
+import os
 import json
 import csv
 import sys
@@ -29,6 +30,7 @@ class GoogleA2ML(object):
         self.budget = ctx.config['config'].get('budget',None)
         self.operation_name = ctx.config['google'].get('operation_name',None)
         self.model_name = ctx.config['google'].get('model_name',None)
+        self.gsbucket = ctx.config['google'].get('gsbucket','gs://a2ml')
 
     def import_data(self):
         self.ctx.log('Google Import Data')
@@ -49,8 +51,15 @@ class GoogleA2ML(object):
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
         self.ctx.log('Dataset name: {}'.format(self.dataset_name))
 
+        if os.path.isfile(self.source):
+            print("Copying {} to {}".format(self.source,self.gsbucket))
+            cmd = "gsutil cp " + self.source + " "+ self.gsbucket 
+            result = os.system(cmd)
+            print("Result of local copy to Google Storage bucket: {}".format(result)) 
+            self.source = self.gsbucket + "/" + os.path.basename(self.source)
+
         if self.source.startswith('bq'):
-            input_config = {"bigquery_source": {"input_uri": source}}
+            input_config = {"bigquery_source": {"input_uri": self.source}}
         else:
             # Get the multiple Google Cloud Storage URIs.
             input_uris = self.source.split(",")
@@ -104,7 +113,7 @@ class GoogleA2ML(object):
             'target_column_spec': self.column_specs[self.target],
             'input_feature_column_specs': [
                 self.column_specs[x] for x in self.feat_list],
-            'train_budget_milli_node_hours': self.budget,
+            'train_budget_milli_node_hours': self.budget*60*1000, # budget is in minutes, google wants "millihours", seriously?
             'optimization_objective': self.metric}}
         response = self.client.create_model(self.project_location,model_dict)
 

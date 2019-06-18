@@ -3,6 +3,7 @@ experiment:
   cross_validation_folds: 5
   max_total_time: 60
   max_n_trials: 10
+  iteration_timeout_minutes: 1
   metric: spearman_correlation
 
 cluster: 
