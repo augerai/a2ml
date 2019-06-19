@@ -20,7 +20,7 @@ class AugerBaseApi(object):
         params = {} if params is None else params
         if self.parent_api:
             api_request_path = self.parent_api.api_request_path
-            params['%s_id' % api_request_path] = self.parent_api.object_id
+            params['%s_id' % api_request_path] = self.parent_api.oid
         if self.object_name:
             params['name'] = self.object_name
         return self.hub_client.request_list(
