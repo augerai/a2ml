@@ -99,7 +99,6 @@ class AugerExperimentApi(AugerBaseApi):
                     ' to build time series model'
                     ' (experiment/time_series option).')
 
-        # print(json.dumps(options, indent = 2))
         return {'evaluation_options': options}, model_type
 
     def _fill_data_options(self, options, stats, target, exclude):

@@ -36,10 +36,10 @@ class AugerPipelineFileApi(AugerBaseApi):
         return 's3_model_path_status'
 
     def _log_status(self, status):
-        if self.hub_client.ctx is None:
+        if self.hub_client.ctx is None or status is None:
             return
         message = {
             'not_requested': 'Starting to buid model for download...',
             'pending': 'Buiding model for download...',
             'success': 'Model is ready for download...'}
-        self.hub_client.ctx.log(message.get(status, ''))
+        self.hub_client.ctx.log(message.get(status, status))

@@ -45,8 +45,15 @@ class AugerBaseApi(object):
         return None
 
     def status(self):
-        return self.hub_client.get_status(
-            self.object_in_camel_case, self.oid).get('data').get('status')
+        supported_status = ["Cluster", "ClusterTask", "Component",
+            "ExperimentSession", "Organization", "Pipeline", "Project",
+            "ProjectFile", "SimilarTrialsRequest", "Subscription"]
+        if self.object_in_camel_case not in supported_status:
+            return self.properties().get(self._get_status_name())
+        else:
+            return self.hub_client.get_status(
+                self.object_in_camel_case, self.oid).\
+                get('data').get(self._get_status_name())
 
     def wait_for_status(self, progress):
         return self.hub_client.wait_for_object_status(
@@ -97,8 +104,8 @@ class AugerBaseApi(object):
         if object_properties:
             self.object_id = object_properties.get('id')
             if progress:
-                object_properties = self.wait_for_status(progress)
-        return object_properties
+                self.wait_for_status(progress)
+        return self.properties()
 
     def _ensure_object_id(self):
         if self.object_id is None:
