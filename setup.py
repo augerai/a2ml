@@ -11,7 +11,7 @@ extras = {
     'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock'],
     'azure': ['lightgbm<=2.2.1,>=2.0.11','scipy<=1.1.0,>=1.0.0',
         'numpy<=1.16.2,>=1.11.0','azureml','azureml.core','azureml.train',
-        'azureml.train.automl','azure.batch','azure.mgmt.storage','azure.storage','azure.storage.file'],
+        'azureml.train.automl'],
     'google': ['google-cloud-automl']
 }
 

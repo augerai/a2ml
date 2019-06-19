@@ -28,8 +28,7 @@ a2ml new test_appp
 ```
 ### Configuring Your A2ML Project
 
-Before you use the Python API or the command line interface for the specific PREDIT pipeline steps you will need to configure your particular project (although this can 
-and probably should be after the "new" command above). This includes both general options that apply to all AutoML providers and provider specific options in separate YAML files.  
+Before you use the Python API or the command line interface for the specific PREDIT pipeline steps you will need to configure your particular project. This includes both general options that apply to all vendors and vendor specific options in separate YAML files.  
 
 After a new A2ML application is created, application configuration for all providers are stored in CONFIG.YAML. The options available include:
 * name - the name of the project
@@ -60,16 +59,17 @@ budget: 3600
 #### GOOGLE.YAML Configuration
 Here is an example specific configuration file (google.yaml) for Google AutoML for this project:
 ```
-project: automl-test-237311 # the project name on the Google infrastructure
-experiment:
-  metric: MINIMIZE_MAE # how to score accuracy
-cluster:
-  region: us-central1 # what's the compute region (little else can be configured on Google now)
-gsbucket: gs://a2ml  # location of source data on Google Cloud infrastrure
+region: us-central1
+metric: MINIMIZE_MAE
+project: automl-test-237311
+dataset_id: TBL1889796605356277760
+operation_id: TBL2145477039279308800
+operation_name: projects/291533092938/locations/us-central1/operations/TBL4473943599746121728
+model_name: projects/291533092938/locations/us-central1/models/TBL1517370026795991040
 ```
 
 #### AUGER.YAML
-Here's an example configuration file for Auger.AI 
+Here's an example configuration file for Auger.AI
 ``` auger.yaml
 project: test_app
 dataset: some_test_data
@@ -89,32 +89,9 @@ cluster:
   stack_type: experimental
 ```
 
-#### AZURE.YAML
-
-Below is a sample Azure configuration file for this same project.
-
-```
-experiment:
-  cross_validation_folds: 5
-  max_total_time: 60
-  max_n_trials: 10
-  iteration_timeout_minutes: 1
-  metric: spearman_correlation
-
-cluster: 
-  region: eastus2
-  name: a2ml
-  min_nodes: 0
-  max_nodes: 4
-  type: STANDARD_D2_V2
-
-workspace: autoautoml
-resource_group: autoautoml
-```
-
 Once you project is configured with these YAML files you can skip ahead to the 
-[Using the A2ML API](#using-the-a2ml-api) section if you want to start using the
-A2ML Python API instead of the CLIcd . 
+[Using the A2ML API](#Using_the_A2ML_API) section if you want to start using the
+A2ML Python API. 
 
 ### The A2ML CLI Commands Available
 Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.
@@ -134,6 +111,8 @@ Commands:
 
 To get detailed information on available options for each command, please run:
 
+```
+$ a2ml command --help
 ```
 
 ## Using the A2ML API
