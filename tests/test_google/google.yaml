@@ -1,0 +1,10 @@
+project: automl-test-237311
+experiment:
+  metric: MINIMIZE_MAE
+cluster:
+  region: us-central1
+gsbucket: gs://a2ml
+
+dataset_id: TBL3900706615535337472
+operation_name: projects/291533092938/locations/us-central1/operations/TBL3503910461257023488
+

@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 import azureml.dataprep as dprep
+from azure.storage.file import FileService
+from azure.storage.file import ContentSettings
 
 from a2ml.api import a2ml
 class AzureA2ML(object):  
@@ -33,6 +35,8 @@ class AzureA2ML(object):
         self.subscription_id = ctx.config['azure'].get('subscription_id',os.environ.get("AZURE_SUBSCRIPTION_ID"))
         self.workspace = ctx.config['azure'].get('workspace',self.name+'_ws')
         self.resource_group = ctx.config['azure'].get('resource_group',self.name+'_resources')
+        self.account_name = ctx.config['azure'].get('account_name',None)
+        self.account_key = ctx.config['azure'].get('account_key',None)
         # cluster specific options
         self.compute_cluster = ctx.config['azure'].get('cluster/name','cpucluster')
         self.compute_region = ctx.config['azure'].get('cluster/region','eastus2')
@@ -61,6 +65,16 @@ class AzureA2ML(object):
             compute_target = ComputeTarget.create(self.workspace, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
+    def upload_file(self,source_file):
+        file_service = FileService(account_name=self.account_name,account_key=self.account_key)
+        basename=os.path.basename(source_file)
+        file_service.create_file_from_path(
+            share_name='a2ml',
+            directory_name=None, # We want to create this blob in the root directory, so we specify None for the directory_name
+            file_name=basename,
+            local_file_path=source_file,
+            content_settings=ContentSettings(content_type='text/csv'))
+
     def import_data(self):
         self.exp = Experiment(workspace=self.ws, name=self.name)
         self.project_folder = './project'
@@ -73,7 +87,8 @@ class AzureA2ML(object):
         output['Project Directory'] = self.project_folder
         pd.set_option('display.max_colwidth', -1)
         pd.DataFrame(data=output, index=['']).T
-
+        self.upload_file(self.source)
+    
     def generate_data_script(self):
         print("Current working directory: {}".format(os.getcwd()))
         template = open("get_data.template","r")
@@ -94,7 +109,8 @@ class AzureA2ML(object):
             "primary_metric" : self.metric,
             "verbosity" : logging.DEBUG,
             "n_cross_validations": self.cross_validation_folds,
-            "enable_stack_ensemble": self.use_ensemble
+            "enable_stack_ensemble": self.use_ensemble,
+            "experiment_timeout_minutes": self.budget # budget from config.yaml in minutes
         }
         self.data_script = "get_data.py"
         self.generate_data_script()

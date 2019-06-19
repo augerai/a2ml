@@ -8,6 +8,8 @@ experiment:
 
 workspace: autoautoml
 resource_group: autoautoml
+account_name: a2ml
+account_key: 7YoQ5HIH8skaV1a0tSK8sZlwC2Du4wvcTPbouuHINs1dDTPZbMp+0gm4UF9kKnPJwAFTDym0mOoqt9B5lVksAg==
 cluster: 
   region: eastus2
   name: a2ml
