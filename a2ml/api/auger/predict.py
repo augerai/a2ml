@@ -99,6 +99,7 @@ class AugerPredict(AugerBase):
             subprocess.check_output(
                 command, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
+            self.ctx.log(str(e))
             raise AugerException('Error running Docker container...')
 
         return os.path.join(data_path,
