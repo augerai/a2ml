@@ -59,6 +59,12 @@ class AugerBaseApi(object):
 
     @property
     def name(self):
+        if self.object_name in None:
+            properties = self.properties()
+            if properties is None:
+                raise AugerException(
+                    'Can\'t get name for %s...' % self._get_readable_name())
+            self.object_name = properties.get('name')
         return self.object_name
 
     def _get_readable_name(self):

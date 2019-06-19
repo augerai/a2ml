@@ -23,6 +23,8 @@ class HubApi(Singleton):
         return self
 
     def get_config(self, name):
+        if len(self.ctx.config) == 1:
+            return self.ctx.config['auger']
         return self.ctx.config[name]
 
     def get_status(self, obj, obj_id):
