@@ -14,6 +14,7 @@ class AugerExperimentApi(AugerBaseApi):
         super(AugerExperimentApi, self).__init__(
             project_api, experiment_name, experiment_id)
         assert project_api is not None, 'Project must be set for Experiment'
+        self._set_api_request_path('AugerExperimentApi')
 
     def run(self):
         experiment_session_api = \

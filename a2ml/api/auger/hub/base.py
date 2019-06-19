@@ -33,8 +33,8 @@ class AugerBaseApi(object):
 
         if self.object_name is None:
             raise AugerException(
-                'No name or id was specified'
-                ' to get %s properties...' % self._get_readable_name())
+                'No name or id was specified for %s' % \
+                self._get_readable_name())
 
         alt_name = self.object_name.replace('_', '-')
         for item in iter(self.list()):
@@ -45,10 +45,8 @@ class AugerBaseApi(object):
         return None
 
     def status(self):
-        self._ensure_object_id()
         return self.hub_client.get_status(
-            self.object_in_camel_case, self.object_id).\
-                get('data').get('status')
+            self.object_in_camel_case, self.oid).get('data').get('status')
 
     def wait_for_status(self, progress):
         return self.hub_client.wait_for_object_status(
@@ -59,13 +57,22 @@ class AugerBaseApi(object):
 
     @property
     def name(self):
-        if self.object_name in None:
+        if self.object_name is None:
             properties = self.properties()
             if properties is None:
                 raise AugerException(
-                    'Can\'t get name for %s...' % self._get_readable_name())
+                    'Can\'t find name for remote %s: %s...' % \
+                    (self._get_readable_name(), self.object_id))
             self.object_name = properties.get('name')
         return self.object_name
+
+    @property
+    def oid(self):
+        return self._ensure_object_id()
+
+    @property
+    def is_exists(self):
+        return self.properties() != None
 
     def _get_readable_name(self):
         s = self.api_request_path
@@ -95,11 +102,12 @@ class AugerBaseApi(object):
 
     def _ensure_object_id(self):
         if self.object_id is None:
-            obj_properties = self.properties()
-            if obj_properties is not None:
-                self.object_id = obj_properties.get('id')
+            properties = self.properties()
+            if properties is not None:
+                self.object_id = properties.get('id')
             else:
-                raise AugerException('Can\'t find id for %s' % self.object_name)
+                raise AugerException('Can\'t find remote %s: %s...' % \
+                    (self._get_readable_name(), self.object_name))
         return self.object_id
 
     def _get_uniq_object_name(self, prefix, suffix):

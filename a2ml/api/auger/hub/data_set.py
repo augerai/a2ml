@@ -19,8 +19,6 @@ class AugerDataSetApi(AugerProjectFileApi):
         data_set_name=None, data_set_id=None):
         super(AugerDataSetApi, self).__init__(
             project_api, data_set_name, data_set_id)
-        # patch request path
-        self._set_api_request_path('AugerProjectFileApi')
 
     def create(self, data_source_file, data_set_name=None):
         data_source_file, local_data_source = \
@@ -49,7 +47,7 @@ class AugerDataSetApi(AugerProjectFileApi):
 
     def _get_readable_name(self):
         # patch readable name
-        return 'Data Set'
+        return 'DataSet'
 
     @staticmethod
     def verify(data_source_file):

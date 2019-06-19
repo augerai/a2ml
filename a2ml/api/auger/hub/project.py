@@ -10,6 +10,7 @@ class AugerProjectApi(AugerBaseApi):
         super(AugerProjectApi, self).__init__(
             org_api, project_name, project_id)
         assert org_api is not None, 'Organization must be set for Project'
+        self._set_api_request_path('AugerProjectApi')
 
     def is_running(self):
         return self.properties().get('status') == 'running'
@@ -19,8 +20,7 @@ class AugerProjectApi(AugerBaseApi):
             'name': self.object_name, 'organization_id': self.parent_api.object_id})
 
     def delete(self):
-        self._ensure_object_id()
-        self.hub_client.call_hub_api('delete_project', {'id': self.object_id})
+        self.hub_client.call_hub_api('delete_project', {'id': self.oid})
 
     def start(self):
         self._ensure_object_id()
@@ -29,8 +29,9 @@ class AugerProjectApi(AugerBaseApi):
         status = project_properties.get('status')
         if status == 'running':
             return project_properties
-        if status in ['deployed', 'deploying']:
-            return self.wait_for_status(['deployed', 'deploying'])
+        project_status = ['deployed', 'deploying']
+        if status in project_status:
+            return self.wait_for_status(project_status)
 
         cluster_id = project_properties.get('cluster_id')
         cluster_api = AugerClusterApi(self, cluster_id)
