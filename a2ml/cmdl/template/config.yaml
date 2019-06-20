@@ -9,3 +9,5 @@ exclude:
 target:
 # Model type: classification|regression|timeseries
 model_type: classification
+# overall experiment time budget in minutes (default of 1 hour)
+budget: 60

@@ -1,9 +1,0 @@
-project: automl-test-237311
-
-experiment:
-  metric: MINIMIZE_MAE
-
-cluster:
-  region: us-central1
-dataset_id: TBL6792580526260617216
-operation_name: projects/291533092938/locations/us-central1/operations/TBL4026328018032001024

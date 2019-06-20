@@ -1,3 +1,4 @@
 region: us-central1
 metric: MINIMIZE_MAE
 project: automl-test-237311
+gsbucket: gs://a2ml
