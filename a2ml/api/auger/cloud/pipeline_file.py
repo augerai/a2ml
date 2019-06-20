@@ -2,18 +2,16 @@ import os
 import urllib.parse
 import urllib.request
 
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.prediction import AugerPredictionApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerPipelineFileApi(AugerBaseApi):
     """Auger Pipeline File API."""
 
-    def __init__(
-        self, experiment_api, pipeline_file_id=None):
+    def __init__(self, ctx, experiment_api, pipeline_file_id=None):
         super(AugerPipelineFileApi, self).__init__(
-            experiment_api, None, pipeline_file_id)
+            ctx, experiment_api, None, pipeline_file_id)
 
     def create(self, trial_id):
         return self._call_create({'trial_id': trial_id},
@@ -36,10 +34,10 @@ class AugerPipelineFileApi(AugerBaseApi):
         return 's3_model_path_status'
 
     def _log_status(self, status):
-        if self.rest_api.ctx is None or status is None:
+        if status is None:
             return
         message = {
             'not_requested': 'Starting to buid model for download...',
             'pending': 'Buiding model for download...',
             'success': 'Model is ready for download...'}
-        self.rest_api.ctx.log(message.get(status, status))
+        self.ctx.log(message.get(status, status))

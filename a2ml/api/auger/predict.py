@@ -5,10 +5,10 @@ from zipfile import ZipFile
 
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.deploy import AugerDeploy
-from a2ml.api.auger.hub.cluster import AugerClusterApi
-from a2ml.api.auger.hub.pipeline import AugerPipelineApi
-from a2ml.api.auger.hub.utils.dataframe import DataFrame
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.cluster import AugerClusterApi
+from a2ml.api.auger.cloud.pipeline import AugerPipelineApi
+from a2ml.api.auger.cloud.utils.dataframe import DataFrame
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 class AugerPredict(AugerBase):
     """Predict using deployed Auger Pipeline."""
@@ -27,15 +27,15 @@ class AugerPredict(AugerBase):
         if locally:
             predicted = self._predict_locally(filename, model_id, threshold)
         else:
-            predicted = self._predict_on_hub(filename, model_id, threshold)
+            predicted = self._predict_on_cloud(filename, model_id, threshold)
 
         self.ctx.log('Predictions stored in %s' % predicted)
 
-    def _predict_on_hub(self, filename, model_id, threshold=None):
+    def _predict_on_cloud(self, filename, model_id, threshold=None):
         target = self.ctx.config['config'].get('target', None)
         df = DataFrame.load(filename, target)
 
-        pipeline_api = AugerPipelineApi(None, model_id)
+        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
         predictions = pipeline_api.predict(
             df.values.tolist(), df.columns.get_values().tolist(), threshold)
 
@@ -76,7 +76,7 @@ class AugerPredict(AugerBase):
         return model_path, model_existed
 
     def _docker_run_predict(self, filename, threshold, model_path):
-        cluster_settings = AugerClusterApi.get_cluster_settings()
+        cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)
         docker_tag = cluster_settings.get('kubernetes_stack')
         result_file = os.path.basename(filename)
         data_path = os.path.dirname(filename)

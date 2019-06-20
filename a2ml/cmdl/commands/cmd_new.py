@@ -6,7 +6,7 @@ from a2ml.api.auger.config import AugerConfig
 from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
-from a2ml.api.auger.hub.data_set import AugerDataSetApi
+from a2ml.api.auger.cloud.data_set import AugerDataSetApi
 from a2ml.api.auger.credentials import Credentials
 
 

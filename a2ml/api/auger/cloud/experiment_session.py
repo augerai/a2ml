@@ -1,14 +1,14 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.trial import AugerTrialApi
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.trial import AugerTrialApi
 
 
 class AugerExperimentSessionApi(AugerBaseApi):
     """Auger Experiment Api."""
 
-    def __init__(self, experiment_api,
+    def __init__(self, ctx, experiment_api,
         session_name=None, session_id=None):
         super(AugerExperimentSessionApi, self).__init__(
-            experiment_api, session_name, session_id)
+            ctx, experiment_api, session_name, session_id)
 
     def list(self, params=None):
         params = {} if params is None else params
@@ -43,7 +43,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
             'model_type': model_type})
 
     def get_leaderboard(self):
-        trial_api = AugerTrialApi(self)
+        trial_api = AugerTrialApi(self.ctx, self)
         leaderboard, score_name = [], None
         for item in iter(trial_api.list()):
             score_name = item.get('score_name')

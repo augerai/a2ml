@@ -1,6 +1,6 @@
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.data_set import AugerDataSetApi
 from a2ml.api.auger.config import AugerConfig
+from a2ml.api.auger.cloud.data_set import AugerDataSetApi
 
 class AugerImport(AugerBase):
     """Import data into Auger."""
@@ -20,15 +20,15 @@ class AugerImport(AugerBase):
 
         self.start_project()
 
-        data_set_api = AugerDataSetApi(self.project_api)
+        data_set_api = AugerDataSetApi(self.ctx, self.project_api)
         data_set_api.create(file_to_upload)
         AugerConfig(self.ctx).set_data_set(data_set_api.object_name)
 
         self.ctx.log(
-            'Created Data Set %s on Auger Cloud.' % \
+            'Created DataSet %s on Auger Cloud.' % \
              data_set_api.object_name)
         self.ctx.log(
-            'Data Set name stored in auger.yaml/dataset')
+            'DataSet name stored in auger.yaml/dataset')
 
     def _get_source_file(self):
         file_to_upload = self.ctx.config['config'].get('source', None)
