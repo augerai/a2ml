@@ -3,7 +3,7 @@ from a2ml.api.auger.hub.trial import AugerTrialApi
 
 
 class AugerExperimentSessionApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Experiment Api."""
+    """Auger Experiment Api."""
 
     def __init__(self, experiment_api,
         session_name=None, session_id=None):
@@ -16,7 +16,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
         return super().list(params)
 
     def run(self):
-        return self.hub_client.call_hub_api(
+        return self.rest_api.call(
             'update_experiment_session',
             {'id': self.object_id, 'status': 'preprocess'})
         # self.wait_for_status(['waiting', 'preprocess', 'started'])
@@ -25,7 +25,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
         try:
             status = self.status()
             if status in ['waiting', 'preprocess', 'started']:
-                self.hub_client.call_hub_api(
+                self.rest_api.call(
                     'update_experiment_session',
                     {'id': self.object_id, 'status': 'interrupted'})
                 return True

@@ -10,11 +10,11 @@ from a2ml.api.auger.hub.utils.exception import AugerException
 REQUEST_LIMIT = 100
 STATE_POLL_INTERVAL = 10
 
-class HubApi(Singleton):
-    """Auger Cloud Api call wrapper."""
+class RestApi(Singleton):
+    """Warapper around Auger Cloud Rest Api."""
 
     def __init__(self):
-        super(HubApi, self).__init__()
+        super(RestApi, self).__init__()
 
     def setup(self, ctx, url, token):
         self.hub_client = HubApiClient(hub_app_url=url, token=token)
@@ -30,7 +30,7 @@ class HubApi(Singleton):
     def get_status(self, obj, obj_id):
         return self.hub_client.get_status(object=obj, id=obj_id)
 
-    def call_hub_api_ex(self, method, params={}):
+    def call_ex(self, method, params={}):
         params = params.copy()
 
         if params.get('id') and not method.startswith('create_'):
@@ -40,8 +40,8 @@ class HubApi(Singleton):
         else:
             return getattr(self.hub_client, method)(**params)
 
-    def call_hub_api(self, method, params={}):
-        result = self.call_hub_api_ex(method, params)
+    def call(self, method, params={}):
+        result = self.call_ex(method, params)
 
         if 'data' in result:
             return result['data']
@@ -55,7 +55,7 @@ class HubApi(Singleton):
         while limit > 0:
             p['offset'] = offset
             p['limit'] = limit
-            response = self.call_hub_api_ex('get_' + record_type, p)
+            response = self.call_ex('get_' + record_type, p)
             if not 'data' in response or not 'meta' in response:
                 raise AugerException("Read list of %s failed." % record_type)
 

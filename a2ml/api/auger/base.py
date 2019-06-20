@@ -1,4 +1,4 @@
-from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.rest_api import RestApi
 from a2ml.api.auger.credentials import Credentials
 from a2ml.api.auger.hub.project import AugerProjectApi
 from a2ml.api.auger.hub.cluster import AugerClusterApi
@@ -12,7 +12,7 @@ class AugerBase(object):
         super(AugerBase, self).__init__()
         self.ctx = ctx
         self.credentials = Credentials(ctx.config['auger']).load()
-        HubApi().setup(
+        RestApi().setup(
             self.ctx, self.credentials.api_url, self.credentials.token)
 
     def start_project(self):

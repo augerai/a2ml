@@ -7,7 +7,7 @@ from a2ml.api.auger.hub.experiment_session import AugerExperimentSessionApi
 MODEL_TYPES = ['classification', 'regression', 'timeseries']
 
 class AugerExperimentApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Experiment Api."""
+    """Auger Experiment Api."""
 
     def __init__(self, project_api,
         experiment_name=None, experiment_id=None):
@@ -42,8 +42,8 @@ class AugerExperimentApi(AugerBaseApi):
             'data_path': data_set_properties.get('url')})
 
     def get_experiment_settings(self):
-        config = self.hub_client.get_config('config')
-        auger_config = self.hub_client.get_config('auger')
+        config = self.rest_api.get_config('config')
+        auger_config = self.rest_api.get_config('auger')
 
         model_type = config.get('model_type', '')
         if not model_type in MODEL_TYPES:

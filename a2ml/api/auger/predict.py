@@ -4,7 +4,6 @@ import subprocess
 from zipfile import ZipFile
 
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.deploy import AugerDeploy
 from a2ml.api.auger.hub.cluster import AugerClusterApi
 from a2ml.api.auger.hub.pipeline import AugerPipelineApi

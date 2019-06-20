@@ -1,10 +1,10 @@
-from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.rest_api import RestApi
 from a2ml.api.auger.hub.base import AugerBaseApi
 from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerClusterApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Cluster."""
+    """Auger Cluster API."""
 
     def __init__(self, project_api, cluster_id=None):
         super(AugerClusterApi, self).__init__(
@@ -26,10 +26,10 @@ class AugerClusterApi(AugerBaseApi):
 
     @staticmethod
     def get_cluster_settings():
-        config = HubApi().get_config('auger')
+        config = RestApi().get_config('auger')
 
         default_stack = "stable"
-        if 'staging' in HubApi().api_url:
+        if 'staging' in RestApi().api_url:
             default_stack = 'experimental'
 
         kubernetes_stack = config.get('cluster/kubernetes_stack', None)

@@ -3,7 +3,7 @@ from a2ml.api.auger.hub.cluster import AugerClusterApi
 
 
 class AugerProjectApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Project."""
+    """Auger Project API."""
 
     def __init__(self, org_api,
         project_name=None, project_id=None):
@@ -18,9 +18,6 @@ class AugerProjectApi(AugerBaseApi):
     def create(self):
         return self._call_create({
             'name': self.object_name, 'organization_id': self.parent_api.object_id})
-
-    def delete(self):
-        self.hub_client.call_hub_api('delete_project', {'id': self.oid})
 
     def start(self):
         self._ensure_object_id()
@@ -41,11 +38,11 @@ class AugerProjectApi(AugerBaseApi):
                 cluster_api.create()
         else:
             cluster_settings = cluster_api.get_cluster_settings()
-            self.hub_client.call_hub_api('update_project', {
+            self.rest_api.call('update_project', {
                 'id': self.object_id,
                 'cluster_autoterminate_minutes':
                     cluster_settings.get('autoterminate_minutes')})
-            self.hub_client.call_hub_api('deploy_project', {
+            self.rest_api.call('deploy_project', {
                 'id': self.object_id,
                 'worker_type_id': cluster_settings.get('worker_type_id'),
                 'workers_count' : cluster_settings.get('workers_count'),
@@ -55,6 +52,6 @@ class AugerProjectApi(AugerBaseApi):
 
     def stop(self):
         if self.status() != 'undeployed':
-            self.hub_client.call_hub_api(
+            self.rest_api.call(
                 'undeploy_project', {'id': self.object_id})
             return self.wait_for_status(['running', 'undeploying'])

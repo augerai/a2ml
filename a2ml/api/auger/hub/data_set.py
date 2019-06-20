@@ -13,7 +13,7 @@ SUPPORTED_FORMATS = ['.csv', '.arff']
 
 
 class AugerDataSetApi(AugerProjectFileApi):
-    """Wrapper around ProjectFileApi for Auger Data Set."""
+    """Auger Data Set API."""
 
     def __init__(self, project_api=None,
         data_set_name=None, data_set_id=None):
@@ -90,7 +90,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             file_uploader_service.get('url'), upload_token)
 
         file_url = self._upload_file(file_to_upload, upload_url)
-        self.hub_client.ctx.log(
+        self.rest_api.ctx.log(
             'Uploaded local file to Auger Cloud file: %s' % file_url)
         return file_url
 
@@ -110,7 +110,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             (self.parent_api.object_name, shortuuid.uuid(),
              os.path.basename(file_to_upload))
 
-        res = self.hub_client.call_hub_api('create_project_file_url', {
+        res = self.rest_api.call('create_project_file_url', {
             'project_id': self.parent_api.object_id,
             'file_path': file_path})
         if res is None:

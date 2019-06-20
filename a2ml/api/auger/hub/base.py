@@ -1,10 +1,10 @@
 import re
-from a2ml.api.auger.hub.hub_api import HubApi
+from a2ml.api.auger.hub.rest_api import RestApi
 from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerBaseApi(object):
-    """Wrapper around HubApi for basic common calls."""
+    """Auger API base class implements common business object calls."""
 
     def __init__(
         self, parent_api,
@@ -13,7 +13,7 @@ class AugerBaseApi(object):
         self.parent_api = parent_api
         self.object_id = object_id
         self.object_name = object_name
-        self.hub_client = HubApi()
+        self.rest_api = RestApi()
         self._set_api_request_path()
 
     def list(self, params=None):
@@ -23,12 +23,12 @@ class AugerBaseApi(object):
             params['%s_id' % api_request_path] = self.parent_api.oid
         if self.object_name:
             params['name'] = self.object_name
-        return self.hub_client.request_list(
+        return self.rest_api.request_list(
             '%ss' % self.api_request_path, params)
 
     def properties(self):
         if self.object_id is not None:
-            return self.hub_client.call_hub_api(
+            return self.rest_api.call(
                 'get_%s' % self.api_request_path, {'id': self.object_id})
 
         if self.object_name is None:
@@ -51,16 +51,20 @@ class AugerBaseApi(object):
         if self.object_in_camel_case not in supported_status:
             return self.properties().get(self._get_status_name())
         else:
-            return self.hub_client.get_status(
+            return self.rest_api.get_status(
                 self.object_in_camel_case, self.oid).\
                 get('data').get(self._get_status_name())
 
     def wait_for_status(self, progress):
-        return self.hub_client.wait_for_object_status(
+        return self.rest_api.wait_for_object_status(
             get_status=self.status, progress=progress,
             object_readable_name=self._get_readable_name(),
             post_check_status=self._post_check_status,
             log_status=self._log_status)
+
+    def delete(self):
+        self.rest_api.call(
+            'delete_%s' % self.api_request_path, {'id': self.oid})
 
     @property
     def name(self):
@@ -89,9 +93,9 @@ class AugerBaseApi(object):
         return 'status'
 
     def _log_status(self, status):
-        if self.hub_client.ctx is None:
+        if self.rest_api.ctx is None:
             return
-        self.hub_client.ctx.log(
+        self.rest_api.ctx.log(
             '%s %s is %s...' % \
             (self._get_readable_name(), self._get_status_name(), status))
 
@@ -99,7 +103,7 @@ class AugerBaseApi(object):
         self._log_status(status)
 
     def _call_create(self, params=None, progress=None):
-        object_properties = self.hub_client.call_hub_api(
+        object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
         if object_properties:
             self.object_id = object_properties.get('id')

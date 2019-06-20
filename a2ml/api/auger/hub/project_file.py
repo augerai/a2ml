@@ -2,7 +2,7 @@ from a2ml.api.auger.hub.base import AugerBaseApi
 
 
 class AugerProjectFileApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger ProjectFile Api."""
+    """Auger Project File Api."""
 
     def __init__(self, project_api=None,
         project_file_name=None, project_file_id=None):
@@ -18,5 +18,5 @@ class AugerProjectFileApi(AugerBaseApi):
             'file_name': file_name, 'url': file_url}, ['processing'])
 
     def delete(self):
-        self.hub_client.call_hub_api(
+        self.rest_api.call(
             'delete_%s' % self.api_request_path, {'id': self.oid})
