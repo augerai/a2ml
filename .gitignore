@@ -23,7 +23,7 @@ coverage/*
 # Development artifacts
 /*.csv
 /*.log
-**/test_*/*
+/test_*/*
 **/aws-keys.yaml
 **/logs/*
 **/log/*

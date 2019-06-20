@@ -4,7 +4,6 @@ import subprocess
 from zipfile import ZipFile
 
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.deploy import AugerDeploy
 from a2ml.api.auger.hub.cluster import AugerClusterApi
 from a2ml.api.auger.hub.pipeline import AugerPipelineApi
@@ -77,7 +76,8 @@ class AugerPredict(AugerBase):
         return model_path, model_existed
 
     def _docker_run_predict(self, filename, threshold, model_path):
-        docker_tag = self._docker_pull_image()
+        cluster_settings = AugerClusterApi.get_cluster_settings()
+        docker_tag = cluster_settings.get('kubernetes_stack')
         result_file = os.path.basename(filename)
         data_path = os.path.dirname(filename)
 
@@ -103,16 +103,3 @@ class AugerPredict(AugerBase):
 
         return os.path.join(data_path,
             os.path.splitext(result_file)[0] + "_predicted.csv")
-
-    def _docker_pull_image(self):
-        cluster_settings = AugerClusterApi.get_cluster_settings()
-        docker_tag = cluster_settings.get('kubernetes_stack')
-
-        try:
-            subprocess.check_call(
-                'docker pull deeplearninc/auger-ml-worker:%s' % \
-                 docker_tag, shell=True)
-        except subprocess.CalledProcessError as e:
-            raise AugerException('Can\'t pull Docker container...')
-
-        return docker_tag

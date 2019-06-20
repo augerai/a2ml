@@ -4,7 +4,7 @@ from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerPipelineApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Pipeline."""
+    """Auger Pipeline API."""
 
     def __init__(
         self, experiment_api, pipeline_id=None):

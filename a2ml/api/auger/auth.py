@@ -1,6 +1,5 @@
 import sys
 
-from auger.hub_api_client import HubApiClient
 from a2ml.api.auger.hub.auth import AugerAuthApi
 from a2ml.api.auger.credentials import Credentials
 from a2ml.api.auger.hub.utils.exception import AugerException

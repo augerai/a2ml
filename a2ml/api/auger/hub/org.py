@@ -3,7 +3,7 @@ from a2ml.api.auger.hub.utils.exception import AugerException
 
 
 class AugerOrganizationApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Organization."""
+    """Auger Organization API."""
 
     def __init__(self, org_name=None, org_id=None):
         super(AugerOrganizationApi, self).__init__(

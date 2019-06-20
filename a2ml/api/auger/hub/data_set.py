@@ -13,14 +13,12 @@ SUPPORTED_FORMATS = ['.csv', '.arff']
 
 
 class AugerDataSetApi(AugerProjectFileApi):
-    """Wrapper around ProjectFileApi for Auger Data Set."""
+    """Auger Data Set API."""
 
     def __init__(self, project_api=None,
         data_set_name=None, data_set_id=None):
         super(AugerDataSetApi, self).__init__(
             project_api, data_set_name, data_set_id)
-        # patch request path
-        self._set_api_request_path('AugerProjectFileApi')
 
     def create(self, data_source_file, data_set_name=None):
         data_source_file, local_data_source = \
@@ -49,7 +47,7 @@ class AugerDataSetApi(AugerProjectFileApi):
 
     def _get_readable_name(self):
         # patch readable name
-        return 'Data Set'
+        return 'DataSet'
 
     @staticmethod
     def verify(data_source_file):
@@ -92,7 +90,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             file_uploader_service.get('url'), upload_token)
 
         file_url = self._upload_file(file_to_upload, upload_url)
-        self.hub_client.ctx.log(
+        self.rest_api.ctx.log(
             'Uploaded local file to Auger Cloud file: %s' % file_url)
         return file_url
 
@@ -112,7 +110,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             (self.parent_api.object_name, shortuuid.uuid(),
              os.path.basename(file_to_upload))
 
-        res = self.hub_client.call_hub_api('create_project_file_url', {
+        res = self.rest_api.call('create_project_file_url', {
             'project_id': self.parent_api.object_id,
             'file_path': file_path})
         if res is None:

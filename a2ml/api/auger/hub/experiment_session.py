@@ -3,7 +3,7 @@ from a2ml.api.auger.hub.trial import AugerTrialApi
 
 
 class AugerExperimentSessionApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Experiment Api."""
+    """Auger Experiment Api."""
 
     def __init__(self, experiment_api,
         session_name=None, session_id=None):
@@ -11,14 +11,28 @@ class AugerExperimentSessionApi(AugerBaseApi):
             experiment_api, session_name, session_id)
 
     def list(self, params=None):
-        return super().list({
-            'project_id': self.parent_api.parent_api.object_id})
+        params = {} if params is None else params
+        params['project_id'] = self.parent_api.parent_api.oid
+        return super().list(params)
 
     def run(self):
-        return self.hub_client.call_hub_api(
+        return self.rest_api.call(
             'update_experiment_session',
             {'id': self.object_id, 'status': 'preprocess'})
         # self.wait_for_status(['waiting', 'preprocess', 'started'])
+
+    def interrupt(self):
+        try:
+            status = self.status()
+            if status in ['waiting', 'preprocess', 'started']:
+                self.rest_api.call(
+                    'update_experiment_session',
+                    {'id': self.object_id, 'status': 'interrupted'})
+                return True
+        except Exception as e:
+            if 'Event \'interrupted\' cannot transition' not in str(e):
+                raise e
+        return False
 
     def create(self):
         evaluation_options, model_type = \
@@ -36,9 +50,9 @@ class AugerExperimentSessionApi(AugerBaseApi):
             leaderboard.append({
                 'model id': item.get('id'),
                 item.get('score_name'):\
-                    '{0:.2f}'.format(item.get('score_value')),
+                    '{0:.4f}'.format(item.get('score_value')),
                 'algorithm': item.get('hyperparameter').\
                     get('algorithm_name').split('.')[-1]})
-        if score_name:
-            leaderboard.sort(key=lambda t: t[score_name], reverse=False)
-        return leaderboard
+        # if score_name:
+        #     leaderboard.sort(key=lambda t: t[score_name], reverse=False)
+        return leaderboard[::-1]

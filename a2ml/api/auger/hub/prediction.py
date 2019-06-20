@@ -2,7 +2,7 @@ from a2ml.api.auger.hub.base import AugerBaseApi
 
 
 class AugerPredictionApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Trial."""
+    """Auger Trial API."""
 
     def __init__(
         self, pipeline_api,
