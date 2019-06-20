@@ -1,13 +1,13 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
+from a2ml.api.auger.cloud.base import AugerBaseApi
 
 
 class AugerProjectFileApi(AugerBaseApi):
     """Auger Project File Api."""
 
-    def __init__(self, project_api=None,
+    def __init__(self, ctx, project_api=None,
         project_file_name=None, project_file_id=None):
         super(AugerProjectFileApi, self).__init__(
-            project_api, project_file_name, project_file_id)
+            ctx, project_api, project_file_name, project_file_id)
         assert project_api is not None, 'Project must be set for Project File'
         self._set_api_request_path('AugerProjectFileApi')
 

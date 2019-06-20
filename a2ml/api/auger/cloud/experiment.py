@@ -1,24 +1,23 @@
-import json
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.utils.exception import AugerException
-from a2ml.api.auger.hub.data_set import AugerDataSetApi
-from a2ml.api.auger.hub.experiment_session import AugerExperimentSessionApi
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.data_set import AugerDataSetApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
+from a2ml.api.auger.cloud.experiment_session import AugerExperimentSessionApi
 
 MODEL_TYPES = ['classification', 'regression', 'timeseries']
 
 class AugerExperimentApi(AugerBaseApi):
     """Auger Experiment Api."""
 
-    def __init__(self, project_api,
+    def __init__(self, ctx, project_api,
         experiment_name=None, experiment_id=None):
         super(AugerExperimentApi, self).__init__(
-            project_api, experiment_name, experiment_id)
+            ctx, project_api, experiment_name, experiment_id)
         assert project_api is not None, 'Project must be set for Experiment'
         self._set_api_request_path('AugerExperimentApi')
 
     def run(self):
         experiment_session_api = \
-            AugerExperimentSessionApi(self)
+            AugerExperimentSessionApi(self.ctx, self)
         experimeny_session_properties = \
             experiment_session_api.create()
         experiment_session_api.run()
@@ -26,10 +25,10 @@ class AugerExperimentApi(AugerBaseApi):
 
     def create(self, data_set_name):
         assert data_set_name is not None, \
-            'Data Set Name is required to create Experiment'
+            'DataSet Name is required to create Experiment'
 
         data_set_api = AugerDataSetApi(
-            self.parent_api, data_set_name)
+            self.ctx, self.parent_api, data_set_name)
         data_set_properties = data_set_api.properties()
 
         if not self.object_name:
@@ -42,8 +41,8 @@ class AugerExperimentApi(AugerBaseApi):
             'data_path': data_set_properties.get('url')})
 
     def get_experiment_settings(self):
-        config = self.rest_api.get_config('config')
-        auger_config = self.rest_api.get_config('auger')
+        config = self.ctx.get_config('config')
+        auger_config = self.ctx.get_config('auger')
 
         model_type = config.get('model_type', '')
         if not model_type in MODEL_TYPES:
@@ -79,7 +78,7 @@ class AugerExperimentApi(AugerBaseApi):
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(
-            self.parent_api, None, data_set_id)
+            self.ctx, self.parent_api, None, data_set_id)
         data_set_properties = data_set_api.properties()
         stats = data_set_properties['statistics']
 

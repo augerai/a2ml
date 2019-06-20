@@ -1,20 +1,20 @@
 import re
-from a2ml.api.auger.hub.rest_api import RestApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerBaseApi(object):
     """Auger API base class implements common business object calls."""
 
     def __init__(
-        self, parent_api,
+        self, ctx, parent_api,
         object_name=None, object_id=None):
         super(AugerBaseApi, self).__init__()
         self.parent_api = parent_api
         self.object_id = object_id
         self.object_name = object_name
-        self.rest_api = RestApi()
+        self.rest_api = ctx.rest_api
         self._set_api_request_path()
+        self.ctx = ctx
 
     def list(self, params=None):
         params = {} if params is None else params
@@ -93,9 +93,7 @@ class AugerBaseApi(object):
         return 'status'
 
     def _log_status(self, status):
-        if self.rest_api.ctx is None:
-            return
-        self.rest_api.ctx.log(
+        self.ctx.log(
             '%s %s is %s...' % \
             (self._get_readable_name(), self._get_status_name(), status))
 

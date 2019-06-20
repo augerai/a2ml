@@ -1,15 +1,14 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.prediction import AugerPredictionApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.prediction import AugerPredictionApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerPipelineApi(AugerBaseApi):
     """Auger Pipeline API."""
 
-    def __init__(
-        self, experiment_api, pipeline_id=None):
+    def __init__(self, ctx, experiment_api, pipeline_id=None):
         super(AugerPipelineApi, self).__init__(
-            experiment_api, None, pipeline_id)
+            ctx, experiment_api, None, pipeline_id)
 
     def create(self, trial_id):
         return self._call_create({'trial_id': trial_id},
@@ -23,7 +22,7 @@ class AugerPipelineApi(AugerBaseApi):
             raise AugerException(
                 "Pipeline %s is not ready or has issues..." % self.object_id)
 
-        prediction_api = AugerPredictionApi(self)
+        prediction_api = AugerPredictionApi(self.ctx, self)
         prediction_properties = \
             prediction_api.create(records, features, threshold)
 

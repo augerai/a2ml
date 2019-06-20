@@ -1,8 +1,7 @@
-from a2ml.api.auger.hub.rest_api import RestApi
+from a2ml.api.auger.cloud.rest_api import RestApi
 from a2ml.api.auger.credentials import Credentials
-from a2ml.api.auger.hub.project import AugerProjectApi
-from a2ml.api.auger.hub.cluster import AugerClusterApi
-from a2ml.api.auger.hub.org import AugerOrganizationApi
+from a2ml.api.auger.cloud.project import AugerProjectApi
+from a2ml.api.auger.cloud.org import AugerOrganizationApi
 
 
 class AugerBase(object):
@@ -12,8 +11,8 @@ class AugerBase(object):
         super(AugerBase, self).__init__()
         self.ctx = ctx
         self.credentials = Credentials(ctx.config['auger']).load()
-        RestApi().setup(
-            self.ctx, self.credentials.api_url, self.credentials.token)
+        self.ctx.rest_api = RestApi(
+            self.credentials.api_url, self.credentials.token)
 
     def start_project(self):
         self._ensure_org_and_project()
@@ -29,7 +28,7 @@ class AugerBase(object):
             raise Exception(
                 'Please specify your organization...')
 
-        self.org_api = AugerOrganizationApi(org_name)
+        self.org_api = AugerOrganizationApi(self.ctx, org_name)
         org_properties = self.org_api.properties()
         if org_properties is None:
             raise Exception('Can\'t find organization %s' % org_name)
@@ -41,7 +40,7 @@ class AugerBase(object):
                 'Please specify your project in auger.yaml/project...')
 
         self.project_api = AugerProjectApi(
-            self.org_api, project_name)
+            self.ctx, self.org_api, project_name)
         project_properties = self.project_api.properties()
         if project_properties is None:
             self.ctx.log(

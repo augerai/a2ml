@@ -3,29 +3,19 @@ import sys
 import time
 
 from auger.hub_api_client import HubApiClient
-from a2ml.api.auger.hub.utils.singleton import Singleton
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 REQUEST_LIMIT = 100
 STATE_POLL_INTERVAL = 10
 
-class RestApi(Singleton):
+class RestApi(object):
     """Warapper around Auger Cloud Rest Api."""
 
-    def __init__(self):
+    def __init__(self, url, token):
         super(RestApi, self).__init__()
-
-    def setup(self, ctx, url, token):
         self.hub_client = HubApiClient(hub_app_url=url, token=token)
         self.api_url = url
-        self.ctx = ctx
-        return self
-
-    def get_config(self, name):
-        if len(self.ctx.config) == 1:
-            return self.ctx.config['auger']
-        return self.ctx.config[name]
 
     def get_status(self, obj, obj_id):
         return self.hub_client.get_status(object=obj, id=obj_id)
@@ -46,7 +36,7 @@ class RestApi(Singleton):
         if 'data' in result:
             return result['data']
 
-        raise AugerException("Call of HUB API method %s failed." % keys)
+        raise AugerException("Call of Auger API method %s failed." % keys)
 
     def request_list(self, record_type, params):
         offset = params.get('offset', 0)

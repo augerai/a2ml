@@ -18,7 +18,12 @@ class Context(object):
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
-        self.debug = self.config['config'].get('debug', False)
+        self.debug = self.get_config('config').get('debug', False)
+
+    def get_config(self, name):
+        if len(self.config) == 1:
+            return self.config['auger']
+        return self.config[name]
 
     def get_providers(self):
         providers = self.config['config'].get('providers', [])
