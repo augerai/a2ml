@@ -1,6 +1,8 @@
 import os
+import subprocess
 
 from a2ml.api.auger.base import AugerBase
+from a2ml.api.auger.hub.cluster import AugerClusterApi
 from a2ml.api.auger.hub.pipeline import AugerPipelineApi
 from a2ml.api.auger.hub.utils.exception import AugerException
 from a2ml.api.auger.hub.pipeline_file import AugerPipelineFileApi
@@ -48,9 +50,25 @@ class AugerDeploy(AugerBase):
         else:
             self.ctx.log('Downloaded model is %s' % model_name)
 
+        self.ctx.log('Pulling docker image required to predict')
+        self._docker_pull_image()
+
     @staticmethod
     def verify_local_model(model_id):
         model_path = os.path.abspath(
             os.path.join(os.getcwd(), 'models'))
         model_name = '%s/model-%s.zip' % (model_path, model_id)
         return os.path.isfile(model_name), model_path, model_name
+
+    def _docker_pull_image(self):
+        cluster_settings = AugerClusterApi.get_cluster_settings()
+        docker_tag = cluster_settings.get('kubernetes_stack')
+
+        try:
+            subprocess.check_call(
+                'docker pull deeplearninc/auger-ml-worker:%s' % \
+                 docker_tag, shell=True)
+        except subprocess.CalledProcessError as e:
+            raise AugerException('Can\'t pull Docker container...')
+
+        return docker_tag
