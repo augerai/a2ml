@@ -7,7 +7,7 @@ class AugerAuthApi(object):
     """Auger Authentication API."""
     def __init__(self, ctx):
         super(AugerAuthApi, self).__init__()
-        self.cxt = ctx
+        self.ctx = ctx
 
     def login(self, username, password, organisation, url):
         rest_api = RestApi(url, None)
