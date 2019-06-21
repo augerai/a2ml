@@ -8,7 +8,7 @@ class AugerAuth(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        self.credentials = Credentials(ctx.config['auger']).load()
+        self.credentials = Credentials(ctx).load()
 
     def login(self, username, password, organisation, url=None):
         try:

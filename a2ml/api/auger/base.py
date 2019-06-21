@@ -10,7 +10,7 @@ class AugerBase(object):
     def __init__(self, ctx):
         super(AugerBase, self).__init__()
         self.ctx = ctx
-        self.credentials = Credentials(ctx.config['auger']).load()
+        self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
             self.credentials.api_url, self.credentials.token)
 
