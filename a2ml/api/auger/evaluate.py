@@ -1,7 +1,7 @@
-from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.cloud.utils.exception import AugerException
-from a2ml.api.auger.cloud.experiment import AugerExperimentSessionApi
-from a2ml.api.utils.formatter import print_table
+from auger.api.base import AugerBase
+from auger.api.cloud.utils.exception import AugerException
+from auger.api.cloud.experiment import AugerExperimentSessionApi
+from auger.cli.utils.formatter import print_table
 
 
 class AugerEvaluate(AugerBase):
