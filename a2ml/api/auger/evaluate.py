@@ -27,7 +27,7 @@ class AugerEvaluate(AugerBase):
 
         status = experiment_session_api.properties().get('status')
         messages = {
-            'preprocess': 'Search is preprocessing data for traing...',
+            'preprocess': 'Search is preprocessing data for training...',
             'started': 'Search is in progress...',
             'completed': 'Search is completed.'
         }

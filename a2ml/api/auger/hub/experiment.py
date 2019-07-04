@@ -59,16 +59,17 @@ class AugerExperimentApi(AugerBaseApi):
             'binaryClassification': False,
             'labelEncodingFeatures':
                 auger_config.get('experiment/label_encoded', []),
+            # get these options from main config.yaml
             'crossValidationFolds':
-                auger_config.get('experiment/cross_validation_folds', 5),
+                config.get('experiment/cross_validation_folds', 5),
             'max_total_time_mins':
-                auger_config.get('experiment/max_total_time', 60),
+                config.get('experiment/max_total_time', 60),
             'max_eval_time_mins':
-                auger_config.get('experiment/max_eval_time', 1),
+                config.get('experiment/max_eval_time', 1),
             'max_n_trials':
-                auger_config.get('experiment/max_n_trials', 1000),
+                config.get('experiment/max_n_trials', 1000),
             'use_ensemble':
-                auger_config.get('experiment/use_ensemble', True),
+                config.get('experiment/use_ensemble', True),
             'classification':
                 True if model_type == 'classification' else False,
             'scoring':

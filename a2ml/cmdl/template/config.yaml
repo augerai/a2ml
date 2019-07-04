@@ -1,6 +1,6 @@
 ---
 # List of providers: auger, google, azure
-providers: auger
+providers: auger, azure, google
 # Local file name or remote url to the data source file
 source:
 # List of columns to be excluded from the training data
@@ -9,5 +9,14 @@ exclude:
 target:
 # Model type: classification|regression|timeseries
 model_type: classification
-# overall experiment time budget in minutes (default of 1 hour)
-budget: 60
+experiment: 
+  # Number of folds used for k-folds validation of individual trial
+  cross_validation_folds: 5
+  # Maximum time to run experiment in minutes
+  max_total_time: 60
+  # Maximum time to run individual trial in minutes
+  max_eval_time: 1
+  # Maximum trials to run to complete experiment
+  max_n_trials: 10
+  # Try to improve model performance by creating ensembles from the trial models
+  use_ensemble: true

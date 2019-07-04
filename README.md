@@ -118,21 +118,20 @@ $ a2ml command --help
 ## Using the A2ML API
 After you have configured the YAML files as shown above (whether from scratch 
 or using the templates provided by "a2ml new") you can use the API to 
-import, train, evaluate, deploy, predict and review (the PREDIT pipeline).
+import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured
 
 In your Python code, you will first need retrieve the configuration by referring
 to a Context() object.  Then you can create a client for the A2ML class. 
 From that client object you will execute the various PREDIT pipeline methods
-(starting from "import_data". Below is example Python code for this. 
+(starting from "import_data"). Below is example Python code for this. 
 
 ```
-    import os
-    from a2ml.api.a2ml import A2ML
-    from a2ml.api.google.a2ml import GoogleA2ML
-    from a2ml.api.utils.context import Context
-    self.ctx = Context()
-    a2ml = GoogleA2ML(self.ctx)
-    result = a2ml.import_data()
+import os
+from a2ml.api.a2ml import A2ML
+from a2ml.api.utils.context import Context
+ctx = Context()
+a2ml = A2ML(ctx)
+result = a2ml.import_data()
 ```
 
 ## Development Setup
