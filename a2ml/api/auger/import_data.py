@@ -1,5 +1,5 @@
-from auger.api.base import AugerBase
-from auger.api.config import AugerConfig
+from a2ml.api.auger.base import AugerBase
+from a2ml.api.auger.config import AugerConfig
 from auger.api.cloud.data_set import AugerDataSetApi
 
 

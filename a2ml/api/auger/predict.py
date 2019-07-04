@@ -3,8 +3,8 @@ import shutil
 import subprocess
 from zipfile import ZipFile
 
-from auger.api.base import AugerBase
-from auger.api.deploy import AugerDeploy
+from a2ml.api.auger.base import AugerBase
+from a2ml.api.auger.deploy import AugerDeploy
 from auger.api.cloud.cluster import AugerClusterApi
 from auger.api.cloud.pipeline import AugerPipelineApi
 from auger.api.cloud.utils.dataframe import DataFrame

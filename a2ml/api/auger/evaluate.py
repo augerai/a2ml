@@ -1,4 +1,4 @@
-from auger.api.base import AugerBase
+from a2ml.api.auger.base import AugerBase
 from auger.api.cloud.utils.exception import AugerException
 from auger.api.cloud.experiment import AugerExperimentSessionApi
 from auger.cli.utils.formatter import print_table
