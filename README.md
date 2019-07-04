@@ -24,7 +24,7 @@ the API.
 Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure.
 
 ```
-a2ml new test_appp
+a2ml new test_app
 ```
 ### Configuring Your A2ML Project
 
@@ -89,9 +89,9 @@ cluster:
   stack_type: experimental
 ```
 
-Once you project is configured with these YAML files you can skip ahead to the
-[Using the A2ML API](#Using_the_A2ML_API) section if you want to start using the
-A2ML Python API.
+Once you project is configured with these YAML files you can skip ahead to the 
+[Using the A2ML API](#using-the-a2ml-api) section if you want to start using the
+A2ML Python API. 
 
 ### The A2ML CLI Commands Available
 Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.
@@ -116,23 +116,22 @@ $ a2ml command --help
 ```
 
 ## Using the A2ML API
-After you have configured the YAML files as shown above (whether from scratch
-or using the templates provided by "a2ml new") you can use the API to
-import, train, evaluate, deploy, predict and review (the PREDIT pipeline).
+After you have configured the YAML files as shown above (whether from scratch 
+or using the templates provided by "a2ml new") you can use the API to 
+import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured files should be in the directory you are running from.
 
 In your Python code, you will first need retrieve the configuration by referring
 to a Context() object.  Then you can create a client for the A2ML class.
 From that client object you will execute the various PREDIT pipeline methods
-(starting from "import_data". Below is example Python code for this.
+(starting from "import_data"). Below is example Python code for this. 
 
 ```
-    import os
-    from a2ml.api.a2ml import A2ML
-    from a2ml.api.google.a2ml import GoogleA2ML
-    from a2ml.api.utils.context import Context
-    self.ctx = Context()
-    a2ml = GoogleA2ML(self.ctx)
-    result = a2ml.import_data()
+import os
+from a2ml.api.a2ml import A2ML
+from a2ml.api.utils.context import Context
+ctx = Context()
+a2ml = A2ML(ctx)
+result = a2ml.import_data()
 ```
 
 ## Development Setup

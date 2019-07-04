@@ -31,7 +31,7 @@ class AugerDeploy(AugerBase):
         pipeline_properties = AugerPipelineApi(
             self.ctx, None).create(model_id)
 
-        self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
+        self.ctx.log('Deployed Auger model: %s' %
             pipeline_properties.get('id'))
 
     def depoly_model_locally(self, model_id):
