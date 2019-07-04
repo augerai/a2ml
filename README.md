@@ -118,7 +118,7 @@ $ a2ml command --help
 ## Using the A2ML API
 After you have configured the YAML files as shown above (whether from scratch 
 or using the templates provided by "a2ml new") you can use the API to 
-import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured
+import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured files should be in the directory you are running from.
 
 In your Python code, you will first need retrieve the configuration by referring
 to a Context() object.  Then you can create a client for the A2ML class. 
