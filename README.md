@@ -24,7 +24,7 @@ the API.
 Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure. 
 
 ```
-a2ml new test_appp
+a2ml new test_app
 ```
 ### Configuring Your A2ML Project
 
