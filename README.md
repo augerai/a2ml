@@ -90,7 +90,7 @@ cluster:
 ```
 
 Once you project is configured with these YAML files you can skip ahead to the 
-[Using the A2ML API](##Using_the_A2ML_API) section if you want to start using the
+[Using the A2ML API](#using-the-a2ml-api) section if you want to start using the
 A2ML Python API. 
 
 ### The A2ML CLI Commands Available
