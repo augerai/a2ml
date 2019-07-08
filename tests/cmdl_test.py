@@ -50,7 +50,6 @@ class TestNewCmd(object):
             result = self.runner.invoke(cmdl, ['new', self.PROJECT_NAME])
             assert result.exit_code == 0
             result = self.runner.invoke(cmdl, ['new', self.PROJECT_NAME])
-            # FIXME: this must fail, but it still doesn't
             assert result.exit_code != 0
             assert (caplog.messages[-1] ==
                 "Can't create 'new_project'. Folder already exists.")
