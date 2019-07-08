@@ -1,9 +1,11 @@
 import os
+import logging
 from pathlib import Path
 
 from click.testing import CliRunner
 
 from a2ml.cmdl.cmdl import cmdl
+
 
 class TestCmdl(object):
 
@@ -30,7 +32,7 @@ class TestNewCmd(object):
 
     def test_new_requires_project_name(self):
         result = self.runner.invoke(cmdl, ['new'])
-        assert 'Error: Missing argument "PROJECT_NAME"' in result.output
+        assert 'Error: Missing argument "PROJECT"' in result.output
         assert result.exit_code == 2
 
     def test_new_creates_valid_structure(self):
@@ -42,10 +44,13 @@ class TestNewCmd(object):
                 file = Path(os.path.join(self.PROJECT_NAME, filename))
                 assert file.exists()
 
-    def test_new_already_existing(self):
+    def test_new_already_existing(self, caplog):
+        caplog.set_level(logging.INFO)
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(cmdl, ['new', self.PROJECT_NAME])
             assert result.exit_code == 0
             result = self.runner.invoke(cmdl, ['new', self.PROJECT_NAME])
             # FIXME: this must fail, but it still doesn't
             assert result.exit_code != 0
+            assert (caplog.messages[-1] ==
+                "Can't create 'new_project'. Folder already exists.")

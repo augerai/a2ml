@@ -1,4 +1,5 @@
 import os
+import sys
 import errno
 import click
 
@@ -65,6 +66,7 @@ class NewCmd(object):
             # import traceback
             # traceback.print_exc()
             self.ctx.log('%s', str(e))
+            sys.exit(1)
 
 
 @click.command('new', short_help='Create new A2ML project.')
