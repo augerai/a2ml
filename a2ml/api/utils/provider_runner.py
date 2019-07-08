@@ -10,6 +10,9 @@ class ProviderRunner(object):
         self.providers = self._load_providers()
 
     def execute(self, operation_name, *args, **kwargs):
+        if len(self.providers) == 0:
+            raise Exception('Please specify list of providers '
+                'at config.yaml/providers')
         # if there is single operation requested
         # no need to run it on the thread
         if len(self.providers) == 1:

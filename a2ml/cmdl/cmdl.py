@@ -5,17 +5,20 @@ from a2ml.api.utils.context import Context
 from a2ml.api.utils.context import CONTEXT_SETTINGS
 from a2ml.api.utils.context import pass_context
 
-class A2mlCli(click.MultiCommand):
-    cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), 'commands'))
+COMMANDS = [
+  'auth',
+  'new',
+  'import',
+  'train',
+  'evaluate',
+  'deploy',
+  'predict',
+  'review'
+]
 
+class A2mlCli(click.MultiCommand):
     def list_commands(self, ctx):
-        rv = []
-        for filename in os.listdir(A2mlCli.cmd_folder):
-            if filename.endswith('.py') and \
-               filename.startswith('cmd_'):
-                rv.append(filename[4:-3])
-        rv.sort()
-        return rv
+        return COMMANDS
 
     def get_command(self, ctx, name):
         try:

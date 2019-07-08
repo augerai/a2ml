@@ -1,6 +1,8 @@
+from a2ml.api.utils.error_handler import ErrorHandler
 from a2ml.api.utils.provider_runner import ProviderRunner
 
-class A2ML(object):
+
+class A2ML(metaclass=ErrorHandler):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx):
