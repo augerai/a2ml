@@ -23,7 +23,7 @@ class AugerBase(object):
     def _ensure_org_and_project(self):
         """Ensure there are org and project to work with"""
 
-        org_name = self.credentials.organisation
+        org_name = self.credentials.organization
         if org_name is None:
             raise Exception(
                 'Please specify your organization...')
