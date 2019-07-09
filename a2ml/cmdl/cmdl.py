@@ -13,7 +13,11 @@ COMMANDS = [
   'evaluate',
   'deploy',
   'predict',
-  'review'
+  'review',
+  'project',
+  'dataset',
+  'experiment',
+  'model'
 ]
 
 class A2mlCli(click.MultiCommand):
