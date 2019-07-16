@@ -1,17 +1,16 @@
 import sys
 
-from auger.hub_api_client import HubApiClient
-from a2ml.api.auger.hub.auth import AugerAuthApi
+from a2ml.api.auger.cloud.auth import AugerAuthApi
 from a2ml.api.auger.credentials import Credentials
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 class AugerAuth(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        self.credentials = Credentials(ctx.config['auger']).load()
+        self.credentials = Credentials(ctx).load()
 
-    def login(self, username, password, organisation, url=None):
+    def login(self, username, password, organization, url=None):
         try:
             self.credentials.token = None
             self.credentials.save()
@@ -19,13 +18,13 @@ class AugerAuth(object):
             if url is None:
                 url = self.credentials.api_url
 
-            token = AugerAuthApi().login(
-                self.ctx, username, password, organisation, url)
+            token = AugerAuthApi(self.ctx).login(
+                username, password, organization, url)
 
             self.credentials.token = token
             self.credentials.username = username
             self.credentials.api_url = url
-            self.credentials.organisation = organisation
+            self.credentials.organization = organization
             self.credentials.save()
 
             self.ctx.log(
@@ -43,7 +42,7 @@ class AugerAuth(object):
         else:
             self.credentials.token = None
             self.credentials.api_url = None
-            self.credentials.organisation = None
+            self.credentials.organization = None
             self.credentials.save()
             self.ctx.log('You are loged out of Auger.')
 
@@ -54,5 +53,5 @@ class AugerAuth(object):
             self.ctx.log(
                 '%s %s %s' % (
                     self.credentials.username,
-                    self.credentials.organisation,
+                    self.credentials.organization,
                     self.credentials.api_url))

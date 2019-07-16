@@ -1,14 +1,13 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
+from a2ml.api.auger.cloud.base import AugerBaseApi
 
 
 class AugerPredictionApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Trial."""
+    """Auger Trial API."""
 
-    def __init__(
-        self, pipeline_api,
+    def __init__(self, ctx, pipeline_api,
         prediction_name=None, prediction_id=None):
         super(AugerPredictionApi, self).__init__(
-            pipeline_api, prediction_name, prediction_id)
+            ctx, pipeline_api, prediction_name, prediction_id)
         assert pipeline_api is not None, 'Pipeline must be set for Prediction'
 
     def create(self, records, features, threshold=None):

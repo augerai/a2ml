@@ -1,40 +1,40 @@
 import re
-from a2ml.api.auger.hub.hub_api import HubApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerBaseApi(object):
-    """Wrapper around HubApi for basic common calls."""
+    """Auger API base class implements common business object calls."""
 
     def __init__(
-        self, parent_api,
+        self, ctx, parent_api,
         object_name=None, object_id=None):
         super(AugerBaseApi, self).__init__()
         self.parent_api = parent_api
         self.object_id = object_id
         self.object_name = object_name
-        self.hub_client = HubApi()
+        self.rest_api = ctx.rest_api
         self._set_api_request_path()
+        self.ctx = ctx
 
     def list(self, params=None):
         params = {} if params is None else params
         if self.parent_api:
             api_request_path = self.parent_api.api_request_path
-            params['%s_id' % api_request_path] = self.parent_api.object_id
+            params['%s_id' % api_request_path] = self.parent_api.oid
         if self.object_name:
             params['name'] = self.object_name
-        return self.hub_client.request_list(
+        return self.rest_api.request_list(
             '%ss' % self.api_request_path, params)
 
     def properties(self):
         if self.object_id is not None:
-            return self.hub_client.call_hub_api(
+            return self.rest_api.call(
                 'get_%s' % self.api_request_path, {'id': self.object_id})
 
         if self.object_name is None:
             raise AugerException(
-                'No name or id was specified'
-                ' to get %s properties...' % self._get_readable_name())
+                'No name or id was specified for %s' % \
+                self._get_readable_name())
 
         alt_name = self.object_name.replace('_', '-')
         for item in iter(self.list()):
@@ -44,19 +44,46 @@ class AugerBaseApi(object):
 
         return None
 
+    def status(self):
+        supported_status = ["Cluster", "ClusterTask", "Component",
+            "ExperimentSession", "Organization", "Pipeline", "Project",
+            "ProjectFile", "SimilarTrialsRequest", "Subscription"]
+        if self.object_in_camel_case not in supported_status:
+            return self.properties().get(self._get_status_name())
+        else:
+            return self.rest_api.get_status(
+                self.object_in_camel_case, self.oid).\
+                get('data').get(self._get_status_name())
+
     def wait_for_status(self, progress):
-        return self.hub_client.wait_for_object_status(
-            method='get_%s' % self.api_request_path,
-            params={'id': self.object_id},
-            progress=progress,
+        return self.rest_api.wait_for_object_status(
+            get_status=self.status, progress=progress,
             object_readable_name=self._get_readable_name(),
-            status_name=self._get_status_name(),
             post_check_status=self._post_check_status,
             log_status=self._log_status)
 
+    def delete(self):
+        self.rest_api.call(
+            'delete_%s' % self.api_request_path, {'id': self.oid})
+
     @property
     def name(self):
+        if self.object_name is None:
+            properties = self.properties()
+            if properties is None:
+                raise AugerException(
+                    'Can\'t find name for remote %s: %s...' % \
+                    (self._get_readable_name(), self.object_id))
+            self.object_name = properties.get('name')
         return self.object_name
+
+    @property
+    def oid(self):
+        return self._ensure_object_id()
+
+    @property
+    def is_exists(self):
+        return self.properties() != None
 
     def _get_readable_name(self):
         s = self.api_request_path
@@ -66,31 +93,30 @@ class AugerBaseApi(object):
         return 'status'
 
     def _log_status(self, status):
-        if self.hub_client.ctx is None:
-            return
-        self.hub_client.ctx.log(
+        self.ctx.log(
             '%s %s is %s...' % \
             (self._get_readable_name(), self._get_status_name(), status))
 
-    def _post_check_status(self, status, result):
+    def _post_check_status(self, status):
         self._log_status(status)
 
     def _call_create(self, params=None, progress=None):
-        object_properties = self.hub_client.call_hub_api(
+        object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
         if object_properties:
             self.object_id = object_properties.get('id')
             if progress:
-                object_properties = self.wait_for_status(progress)
-        return object_properties
+                self.wait_for_status(progress)
+        return self.properties()
 
     def _ensure_object_id(self):
         if self.object_id is None:
-            obj_properties = self.properties()
-            if obj_properties is not None:
-                self.object_id = obj_properties.get('id')
+            properties = self.properties()
+            if properties is not None:
+                self.object_id = properties.get('id')
             else:
-                raise AugerException('Can\'t find id for %s' % self.object_name)
+                raise AugerException('Can\'t find remote %s: %s...' % \
+                    (self._get_readable_name(), self.object_name))
         return self.object_id
 
     def _get_uniq_object_name(self, prefix, suffix):
@@ -117,8 +143,12 @@ class AugerBaseApi(object):
         def to_snake_case(name):
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
             return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+        def to_camel_case(name):
+            return ''.join(x.capitalize() for x in name.split('_'))
         def get_api_request_path(name):
             return '_'.join(to_snake_case(name).split('_')[1:-1])
 
         self.api_request_path = get_api_request_path(
             patch_name if patch_name else type(self).__name__)
+        self.object_in_camel_case = to_camel_case(
+            self.api_request_path)

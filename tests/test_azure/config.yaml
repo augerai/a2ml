@@ -1,0 +1,18 @@
+# project name
+name: moneyball
+# List of providers: auger, google, azure
+providers: azure
+# Local file name or remote url to the data source file
+source: ../data/baseball.csv
+# List of columns to be excluded from the training data
+exclude: Team,League,Year
+# Target column name
+target: RS
+# Model type: classification|regression|timeseries
+model_type: regression
+# experiment settings
+experiment: 
+  cross_validation_folds: 5
+  max_total_time: 60
+  max_n_trials: 10
+  iteration_timeout_minutes: 1

@@ -4,12 +4,11 @@ import subprocess
 from zipfile import ZipFile
 
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.hub_api import HubApi
 from a2ml.api.auger.deploy import AugerDeploy
-from a2ml.api.auger.hub.cluster import AugerClusterApi
-from a2ml.api.auger.hub.pipeline import AugerPipelineApi
-from a2ml.api.auger.hub.utils.dataframe import DataFrame
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.cluster import AugerClusterApi
+from a2ml.api.auger.cloud.pipeline import AugerPipelineApi
+from a2ml.api.auger.cloud.utils.dataframe import DataFrame
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 class AugerPredict(AugerBase):
     """Predict using deployed Auger Pipeline."""
@@ -28,15 +27,15 @@ class AugerPredict(AugerBase):
         if locally:
             predicted = self._predict_locally(filename, model_id, threshold)
         else:
-            predicted = self._predict_on_hub(filename, model_id, threshold)
+            predicted = self._predict_on_cloud(filename, model_id, threshold)
 
         self.ctx.log('Predictions stored in %s' % predicted)
 
-    def _predict_on_hub(self, filename, model_id, threshold=None):
+    def _predict_on_cloud(self, filename, model_id, threshold=None):
         target = self.ctx.config['config'].get('target', None)
         df = DataFrame.load(filename, target)
 
-        pipeline_api = AugerPipelineApi(None, model_id)
+        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
         predictions = pipeline_api.predict(
             df.values.tolist(), df.columns.get_values().tolist(), threshold)
 
@@ -77,7 +76,8 @@ class AugerPredict(AugerBase):
         return model_path, model_existed
 
     def _docker_run_predict(self, filename, threshold, model_path):
-        docker_tag = self._docker_pull_image()
+        cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)
+        docker_tag = cluster_settings.get('kubernetes_stack')
         result_file = os.path.basename(filename)
         data_path = os.path.dirname(filename)
 
@@ -99,21 +99,7 @@ class AugerPredict(AugerBase):
             subprocess.check_call(
                 command, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
-            self.ctx.log(str(e))
             raise AugerException('Error running Docker container...')
 
         return os.path.join(data_path,
             os.path.splitext(result_file)[0] + "_predicted.csv")
-
-    def _docker_pull_image(self):
-        cluster_settings = AugerClusterApi.get_cluster_settings()
-        docker_tag = cluster_settings.get('kubernetes_stack')
-
-        try:
-            subprocess.check_call(
-                'docker pull deeplearninc/auger-ml-worker:%s' % \
-                 docker_tag, shell=True)
-        except subprocess.CalledProcessError as e:
-            raise AugerException('Can\'t pull Docker container...')
-
-        return docker_tag

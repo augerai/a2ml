@@ -1,6 +1,6 @@
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.hub.experiment import AugerExperimentApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.experiment import AugerExperimentApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
 from a2ml.api.auger.config import AugerConfig
 
 class AugerTrain(AugerBase):
@@ -18,10 +18,10 @@ class AugerTrain(AugerBase):
 
         data_set_name = self.ctx.config['auger'].get('dataset')
         if data_set_name is None:
-            raise AugerException('Plese specify Data Set Name'
-                ' (auger.yaml/dataset option).')
+            raise AugerException(
+                'Plese specify DataSet name in auger.yaml/dataset')
 
-        experiment_api = AugerExperimentApi(self.project_api)
+        experiment_api = AugerExperimentApi(self.ctx, self.project_api)
         experiment_api.create(data_set_name)
         self.ctx.log(
             'Created Experiment %s ' % experiment_api.object_name)

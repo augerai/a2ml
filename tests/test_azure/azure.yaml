@@ -1,0 +1,17 @@
+---
+experiment:
+  metric: spearman_correlation
+
+cluster: 
+  name: a2ml
+  region: eastus2
+  min_nodes: 0
+  max_nodes: 4
+  type: STANDARD_D2_V2
+
+workspace: autoautoml
+resource_group: autoautoml
+file_share: https://autoautostoragemrtiourv.file.core.windows.net/a2ml
+account_name: autoautostorage68c87c828 
+account_key: 7YoQ5HIH8skaV1a0tSK8sZlwC2Du4wvcTPbouuHINs1dDTPZbMp+0gm4UF9kKnPJwAFTDym0mOoqt9B5lVksAg==
+data_file: https://autoautostorage68c87c828.file.core.windows.net/a2ml/baseball.csv

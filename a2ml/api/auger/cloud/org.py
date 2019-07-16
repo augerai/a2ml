@@ -1,13 +1,13 @@
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerOrganizationApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Organization."""
+    """Auger Organization API."""
 
-    def __init__(self, org_name=None, org_id=None):
+    def __init__(self, ctx, org_name=None, org_id=None):
         super(AugerOrganizationApi, self).__init__(
-            None, org_name, org_id)
+            ctx, None, org_name, org_id)
 
     def get_cluster_mode(self):
         cluster_mode = getattr(self, 'cluster_mode', None)

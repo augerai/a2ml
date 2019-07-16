@@ -1,14 +1,13 @@
-from a2ml.api.auger.hub.hub_api import HubApi
-from a2ml.api.auger.hub.base import AugerBaseApi
-from a2ml.api.auger.hub.utils.exception import AugerException
+from a2ml.api.auger.cloud.base import AugerBaseApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
 
 
 class AugerClusterApi(AugerBaseApi):
-    """Wrapper around HubApi for Auger Cluster."""
+    """Auger Cluster API."""
 
-    def __init__(self, project_api, cluster_id=None):
+    def __init__(self, ctx, project_api, cluster_id=None):
         super(AugerClusterApi, self).__init__(
-            project_api, None, cluster_id)
+            ctx, project_api, None, cluster_id)
         assert project_api is not None, 'Project must be set for Cluster'
 
     def is_running(self):
@@ -20,16 +19,16 @@ class AugerClusterApi(AugerBaseApi):
         params = {
             'project_id': self.parent_api.object_id,
             'organization_id': self.parent_api.parent_api.object_id}
-        params.update(self.get_cluster_settings())
+        params.update(self.get_cluster_settings(self.ctx))
         return self._call_create(params,
             ['waiting', 'provisioning', 'bootstrapping'])
 
     @staticmethod
-    def get_cluster_settings():
-        config = HubApi().get_config('auger')
+    def get_cluster_settings(ctx):
+        config = ctx.get_config('auger')
 
         default_stack = "stable"
-        if 'staging' in HubApi().api_url:
+        if 'staging' in ctx.rest_api.api_url:
             default_stack = 'experimental'
 
         kubernetes_stack = config.get('cluster/kubernetes_stack', None)

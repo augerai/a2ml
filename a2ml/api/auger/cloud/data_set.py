@@ -5,29 +5,27 @@ import shortuuid
 import urllib.parse
 import xml.etree.ElementTree as ET
 
-from a2ml.api.auger.hub.cluster import AugerClusterApi
-from a2ml.api.auger.hub.utils.exception import AugerException
-from a2ml.api.auger.hub.project_file import AugerProjectFileApi
+from a2ml.api.auger.cloud.cluster import AugerClusterApi
+from a2ml.api.auger.cloud.utils.exception import AugerException
+from a2ml.api.auger.cloud.project_file import AugerProjectFileApi
 
 SUPPORTED_FORMATS = ['.csv', '.arff']
 
 
 class AugerDataSetApi(AugerProjectFileApi):
-    """Wrapper around ProjectFileApi for Auger Data Set."""
+    """Auger DataSet API."""
 
-    def __init__(self, project_api=None,
+    def __init__(self, ctx, project_api=None,
         data_set_name=None, data_set_id=None):
         super(AugerDataSetApi, self).__init__(
-            project_api, data_set_name, data_set_id)
-        # patch request path
-        self._set_api_request_path('AugerProjectFileApi')
+            ctx, project_api, data_set_name, data_set_id)
 
     def create(self, data_source_file, data_set_name=None):
         data_source_file, local_data_source = \
             AugerDataSetApi.verify(data_source_file)
 
         if local_data_source:
-            file_url = self._upload_to_hub(data_source_file)
+            file_url = self._upload_to_cloud(data_source_file)
             file_name = os.path.basename(data_source_file)
             if data_set_name:
                 self.object_name = data_set_name
@@ -44,12 +42,12 @@ class AugerDataSetApi(AugerProjectFileApi):
         except Exception as exc:
             if 'en.errors.project_file.url_not_uniq' in str(exc):
                 raise AugerException(
-                    'Data Set already exists for %s' % file_url)
+                    'DataSet already exists for %s' % file_url)
             raise exc
 
     def _get_readable_name(self):
         # patch readable name
-        return 'Data Set'
+        return 'DataSet'
 
     @staticmethod
     def verify(data_source_file):
@@ -71,7 +69,7 @@ class AugerDataSetApi(AugerProjectFileApi):
 
         return data_source_file, True
 
-    def _upload_to_hub(self, file_to_upload):
+    def _upload_to_cloud(self, file_to_upload):
         cluster_mode = self.parent_api.parent_api.get_cluster_mode()
         if cluster_mode == 'single_tenant':
             return self._upload_to_single_tenant(file_to_upload)
@@ -83,7 +81,8 @@ class AugerDataSetApi(AugerProjectFileApi):
         # and upload data to that service
         project_properties = self.parent_api.properties()
         cluster_id = project_properties.get('cluster_id')
-        cluster_api = AugerClusterApi(self.parent_api, cluster_id)
+        cluster_api = AugerClusterApi(
+            self.ctx, self.parent_api, cluster_id)
         cluster_properties = cluster_api.properties()
 
         file_uploader_service = cluster_properties.get('file_uploader_service')
@@ -92,7 +91,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             file_uploader_service.get('url'), upload_token)
 
         file_url = self._upload_file(file_to_upload, upload_url)
-        self.hub_client.ctx.log(
+        self.ctx.log(
             'Uploaded local file to Auger Cloud file: %s' % file_url)
         return file_url
 
@@ -112,7 +111,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             (self.parent_api.object_name, shortuuid.uuid(),
              os.path.basename(file_to_upload))
 
-        res = self.hub_client.call_hub_api('create_project_file_url', {
+        res = self.rest_api.call('create_project_file_url', {
             'project_id': self.parent_api.object_id,
             'file_path': file_path})
         if res is None:

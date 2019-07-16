@@ -22,7 +22,6 @@ def print_table(log, table_list, headers=None):
     format_str = ' | '.join(["{{:<{}}}".format(i) for i in col_size])
     format_sep = '-+-'.join(["{{:<{}}}".format(i) for i in col_size])
     for item in row_list:
-        #print(item)
         if item[0][0] == '-':
             log(format_sep.format(*item))
         else:

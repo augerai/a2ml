@@ -17,15 +17,16 @@ and a command line interface that invokes stages of the pipeline.
 
 ## Command Line Interface
 
-The command line is a convenient way to start an A2ML project even if you plan to use 
+The command line is a convenient way to start an A2ML project even if you plan to use
 the API.  
 
 ### Creating a New A2ML Project
-Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure. 
+Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure.
 
 ```
-a2ml new test_appp
+a2ml new test_app
 ```
+
 ### Configuring Your A2ML Project
 
 Before you use the Python API or the command line interface for the specific PREDIT pipeline steps you will need to configure your particular project. This includes both general options that apply to all vendors and vendor specific options in separate YAML files.  
@@ -33,7 +34,7 @@ Before you use the Python API or the command line interface for the specific PRE
 After a new A2ML application is created, application configuration for all providers are stored in CONFIG.YAML. The options available include:
 * name - the name of the project
 * provider - the AutoML provider: GC (for Google Cloud), AZ (for Microsoft Azure), or Auger
-* source - the CSV file to train with. Can be a local file path  (for Auger or Azure). Can be a hosted file URL.  Can be URL for Google Cloud Storage ("gs://...") for 
+* source - the CSV file to train with. Can be a local file path  (for Auger or Azure). Can be a hosted file URL.  Can be URL for Google Cloud Storage ("gs://...") for
 Google Cloud AutoML.  
 * exclude - features from the dataset to exclude from the model
 * target - the feature which is the target
@@ -89,9 +90,9 @@ cluster:
   stack_type: experimental
 ```
 
-Once you project is configured with these YAML files you can skip ahead to the 
-[Using the A2ML API](##Using_the_A2ML_API) section if you want to start using the
-A2ML Python API. 
+Once your project is configured with these YAML files you can skip ahead to the
+[Using the A2ML API](#using-the-a2ml-api) section if you want to start using the
+A2ML Python API.
 
 ### The A2ML CLI Commands Available
 Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.
@@ -101,13 +102,17 @@ Usage:
 $ a2ml [OPTIONS] COMMAND [ARGS]...
 ```
 Commands:
-* new       Create new A2ML application.
-* import    Import data for training.
-* train     Train the model.
-* evaluate  Evaluate models after training.
-* deploy    Deploy trained model.
-* predict   Predict with deployed model.
-* review    Review specified model info.
+* new        Create new A2ML application.
+* import     Import data for training.
+* train      Train the model.
+* evaluate   Evaluate models after training.
+* deploy     Deploy trained model.
+* predict    Predict with deployed model.
+* review     Review specified model info.
+* project    Project(s) management
+* dataset    Dataset(s) management
+* experiment Experiment(s) management
+* model      Model(s) management
 
 To get detailed information on available options for each command, please run:
 
@@ -116,14 +121,14 @@ $ a2ml command --help
 ```
 
 ## Using the A2ML API
-After you have configured the YAML files as shown above (whether from scratch 
-or using the templates provided by "a2ml new") you can use the API to 
+After you have configured the YAML files as shown above (whether from scratch
+or using the templates provided by "a2ml new") you can use the API to
 import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured files should be in the directory you are running from.
 
 In your Python code, you will first need retrieve the configuration by referring
-to a Context() object.  Then you can create a client for the A2ML class. 
+to a Context() object.  Then you can create a client for the A2ML class.
 From that client object you will execute the various PREDIT pipeline methods
-(starting from "import_data"). Below is example Python code for this. 
+(starting from "import_data"). Below is example Python code for this.
 
 ```
 import os
@@ -157,7 +162,7 @@ $ pip install -e ".[all]"
 Running tests and getting test coverage:
 
 ```
-$ pytest pytest --cov='a2ml' --cov-report html tests/  
+$ pytest --cov='a2ml' --cov-report html tests/  
 ```
 
 ## Implementing A2ML for Another AutoML Provider
