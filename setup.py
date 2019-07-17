@@ -1,5 +1,9 @@
+import os
+import codecs
+
 from setuptools import setup
 from setuptools import find_packages
+from setuptools.command.install import install
 
 VERSION = '0.1.1'
 
