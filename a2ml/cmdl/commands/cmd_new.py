@@ -1,4 +1,5 @@
 import os
+import sys
 import errno
 import click
 
@@ -6,7 +7,7 @@ from a2ml.api.auger.config import AugerConfig
 from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
-from a2ml.api.auger.cloud.data_set import AugerDataSetApi
+from auger.api.cloud.data_set import AugerDataSetApi
 from a2ml.api.auger.credentials import Credentials
 
 
@@ -65,6 +66,7 @@ class NewCmd(object):
             # import traceback
             # traceback.print_exc()
             self.ctx.log('%s', str(e))
+            sys.exit(1)
 
 
 @click.command('new', short_help='Create new A2ML project.')
