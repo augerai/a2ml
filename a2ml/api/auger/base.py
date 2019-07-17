@@ -1,7 +1,7 @@
-from a2ml.api.auger.cloud.rest_api import RestApi
-from a2ml.api.auger.credentials import Credentials
-from a2ml.api.auger.cloud.project import AugerProjectApi
-from a2ml.api.auger.cloud.org import AugerOrganizationApi
+from auger.api.cloud.rest_api import RestApi
+from auger.api.credentials import Credentials
+from auger.api.cloud.project import AugerProjectApi
+from auger.api.cloud.org import AugerOrganizationApi
 
 
 class AugerBase(object):

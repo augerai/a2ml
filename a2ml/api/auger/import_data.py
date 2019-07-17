@@ -1,6 +1,7 @@
 from a2ml.api.auger.base import AugerBase
 from a2ml.api.auger.config import AugerConfig
-from a2ml.api.auger.cloud.data_set import AugerDataSetApi
+from auger.api.cloud.data_set import AugerDataSetApi
+
 
 class AugerImport(AugerBase):
     """Import data into Auger."""

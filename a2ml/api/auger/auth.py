@@ -1,8 +1,9 @@
 import sys
 
-from a2ml.api.auger.cloud.auth import AugerAuthApi
-from a2ml.api.auger.credentials import Credentials
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from auger.api.cloud.auth import AugerAuthApi
+from auger.api.credentials import Credentials
+from auger.api.cloud.utils.exception import AugerException
+
 
 class AugerAuth(object):
 

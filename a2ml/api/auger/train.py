@@ -1,7 +1,8 @@
 from a2ml.api.auger.base import AugerBase
-from a2ml.api.auger.cloud.experiment import AugerExperimentApi
-from a2ml.api.auger.cloud.utils.exception import AugerException
+from auger.api.cloud.experiment import AugerExperimentApi
+from auger.api.cloud.utils.exception import AugerException
 from a2ml.api.auger.config import AugerConfig
+
 
 class AugerTrain(AugerBase):
     """Train you Model on Auger."""
