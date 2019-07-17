@@ -1,5 +1,5 @@
 # Name of the Project on Auger Cloud
-project: demo
+project: failstotrain
 # Name of the DataSet on Auger Cloud
 dataset: baseball.csv
 # Experiment settings that are unique to Auger
@@ -7,7 +7,7 @@ experiment:
   # Latest experiment name
   name: baseball.csv-experiment
   # Latest experiment session
-  experiment_session_id: 3e49db522c6c3f33
+  experiment_session_id: 8be334d69a64ba35
   # Time series feature. If Data Source contains more then one DATETIME feature
   # you will have to explicitly specify feature to use as time series
   time_series:
@@ -27,4 +27,4 @@ cluster:
   type: standard
   min_nodes: 2
   max_nodes: 2
-  stack_version: experimental
+  stack_version: stable

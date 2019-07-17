@@ -28,4 +28,4 @@ cluster:
   type: standard
   min_nodes: 2
   max_nodes: 2
-  stack_version: experimental
+  stack_version: stable
