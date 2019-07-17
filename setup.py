@@ -1,5 +1,9 @@
+import os
+import codecs
+
 from setuptools import setup
 from setuptools import find_packages
+from setuptools.command.install import install
 
 VERSION = '0.1.1'
 
@@ -25,7 +29,6 @@ install_requires = [
     'click','scikit-learn<=0.20.3,>=0.19.0','sklearn','wheel==0.30.0',
     'requests','requests-toolbelt','shortuuid','ruamel.yaml<=0.15.89,>=0.15.35',
     'pandas<=0.23.4,>=0.21.0','auger-hub-api-client>=0.6.1', 'auger.ai'
->>>>>>> Stashed changes
 ]
 
 extras = {
