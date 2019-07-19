@@ -54,7 +54,7 @@ class ConfigYaml(Namespace):
     @staticmethod
     def _get(options, path, default):
         if len(path) == 0:
-            return options if options else default
+            return options if options is not None else default
         if hasattr(options, path[0]):
             return ConfigYaml._get(
                 getattr(options, path[0]), path[1:], default)

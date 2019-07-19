@@ -1,9 +1,5 @@
 import os
-import logging
 from pathlib import Path
-
-from click.testing import CliRunner
-
 from a2ml.cmdl.cmdl import cmdl
 
 
