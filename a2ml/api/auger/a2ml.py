@@ -28,4 +28,4 @@ class AugerA2ML(object):
         AugerPredict(self.ctx).predict(filename, model_id, threshold, locally)
 
     def review(self):
-        pass
+        raise NotImplementedError()

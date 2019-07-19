@@ -55,8 +55,8 @@ class AzureA2ML(object):
         self.data_file = ctx.config['azure'].get('file_share',default_data_file)         
 
         # check core SDK version number
-        print("Azure ML SDK Version: {}".format(azureml.core.VERSION))
-        print("Current directory: {}".format(os.getcwd()))
+        self.ctx.log("Azure ML SDK Version: {}".format(azureml.core.VERSION))
+        self.ctx.log("Current directory: {}".format(os.getcwd()))
         try:  # get the preloaded workspace definition
             self.ws = Workspace.from_config(path='./.azureml/config.json')
         except:  # or create a new one
@@ -69,21 +69,21 @@ class AzureA2ML(object):
         if self.compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[self.compute_cluster]
             if compute_target and type(compute_target) is AmlCompute:
-                print('Found compute target. Just use it: ' + self.compute_cluster)
+                self.ctx.log('Found compute target. Just use it: ' + self.compute_cluster)
         else: 
-            print('Creating new AML compute context.')
+            self.ctx.log('Creating new AML compute context.')
             provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.compute_sku, min_nodes=self.compute_min_nodes, max_nodes=self.compute_max_nodes)
             compute_target = ComputeTarget.create(self.ws, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
     def upload_file(self,source_file):
-        print("Copying {} to {}".format(self.source,self.file_share))
+        self.ctx.log("Copying {} to {}".format(self.source,self.file_share))
         cmd = "az storage file upload --source " + self.source 
         cmd = cmd +  " --share-name " + self.file_share
         cmd = cmd + " --account-name " + self.account_name + " --account-key " + self.account_key
-        print("Running command: {}".format(cmd))
+        self.ctx.log("Running command: {}".format(cmd))
         result = os.system(cmd)
-        print("Result of local copy to Azure file share: {}".format(result)) 
+        self.ctx.log("Result of local copy to Azure file share: {}".format(result)) 
     
     def import_data(self):
         self.exp = Experiment(workspace=self.ws, name=self.name)
@@ -100,14 +100,14 @@ class AzureA2ML(object):
         self.upload_file(self.source)
 
     def generate_data_script(self):
-        print("Current working directory: {}".format(os.getcwd()))
+        self.ctx.log("Current working directory: {}".format(os.getcwd()))
         template = open("get_data.template","r")
         text = template.read()
         template.close 
-        print("Replacing $SOURCE with: {}".format(self.data_file))
+        self.ctx.log("Replacing $SOURCE with: {}".format(self.data_file))
         text=text.replace("$SOURCE",self.data_file)
         text=text.replace("$TARGET",self.target)
-        print("Generated data script contents: {}".format(text))
+        self.ctx.log("Generated data script contents: {}".format(text))
         script = open(self.data_script,"w")
         script.write(text)
         script.close
@@ -131,15 +131,19 @@ class AzureA2ML(object):
                                     **automl_settings
                                     ) 
         experiment=Experiment(self.ws, 'automl_remote')
-        print("Submitting training run: {}:".format(self.ws))
+        self.ctx.log("Submitting training run: {}:".format(self.ws))
         remote_run = experiment.submit(self.automl_config, show_output=True)
-        print("Results of training run: {}:".format(remote_run))
+        self.ctx.log("Results of training run: {}:".format(remote_run))
 
     def evaluate(self):
-        pass
+        raise NotImplementedError()
+
     def deploy(self):
-        pass
+        raise NotImplementedError()
+
     def predict(self,filepath,score_threshold):
-        pass
+        raise NotImplementedError()
+
     def review(self):
-        pass
+        raise NotImplementedError()
+
