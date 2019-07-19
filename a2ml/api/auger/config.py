@@ -20,7 +20,6 @@ class AugerConfig(object):
             kwargs.get('data_set_name', '')
         yaml['experiment']['experiment_session_id'] = \
             kwargs.get('experiment_session_id', '')
-        yaml['project'] = kwargs.get('project_name', '')
         model_type = kwargs.get('model_type', None)
         if model_type:
             yaml['experiment']['metric'] = \

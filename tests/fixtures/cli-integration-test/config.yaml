@@ -1,14 +1,13 @@
----
 # Overall project name
-name:
+name: cli-integration-test
 # List of providers: auger, google, azure
-providers: auger, azure, google
+providers: auger
 # Local file name or remote url to the data source file
-source:
+source: iris.csv
 # List of columns to be excluded from the training data
 exclude:
 # Target column name
-target:
+target: species
 # Model type: classification|regression|timeseries
 model_type: classification
 # Experiment settings
