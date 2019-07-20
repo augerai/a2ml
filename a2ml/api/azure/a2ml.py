@@ -137,13 +137,98 @@ class AzureA2ML(object):
 
     def evaluate(self):
         raise NotImplementedError()
+        # TODO: Adopt from Google to Azure
+        credentials, project = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
+        authed_session = AuthorizedSession(credentials)
+        basename="https://automl.googleapis.com/v1beta1/"
+        cmd = basename + self.operation_name
+        response=authed_session.get(cmd)
+        result=json.loads(response.content)
+        self.ctx.log("Operation name: {}".format(result["name"]))
+     
+        if (("done" in result.keys()) and result["done"]): 
+            self.ctx.log("Model training complete.")
+            self.model_name = result["response"]["name"]
+            self.ctx.log("Model full name: {}".format(self.model_name))   
+            self.ctx.config['google'].yaml['model_name'] = self.model_name
+            self.ctx.config['google'].write()  
+            response = self.client.list_model_evaluations(self.model_name)
+            self.ctx.log("List of model evaluations:")
+            for evaluation in response:
+                self.ctx.log("Model evaluation name: {}".format(evaluation.name))
+                self.ctx.log("Model evaluation id: {}".format(evaluation.name.split("/")[-1]))
+                self.ctx.log("Model evaluation example count: {}".format(
+                    evaluation.evaluated_example_count))
+                self.ctx.log("Model evaluation time: {} seconds".format(evaluation.create_time.seconds))
+                self.ctx.log("Full model evaluation: {}".format(inspect.getmembers(evaluation) ))
+                self.ctx.log("\n")
 
-    def deploy(self):
+    def deploy(self,  model_id, locally=False):
         raise NotImplementedError()
+        # TODO: Adopt from Google to Azure
+        self.ctx.log('Azure Deploy'.format(model_id))
+        if (model_id is None):
+            model_name = self.model_name
+        else:
+            model_name = self.client.model_path(self.project_id, self.compute_region, self.id)
+        try: 
+            self.ctx.log('Deploy model: {}'.format(self.model_name))
+            response = self.client.deploy_model(self.model_name)
+            self.ctx.log("Deploy result: {}".format(response))
+        except google.api_core.exceptions.FailedPrecondition as inst:
+            self.ctx.log("Failed to deploy because its already deploying: {}...".format(inst))
 
-    def predict(self,filepath,score_threshold):
+    def predict(self,filename, model_id, threshold=None, locally=False):
         raise NotImplementedError()
+        # TODO: Adopt from Google to Azure
+        self.ctx.log('Azure Predict')
+        prediction_client = automl.PredictionServiceClient()
+        predictions_file = filename.split('.')[0]+'_predicted.csv' 
+        predictions=open(predictions_file, "wt")  
+        with open(filename,"rt") as csv_file:
+            content = csv.reader(csv_file)
+            next(reader,None)
+            csvlist = ''
+            for row in content:
+                # Create payload
+                values = []
+                for column in row:
+                    self.ctx.log("Column: {}".format(column))
+                    values.append({'number_value': float(column)})
+                csvlist=",".join(row)
+                print ("CSVList: {}".format(csvlist))
+                payload = {
+                    'row': {'values': values}
+                }
+                response = prediction_client.predict(self.model_name, payload)
+                self.ctx.log("Prediction results:")
+                for result in response.payload:
+                    if ((threshold is None) or (result.classification.score >= score_threshold)): 
+                        prediction=result.tables.value.number_value
+                self.ctx.log("Prediction: {}".format(prediction))
+                csvlist += (',' + str(prediction) + '\n')
+                predictions.write(csvlist) 
+                i = i + 1
 
     def review(self):
         raise NotImplementedError()
+        # TODO: Adopt from Google to Azure
+        self.ctx.log('Azure Review')
 
+        # Get complete detail of the model.
+        model = self.client.get_model(self.model_name)
+
+        # Retrieve deployment state.
+        if model.deployment_state == enums.Model.DeploymentState.DEPLOYED:
+            deployment_state = "deployed"
+        else:
+            deployment_state = "undeployed"
+
+        # Display the model information.
+        self.ctx.log("Model name: {}".format(self.model_name))
+        self.ctx.log("Model id: {}".format(model.name.split("/")[-1]))
+        self.ctx.log("Model display name: {}".format(model.display_name))
+        self.ctx.log("Model metadata:")
+        self.ctx.log(model.tables_model_metadata)
+        self.ctx.log("Model create time (seconds): {}".format(model.create_time.seconds))
+        self.ctx.log("Model deployment state: {}".format(deployment_state))
