@@ -187,7 +187,7 @@ class GoogleA2ML(object):
                     self.ctx.log("Column: {}".format(column))
                     values.append({'number_value': float(column)})
                 csvlist=",".join(row)
-                print ("CSVList: {}".format(csvlist))
+                self.ctx.log("CSVList: {}".format(csvlist))
                 payload = {
                     'row': {'values': values}
                 }
