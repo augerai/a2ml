@@ -54,13 +54,15 @@ class NewCmd(object):
             config.yaml['target'] = self.target
             config.yaml['source'] = self.source
             config.yaml['model_type'] = self.model_type
+            config.yaml['name'] = self.project_name
             config.write()
 
             AugerConfig(self.ctx).config(
                 target = self.target,
                 source = self.source,
                 model_type = self.model_type,
-                project_name = self.project_name)
+                # TODO: turn to config.yaml usage instead of auger.project
+                project_name = self.project_name) 
 
         except Exception as e:
             # import traceback
