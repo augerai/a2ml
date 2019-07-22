@@ -216,8 +216,7 @@ class GoogleA2ML(object):
         predictions = open(predictions_file, 'wt')
         with open(filename, 'rt') as csv_file:
             content = csv.reader(csv_file)
-            # TODO: probably bug with variable "name"
-            next(reader, None)
+            next(content, None)
             csvlist = ''
             i = 0
             for row in content:
