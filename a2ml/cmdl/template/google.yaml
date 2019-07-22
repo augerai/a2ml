@@ -1,4 +1,4 @@
-# defaults to environment variable PROJECT_ID if emptuy
+# defaults to environment variable PROJECT_ID if empty
 project: 
 # experiment settings for Google AutoML only (currently just metric)
 experiment: 
