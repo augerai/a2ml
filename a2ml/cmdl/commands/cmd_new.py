@@ -51,6 +51,7 @@ class NewCmd(object):
             config = self.ctx.config['config']
             config.yaml['providers'] = \
                 PROVIDERS if self.providers == 'all' else self.providers
+            config.yaml['name'] = self.project_name
             config.yaml['target'] = self.target
             config.yaml['source'] = self.source
             config.yaml['model_type'] = self.model_type
