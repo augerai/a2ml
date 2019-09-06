@@ -34,7 +34,7 @@ class AugerBase(object):
             raise Exception('Can\'t find organization %s' % org_name)
         self.org_api.cluster_mode = org_properties.get('cluster_mode')
 
-        project_name = self.ctx.config['config'].get('project', None)
+        project_name = self.ctx.config['config'].get('name', None)
         if project_name is None:
             raise Exception(
                 'Please specify your project in config.yaml/name...')
