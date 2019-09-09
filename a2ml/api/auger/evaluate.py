@@ -23,7 +23,10 @@ class AugerEvaluate(AugerBase):
 
         experiment_session_api = AugerExperimentSessionApi(
             self.ctx, None, None, experiment_session_id)
-        print_table(self.ctx.log, experiment_session_api.get_leaderboard())
+        leaderboard = experiment_session_api.get_leaderboard()
+        if leaderboard is None:
+            raise AugerException('No leaderboard was found...')
+        print_table(self.ctx.log,leaderboard[::-1])
 
         status = experiment_session_api.properties().get('status')
         messages = {
