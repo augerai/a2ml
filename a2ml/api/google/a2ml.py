@@ -27,7 +27,7 @@ class GoogleA2ML(object):
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
         self.target = ctx.config['config'].get('target',None)
         self.exclude = ctx.config['config'].get('exclude',None)
-        self.max_total_time = ctx.config['config'].get('max_total_time',None)
+        self.max_total_time = ctx.config['config'].get('max_total_time',60)
         self.operation_name = ctx.config['google'].get('operation_name',None)
         self.model_name = ctx.config['google'].get('model_name',None)
         self.gsbucket = ctx.config['google'].get('gsbucket','gs://a2ml')
@@ -80,7 +80,7 @@ class GoogleA2ML(object):
         
         self.ctx.log("Listing tables from: {}".format(self.dataset_name))
         list_table_specs_response = self.client.list_table_specs(self.dataset_name)
-        #self.ctx.log("List table specs response: {}".format(list_table_specs_response))
+        self.ctx.log("List table specs response: {}".format(list_table_specs_response))
         table_specs = [s for s in list_table_specs_response]
         table_spec_name = table_specs[0].name
         self.ctx.log("Table spec name: {}".format(table_spec_name))
@@ -113,7 +113,7 @@ class GoogleA2ML(object):
             'target_column_spec': self.column_specs[self.target],
             'input_feature_column_specs': [
                 self.column_specs[x] for x in self.feat_list],
-            'train_budget_milli_node_hours': self.max_total_time/60*1000, # budget is in minutes, google wants "millihours", seriously?
+            'train_budget_milli_node_hours': int(self.max_total_time/60*1000), # budget is in minutes, google wants "millihours", seriously?
             'optimization_objective': self.metric}}
         response = self.client.create_model(self.project_location,model_dict)
 

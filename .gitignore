@@ -6,6 +6,7 @@
 .idea
 metastore_db
 automl.json
+automl-test-*.json
 **/.azureml/config.json
 
 # Testing artifacts

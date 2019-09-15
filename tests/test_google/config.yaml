@@ -11,4 +11,5 @@ target: RS
 # Model type: classification|regression|timeseries
 model_type: regression
 # overal experiment budget in minutes
-budget: 60
+max_total_time: 60
+

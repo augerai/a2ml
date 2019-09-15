@@ -60,7 +60,7 @@ setup(
     platforms='any',
     test_suite='tests',
     python_requires='>=3',
-    keywords='augerai auger ai machine learning automl deeplearn api sdk',
+    keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai machine learning automl deeplearn api sdk',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -76,7 +76,7 @@ setup(
     extras_require=extras,
     entry_points={
         'console_scripts': [
-            'a2ml=a2ml.cmdl.cmdl:cmdl'
+            'a2ml='
         ]
     },
     cmdclass={

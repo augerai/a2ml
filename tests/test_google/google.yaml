@@ -5,6 +5,7 @@ experiment:
 
 cluster:
   region: us-central1
-dataset_id: TBL6600368301539328000
-operation_name: projects/291533092938/locations/us-central1/operations/TBL7795840906141106176
+dataset_id: TBL3076561077866070016
+operation_name: projects/291533092938/locations/us-central1/operations/TBL2146530371418718208
 gsbucket: gs://a2ml
+model_name: projects/291533092938/locations/us-central1/models/TBL7789441748467449856
