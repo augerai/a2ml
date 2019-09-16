@@ -174,17 +174,20 @@ class GoogleA2ML(object):
     def predict(self, filename, model_id, threshold=None, locally=False):
         self.ctx.log('Google Predict')
         prediction_client = automl.PredictionServiceClient()
-        predictions_file = filename.split('.')[0]+'_predicted.csv' 
+        basefile, file_extension = os.path.splitext(filename)
+        predictions_file = basefile+'_predicted.csv' 
+        self.ctx.log('Saving to file {}'.format(predictions_file))
         predictions=open(predictions_file, "wt")  
         with open(filename,"rt") as csv_file:
             content = csv.reader(csv_file)
-            next(reader,None)
+            next(content,None)
             csvlist = ''
+            i=0
             for row in content:
                 # Create payload
                 values = []
                 for column in row:
-                    self.ctx.log("Column: {}".format(column))
+                    #self.ctx.log("Column: {}".format(column))
                     values.append({'number_value': float(column)})
                 csvlist=",".join(row)
                 print ("CSVList: {}".format(csvlist))
@@ -200,6 +203,7 @@ class GoogleA2ML(object):
                 csvlist += (',' + str(prediction) + '\n')
                 predictions.write(csvlist) 
                 i = i + 1
+        self.ctx.log('{} predictions.'.format(i))
 
     def review(self):
         self.ctx.log('Google Review')
