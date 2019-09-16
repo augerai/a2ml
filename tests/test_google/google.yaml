@@ -8,4 +8,4 @@ cluster:
 dataset_id: TBL3076561077866070016
 operation_name: projects/291533092938/locations/us-central1/operations/TBL2146530371418718208
 gsbucket: gs://a2ml
-model_name: projects/291533092938/locations/us-central1/models/TBL7789441748467449856
+model_name: projects/291533092938/locations/us-central1/models/TBL5318896295459422208

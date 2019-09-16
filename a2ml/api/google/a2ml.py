@@ -159,11 +159,11 @@ class GoogleA2ML(object):
             self.ctx.log("Model still training...")
 
     def deploy(self, model_id, locally=False):
-        self.ctx.log('Google Deploy'.format(model_id))
+        self.ctx.log('Google Deploy model ID: {}'.format(model_id))
         if (model_id is None):
             model_name = self.model_name
         else:
-            model_name = self.client.model_path(self.project_id, self.compute_region, self.id)
+            model_name = self.client.model_path(self.project_id, self.compute_region, model_id)
         try: 
             self.ctx.log('Deploy model: {}'.format(self.model_name))
             response = self.client.deploy_model(self.model_name)
