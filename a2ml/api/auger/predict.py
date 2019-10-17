@@ -34,11 +34,11 @@ class AugerPredict(AugerBase):
 
     def _predict_on_cloud(self, filename, model_id, threshold=None):
         target = self.ctx.config['config'].get('target', None)
-        df = DataFrame.load(filename, target)
+        records, features = DataFrame.load_records(filename, target)
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
         predictions = pipeline_api.predict(
-            df.values.tolist(), df.columns.get_values().tolist(), threshold)
+            records, features, threshold)
 
         predicted = os.path.splitext(filename)[0] + "_predicted.csv"
         DataFrame.save(predicted, predictions)
