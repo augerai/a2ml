@@ -76,7 +76,7 @@ setup(
     extras_require=extras,
     entry_points={
         'console_scripts': [
-            'a2ml='
+            'a2ml=a2ml.cmdl.cmdl:cmdl'
         ]
     },
     cmdclass={
