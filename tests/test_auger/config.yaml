@@ -1,3 +1,4 @@
+debug: false
 # project name
 name: moneyball
 # List of providers: auger, google, azure
