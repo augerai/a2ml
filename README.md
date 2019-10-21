@@ -150,7 +150,7 @@ $ pip install virtualenv virtualenvwrapper
 Clone A2ML:
 
 ```
-$ git clone https://github.com/augeraiinc/a2ml.git
+$ git clone https://github.com/augerai/a2ml.git
 ```
 
 Setup dependencies and A2ML command line:
