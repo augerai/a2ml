@@ -26,9 +26,9 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'click','scikit-learn>=0.19.0','wheel==0.30.0',
+    'click','scikit-learn<=0.20.3,>=0.19.0','wheel==0.30.0',
     'requests','requests-toolbelt','shortuuid','ruamel.yaml<=0.15.89,>=0.15.35',
-    'pandas>=0.23.4','auger-hub-api-client>=0.6.1', 'auger.ai'
+    'pandas==0.23.4','auger-hub-api-client>=0.6.1', 'auger.ai'
 ]
 
 extras = {

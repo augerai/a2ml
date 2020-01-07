@@ -3,7 +3,7 @@
 experiment:
   metric: spearman_correlation
 
-cluster: 
+cluster:
   region: eastus2
   name: cpucluster
   min_nodes: 0
@@ -12,6 +12,4 @@ cluster:
 
 file_share: a2ml
 account_name: 
-account_key: 
-
-
+account_key:

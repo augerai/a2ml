@@ -1,21 +1,21 @@
-import lightgbm as lgb
-import numpy as np
-import pandas as pd
 import os
 import logging
-import azureml.core 
+import numpy as np
+import pandas as pd
+import azureml.core
 from azureml.core import Workspace
 from azureml.core import Experiment
 from azureml.core.compute import AmlCompute
 from azureml.core.compute import ComputeTarget
-from sklearn.model_selection import train_test_split
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 import azureml.dataprep as dprep
 
 from a2ml.api import a2ml
-class AzureA2ML(object):  
-    def __init__(self,ctx):
+
+
+class AzureA2ML(object):
+    def __init__(self, ctx):
         self.ctx = ctx
         self.name = ctx.config['config'].get('name',None)
         self.source = ctx.config['config'].get('source', None)
@@ -23,7 +23,7 @@ class AzureA2ML(object):
         self.exclude = ctx.config['config'].get('exclude',None)
 
         # global experiment settings
-        # experiment: 
+        # experiment:
         #   cross_validation_folds: 5
         #   max_total_time: 60
         #   max_eval_time: 1
@@ -47,12 +47,14 @@ class AzureA2ML(object):
         self.compute_max_nodes = ctx.config['azure'].get('cluster/max_nodes',4)
         self.compute_sku = ctx.config['azure'].get('cluster/type','STANDARD_D2_V2')
         # azure-specific file-related options
-        self.file_share = ctx.config['azure'].get('file_share',None)
-        self.account_name = ctx.config['azure'].get('account_name',None)
-        self.account_key = ctx.config['azure'].get('account_key',None)  
+        self.file_share = ctx.config['azure'].get('file_share', None)
+        self.account_name = ctx.config['azure'].get('account_name', None)
+        self.account_key = ctx.config['azure'].get('account_key', None)
         # example: https://autoautostorage68c87c828.file.core.windows.net/a2ml/baseball.csv
+        # print('account_name: ', self.account_name,
+        #     'file_share: ', self.file_share, 'source: ', self.source)
         default_data_file = "https://" + self.account_name + ".file.core.windows.net/" + self.file_share + "/" + os.path.basename(self.source)
-        self.data_file = ctx.config['azure'].get('file_share',default_data_file)         
+        self.data_file = ctx.config['azure'].get('file_share',default_data_file)
 
         # check core SDK version number
         print("Azure ML SDK Version: {}".format(azureml.core.VERSION))
@@ -61,16 +63,16 @@ class AzureA2ML(object):
             self.ws = Workspace.from_config(path='./.azureml/config.json')
         except:  # or create a new one
             self.ws = Workspace.create(name=self.workspace,
-                        subscription_id=self.subscription_id,	
+                        subscription_id=self.subscription_id,
                         resource_group=self.resource_group,
                         create_resource_group=True,
                         location=self.compute_region)
-        self.ws.write_config() 
+        self.ws.write_config()
         if self.compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[self.compute_cluster]
             if compute_target and type(compute_target) is AmlCompute:
                 print('Found compute target. Just use it: ' + self.compute_cluster)
-        else: 
+        else:
             print('Creating new AML compute context.')
             provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.compute_sku, min_nodes=self.compute_min_nodes, max_nodes=self.compute_max_nodes)
             compute_target = ComputeTarget.create(self.ws, self.compute_cluster, provisioning_config)
@@ -78,13 +80,13 @@ class AzureA2ML(object):
 
     def upload_file(self,source_file):
         print("Copying {} to {}".format(self.source,self.file_share))
-        cmd = "az storage file upload --source " + self.source 
+        cmd = "az storage file upload --source " + self.source
         cmd = cmd +  " --share-name " + self.file_share
         cmd = cmd + " --account-name " + self.account_name + " --account-key " + self.account_key
         print("Running command: {}".format(cmd))
         result = os.system(cmd)
-        print("Result of local copy to Azure file share: {}".format(result)) 
-    
+        print("Result of local copy to Azure file share: {}".format(result))
+
     def import_data(self):
         self.exp = Experiment(workspace=self.ws, name=self.name)
         self.project_folder = './project'
@@ -103,7 +105,7 @@ class AzureA2ML(object):
         print("Current working directory: {}".format(os.getcwd()))
         template = open("get_data.template","r")
         text = template.read()
-        template.close 
+        template.close
         print("Replacing $SOURCE with: {}".format(self.data_file))
         text=text.replace("$SOURCE",self.data_file)
         text=text.replace("$TARGET",self.target)
@@ -112,7 +114,7 @@ class AzureA2ML(object):
         script.write(text)
         script.close
 
-    def train(self):   
+    def train(self):
         automl_settings = {
             "iteration_timeout_minutes" : self.iteration_timeout_minutes,
             "iterations" : self.max_n_trials,
@@ -129,7 +131,7 @@ class AzureA2ML(object):
                                     compute_target = self.compute_cluster,
                                     data_script = "./get_data.py",
                                     **automl_settings
-                                    ) 
+                                    )
         experiment=Experiment(self.ws, 'automl_remote')
         print("Submitting training run: {}:".format(self.ws))
         remote_run = experiment.submit(self.automl_config, show_output=True)
