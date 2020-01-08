@@ -37,7 +37,8 @@ class AzureA2ML(object):
         self.max_n_trials = ctx.config['config'].get('experiment/max_n_trials',10)
         self.use_ensemble = ctx.config['config'].get('experiment/use_ensemble',False)
         # per provider compute settings
-        self.subscription_id = ctx.config['azure'].get('subscription_id',os.environ.get("AZURE_SUBSCRIPTION_ID"))
+        self.subscription_id = ctx.config['azure'].get('subscription_id',
+            os.environ.get("AZURE_SUBSCRIPTION_ID"))
         self.workspace = ctx.config['azure'].get('workspace',self.name+'_ws')
         self.resource_group = ctx.config['azure'].get('resource_group',self.name+'_resources')
         # cluster specific options
@@ -53,29 +54,25 @@ class AzureA2ML(object):
         # example: https://autoautostorage68c87c828.file.core.windows.net/a2ml/baseball.csv
         # print('account_name: ', self.account_name,
         #     'file_share: ', self.file_share, 'source: ', self.source)
-        default_data_file = "https://" + self.account_name + ".file.core.windows.net/" + self.file_share + "/" + os.path.basename(self.source)
-        self.data_file = ctx.config['azure'].get('file_share',default_data_file)
+        default_data_file = "https://" + self.account_name +\
+            ".file.core.windows.net/" + self.file_share + "/" +\
+            os.path.basename(self.source)
+        self.data_file = ctx.config['azure'].get('file_share', default_data_file)
 
-        # check core SDK version number
-        print("Azure ML SDK Version: {}".format(azureml.core.VERSION))
-        print("Current directory: {}".format(os.getcwd()))
-        try:  # get the preloaded workspace definition
-            self.ws = Workspace.from_config(path='./.azureml/config.json')
-        except:  # or create a new one
-            self.ws = Workspace.create(name=self.workspace,
-                        subscription_id=self.subscription_id,
-                        resource_group=self.resource_group,
-                        create_resource_group=True,
-                        location=self.compute_region)
-        self.ws.write_config()
+        # get the preloaded workspace definition
+        self.ws = Workspace.from_config()
+
         if self.compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[self.compute_cluster]
             if compute_target and type(compute_target) is AmlCompute:
                 print('Found compute target. Just use it: ' + self.compute_cluster)
         else:
             print('Creating new AML compute context.')
-            provisioning_config = AmlCompute.provisioning_configuration(vm_size=self.compute_sku, min_nodes=self.compute_min_nodes, max_nodes=self.compute_max_nodes)
-            compute_target = ComputeTarget.create(self.ws, self.compute_cluster, provisioning_config)
+            provisioning_config = AmlCompute.provisioning_configuration(
+                vm_size=self.compute_sku, min_nodes=self.compute_min_nodes,
+                max_nodes=self.compute_max_nodes)
+            compute_target = ComputeTarget.create(
+                self.ws, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
     def upload_file(self,source_file):

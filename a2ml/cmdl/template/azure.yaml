@@ -10,6 +10,6 @@ cluster:
   max_nodes: 4
   type: STANDARD_D2_V2
 
-file_share: a2ml
-account_name: 
+file_share:
+account_name:
 account_key:
