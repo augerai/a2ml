@@ -1,10 +1,12 @@
 import os
+import time
 import logging
 import numpy as np
 import pandas as pd
 import azureml.core
 from azureml.core import Workspace
 from azureml.core import Experiment
+from azureml.core.dataset import Dataset
 from azureml.core.compute import AmlCompute
 from azureml.core.compute import ComputeTarget
 from azureml.train.automl import AutoMLConfig
@@ -30,6 +32,9 @@ class AzureA2ML(object):
         #   max_n_trials: 10
         #   use_ensemble: true
         # per provider experiment settings
+        self.model_type = ctx.config['config'].get('model_type', None)
+        if (self.model_type == None):
+            raise Exception('Please specify model_type')
         self.metric = ctx.config['azure'].get('experiment/metric','spearman_correlation')
         self.cross_validation_folds = ctx.config['azure'].get('experiment/cross_validation_folds',5)
         self.max_total_time = ctx.config['config'].get('experiment/max_total_time',60)
@@ -75,44 +80,20 @@ class AzureA2ML(object):
                 self.ws, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
 
-    def upload_file(self,source_file):
-        print("Copying {} to {}".format(self.source,self.file_share))
-        cmd = "az storage file upload --source " + self.source
-        cmd = cmd +  " --share-name " + self.file_share
-        cmd = cmd + " --account-name " + self.account_name + " --account-key " + self.account_key
-        print("Running command: {}".format(cmd))
-        result = os.system(cmd)
-        print("Result of local copy to Azure file share: {}".format(result))
-
     def import_data(self):
-        self.exp = Experiment(workspace=self.ws, name=self.name)
-        self.project_folder = './project'
-        output = {}
-        output['SDK version'] = azureml.core.VERSION
-        output['Subscription ID'] = self.ws.subscription_id
-        output['Workspace'] = self.ws.name
-        output['Resource Group'] = self.ws.resource_group
-        output['Location'] = self.ws.location
-        output['Project Directory'] = self.project_folder
-        pd.set_option('display.max_colwidth', -1)
-        pd.DataFrame(data=output, index=['']).T
-        self.upload_file(self.source)
-
-    def generate_data_script(self):
-        print("Current working directory: {}".format(os.getcwd()))
-        template = open("get_data.template","r")
-        text = template.read()
-        template.close
-        print("Replacing $SOURCE with: {}".format(self.data_file))
-        text=text.replace("$SOURCE",self.data_file)
-        text=text.replace("$TARGET",self.target)
-        print("Generated data script contents: {}".format(text))
-        script = open(self.data_script,"w")
-        script.write(text)
-        script.close
+        ds = self.ws.get_default_datastore()
+        ds.upload_files(files=[self.source], relative_root=None,
+            target_path=None, overwrite=True, show_progress=True)
 
     def train(self):
+        print('trainig on: ', os.path.basename(self.source))
+        ds = self.ws.get_default_datastore()
+        training_data = Dataset.Tabular.from_delimited_files(
+            path=ds.path(os.path.basename(self.source)))
+        # training_data.drop_columns(columns)
+
         automl_settings = {
+            "name": "AutoML_Experiment_{0}".format(time.time()),
             "iteration_timeout_minutes" : self.iteration_timeout_minutes,
             "iterations" : self.max_n_trials,
             "primary_metric" : self.metric,
@@ -120,19 +101,19 @@ class AzureA2ML(object):
             "n_cross_validations": self.cross_validation_folds,
             "enable_stack_ensemble": self.use_ensemble
         }
-        self.data_script = "get_data.py"
-        self.generate_data_script()
-        self.automl_config = AutoMLConfig(task='regression',
-                                    path = os.getcwd(),
-                                    debug_log='automl_errors.log',
-                                    compute_target = self.compute_cluster,
-                                    data_script = "./get_data.py",
-                                    **automl_settings
-                                    )
+
+        self.automl_config = AutoMLConfig(
+            task=self.model_type,
+            debug_log='automl_errors.log',
+            path = os.getcwd(),
+            compute_target = self.compute_cluster,
+            training_data=training_data,
+            label_column_name=self.target,
+            **automl_settings)
+
         experiment=Experiment(self.ws, 'automl_remote')
-        print("Submitting training run: {}:".format(self.ws))
+        print("Submitting training run...")
         remote_run = experiment.submit(self.automl_config, show_output=True)
-        print("Results of training run: {}:".format(remote_run))
 
     def evaluate(self):
         pass
