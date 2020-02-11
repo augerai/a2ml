@@ -64,8 +64,14 @@ class AzureA2ML(object):
             os.path.basename(self.source)
         self.data_file = ctx.config['azure'].get('file_share', default_data_file)
 
-        # get the preloaded workspace definition
-        self.ws = Workspace.from_config()
+        try:  # get the preloaded workspace definition
+            self.ws = Workspace.from_config()
+        except:  # or create a new one
+            self.ws = Workspace.create(name=self.workspace,
+                        subscription_id=self.subscription_id,
+                        resource_group=self.resource_group,
+                        create_resource_group=True,
+                        location=self.compute_region)
 
         if self.compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[self.compute_cluster]
