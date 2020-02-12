@@ -79,6 +79,7 @@ class AzureA2ML(object):
             compute_target = ComputeTarget.create(
                 self.ws, self.compute_cluster, provisioning_config)
             compute_target.wait_for_completion(show_output = True)
+        self.compute_target = compute_target
 
     def import_data(self):
         ds = self.ws.get_default_datastore()
@@ -106,7 +107,7 @@ class AzureA2ML(object):
             task=self.model_type,
             debug_log='automl_errors.log',
             path = os.getcwd(),
-            compute_target = self.compute_cluster,
+            compute_target = self.compute_target,
             training_data=training_data,
             label_column_name=self.target,
             **automl_settings)
