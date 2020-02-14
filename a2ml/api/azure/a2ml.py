@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import logging
 import numpy as np
 import pandas as pd
@@ -17,6 +18,7 @@ from azureml.train.automl.run import AutoMLRun
 from azureml.core.model import InferenceConfig
 from azureml.core.webservice import AciWebservice
 from azureml.core.webservice import Webservice
+from azureml.exceptions import WebserviceException
 from azureml.core.model import Model
 
 from a2ml.api import a2ml
@@ -167,6 +169,9 @@ class AzureA2ML(object):
         else:
             self.ctx.log('Pleae provide Run ID (experiment/run_id) to evaluate')
 
+    def _aci_service_name(self, model_name):
+        return (model_name+'-service').lower()
+
     def deploy(self, model_id, locally=False):
 # samples
 # https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/deployment/deploy-to-cloud/model-register-and-deploy.ipynb
@@ -213,8 +218,15 @@ class AzureA2ML(object):
         # with a letter, end with a letter or number, and be between 3 and 32
         # characters long.
         # TBD - service_name + suffix must satisfy requiremets
-        aci_service_name = '%s-service-01' % service_name
+        aci_service_name = self._aci_service_name(model_name)
         print(aci_service_name)
+
+        # Remove any existing service under the same name.
+        try:
+            Webservice(self.ws, aci_service_name).delete()
+        except WebserviceException:
+            pass
+
         aci_service = Model.deploy(
             self.ws,
             aci_service_name,
@@ -225,7 +237,32 @@ class AzureA2ML(object):
         print(aci_service.state)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
-        # response = aci_service.run(input_data = input_data)
+        if (locally):
+            print('Local predict is not implemeted yet...')
+            return
+
+        # TBD - add exclude to DataFrame.load_records
+        from auger.api.cloud.utils.dataframe import DataFrame
+        target = self.ctx.config['config'].get('target', None)
+        records, features = DataFrame.load_records(filename, target)
+        input_payload = json.dumps({'data': records})
+
+        experiment = Experiment(self.ws, 'automl_remote')
+        remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
+        model_name = remote_run.properties['model_name']
+
+        aci_service_name = self._aci_service_name(model_name)
+        aci_service = AciWebservice(self.ws, aci_service_name)
+        response = aci_service.run(input_data = input_payload)
+
+        rcdf = pd.DataFrame(records, columns = features)
+        rsdf = pd.DataFrame(
+            json.loads(response)['result'], columns = [target])
+        predictions = pd.concat([rcdf, rsdf], axis=1)
+        predicted = os.path.abspath(
+            os.path.splitext(filename)[0] + "_predicted.csv")
+        predictions.to_csv(predicted, index=False, encoding='utf-8')
+        self.ctx.log('Predictions are saved to %s' % predicted)
 
     def review(self):
         pass
