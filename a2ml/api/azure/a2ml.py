@@ -124,6 +124,8 @@ class AzureA2ML(object):
         print("Submitting training run...")
         remote_run = experiment.submit(self.automl_config, show_output=False)
         print('remote_run: ', remote_run.run_id)
+        self.ctx.config['azure'].yaml['experiment']['run_id'] = remote_run.run_id
+        self.ctx.config['azure'].write()
 
     def _get_leaderboard(self, remote_run):
         primary_metric = remote_run.properties['primary_metric']
