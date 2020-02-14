@@ -6,6 +6,7 @@ import pandas as pd
 import azureml.core
 from azureml.core import Workspace
 from azureml.core import Experiment
+from azureml.core import diagnostic_log
 from azureml.core.dataset import Dataset
 from azureml.core.compute import AmlCompute
 from azureml.core.compute import ComputeTarget
@@ -14,10 +15,13 @@ from azureml.core.experiment import Experiment
 from azureml.train.automl.run import AutoMLRun
 
 from a2ml.api import a2ml
+from a2ml.api.utils.formatter import print_table
 
+logging.basicConfig(level=logging.INFO)
 
 class AzureA2ML(object):
     def __init__(self, ctx):
+        diagnostic_log().start_capture()
         self.ctx = ctx
         self.name = ctx.config['config'].get('name',None)
         self.source = ctx.config['config'].get('source', None)
@@ -102,7 +106,7 @@ class AzureA2ML(object):
             "iteration_timeout_minutes" : self.iteration_timeout_minutes,
             "iterations" : self.max_n_trials,
             "primary_metric" : self.metric,
-            "verbosity" : logging.DEBUG,
+            "verbosity" : logging.INFO,
             "n_cross_validations": self.cross_validation_folds,
             "enable_stack_ensemble": self.use_ensemble
         }
@@ -121,24 +125,38 @@ class AzureA2ML(object):
         remote_run = experiment.submit(self.automl_config, show_output=False)
         print('remote_run: ', remote_run.run_id)
 
+    def _get_leaderboard(self, remote_run):
+        primary_metric = remote_run.properties['primary_metric']
+        children = list(remote_run.get_children(recursive=True))
+        leaderboard = pd.DataFrame(index=['model id', 'algorithm', 'score'])
+        goal_minimize = False
+        for run in children:
+            if('run_algorithm' in run.properties and 'score' in run.properties):
+                if(run.properties['run_preprocessor']):
+                    run_algorithm = '%s,%s' % (run.properties['run_preprocessor'],
+                        run.properties['run_algorithm'])
+                else:
+                    run_algorithm = run.properties['run_algorithm']
+                leaderboard[run.id] = [run.id,
+                                      run_algorithm,
+                                      float(run.properties['score'])]
+                if('goal' in run.properties):
+                    goal_minimize = run.properties['goal'].split('_')[-1] == 'min'
+
+        leaderboard = leaderboard.T.sort_values(
+            'score', ascending = goal_minimize)
+        leaderboard = leaderboard.head(10)
+        leaderboard.rename(columns={'score':primary_metric}, inplace=True)
+        return leaderboard
+
     def evaluate(self):
         run_id = self.ctx.config['azure'].get('experiment/run_id', None)
         if run_id:
             experiment = Experiment(self.ws, 'automl_remote')
             remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+            leaderboard = self._get_leaderboard(remote_run)
+            print_table(self.ctx.log,leaderboard.to_dict('records'))
             self.ctx.log('Status: %s' % remote_run.get_status())
-            summary = remote_run.summary()
-            for model in summary:
-                self.ctx.log('%s %s' % (model[0], model[2]))
-
-            min_trail = self.max_n_trials - 10;
-            if min_trail < 0:
-                min_trail = 0;
-
-            for index in range(min_trail, self.max_n_trials):
-                best_run, fitted_model = remote_run.get_output(iteration=index)
-                print('run_id: ', best_run)
-                print('model: ', fitted_model)
         else:
             self.ctx.log('Pleae provide Run ID (experiment/run_id) to evaluate')
 
