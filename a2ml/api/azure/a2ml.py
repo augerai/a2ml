@@ -13,6 +13,11 @@ from azureml.core.compute import ComputeTarget
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 from azureml.train.automl.run import AutoMLRun
+# deployment
+from azureml.core.model import InferenceConfig
+from azureml.core.webservice import AciWebservice
+from azureml.core.webservice import Webservice
+from azureml.core.model import Model
 
 from a2ml.api import a2ml
 from a2ml.api.utils.formatter import print_table
@@ -162,9 +167,65 @@ class AzureA2ML(object):
         else:
             self.ctx.log('Pleae provide Run ID (experiment/run_id) to evaluate')
 
-    def deploy(self):
-        pass
-    def predict(self,filepath,score_threshold):
-        pass
+    def deploy(self, model_id, locally=False):
+# samples
+# https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/deployment/deploy-to-cloud/model-register-and-deploy.ipynb
+# https://ml.azure.com/fileexplorer?wsid=/subscriptions/28ca7f62-a275-4222-aaa1-c8e9ec93adbb/resourceGroups/azure-iris_resources/workspaces/azure-iris_ws&tid=6d111df4-1dfb-481f-ac25-6ff206ab1ae0&activeFilePath=Samples/Python/1.0.83/how-to-use-azureml/automated-machine-learning/forecasting-orange-juice-sales/auto-ml-forecasting-orange-juice-sales.ipynb#Operationalize
+        if (locally):
+            print('Local deployment is not implemeted yet')
+            return
+
+        service_name = 'automl-remote'
+        experiment_run_id = self.ctx.config['azure'].get(
+            'experiment/run_id', None)
+
+        experiment = Experiment(self.ws, 'automl_remote')
+        remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
+        script_file_name = '.azureml/score_script.py'
+        remote_run.download_file(
+            'outputs/scoring_file_v_1_0_0.py', script_file_name)
+        model_name = remote_run.properties['model_name']
+        print('model_name: ', model_name)
+
+        description = '%s-%s' % (service_name, model_name)
+        print('description: ', description)
+        experiment_run = AutoMLRun(
+            experiment = experiment, run_id = experiment_run_id)
+        # do we need to check for already registered one?
+        model = experiment_run.register_model(
+            model_name = model_name,
+            description = description,
+            tags = None)
+
+        print('Deploying AciWebservice...')
+
+        inference_config = InferenceConfig(
+            environment = remote_run.get_environment(),
+            entry_script = script_file_name)
+
+        aciconfig = AciWebservice.deploy_configuration(
+            cpu_cores = 1,
+            memory_gb = 2,
+            tags = {'type': "%s-inference-service" % service_name},
+            description = "%s inference service" % service_name)
+
+        # It must only consist of lowercase letters, numbers, or dashes, start
+        # with a letter, end with a letter or number, and be between 3 and 32
+        # characters long.
+        # TBD - service_name + suffix must satisfy requiremets
+        aci_service_name = '%s-service-01' % service_name
+        print(aci_service_name)
+        aci_service = Model.deploy(
+            self.ws,
+            aci_service_name,
+            [model],
+            inference_config,
+            aciconfig)
+        aci_service.wait_for_deployment(True)
+        print(aci_service.state)
+
+    def predict(self, filename, model_id, threshold=None, locally=False):
+        # response = aci_service.run(input_data = input_data)
+
     def review(self):
         pass
