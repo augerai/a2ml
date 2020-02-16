@@ -20,10 +20,10 @@ class AugerConfig(object):
             kwargs.get('data_set_name', '')
         yaml['experiment']['experiment_session_id'] = \
             kwargs.get('experiment_session_id', '')
-        model_type = kwargs.get('model_type', None)
-        if model_type:
-            yaml['experiment']['metric'] = \
-                'f1_macro' if model_type == 'classification' else 'r2'
+        # model_type = kwargs.get('model_type', None)
+        # if model_type:
+        #     yaml['experiment']['metric'] = \
+        #         'f1_macro' if model_type == 'classification' else 'r2'
 
     @_with_auger_yaml
     def set_data_set(self, yaml, data_set_name):

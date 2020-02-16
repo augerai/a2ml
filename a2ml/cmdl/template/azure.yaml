@@ -1,7 +1,7 @@
 ---
 # experiment settings unique to Azure, currently just metric used for scoring
 experiment:
-  metric: spearman_correlation
+  metric: accuracy
 
 cluster:
   region: eastus2
