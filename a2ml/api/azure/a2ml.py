@@ -206,33 +206,65 @@ class AzureA2ML(object):
         aci_service.wait_for_deployment(True)
         print(aci_service.state)
 
-    def predict(self, filename, model_id, threshold=None, locally=False):
-        if (locally):
-            print('Local predict is not implemeted yet...')
-            return
-
-        # TBD - add exclude to DataFrame.load_records
+    def _save_predictions(self, df_predictions, filename):
+        predicted_path = os.path.abspath(
+            os.path.splitext(filename)[0] + "_predicted.csv")
+        df_predictions.to_csv(predicted_path, index=False, encoding='utf-8')
+        self.ctx.log('Predictions are saved to %s' % predicted_path)
+        
+    def _predict_local(self, predict_data, model_id, threshold):
         from auger.api.cloud.utils.dataframe import DataFrame
-        target = self.ctx.config['config'].get('target', None)
-        records, features = DataFrame.load_records(filename, target)
-        input_payload = json.dumps({'data': records})
 
         experiment = Experiment(self.ws, self.experiment_name)
-        remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
-        model_name = remote_run.properties['model_name']
+        run_id = model_id
+        iteration = None
+        parts = model_id.split('_')
+        if len(parts) > 2:
+            run_id = parts[0]+"_"+parts[1]
+            iteration = parts[2]
 
-        aci_service_name = self._aci_service_name(model_name)
-        aci_service = AciWebservice(self.ws, aci_service_name)
-        response = aci_service.run(input_data = input_payload)
+        #print(run_id)
+        #print(iteration)    
+        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+        best_run, fitted_model = remote_run.get_output(iteration=iteration)
 
-        rcdf = pd.DataFrame(records, columns = features)
-        rsdf = pd.DataFrame(
-            json.loads(response)['result'], columns = [target])
-        predictions = pd.concat([rcdf, rsdf], axis=1)
-        predicted = os.path.abspath(
-            os.path.splitext(filename)[0] + "_predicted.csv")
-        predictions.to_csv(predicted, index=False, encoding='utf-8')
-        self.ctx.log('Predictions are saved to %s' % predicted)
+        return fitted_model.predict(predict_data)
+
+    def predict(self, filename, model_id, threshold=None, locally=False):
+        from auger.api.cloud.utils.dataframe import DataFrame
+        target = self.ctx.config['config'].get('target', None)
+        predict_data = DataFrame.load(filename, target)
+
+        y_pred = []
+        if (locally):
+            y_pred = self._predict_local(predict_data, model_id, threshold)
+        else:    
+            input_payload = predict_data.to_json(orient='split', index=False)
+            # import requests
+            # headers = {'Content-Type': 'application/json; charset=utf-8'}
+            # scoring_uri = 'http://b2ddd7c1-697e-43a5-b050-ba48a77cbb56.eastus2.azurecontainer.io/score'
+            # resp = requests.post(scoring_uri, input_payload, headers=headers)
+            # print(resp.text)
+
+            experiment = Experiment(self.ws, self.experiment_name)
+            remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_name = remote_run.properties['model_name']
+
+            aci_service_name = self._aci_service_name(model_name)
+            aci_service = AciWebservice(self.ws, aci_service_name)
+            input_payload = json.loads(input_payload)
+            input_payload = {
+                'method': 'predict',
+                'data': input_payload['data']
+            }
+            input_payload = json.dumps(input_payload)
+            #print(input_payload)
+
+            response = aci_service.run(input_data = input_payload)
+            y_pred = json.loads(response)['result']
+
+        predict_data[target] = y_pred
+        self._save_predictions(predict_data, filename)
 
     def review(self):
         pass
