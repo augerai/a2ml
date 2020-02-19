@@ -1,5 +1,6 @@
 import os
 import codecs
+import sys
 
 from setuptools import setup
 from setuptools import find_packages
@@ -12,6 +13,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+
 class VerifyVersionCommand(install):
     """Verify that the git tag matches our version"""
     description = 'verify that the git tag matches our version'
@@ -20,22 +22,40 @@ class VerifyVersionCommand(install):
         tag = os.getenv('CIRCLE_TAG', '')
 
         if not tag.endswith(VERSION, 1):
-            info = "Git tag: {0} does not match the version of auger-cli: {1}".format(
+            info = "Git tag: {0} doesn't match version of a2ml: {1}".format(
                 tag, VERSION
             )
             sys.exit(info)
 
+
 install_requires = [
-    'click','scikit-learn<=0.20.3,>=0.19.0','wheel==0.30.0',
-    'requests','requests-toolbelt','shortuuid','ruamel.yaml<=0.15.89,>=0.15.35',
-    'pandas==0.23.4','auger-hub-api-client>=0.6.1', 'auger.ai'
+    'auger.ai',
+    'auger-hub-api-client>=0.6.1',
+    'click',
+    'pandas==0.23.4',
+    'ruamel.yaml<=0.15.89,>=0.15.35',
+    'scikit-learn<=0.20.3,>=0.19.0',
+    'shortuuid',
+    'wheel==0.30.0'
 ]
 
 extras = {
-    'testing': ['pytest', 'pytest-cov', 'pytest-xdist', 'flake8', 'mock'],
-    'azure': ['lightgbm<=2.2.1,>=2.0.11','scipy<=1.1.0,>=1.0.0',
-        'numpy<=1.16.2,>=1.11.0','azureml','azureml.core','azureml.train',
-        'azureml.train.automl'],
+    'testing': [
+        'flake8',
+        'mock',
+        'pytest',
+        'pytest-cov',
+        'pytest-xdist'
+    ],
+    'azure': [
+        'azureml',
+        'azureml.core',
+        'azureml.train',
+        'azureml.train.automl',
+        'lightgbm<=2.2.1,>=2.0.11',
+        'numpy<=1.16.2,>=1.11.0',
+        'scipy<=1.1.0,>=1.0.0'
+    ],
     'google': ['google-cloud-automl']
 }
 
@@ -48,8 +68,10 @@ extras['all'] = all_deps
 setup(
     name='a2ml',
     version='0.1',
-    description=('The A2ML ("Automate AutoML") project is a set of scripts to '
-                 'automate Automated Machine Learning tools from multiple vendors.'),
+    description=(
+        'The A2ML ("Automate AutoML") project is a set of scripts to '
+        'automate Automated Machine Learning tools from multiple vendors.'
+    ),
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Deep Learn',
