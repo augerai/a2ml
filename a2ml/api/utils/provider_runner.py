@@ -7,7 +7,12 @@ class ProviderRunner(object):
     def __init__(self, ctx):
         super(ProviderRunner, self).__init__()
         self.ctx = ctx
-        self.providers = self._load_providers()
+        try:
+            self.providers = self._load_providers()
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            raise e
 
     def execute(self, operation_name, *args, **kwargs):
         if len(self.providers) == 0:

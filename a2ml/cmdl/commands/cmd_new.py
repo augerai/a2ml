@@ -57,6 +57,12 @@ class NewCmd(object):
             config.yaml['model_type'] = self.model_type
             config.write()
 
+            if self.model_type != 'classification':
+                self.ctx.config['azure'].yaml['experiment']['metric'] = 'spearman_correlation'
+                self.ctx.config['azure'].write()
+                self.ctx.config['auger'].yaml['experiment']['metric'] = 'r2'
+                self.ctx.config['auger'].write()
+
             AugerConfig(self.ctx).config(
                 target = self.target,
                 source = self.source,

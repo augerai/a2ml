@@ -1,17 +1,15 @@
 ---
 # experiment settings unique to Azure, currently just metric used for scoring
 experiment:
-  metric: spearman_correlation
+  metric: accuracy
 
-cluster: 
+cluster:
   region: eastus2
   name: cpucluster
   min_nodes: 0
   max_nodes: 4
   type: STANDARD_D2_V2
 
-file_share: a2ml
-account_name: 
-account_key: 
-
-
+file_share:
+account_name:
+account_key:
