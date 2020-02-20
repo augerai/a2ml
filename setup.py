@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.1'
+VERSION = '0.1.0'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -69,7 +69,7 @@ extras['all'] = all_deps
 
 setup(
     name='a2ml',
-    version='0.1',
+    version=VERSION,
     description=(
         'The A2ML ("Automate AutoML") project is a set of scripts to '
         'automate Automated Machine Learning tools from multiple vendors.'
@@ -77,8 +77,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Deep Learn',
-    author_email='augerai@dplrn.com',
-    url='https://github.com/deeplearninc/a2ml',
+    author_email='hello@auger.ai',
+    url='https://github.com/augerai/a2ml',
     license='MIT',
     zip_safe=False,
     platforms='any',

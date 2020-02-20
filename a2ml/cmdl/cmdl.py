@@ -1,7 +1,5 @@
-import os
 import sys
 import click
-from a2ml.api.utils.context import Context
 from a2ml.api.utils.context import CONTEXT_SETTINGS
 from a2ml.api.utils.context import pass_context
 
@@ -20,6 +18,7 @@ COMMANDS = [
   'model'
 ]
 
+
 class A2mlCli(click.MultiCommand):
     def list_commands(self, ctx):
         return COMMANDS
@@ -30,7 +29,7 @@ class A2mlCli(click.MultiCommand):
                 name = name.encode('ascii', 'replace')
             mod = __import__('a2ml.cmdl.commands.cmd_' + name,
                              None, None, ['cli'])
-        except ImportError as e:
+        except ImportError:
             import traceback
             traceback.print_exc()
             return

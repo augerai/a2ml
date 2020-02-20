@@ -10,6 +10,7 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
 PROVIDERS = ['auger', 'google', 'azure']
 PROVIDERS_META = '|'.join(PROVIDERS)
 
+
 class Context(object):
 
     def __init__(self, name=''):
