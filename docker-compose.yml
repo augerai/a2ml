@@ -1,0 +1,36 @@
+---
+version: '2'
+services:
+  a2ml:
+    build: .
+    image: deeplearninc/a2ml
+    working_dir: /app
+    command: setup.py test
+    entrypoint: python
+    environment:
+      AWS_ACCESS_KEY_ID: secret
+      AWS_SECRET_ACCESS_KEY: strongsecret
+      BROKER_URL: amqp://guest:guest@rabbitmq
+      S3_ENDPOINT_URL: http://minio:9000
+    volumes:
+      - .:/app
+    depends_on:
+      - minio
+      - rabbitmq
+  minio:
+    image: minio/minio:RELEASE.2019-10-12T01-39-57Z
+    command: server --compat /data
+    ports:
+      - 9000:9000
+    volumes:
+      - ./tmp/data/:/data/
+    environment:
+      MINIO_ACCESS_KEY: secret
+      MINIO_SECRET_KEY: strongsecret
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+

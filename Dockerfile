@@ -33,9 +33,9 @@ ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
 COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
-#COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
+COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
 COPY --from=builder /usr/local/bin/a2ml /usr/local/bin/a2ml
 COPY --from=builder $WORKDIR $WORKDIR
-#COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
+COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 
 ENTRYPOINT /usr/local/bin/a2ml

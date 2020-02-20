@@ -31,6 +31,7 @@ class VerifyVersionCommand(install):
 install_requires = [
     'auger.ai',
     'auger-hub-api-client>=0.6.1',
+    'celery',
     'click',
     'pandas==0.23.4',
     'ruamel.yaml<=0.15.89,>=0.15.35',
@@ -45,6 +46,7 @@ extras = {
         'mock',
         'pytest',
         'pytest-cov',
+        'pytest-runner',
         'pytest-xdist'
     ],
     'azure': [
@@ -96,6 +98,7 @@ setup(
     ],
     install_requires=install_requires,
     extras_require=extras,
+    tests_require=extras['testing'],
     entry_points={
         'console_scripts': [
             'a2ml=a2ml.cmdl.cmdl:cmdl'
