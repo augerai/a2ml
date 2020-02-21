@@ -52,7 +52,9 @@ extras = {
     'azure': [
         'azureml-sdk[automl]'
     ],
-    'google': ['google-cloud-automl']
+    'google': [
+        'google-cloud-automl'
+    ]
 }
 
 # Meta dependency groups.
