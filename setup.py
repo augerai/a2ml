@@ -47,7 +47,8 @@ extras = {
         'pytest',
         'pytest-cov',
         'pytest-runner',
-        'pytest-xdist'
+        'pytest-xdist',
+        'tox'
     ],
     'azure': [
         'azureml-sdk[automl]'
@@ -110,5 +111,5 @@ setup(
             'cmdl/template/*.template',
             'cmdl/template/*.yaml'
         ]
-    },
+    }
 )

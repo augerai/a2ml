@@ -4,7 +4,6 @@ import json
 import logging
 import numpy as np
 import pandas as pd
-import azureml.core
 from azureml.core import Workspace
 from azureml.core import Experiment
 from azureml.core import diagnostic_log

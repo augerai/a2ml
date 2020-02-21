@@ -11,7 +11,7 @@ WORKDIR $WORKDIR
 COPY a2ml/ $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
 COPY LICENSE README.md $WORKDIR/
-COPY setup.cfg setup.py $WORKDIR/
+COPY setup.py $WORKDIR/
 
 RUN pip install -e ".[all]"
 RUN find /usr/local/lib/python3.7 \

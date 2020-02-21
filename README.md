@@ -162,7 +162,7 @@ $ pip install -e ".[all]"
 Running tests and getting test coverage:
 
 ```
-$ pytest --cov='a2ml' --cov-report html tests/  
+$ tox
 ```
 
 ## Implementing A2ML for Another AutoML Provider

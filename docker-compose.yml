@@ -5,8 +5,8 @@ services:
     build: .
     image: deeplearninc/a2ml
     working_dir: /app
-    command: setup.py test
-    entrypoint: python
+    command: tox
+    entrypoint: /bin/bash
     environment:
       AWS_ACCESS_KEY_ID: secret
       AWS_SECRET_ACCESS_KEY: strongsecret
