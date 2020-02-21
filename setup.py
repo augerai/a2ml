@@ -50,13 +50,7 @@ extras = {
         'pytest-xdist'
     ],
     'azure': [
-        'azureml',
-        'azureml.core',
-        'azureml.train',
-        'azureml.train.automl',
-        'lightgbm<=2.2.1,>=2.0.11',
-        'numpy<=1.16.2,>=1.11.0',
-        'scipy<=1.1.0,>=1.0.0'
+        'azureml-sdk[automl]'
     ],
     'google': ['google-cloud-automl']
 }
