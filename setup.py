@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -107,5 +107,12 @@ setup(
     cmdclass={
         'verify': VerifyVersionCommand
     },
-    packages=find_packages()
+    packages=find_packages(),
+    package_data={
+        'a2ml': [
+            'api/azure/*.template',
+            'cmdl/template/*.template',
+            'cmdl/template/*.yaml'
+        ]
+    },
 )
