@@ -1,0 +1,14 @@
+**/*.pyc
+**/__pycache__
+*.egg
+*.egg-info
+.circleci/
+.env/
+.git/
+.pytest_cache/
+.tox/
+.venv/
+.vscode/
+build/
+dist/
+mnt/

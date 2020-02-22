@@ -6,7 +6,9 @@ services:
     image: deeplearninc/a2ml
     working_dir: /app
     command: tox
-    entrypoint: /bin/bash
+    entrypoint:
+      - /bin/bash
+      - -c
     environment:
       AWS_ACCESS_KEY_ID: secret
       AWS_SECRET_ACCESS_KEY: strongsecret
