@@ -8,4 +8,4 @@ class AugerDataset(DataSetCmd):
         super(AugerDataset, self).__init__(ctx)
         self.ctx.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            self.ctx.credentials.api_url, self.ctx.credentials.token, debug=self.ctx.debug)
+            self.ctx.credentials.api_url, self.ctx.credentials.token)
