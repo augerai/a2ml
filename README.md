@@ -71,6 +71,7 @@ model_name: projects/291533092938/locations/us-central1/models/TBL15173700267959
 
 #### AUGER.YAML
 Here's an example configuration file for Auger.AI
+
 ``` auger.yaml
 project: test_app
 dataset: some_test_data
@@ -163,6 +164,51 @@ Running tests and getting test coverage:
 
 ```
 $ tox
+```
+
+## Authentication with A2ML
+
+### Authenticating with Auger.AI
+You can login to Auger.AI with the a2ml auth login command.
+
+```
+a2ml auth login
+```
+You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.
+
+```
+export AUGER_CREDENTIALS=~/auger_credentials.json
+```
+You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
+
+The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML for you. If you choose to set up your own endpoints, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running from.  Here are abbreviated directions for that step for Google, Azure and Auger.
+
+### Google Cloud AutoML
+If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the GOOGLE_APPLICATION CREDENTIALS environment variable to point to the saved file.  For example:
+
+```
+export GOOGLE_APPLICATION_CREDENTIALS="/Users/adamblum/a2ml/automl.json"
+```
+
+For ease of use you can set up a default project ID to use with your project with the PROJECT_ID environment variable. For example:  
+
+```
+export PROJECT_ID="automl-test-237311"
+```
+
+Detailed instructions for setting up Google Cloud AutoML are [here](https://cloud.google.com/vision/automl/docs/before-you-begin)])    
+
+### Azure AutoML
+The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:
+
+```
+**/.azureml/config.json
+```
+
+The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.
+
+```
+export AZURE_SUBSCRIPTION_ID="d1b17dd2-ba8a-4492-9b5b-10c6418420ce"
 ```
 
 ## Implementing A2ML for Another AutoML Provider
