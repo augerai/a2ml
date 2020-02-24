@@ -165,6 +165,25 @@ Running tests and getting test coverage:
 $ tox
 ```
 
+## Authentication with A2ML
+
+There is no explicit authentication step with A2ML. It assumes that the underlying AutoML service has been configured correctly to run on the server you are running from.  Here are abbreviated directions for that step.
+
+### Google Cloud AutoML
+If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the GOOGLE_APPLICATION CREDENTIALS environment variable to point to the saved file.  For example:
+
+```
+export GOOGLE_APPLICATION_CREDENTIALS="/Users/adamblum/a2ml/automl.json"
+```
+
+For ease of use you can set up a default project ID to use with your project with the PROJECT_ID environment variable. For example:  
+
+```
+export PROJECT_ID="automl-test-237311"
+```
+
+Detailed instructions for setting up Google Cloud AutoML [here](https://cloud.google.com/vision/automl/docs/before-you-begin)])    
+
 ## Implementing A2ML for Another AutoML Provider
 The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
 
