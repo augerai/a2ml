@@ -20,6 +20,11 @@ class AugerBase(object):
             self.ctx.log('Starting Project to process request...')
             self.project_api.start()
 
+    def stop_project(self):
+        self._ensure_org_and_project()
+        self.ctx.log('Stopping Project to process request...')
+        self.project_api.stop()
+
     def _ensure_org_and_project(self):
         """Ensure there are org and project to work with"""
 

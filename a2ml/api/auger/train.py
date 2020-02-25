@@ -16,11 +16,17 @@ class AugerTrain(AugerBase):
         self.credentials.verify()
 
         self.start_project()
+        self.ctx.log('Project started')
+
+        # self.stop_project()
 
         data_set_name = self.ctx.config['auger'].get('dataset')
         if data_set_name is None:
             raise AugerException(
                 'Plese specify DataSet name in auger.yaml/dataset')
+
+        # experiment_api = AugerExperimentApi(self.ctx, self.project_api, 
+        #     self.ctx.config['auger'].get('experiment/name'))
 
         experiment_api = AugerExperimentApi(self.ctx, self.project_api)
         experiment_api.create(data_set_name)

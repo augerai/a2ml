@@ -13,9 +13,9 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
-    def __init__(self, name=''):
+    def __init__(self, name='', path=None):
         super(Context, self).__init__()
-        self.load_config()
+        self.load_config(path)
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
