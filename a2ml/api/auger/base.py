@@ -12,7 +12,7 @@ class AugerBase(object):
         self.ctx = ctx
         self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            self.credentials.api_url, self.credentials.token, debug=self.ctx.debug)
+            self.credentials.api_url, self.credentials.token)
 
     def start_project(self):
         self._ensure_org_and_project()
