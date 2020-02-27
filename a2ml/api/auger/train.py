@@ -17,7 +17,7 @@ class AugerTrain(AugerBase):
 
         self.start_project()
 
-        data_set_name = self.ctx.config['auger'].get('dataset')
+        data_set_name = self.ctx.config.get('dataset')
         if data_set_name is None:
             raise AugerException(
                 'Plese specify DataSet name in auger.yaml/dataset')

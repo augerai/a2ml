@@ -50,7 +50,7 @@ class Credentials(object):
 
     def _path_to_credentials(self):
         default_path = '%s/.augerai' % os.environ.get('HOME', os.getcwd())
-        creds_path = os.path.abspath(self.ctx.get_config('auger').get(
+        creds_path = os.path.abspath(self.ctx.config.get(
             'path_to_credentials', default_path))
         return os.environ.get('AUGER_CREDENTIALS_PATH', creds_path)
 

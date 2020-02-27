@@ -47,21 +47,21 @@ class NewCmd(object):
                 ' cd %s && a2ml import && a2ml train' % \
                 self.project_name)
 
-            self.ctx.load_config(project_path)
-            config = self.ctx.config['config']
-            config.yaml['providers'] = \
-                PROVIDERS if self.providers == 'all' else self.providers
-            config.yaml['name'] = self.project_name
-            config.yaml['target'] = self.target
-            config.yaml['source'] = self.source
-            config.yaml['model_type'] = self.model_type
-            config.write()
+            config = self.ctx.config
+            config.load(project_path, True)
+            config.set('config', 'providers',
+                PROVIDERS if self.providers == 'all' else self.providers)
+            config.set('config', 'name', self.project_name)
+            config.set('config', 'target', self.target)
+            config.set('config', 'source', self.source)
+            config.set('config', 'model_type', self.model_type)
+            config.write('config')
 
             if self.model_type != 'classification':
-                self.ctx.config['azure'].yaml['experiment']['metric'] = 'spearman_correlation'
-                self.ctx.config['azure'].write()
-                self.ctx.config['auger'].yaml['experiment']['metric'] = 'r2'
-                self.ctx.config['auger'].write()
+                self.ctx.config.set('azure', 'experiment/metric', 'spearman_correlation')
+                self.ctx.config.write('azure')
+                self.ctx.config.set('auger', 'experiment/metric', 'r2')
+                self.ctx.config.write('auger')
 
             AugerConfig(self.ctx).config(
                 target = self.target,

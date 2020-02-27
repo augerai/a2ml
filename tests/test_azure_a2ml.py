@@ -16,6 +16,6 @@ class TestAzureA2ML():
     def test_import_data(self):
         print("Current directory: {}".format(os.getcwd()))
         self.ctx = Context()
-        print("Project name: {}".format(self.ctx.config['config'].name))
-        a2ml=AzureA2ML(self.ctx)
+        print("Project name: {}".format(self.ctx.config.get('name')))
+        a2ml=AzureA2ML(self.ctx.copy('azure'))
         a2ml.import_data()
