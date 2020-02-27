@@ -1,5 +1,5 @@
 # a2ml - Automation of AutoML
-Th A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
+The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
 
 ## The PREDIT Pipeline
 Every AutoML vendor has their own API to manage the datasets and create and
@@ -17,14 +17,13 @@ and a command line interface that invokes stages of the pipeline.
 
 ## Command Line Interface
 
-The command line is a convenient way to start an A2ML project even if you plan to use
-the API.  
+The command line is a convenient way to start an A2ML project even if you plan to use the API.  
 
 ### Creating a New A2ML Project
 Specifically, you can start a new A2ML project with the new command supplying a project name.  A2ML will create a directory which has a default set of configuration files that you can then more specifically configure.
 
-```
-a2ml new test_app
+```sh
+$ a2ml new test_app
 ```
 
 ### Configuring Your A2ML Project
@@ -47,7 +46,7 @@ Examples of options which apply to specific vendors include:
 
 Here is an example CONFIG.YAML with options that apply to all AutoML providers:
 
-```
+```yaml
 name: moneyball
 providers: google,azure,auger
 source: gs://moneyball/baseball.csv
@@ -59,7 +58,7 @@ budget: 3600
 
 #### GOOGLE.YAML Configuration
 Here is an example specific configuration file (google.yaml) for Google AutoML for this project:
-```
+```yaml
 region: us-central1
 metric: MINIMIZE_MAE
 project: automl-test-237311
@@ -72,7 +71,7 @@ model_name: projects/291533092938/locations/us-central1/models/TBL15173700267959
 #### AUGER.YAML
 Here's an example configuration file for Auger.AI
 
-``` auger.yaml
+```yaml
 project: test_app
 dataset: some_test_data
 
@@ -99,7 +98,7 @@ A2ML Python API.
 Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.
 
 Usage:
-```
+```sh
 $ a2ml [OPTIONS] COMMAND [ARGS]...
 ```
 Commands:
@@ -117,7 +116,7 @@ Commands:
 
 To get detailed information on available options for each command, please run:
 
-```
+```sh
 $ a2ml command --help
 ```
 
@@ -131,7 +130,7 @@ to a Context() object.  Then you can create a client for the A2ML class.
 From that client object you will execute the various PREDIT pipeline methods
 (starting from "import_data"). Below is example Python code for this.
 
-```
+```python
 import os
 from a2ml.api.a2ml import A2ML
 from a2ml.api.utils.context import Context
@@ -144,39 +143,40 @@ result = a2ml.import_data()
 
 We strongly recommend to install Python virtual environment:
 
-```
+```sh
 $ pip install virtualenv virtualenvwrapper
 ```
 
 Clone A2ML:
 
-```
+```sh
 $ git clone https://github.com/augerai/a2ml.git
 ```
 
 Setup dependencies and A2ML command line:
 
-```
+```sh
 $ pip install -e ".[all]"
 ```
 
 Running tests and getting test coverage:
 
-```
+```sh
 $ tox
 ```
 
 ## Authentication with A2ML
+Authentication with A2ML involves two parts. First, there is authentication between your client (whether it's the `a2ml` cli or the `a2ml` python API) and the service endpoint (either self-hosted or with Auger.AI). Second, there is authentication between the service endpoint and each provider. Note that in the case where you run A2ML locally, endpoint authentication is handled automatically. The table at the end of this section shows this in more detail.
 
 ### Authenticating with Auger.AI
-You can login to Auger.AI with the a2ml auth login command.
+You can login to the Auger.AI endpoint and provider with the `a2ml auth login` command.
 
-```
+```sh
 a2ml auth login
 ```
 You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.
 
-```
+```sh
 export AUGER_CREDENTIALS=~/auger_credentials.json
 ```
 You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
@@ -186,13 +186,13 @@ The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML f
 ### Google Cloud AutoML
 If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the GOOGLE_APPLICATION CREDENTIALS environment variable to point to the saved file.  For example:
 
-```
+```sh
 export GOOGLE_APPLICATION_CREDENTIALS="/Users/adamblum/a2ml/automl.json"
 ```
 
 For ease of use you can set up a default project ID to use with your project with the PROJECT_ID environment variable. For example:  
 
-```
+```sh
 export PROJECT_ID="automl-test-237311"
 ```
 
@@ -201,33 +201,45 @@ Detailed instructions for setting up Google Cloud AutoML are [here](https://clou
 ### Azure AutoML
 The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:
 
-```
+```sh
 **/.azureml/config.json
 ```
 
 The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.
 
-```
+```sh
 export AZURE_SUBSCRIPTION_ID="d1b17dd2-ba8a-4492-9b5b-10c6418420ce"
 ```
+
+### A2ML Authentication Components
+The following shows which authentication components are necessary depending on your A2ML use case:
+
+| | Auger.AI AutoML | Azure AutoML | Google Cloud AutoML |
+| ------------- | ------------- |------------- |------------- |
+| **Auger.AI Endpoint** | |  | | |
+| Provider Credentials Required? | Yes  | No | No |
+| |  | ||
+| **Self-Hosted Endpoint** | | | |
+| Provider Credentials Required? | Yes  | Yes | Yes |
+
 
 ## Implementing A2ML for Another AutoML Provider
 The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
 
-```
-  class AnotherAutoMLModel(Model):  
-      def __init__(self):
-          pass     
-      def predict(self,filepath,score_threshold):
-          pass
-      def review(self):
-          pass
-      def evaluate(self):
-          pass
-      def deploy(self):
-          pass
-      def import_data(self):
-          pass
-      def train(self):
-          pass
+```python
+class AnotherAutoMLModel(Model):  
+    def __init__(self):
+        pass     
+    def predict(self,filepath,score_threshold):
+        pass
+    def review(self):
+        pass
+    def evaluate(self):
+        pass
+    def deploy(self):
+        pass
+    def import_data(self):
+        pass
+    def train(self):
+        pass
 ```
