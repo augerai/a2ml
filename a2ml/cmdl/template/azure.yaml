@@ -1,15 +1,11 @@
 ---
 # experiment settings unique to Azure, currently just metric used for scoring
 experiment:
-  metric: accuracy
+  metric: AUC_weighted
+  run_id:
 
 cluster:
   region: eastus2
-  name: cpucluster
   min_nodes: 0
-  max_nodes: 4
+  max_nodes: 2
   type: STANDARD_D2_V2
-
-file_share:
-account_name:
-account_key:

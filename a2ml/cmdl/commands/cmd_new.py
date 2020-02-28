@@ -63,12 +63,6 @@ class NewCmd(object):
                 self.ctx.config.set('auger', 'experiment/metric', 'r2')
                 self.ctx.config.write('auger')
 
-            AugerConfig(self.ctx).config(
-                target = self.target,
-                source = self.source,
-                model_type = self.model_type,
-                project_name = self.project_name)
-
         except Exception as e:
             # import traceback
             # traceback.print_exc()

@@ -23,13 +23,15 @@ from azureml.core.model import Model
 from a2ml.api import a2ml
 from a2ml.api.utils.formatter import print_table
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 class AzureA2ML(object):
     def __init__(self, ctx):
         diagnostic_log().start_capture()
         self.ctx = ctx
-        self.experiment_name = ctx.config.get('name', 'automl_remote')
+        project_name = self.ctx.config.get('name', '')
+        self.experiment_name = ctx.config.get('experiment/name', project_name)
+        self.cluster_name = self.ctx.config.get('cluster/name', project_name)
 
         # get the preloaded workspace definition
         self.ws = Workspace.from_config()
@@ -38,7 +40,7 @@ class AzureA2ML(object):
         compute_min_nodes = self.ctx.config.get('cluster/min_nodes',1)
         compute_max_nodes = self.ctx.config.get('cluster/max_nodes',4)
         compute_sku = self.ctx.config.get('cluster/type','STANDARD_D2_V2')
-        compute_cluster = self.ctx.config.get('cluster/name','cpu-cluster')
+        compute_cluster = self.cluster_name
 
         if compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[compute_cluster]
@@ -61,7 +63,7 @@ class AzureA2ML(object):
             target_path=None, overwrite=True, show_progress=True)
 
     def train(self):
-        config = config
+        config = self.ctx.config
         source = config.get('source', None)
         print('trainig on: ', os.path.basename(source))
         ds = self.ws.get_default_datastore()
@@ -100,8 +102,8 @@ class AzureA2ML(object):
         print("Submitting training run...")
         remote_run = experiment.submit(self.automl_config, show_output=False)
         print('remote_run: ', remote_run.run_id)
-        self.ctx.config.set('azure', 'experiment/run_id', remote_run.run_id)
-        self.ctx.config.write('azure')
+        config.set('azure', 'experiment/run_id', remote_run.run_id)
+        config.write('azure')
 
     def _get_leaderboard(self, remote_run):
         primary_metric = remote_run.properties['primary_metric']
