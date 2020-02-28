@@ -39,4 +39,4 @@ class AugerImport(AugerBase):
                 'Please specify source in config.yaml '
                 'to import to Auger Cloud...')
 
-        return AugerDataSetApi.verify(file_to_upload)[0]
+        return AugerDataSetApi.verify(file_to_upload, self.ctx.config_path)[0]

@@ -13,13 +13,14 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
-    def __init__(self, name='', path=None):
+    def __init__(self, name='', path=None, debug=False, providers_info = {}):
         super(Context, self).__init__()
         self.load_config(path)
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
-        self.debug = self.get_config('config').get('debug', False)
+        self.debug = self.get_config('config').get('debug', debug)
+        self.providers_info = providers_info
 
     def get_config(self, name):
         if len(self.config) == 1:
@@ -41,7 +42,7 @@ class Context(object):
         raise Exception('Expecting list of providers in config.yaml\providers')
 
     def copy(self, name):
-        new = Context(name)
+        new = Context(name, self.config_path, self.debug, self.providers_info)
         new.config = self.config
         return new
 
@@ -58,6 +59,8 @@ class Context(object):
         self.config = {}
         if path is None:
             path = os.getcwd()
+        self.config_path = path
+
         for provider in ['config'] + PROVIDERS:
             self.config[provider] = self._load_config(
                  os.path.abspath(os.path.join(path, '%s.yaml' % provider)))
