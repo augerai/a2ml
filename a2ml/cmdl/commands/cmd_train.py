@@ -4,8 +4,10 @@ from a2ml.api.utils.context import pass_context
 
 
 @click.command('train', short_help='Train the model.')
+@click.option('--provider', '-p', type=click.STRING, required=False,
+    help='Cloud AutoML Provider.')
 @pass_context
-def cmdl(ctx):
+def cmdl(ctx, provider):
     """Train the model."""
     ctx.setup_logger(format='')
-    A2ML(ctx).train()
+    A2ML(ctx, provider).train()

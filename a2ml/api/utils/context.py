@@ -2,7 +2,7 @@ import os
 import sys
 import click
 import logging
-from .config_yaml import ConfigYaml
+from .config import Config
 
 log = logging.getLogger("a2ml")
 
@@ -15,20 +15,19 @@ class Context(object):
 
     def __init__(self, name='', path=None, debug=False, providers_info = {}):
         super(Context, self).__init__()
-        self.load_config(path)
+
+        self.config = Config(name=name, path=path)
         if len(name) > 0:
             name = "{:<9}".format('[%s]' % name)
         self.name = name
-        self.debug = self.get_config('config').get('debug', debug)
-        self.providers_info = providers_info
+        self.debug = self.config.get('debug', debug)
+        self.providers_info = providers_info        
 
-    def get_config(self, name):
-        if len(self.config) == 1:
-            return self.config['auger']
-        return self.config[name]
-
-    def get_providers(self):
-        providers = self.config['config'].get('providers', [])
+    def get_providers(self, provider = None):
+        if provider:
+            providers = provider
+        else:
+            providers = self.config.get('providers', [])
 
         if isinstance(providers, (str,)):
             providers = [p.strip() for p in providers.split(',')]
@@ -42,8 +41,8 @@ class Context(object):
         raise Exception('Expecting list of providers in config.yaml\providers')
 
     def copy(self, name):
-        new = Context(name, self.config_path, self.debug, self.providers_info)
-        new.config = self.config
+        new = Context(name, self.config.path, self.debug, self.providers_info)
+        #new.config = Config(name)
         return new
 
     def log(self, msg, *args, **kwargs):
@@ -54,22 +53,6 @@ class Context(object):
 
     def error(self, msg, *args, **kwargs):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
-
-    def load_config(self, path=None):
-        self.config = {}
-        if path is None:
-            path = os.getcwd()
-        self.config_path = path
-
-        for provider in ['config'] + PROVIDERS:
-            self.config[provider] = self._load_config(
-                 os.path.abspath(os.path.join(path, '%s.yaml' % provider)))
-
-    def _load_config(self, name):
-        config = ConfigYaml()
-        if os.path.isfile(name):
-            config.load_from_file(name)
-        return config
 
     @staticmethod
     def setup_logger(format='%(asctime)s %(name)s | %(message)s'):

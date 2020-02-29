@@ -5,10 +5,10 @@ from a2ml.api.utils.provider_runner import ProviderRunner
 class A2ML(metaclass=ErrorHandler):
     """Facade to A2ML providers."""
 
-    def __init__(self, ctx):
+    def __init__(self, ctx, provider = None):
         super(A2ML, self).__init__()
         self.ctx = ctx
-        self.runner = ProviderRunner(ctx)
+        self.runner = ProviderRunner(ctx, provider)
 
     def import_data(self):
         self.runner.execute('import_data')

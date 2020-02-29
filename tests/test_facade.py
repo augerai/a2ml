@@ -19,14 +19,14 @@ class TestFacade(object):
             AugerA2ML, "__init__", monkeypatch)
         init_google = MockHelpers.count_calls(
             GoogleA2ML, "__init__", monkeypatch)
-        ctx.config['config'].providers = 'auger'
+        ctx.config.set('config', 'providers', 'auger')
         a2ml = A2ML(ctx)
         assert len(a2ml.runner.providers) == 1
         assert isinstance(a2ml.runner.providers[0], AugerA2ML)
         assert init_auger.times == 1
         assert init_google.times == 0
         # modify config on the fly
-        ctx.config['config'].providers = ['auger','google']
+        ctx.config.set('config', 'providers', ['auger','google'])
         init_auger.reset()
         init_google.reset()
         a2ml = A2ML(ctx)
@@ -43,7 +43,7 @@ class TestFacade(object):
             google_operation = MockHelpers.called_with(
                 GoogleA2ML, operation, monkeypatch)
             #run operation for a single provider
-            ctx.config['config'].providers = ['auger']
+            ctx.config.set('config', 'providers', ['auger'])
             a2ml = A2ML(ctx)
             getattr(a2ml, operation)(*args)
             assert auger_operation.times == 1
@@ -51,7 +51,7 @@ class TestFacade(object):
             for arg in range(len(args)):
                 assert auger_operation.args[arg+1] == args[arg]
             #run operation for multiple providers
-            ctx.config['config'].providers = ['auger','google']
+            ctx.config.set('config', 'providers', ['auger','google'])
             auger_operation.reset()
             google_operation.reset()
             a2ml = A2ML(ctx)

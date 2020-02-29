@@ -29,16 +29,18 @@ class AzureA2ML(object):
     def __init__(self, ctx):
         diagnostic_log().start_capture()
         self.ctx = ctx
-        self.experiment_name = ctx.config['config'].get('name', 'automl_remote')
+        project_name = self.ctx.config.get('name', '')
+        self.experiment_name = ctx.config.get('experiment/name', project_name)
+        self.cluster_name = self.ctx.config.get('cluster/name', project_name)
 
         # get the preloaded workspace definition
         self.ws = Workspace.from_config()
 
     def _get_compute_target(self):
-        compute_min_nodes = self.ctx.config['azure'].get('cluster/min_nodes',1)
-        compute_max_nodes = self.ctx.config['azure'].get('cluster/max_nodes',4)
-        compute_sku = self.ctx.config['azure'].get('cluster/type','STANDARD_D2_V2')
-        compute_cluster = self.ctx.config['azure'].get('cluster/name','cpu-cluster')
+        compute_min_nodes = self.ctx.config.get('cluster/min_nodes',1)
+        compute_max_nodes = self.ctx.config.get('cluster/max_nodes',4)
+        compute_sku = self.ctx.config.get('cluster/type','STANDARD_D2_V2')
+        compute_cluster = self.cluster_name
 
         if compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[compute_cluster]
@@ -55,13 +57,13 @@ class AzureA2ML(object):
         return compute_target
 
     def import_data(self):
-        source = self.ctx.config['config'].get('source', None)
+        source = self.ctx.config.get('source', None)
         ds = self.ws.get_default_datastore()
         ds.upload_files(files=[source], relative_root=None,
             target_path=None, overwrite=True, show_progress=True)
 
     def train(self):
-        config = self.ctx.config['config']
+        config = self.ctx.config
         source = config.get('source', None)
         print('trainig on: ', os.path.basename(source))
         ds = self.ws.get_default_datastore()
@@ -74,7 +76,7 @@ class AzureA2ML(object):
         model_type = config.get('model_type')
         if (not model_type):
             raise Exception('Please specify model_type')
-        primary_metric = self.ctx.config['azure'].get('experiment/metric','spearman_correlation')
+        primary_metric = config.get('experiment/metric','spearman_correlation')
         #TODO: check model_type and set primary_metric
 
         automl_settings = {
@@ -100,8 +102,8 @@ class AzureA2ML(object):
         print("Submitting training run...")
         remote_run = experiment.submit(self.automl_config, show_output=False)
         print('remote_run: ', remote_run.run_id)
-        self.ctx.config['azure'].yaml['experiment']['run_id'] = remote_run.run_id
-        self.ctx.config['azure'].write()
+        config.set('azure', 'experiment/run_id', remote_run.run_id)
+        config.write('azure')
 
     def _get_leaderboard(self, remote_run):
         primary_metric = remote_run.properties['primary_metric']
@@ -128,7 +130,7 @@ class AzureA2ML(object):
         return leaderboard
 
     def evaluate(self):
-        run_id = self.ctx.config['azure'].get('experiment/run_id', None)
+        run_id = self.ctx.config.get('experiment/run_id', None)
         if run_id:
             experiment = Experiment(self.ws, self.experiment_name)
             remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
@@ -150,7 +152,7 @@ class AzureA2ML(object):
             return
 
         service_name = 'automl-remote'
-        experiment_run_id = self.ctx.config['azure'].get(
+        experiment_run_id = self.ctx.config.get(
             'experiment/run_id', None)
 
         experiment = Experiment(self.ws, self.experiment_name)
@@ -210,7 +212,7 @@ class AzureA2ML(object):
             os.path.splitext(filename)[0] + "_predicted.csv")
         df_predictions.to_csv(predicted_path, index=False, encoding='utf-8')
         self.ctx.log('Predictions are saved to %s' % predicted_path)
-        
+
     def _predict_local(self, predict_data, model_id, threshold):
         from auger.api.cloud.utils.dataframe import DataFrame
 
@@ -223,7 +225,7 @@ class AzureA2ML(object):
             iteration = parts[2]
 
         #print(run_id)
-        #print(iteration)    
+        #print(iteration)
         remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
         best_run, fitted_model = remote_run.get_output(iteration=iteration)
 
@@ -231,13 +233,13 @@ class AzureA2ML(object):
 
     def predict(self, filename, model_id, threshold=None, locally=False):
         from auger.api.cloud.utils.dataframe import DataFrame
-        target = self.ctx.config['config'].get('target', None)
+        target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target)
 
         y_pred = []
         if (locally):
             y_pred = self._predict_local(predict_data, model_id, threshold)
-        else:    
+        else:
             input_payload = predict_data.to_json(orient='split', index=False)
             # import requests
             # headers = {'Content-Type': 'application/json; charset=utf-8'}

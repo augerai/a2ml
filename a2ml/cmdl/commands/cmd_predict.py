@@ -4,6 +4,8 @@ from a2ml.api.utils.context import pass_context
 
 
 @click.command('predict', short_help='Predict with deployed model.')
+@click.option('--provider', '-p', type=click.STRING, required=False,
+    help='Cloud AutoML Provider.')
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--threshold', '-t', default=None, type=float,
     help='Threshold.')
@@ -12,7 +14,7 @@ from a2ml.api.utils.context import pass_context
 @click.option('--locally', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
 @pass_context
-def cmdl(ctx, filename, model_id, threshold, locally):
+def cmdl(ctx, provider, filename, model_id, threshold, locally):
     """Predict with deployed model."""
     ctx.setup_logger(format='')
-    A2ML(ctx).predict(filename, model_id, threshold, locally)
+    A2ML(ctx, provider).predict(filename, model_id, threshold, locally)
