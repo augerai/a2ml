@@ -13,13 +13,14 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
-    def __init__(self, name='', path=None, debug=False, providers_info = {}):
+    def __init__(self, name='config', path=None, debug=False, providers_info = {}):
         super(Context, self).__init__()
 
         self.config = Config(name=name, path=path)
-        if len(name) > 0:
-            name = "{:<9}".format('[%s]' % name)
-        self.name = name
+        self.name = self.config.name
+
+        if len(self.name) > 0:
+            self.name = "{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
         self.providers_info = providers_info        
 

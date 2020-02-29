@@ -27,15 +27,16 @@ def create_context(params):
     ctx.setup_logger(format='')
 
     if params.get("provider"):
-        ctx.config['config'].yaml['providers'] = [params.get("provider")]
+        ctx.config.set('config', 'providers', [params.get("provider")])
 
     if params.get("source_path"):
-        ctx.config['config'].yaml['source'] = params.get("source_path")
+        ctx.config.set('config', 'source', params.get("source_path"))
 
-    ctx.config['config'].write()
+    return ctx    
+    # ctx.config['config'].write()
 
-    return Context(path=project_path, debug = params.get("debug_log", False),
-        providers_info = providers_info)
+    # return Context(path=project_path, debug = params.get("debug_log", False),
+    #     providers_info = providers_info)
 
 
 def execute_tasks(tasks_func, params):

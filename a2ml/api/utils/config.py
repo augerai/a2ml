@@ -41,11 +41,12 @@ class ConfigParts(object):
 
 class Config(object):
 
-    def __init__(self, name = 'config'):
+    def __init__(self, name = 'config', path=None):
         super(Config, self).__init__()
         self.name = name
+        self.path = path
         self.parts = ConfigParts()
-        self.load()
+        self.load(path)
 
     def get(self, path, default=None):
         if len(self.parts.keys()) == 0:
