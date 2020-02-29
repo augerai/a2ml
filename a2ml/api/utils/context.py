@@ -21,8 +21,11 @@ class Context(object):
         self.name = name
         self.debug = self.config.get('debug', False)
 
-    def get_providers(self):
-        providers = self.config.get('providers', [])
+    def get_providers(self, provider = None):
+        if provider:
+            providers = provider
+        else:
+            providers = self.config.get('providers', [])
 
         if isinstance(providers, (str,)):
             providers = [p.strip() for p in providers.split(',')]
