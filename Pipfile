@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+pytest-runner = "*"
+pytest-xdist = "*"
+flake8 = "*"
+mock = "*"
+
+[packages]
+a2ml = {editable = true,path = "."}
+"auger.ai" = "*"
+auger-hub-api-client = ">=0.6.1"
+celery = "*"
+click = "*"
+pandas = "==0.23.4"
+"ruamel.yaml" = "<=0.15.89,>=0.15.35"
+scikit-learn = "<=0.20.3,>=0.19.0"
+shortuuid = "*"
+wheel = "==0.30.0"
+"azureml-sdk[automl]" = "*"
+#google-cloud-automl = "*"
