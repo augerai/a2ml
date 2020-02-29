@@ -33,6 +33,8 @@ install_requires = [
     'auger-hub-api-client>=0.6.1',
     'celery',
     'click',
+    'numpy<=1.16.2,>=1.16.0',
+    'scipy<=1.1.0,>=1.0.0',
     'pandas==0.23.4',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'scikit-learn<=0.20.3,>=0.19.0',

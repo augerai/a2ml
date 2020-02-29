@@ -23,7 +23,7 @@ from azureml.core.model import Model
 from a2ml.api import a2ml
 from a2ml.api.utils.formatter import print_table
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 class AzureA2ML(object):
     def __init__(self, ctx):
