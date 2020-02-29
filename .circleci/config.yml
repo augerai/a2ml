@@ -39,11 +39,10 @@ jobs:
             git config user.name "CircleCI docs-deploy job"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
+
 workflows:
   version: 2.1
   build_docs:
     jobs:
       - docs_build
       - docs_deploy
-        requires:
-            - docs_build
