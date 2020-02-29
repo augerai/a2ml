@@ -14,8 +14,36 @@ jobs:
       - persist_to_workspace:
           root: docs/build
           paths: html
+  docs_deploy:
+    docker:
+      - image: node:10.15.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: docs/build
+      - run:
+          name: Disable jekyll builds
+          command: touch docs/build/html/.nojekyll
+      # Needed for write access to the GitHub repository;
+      # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
+      - add_ssh_keys:
+          fingerprints:
+            # - "TODO: we nee to generate it"
+      # The gh-pages npm package looks to be the most widely used utility for
+      # pushing a directory to a git branch;
+      # see https://www.npmjs.com/package/gh-pages
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: |
+            git config user.email "auger@dplrn.com"
+            git config user.name "CircleCI docs-deploy job"
+            npm install -g --silent gh-pages@2.2.0
+            gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
 workflows:
   version: 2.1
   build_docs:
     jobs:
       - docs_build
+      - docs_deploy
+        requires:
+            - docs_build
