@@ -32,7 +32,7 @@ class AugerImport(AugerBase):
             'DataSet name stored in auger.yaml/dataset')
 
     def _get_source_file(self):
-        file_to_upload = self.ctx.config['config'].get('source', None)
+        file_to_upload = self.ctx.config.get('source', None)
 
         if file_to_upload is None:
             raise Exception(

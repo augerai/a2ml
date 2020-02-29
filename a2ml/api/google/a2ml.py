@@ -6,7 +6,7 @@ import inspect
 from google.cloud import automl_v1beta1 as automl
 from google.cloud.automl_v1beta1 import enums
 import google.auth
-from a2ml.api.utils.config_yaml import ConfigYaml
+from a2ml.api.utils.config import Config
 from google.auth.transport.requests import AuthorizedSession
 
 class GoogleA2ML(object):
@@ -16,21 +16,21 @@ class GoogleA2ML(object):
         super(GoogleA2ML, self).__init__()
         self.ctx = ctx
         self.client = automl.AutoMlClient()
-        self.name = ctx.config['config'].get('name',None)
-        self.project_id = ctx.config['google'].get('project',None)
-        self.compute_region = ctx.config['google'].get('cluster/region','us-central1')
-        self.metric = ctx.config['google'].get('experiment/metric',"MINIMIZE_MAE")
+        self.name = ctx.config.get('name',None)
+        self.project_id = ctx.config.get('project',None)
+        self.compute_region = ctx.config.get('cluster/region','us-central1')
+        self.metric = ctx.config.get('experiment/metric',"MINIMIZE_MAE")
         self.project_location = self.client.location_path(self.project_id,self.compute_region)
-        self.dataset_id = ctx.config['google'].get('dataset_id',None)
-        self.dataset_name = ctx.config['google'].get('dataset_name',None)
-        self.source = ctx.config['config'].get('source', None)
+        self.dataset_id = ctx.config.get('dataset_id',None)
+        self.dataset_name = ctx.config.get('dataset_name',None)
+        self.source = ctx.config.get('source', None)
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
-        self.target = ctx.config['config'].get('target',None)
-        self.exclude = ctx.config['config'].get('exclude',None)
-        self.max_total_time = ctx.config['config'].get('max_total_time',60)
-        self.operation_name = ctx.config['google'].get('operation_name',None)
-        self.model_name = ctx.config['google'].get('model_name',None)
-        self.gsbucket = ctx.config['google'].get('gsbucket','gs://a2ml')
+        self.target = ctx.config.get('target',None)
+        self.exclude = ctx.config.get('exclude',None)
+        self.max_total_time = ctx.config.get('max_total_time',60)
+        self.operation_name = ctx.config.get('operation_name',None)
+        self.model_name = ctx.config.get('model_name',None)
+        self.gsbucket = ctx.config.get('gsbucket','gs://a2ml')
 
     def import_data(self):
         self.ctx.log('Google Import Data')
@@ -38,14 +38,14 @@ class GoogleA2ML(object):
         if self.source is None:
             self.ctx.log("Please specify a source (URL or local file)")
             return
-            
+
         create_dataset_response = self.client.create_dataset(
             self.project_location,
             {'display_name': self.name,
             'tables_dataset_metadata': {}})
         self.dataset_id = create_dataset_response.name.split('/')[-1]
-        self.ctx.config['google'].yaml['dataset_id'] = self.dataset_id
-        self.ctx.config['google'].write()
+        self.ctx.config.set('google', 'dataset_id', self.dataset_id)
+        self.ctx.config.write('google')
 
         print ("Dataset ID: {}".format(self.dataset_id))
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
@@ -53,9 +53,9 @@ class GoogleA2ML(object):
 
         if os.path.isfile(self.source):
             print("Copying {} to {}".format(self.source,self.gsbucket))
-            cmd = "gsutil cp " + self.source + " "+ self.gsbucket 
+            cmd = "gsutil cp " + self.source + " "+ self.gsbucket
             result = os.system(cmd)
-            print("Result of local copy to Google Storage bucket: {}".format(result)) 
+            print("Result of local copy to Google Storage bucket: {}".format(result))
             self.source = self.gsbucket + "/" + os.path.basename(self.source)
 
         if self.source.startswith('bq'):
@@ -71,20 +71,20 @@ class GoogleA2ML(object):
         # synchronous check of operation status.
         import_data_response = operation.result()
         self.ctx.log("Imported data: {}".format(import_data_response))
-        
+
         return self
 
     def train(self,synchronous=False):
         self.ctx.log('Google Train')
         self.ctx.log("Training model: {}".format(self.name))
-        
+
         self.ctx.log("Listing tables from: {}".format(self.dataset_name))
         list_table_specs_response = self.client.list_table_specs(self.dataset_name)
         self.ctx.log("List table specs response: {}".format(list_table_specs_response))
         table_specs = [s for s in list_table_specs_response]
         table_spec_name = table_specs[0].name
         self.ctx.log("Table spec name: {}".format(table_spec_name))
-        
+
         list_column_specs_response = self.client.list_column_specs(table_spec_name)
         self.column_specs = {s.display_name: s for s in list_column_specs_response}
 
@@ -92,7 +92,7 @@ class GoogleA2ML(object):
         label_column_spec = self.column_specs[label_column_name]
         label_column_id = label_column_spec.name.rsplit('/', 1)[-1]
         update_dataset_dict = {
-            'name': self.dataset_name, 
+            'name': self.dataset_name,
             'tables_dataset_metadata': {'target_column_spec_id': label_column_id}}
         update_dataset_response = self.client.update_dataset(update_dataset_dict)
         self.ctx.log("Updated dataset response: {}".format(update_dataset_response))
@@ -101,7 +101,7 @@ class GoogleA2ML(object):
         excluded = self.exclude.split(',')
         for exclude in excluded:
             self.ctx.log("Removing: {}".format(exclude))
-            try: 
+            try:
                 self.feat_list.remove(exclude)
             except Exception as inst:
                 self.ctx.log("Can't find: {}: {}".format(exclude,inst))
@@ -119,16 +119,16 @@ class GoogleA2ML(object):
 
         self.operation_name = response.operation.name
         self.ctx.log("Training operation name: {}".format(self.operation_name))
-        self.ctx.config['google'].yaml['operation_name']=self.operation_name
+        self.ctx.config.set('google', 'operation_name', self.operation_name)
 
-        if synchronous: 
+        if synchronous:
             model_response=response.result()
             metadata = model_response.metadata()
             self.ctx.log("Training completed: {}".format(metadata))
             model_name = model_response.name()
             self.ctx.log("Model name: {}".format(model_name))
 
-        self.ctx.config['google'].write()
+        self.ctx.config.write('google')
 
     def evaluate(self):
         credentials, project = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
@@ -138,13 +138,13 @@ class GoogleA2ML(object):
         response=authed_session.get(cmd)
         result=json.loads(response.content)
         self.ctx.log("Operation name: {}".format(result["name"]))
-     
-        if (("done" in result.keys()) and result["done"]): 
+
+        if (("done" in result.keys()) and result["done"]):
             self.ctx.log("Model training complete.")
             self.model_name = result["response"]["name"]
-            self.ctx.log("Model full name: {}".format(self.model_name))   
-            self.ctx.config['google'].yaml['model_name'] = self.model_name
-            self.ctx.config['google'].write()  
+            self.ctx.log("Model full name: {}".format(self.model_name))
+            self.ctx.config.set('google', 'model_name', self.model_name)
+            self.ctx.config.write('google')
             response = self.client.list_model_evaluations(self.model_name)
             self.ctx.log("List of model evaluations:")
             for evaluation in response:
@@ -164,7 +164,7 @@ class GoogleA2ML(object):
             model_name = self.model_name
         else:
             model_name = self.client.model_path(self.project_id, self.compute_region, model_id)
-        try: 
+        try:
             self.ctx.log('Deploy model: {}'.format(self.model_name))
             response = self.client.deploy_model(self.model_name)
             self.ctx.log("Deploy result: {}".format(response))
@@ -175,9 +175,9 @@ class GoogleA2ML(object):
         self.ctx.log('Google Predict')
         prediction_client = automl.PredictionServiceClient()
         basefile, file_extension = os.path.splitext(filename)
-        predictions_file = basefile+'_predicted.csv' 
+        predictions_file = basefile+'_predicted.csv'
         self.ctx.log('Saving to file {}'.format(predictions_file))
-        predictions=open(predictions_file, "wt")  
+        predictions=open(predictions_file, "wt")
         with open(filename,"rt") as csv_file:
             content = csv.reader(csv_file)
             next(content,None)
@@ -197,11 +197,11 @@ class GoogleA2ML(object):
                 response = prediction_client.predict(self.model_name, payload)
                 self.ctx.log("Prediction results:")
                 for result in response.payload:
-                    if ((threshold is None) or (result.classification.score >= score_threshold)): 
+                    if ((threshold is None) or (result.classification.score >= score_threshold)):
                         prediction=result.tables.value.number_value
                 self.ctx.log("Prediction: {}".format(prediction))
                 csvlist += (',' + str(prediction) + '\n')
-                predictions.write(csvlist) 
+                predictions.write(csvlist)
                 i = i + 1
         self.ctx.log('{} predictions.'.format(i))
 

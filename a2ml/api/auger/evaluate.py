@@ -15,7 +15,7 @@ class AugerEvaluate(AugerBase):
         # verify avalability of auger credentials
         self.credentials.verify()
 
-        experiment_session_id = self.ctx.config['auger'].get(
+        experiment_session_id = self.ctx.config.get(
             'experiment/experiment_session_id')
         if experiment_session_id is None:
             raise AugerException('Can\'t find previously run experiments'
