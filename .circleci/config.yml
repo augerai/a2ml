@@ -1,6 +1,6 @@
-version: 2
-
-docs-build:
+version: 2.1
+jobs:
+  docs_build:
     docker:
       - image: python:3.7
     steps:
@@ -14,11 +14,8 @@ docs-build:
       - persist_to_workspace:
           root: docs/_build
           paths: html
-
-
 workflows:
-  version: 2
-  build:
+  version: 2.1
+  build_docs:
     jobs:
-      - docs-build
-
+      - docs_build
