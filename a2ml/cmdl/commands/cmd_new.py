@@ -9,7 +9,7 @@ from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
 from auger.api.cloud.data_set import AugerDataSetApi
 from a2ml.api.auger.credentials import Credentials
-
+from auger.api.utils import fsclient
 
 class NewCmd(object):
 
@@ -23,16 +23,20 @@ class NewCmd(object):
         self.model_type = model_type
 
     def mk_project_folder(self):
-        project_path = os.path.abspath(
-            os.path.join(os.getcwd(), self.project_name))
-        try:
-            os.makedirs(project_path)
-        except OSError as e:
-            if e.errno == errno.EEXIST:
-                raise Exception(
-                    'Can\'t create \'%s\'. Folder already exists.' % \
-                        self.project_name)
-            raise
+        if not self.ctx.config.path:
+            project_path = os.path.join(os.getcwd(), self.project_name)
+        else:
+            project_path = self.ctx.config.path
+
+        if not fsclient.is_s3_path(project_path):
+            project_path = os.path.abspath(project_path)
+
+        if fsclient.is_folder_exists(project_path):
+            raise Exception(
+                'Can\'t create \'%s\'. Folder already exists.' % \
+                    self.project_name)
+
+        fsclient.create_folder(project_path)    
         self.ctx.log('Created project folder %s', self.project_name)
         return project_path
 
@@ -64,10 +68,10 @@ class NewCmd(object):
                 self.ctx.config.write('auger')
 
         except Exception as e:
-            # import traceback
-            # traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             self.ctx.log('%s', str(e))
-            sys.exit(1)
+            #sys.exit(1)
 
 
 @click.command('new', short_help='Create new A2ML project.')
