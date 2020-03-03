@@ -61,6 +61,7 @@ class AzureA2ML(object):
         ds = self.ws.get_default_datastore()
         ds.upload_files(files=[source], relative_root=None,
             target_path=None, overwrite=True, show_progress=True)
+        return {'dataset': ds.path(os.path.basename(source))} 
 
     def train(self):
         config = self.ctx.config

@@ -11,7 +11,8 @@ class A2ML(metaclass=ErrorHandler):
         self.runner = ProviderRunner(ctx, provider)
 
     def import_data(self):
-        self.runner.execute('import_data')
+        results = self.runner.execute('import_data')
+        print(results)
 
     def train(self):
         self.runner.execute('train')

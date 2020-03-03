@@ -13,7 +13,7 @@ class AugerA2ML(object):
         self.ctx = ctx
 
     def import_data(self):
-        AugerImport(self.ctx).import_data()
+        return AugerImport(self.ctx).import_data()
 
     def train(self):
         AugerTrain(self.ctx).train()
