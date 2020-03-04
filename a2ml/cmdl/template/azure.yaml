@@ -1,4 +1,7 @@
 ---
+# Name of the DataSet on Azure Cloud
+dataset:
+
 # experiment settings unique to Azure, currently just metric used for scoring
 experiment:
   metric: AUC_weighted
