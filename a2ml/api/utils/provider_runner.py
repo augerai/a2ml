@@ -21,8 +21,7 @@ class ProviderRunner(object):
         # if there is single operation requested
         # no need to run it on the thread
         if len(self.providers) == 1:
-            getattr(self.providers[0], operation_name)(*args, **kwargs)
-            return
+            return getattr(self.providers[0], operation_name)(*args, **kwargs)
 
         with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
             futures = [

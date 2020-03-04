@@ -35,7 +35,9 @@ class AugerEvaluate(AugerBase):
             'completed': 'Search is completed.'
         }
         message = messages.get(status, None)
-        if message:
-            self.ctx.log(message)
-        else:
-            self.ctx.log('Search status is %s' % status)
+        if not message:
+            message = 'Search status is %s' % status
+
+        self.ctx.log(message)
+
+        return {"leaderboard": leaderboard[::-1], "message": message}

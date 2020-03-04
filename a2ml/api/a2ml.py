@@ -11,19 +11,19 @@ class A2ML(metaclass=ErrorHandler):
         self.runner = ProviderRunner(ctx, provider)
 
     def import_data(self):
-        self.runner.execute('import_data')
+        return self.runner.execute('import_data')
 
     def train(self):
-        self.runner.execute('train')
+        return self.runner.execute('train')
 
     def evaluate(self):
-        self.runner.execute('evaluate')
+        return self.runner.execute('evaluate')
 
     def deploy(self, model_id, locally=False):
-        self.runner.execute('deploy', model_id, locally)
+        return self.runner.execute('deploy', model_id, locally)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
-        self.runner.execute('predict', filename, model_id, threshold, locally)
+        return self.runner.execute('predict', filename, model_id, threshold, locally)
 
     def review(self):
-        self.runner.execute('review')
+        return self.runner.execute('review')

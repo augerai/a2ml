@@ -20,9 +20,9 @@ class AugerDeploy(AugerBase):
         self.credentials.verify()
 
         if locally:
-            self.deploy_model_locally(model_id)
+            return self.deploy_model_locally(model_id)
         else:
-            self.deploy_model_on_cloud(model_id)
+            return self.deploy_model_on_cloud(model_id)
 
     def deploy_model_on_cloud(self, model_id):
         self.ctx.log('Deploying model %s' % model_id)
@@ -33,6 +33,8 @@ class AugerDeploy(AugerBase):
 
         self.ctx.log('Deployed Auger model: %s' %
             pipeline_properties.get('id'))
+
+        return pipeline_properties.get('id')
 
     def deploy_model_locally(self, model_id):
         is_loaded, model_path, model_name = self.verify_local_model(model_id)

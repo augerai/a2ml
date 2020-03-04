@@ -13,19 +13,19 @@ class AugerA2ML(object):
         self.ctx = ctx
 
     def import_data(self):
-        AugerImport(self.ctx).import_data()
+        return AugerImport(self.ctx).import_data()
 
     def train(self):
-        AugerTrain(self.ctx).train()
+        return AugerTrain(self.ctx).train()
 
     def evaluate(self):
-        AugerEvaluate(self.ctx).evaluate()
+        return AugerEvaluate(self.ctx).evaluate()
 
     def deploy(self, model_id, locally=False):
-        AugerDeploy(self.ctx).deploy(model_id, locally)
+        return AugerDeploy(self.ctx).deploy(model_id, locally)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
-        AugerPredict(self.ctx).predict(filename, model_id, threshold, locally)
+        return AugerPredict(self.ctx).predict(filename, model_id, threshold, locally)
 
     def review(self):
         pass

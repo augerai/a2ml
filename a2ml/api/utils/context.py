@@ -23,6 +23,7 @@ class Context(object):
             self.name = "{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
         self.providers_info = providers_info        
+        self.runs_on_server = False
 
     def get_providers(self, provider = None):
         if provider:
@@ -43,6 +44,7 @@ class Context(object):
 
     def copy(self, name):
         new = Context(name, self.config.path, self.debug, self.providers_info)
+        new.runs_on_server = self.runs_on_server
         #new.config = Config(name)
         return new
 

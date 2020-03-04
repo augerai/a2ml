@@ -22,7 +22,7 @@ def create_context(params, new_project=False):
     }
     ctx = Context(path=project_path, debug = params.get("debug_log", False),
         providers_info = providers_info)
-
+    ctx.runs_on_server = True
     ctx.setup_logger(format='')
 
     if not new_project:
@@ -61,3 +61,30 @@ def import_data_task(params):
     ctx = create_context(params)        
 
     return A2ML(ctx).import_data()
+
+@celeryApp.task()
+def train_task(params):
+    ctx = create_context(params)        
+
+    return A2ML(ctx).train()
+
+@celeryApp.task()
+def evaluate_task(params):
+    ctx = create_context(params)        
+
+    return A2ML(ctx).evaluate()
+
+@celeryApp.task()
+def deploy_task(params):
+    ctx = create_context(params)        
+
+    return A2ML(ctx).deploy(params.get('model_id'))
+
+@celeryApp.task()
+def predict_task(params):
+    ctx = create_context(params)        
+
+    return A2ML(ctx).predict(
+        params.get('filename'),
+        params.get('model_id'),
+        params.get('threshold'))

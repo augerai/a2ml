@@ -9,7 +9,7 @@ from auger.api.cloud.cluster import AugerClusterApi
 from auger.api.cloud.pipeline import AugerPipelineApi
 from auger.api.cloud.utils.dataframe import DataFrame
 from auger.api.cloud.utils.exception import AugerException
-
+from auger.api.utils import fsclient
 
 class AugerPredict(AugerBase):
     """Predict using deployed Auger Pipeline."""
@@ -23,15 +23,16 @@ class AugerPredict(AugerBase):
         self.credentials.verify()
 
         self.ctx.log('Predicting on data in %s' % filename)
-        filename = os.path.abspath(filename)
+        if not fsclient.is_s3_path(filename):
+            filename = os.path.abspath(filename)
 
         if locally:
             predicted = self._predict_locally(filename, model_id, threshold)
         else:
             predicted = self._predict_on_cloud(filename, model_id, threshold)
 
-        self.ctx.log('Predictions stored in %s' % predicted)
-
+        return predicted
+            
     def _predict_on_cloud(self, filename, model_id, threshold=None):
         target = self.ctx.config.get('target', None)
         records, features = DataFrame.load_records(filename, target)
@@ -40,10 +41,15 @@ class AugerPredict(AugerBase):
         predictions = pipeline_api.predict(
             records, features, threshold)
 
-        predicted = os.path.splitext(filename)[0] + "_predicted.csv"
-        DataFrame.save(predicted, predictions)
+        if not self.ctx.runs_on_server:
+            predicted = os.path.splitext(filename)[0] + "_predicted.csv"
+            DataFrame.save(predicted, predictions)
 
-        return predicted
+            self.ctx.log('Predictions stored in %s' % predicted)
+
+            return predicted
+
+        return predictions
 
     def _predict_locally(self, filename, model_id, threshold):
         is_model_loaded, model_path, model_name = \
@@ -64,6 +70,7 @@ class AugerPredict(AugerBase):
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
 
+        self.ctx.log('Predictions stored in %s' % predicted)
         return predicted
 
     def _exstract_model(self, model_name):
