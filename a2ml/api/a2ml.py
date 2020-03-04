@@ -12,19 +12,24 @@ class A2ML(metaclass=ErrorHandler):
 
     def import_data(self):
         results = self.runner.execute('import_data')
-        print(results)
+        self.ctx.log(results)
 
     def train(self):
-        self.runner.execute('train')
+        results = self.runner.execute('train')
+        self.ctx.log(results)
 
     def evaluate(self):
-        self.runner.execute('evaluate')
+        results = self.runner.execute('evaluate')
+        self.ctx.log(results)
 
     def deploy(self, model_id, locally=False):
-        self.runner.execute('deploy', model_id, locally)
+        results = self.runner.execute('deploy', model_id, locally)
+        self.ctx.log(results)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
-        self.runner.execute('predict', filename, model_id, threshold, locally)
+        results = self.runner.execute('predict', filename, model_id, threshold, locally)
+        self.ctx.log(results)
 
     def review(self):
-        self.runner.execute('review')
+        results = self.runner.execute('review')
+        self.ctx.log(results)

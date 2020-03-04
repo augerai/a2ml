@@ -1,9 +1,8 @@
-from a2ml.api.auger.train import AugerTrain
 from a2ml.api.auger.deploy import AugerDeploy
 from a2ml.api.auger.predict import AugerPredict
-from a2ml.api.auger.evaluate import AugerEvaluate
-from a2ml.api.auger.import_data import AugerImport
 
+from a2ml.api.auger.dataset import AugerDataset
+from a2ml.api.auger.experiment import AugerExperiment
 
 class AugerA2ML(object):
     """Auger A2ML implementation."""
@@ -13,13 +12,13 @@ class AugerA2ML(object):
         self.ctx = ctx
 
     def import_data(self):
-        return AugerImport(self.ctx).import_data()
+        return AugerDataset(self.ctx).create()
 
     def train(self):
-        AugerTrain(self.ctx).train()
+        return AugerExperiment(self.ctx).start()
 
     def evaluate(self):
-        AugerEvaluate(self.ctx).evaluate()
+        return AugerExperiment(self.ctx).leaderboard()
 
     def deploy(self, model_id, locally=False):
         AugerDeploy(self.ctx).deploy(model_id, locally)
