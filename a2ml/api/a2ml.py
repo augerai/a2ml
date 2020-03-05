@@ -18,8 +18,8 @@ class A2ML(metaclass=ErrorHandler):
         results = self.runner.execute('train')
         self.ctx.log(results)
 
-    def evaluate(self):
-        results = self.runner.execute('evaluate')
+    def evaluate(self, run_id = None):
+        results = self.runner.execute('evaluate', run_id = run_id)
         self.ctx.log(results)
 
     def deploy(self, model_id, locally=False):

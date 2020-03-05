@@ -8,7 +8,6 @@ class AugerA2ML(object):
     def __init__(self, ctx):
         super(AugerA2ML, self).__init__()
         self.ctx = ctx
-        self.ctx.exit_on_exception = False
 
     def import_data(self):
         return AugerDataset(self.ctx).create()
@@ -16,8 +15,8 @@ class AugerA2ML(object):
     def train(self):
         return AugerExperiment(self.ctx).start()
 
-    def evaluate(self):
-        return AugerExperiment(self.ctx).leaderboard()
+    def evaluate(self, run_id = None):
+        return AugerExperiment(self.ctx).leaderboard(run_id)
 
     def deploy(self, model_id, locally=False):
         return AugerModel(self.ctx).deploy(model_id, locally)

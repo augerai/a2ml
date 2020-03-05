@@ -22,8 +22,11 @@ from azureml.core.model import Model
 
 from a2ml.api import a2ml
 from a2ml.api.utils.formatter import print_table
+from a2ml.api.azure.decorators import error_handler
+from a2ml.api.azure.exceptions import AzureException
 
 logging.basicConfig(level=logging.INFO)
+
 
 class AzureA2ML(object):
     def __init__(self, ctx):
@@ -45,9 +48,10 @@ class AzureA2ML(object):
         if compute_cluster in self.ws.compute_targets:
             compute_target = self.ws.compute_targets[compute_cluster]
             if compute_target and type(compute_target) is AmlCompute:
-                print('Found compute target. Just use it: ' + compute_cluster)
+                self.ctx.log(
+                    'Found compute target. Just use it: ' + compute_cluster)
         else:
-            print('Creating new AML compute context.')
+            self.ctx.log('Creating new AML compute context...')
             provisioning_config = AmlCompute.provisioning_configuration(
                 vm_size=compute_sku, min_nodes=compute_min_nodes,
                 max_nodes=compute_max_nodes)
@@ -56,8 +60,11 @@ class AzureA2ML(object):
             compute_target.wait_for_completion(show_output = True)
         return compute_target
 
+    @error_handler
     def import_data(self):
         source = self.ctx.config.get('source', None)
+        if source is None:
+            raise AzureException('Please specify data source file...')
         ds = self.ws.get_default_datastore()
         ds.upload_files(files=[source], relative_root=None,
             target_path=None, overwrite=True, show_progress=True)
@@ -66,22 +73,25 @@ class AzureA2ML(object):
         self.ctx.config.write('azure')
         return {'dataset': dataset}
 
+    @error_handler
     def train(self):
         config = self.ctx.config
-        source = config.get('source', None)
-        print('trainig on: ', os.path.basename(source))
+        dataset = config.get('dataset', None)
+        self.ctx.log("Starting search on %s Dataset..." % dataset)
         ds = self.ws.get_default_datastore()
         training_data = Dataset.Tabular.from_delimited_files(
-            path=ds.path(os.path.basename(source)))
-        # training_data.drop_columns(columns)
+            path=ds.path(dataset))
+        #TODO training_data.drop_columns(columns)
 
         compute_target = self._get_compute_target()
 
         model_type = config.get('model_type')
         if (not model_type):
-            raise Exception('Please specify model_type')
+            raise AzureException('Please specify model type...')
         primary_metric = config.get('experiment/metric','spearman_correlation')
-        #TODO: check model_type and set primary_metric
+        if (not primary_metric):
+            raise AzureException('Please specify primary metric...')
+        #TODO: check if primary_metric is constent with model_type
 
         automl_settings = {
             #"name": "AutoML_Experiment_{0}".format(time.time()),
@@ -103,11 +113,14 @@ class AzureA2ML(object):
             **automl_settings)
 
         experiment=Experiment(self.ws, self.experiment_name)
-        print("Submitting training run...")
         remote_run = experiment.submit(self.automl_config, show_output=False)
-        print('remote_run: ', remote_run.run_id)
+        self.ctx.log("Started Experiment %s search..." % self.experiment_name)
+        config.set('azure', 'experiment/name', self.experiment_name)
         config.set('azure', 'experiment/run_id', remote_run.run_id)
         config.write('azure')
+        return {
+            'eperiment_name': self.experiment_name,
+            'run_id': remote_run.run_id}
 
     def _get_leaderboard(self, remote_run):
         primary_metric = remote_run.properties['primary_metric']
@@ -133,16 +146,23 @@ class AzureA2ML(object):
         leaderboard.rename(columns={'score':primary_metric}, inplace=True)
         return leaderboard
 
-    def evaluate(self):
-        run_id = self.ctx.config.get('experiment/run_id', None)
-        if run_id:
-            experiment = Experiment(self.ws, self.experiment_name)
-            remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
-            leaderboard = self._get_leaderboard(remote_run)
-            print_table(self.ctx.log,leaderboard.to_dict('records'))
-            self.ctx.log('Status: %s' % remote_run.get_status())
-        else:
-            self.ctx.log('Pleae provide Run ID (experiment/run_id) to evaluate')
+    @error_handler
+    def evaluate(self, run_id = None):
+        if run_id is None:
+            run_id = self.ctx.config.get('experiment/run_id', None)
+        if run_id is None:
+            raise AzureException(
+                'Pleae provide Run ID (experiment/run_id) to evaluate')
+        experiment = Experiment(self.ws, self.experiment_name)
+        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+        leaderboard = self._get_leaderboard(remote_run).to_dict('records')
+        print_table(self.ctx.log,leaderboard)
+        status = remote_run.get_status()
+        self.ctx.log('Status: %s' % status)
+        return {
+            'run_id': run_id,
+            'leaderboard': leaderboard,
+            'status': status }
 
     def _aci_service_name(self, model_name):
         return (model_name+'-service').lower()
