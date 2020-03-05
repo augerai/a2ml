@@ -1,6 +1,4 @@
-from a2ml.api.auger.deploy import AugerDeploy
-from a2ml.api.auger.predict import AugerPredict
-
+from a2ml.api.auger.model import AugerModel
 from a2ml.api.auger.dataset import AugerDataset
 from a2ml.api.auger.experiment import AugerExperiment
 
@@ -10,6 +8,7 @@ class AugerA2ML(object):
     def __init__(self, ctx):
         super(AugerA2ML, self).__init__()
         self.ctx = ctx
+        self.ctx.exit_on_exception = False
 
     def import_data(self):
         return AugerDataset(self.ctx).create()
@@ -21,10 +20,11 @@ class AugerA2ML(object):
         return AugerExperiment(self.ctx).leaderboard()
 
     def deploy(self, model_id, locally=False):
-        AugerDeploy(self.ctx).deploy(model_id, locally)
+        return AugerModel(self.ctx).deploy(model_id, locally)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
-        AugerPredict(self.ctx).predict(filename, model_id, threshold, locally)
+        return AugerModel(self.ctx).predict(
+            filename, model_id, threshold, locally)
 
     def review(self):
         pass
