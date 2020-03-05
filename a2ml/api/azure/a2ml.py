@@ -167,13 +167,11 @@ class AzureA2ML(object):
     def _aci_service_name(self, model_name):
         return (model_name+'-service').lower()
 
+    @error_handler
     def deploy(self, model_id, locally=False):
-# samples
-# https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/deployment/deploy-to-cloud/model-register-and-deploy.ipynb
-# https://ml.azure.com/fileexplorer?wsid=/subscriptions/28ca7f62-a275-4222-aaa1-c8e9ec93adbb/resourceGroups/azure-iris_resources/workspaces/azure-iris_ws&tid=6d111df4-1dfb-481f-ac25-6ff206ab1ae0&activeFilePath=Samples/Python/1.0.83/how-to-use-azureml/automated-machine-learning/forecasting-orange-juice-sales/auto-ml-forecasting-orange-juice-sales.ipynb#Operationalize
         if (locally):
-            print('Local deployment is not implemeted yet')
-            return
+            self.ctx.log('Local deployment step is not required for Azure..')
+            return {'model_id': model_id}
 
         service_name = 'automl-remote'
         experiment_run_id = self.ctx.config.get(
@@ -185,10 +183,9 @@ class AzureA2ML(object):
         remote_run.download_file(
             'outputs/scoring_file_v_1_0_0.py', script_file_name)
         model_name = remote_run.properties['model_name']
-        print('model_name: ', model_name)
+        self.ctx.log('Model name: %s' % model_name)
 
         description = '%s-%s' % (service_name, model_name)
-        print('description: ', description)
         experiment_run = AutoMLRun(
             experiment = experiment, run_id = experiment_run_id)
         # do we need to check for already registered one?
@@ -197,7 +194,12 @@ class AzureA2ML(object):
             description = description,
             tags = None)
 
-        print('Deploying AciWebservice...')
+        # It must only consist of lowercase letters, numbers, or dashes, start
+        # with a letter, end with a letter or number, and be between 3 and 32
+        # characters long.
+        # TBD - service_name + suffix must satisfy requiremets
+        aci_service_name = self._aci_service_name(model_name)
+        self.ctx.log('Deploying AciWebservice %s ...' % aci_service_name)
 
         inference_config = InferenceConfig(
             environment = remote_run.get_environment(),
@@ -209,16 +211,10 @@ class AzureA2ML(object):
             tags = {'type': "%s-inference-service" % service_name},
             description = "%s inference service" % service_name)
 
-        # It must only consist of lowercase letters, numbers, or dashes, start
-        # with a letter, end with a letter or number, and be between 3 and 32
-        # characters long.
-        # TBD - service_name + suffix must satisfy requiremets
-        aci_service_name = self._aci_service_name(model_name)
-        print(aci_service_name)
-
         # Remove any existing service under the same name.
         try:
             Webservice(self.ws, aci_service_name).delete()
+            self.ctx.log('Remove any existing service under the same name...')
         except WebserviceException:
             pass
 
@@ -229,13 +225,16 @@ class AzureA2ML(object):
             inference_config,
             aciconfig)
         aci_service.wait_for_deployment(True)
-        print(aci_service.state)
+        self.ctx.log('%s state %s' % (aci_service_name, str(aci_service.state)))
+
+        return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
     def _save_predictions(self, df_predictions, filename):
         predicted_path = os.path.abspath(
             os.path.splitext(filename)[0] + "_predicted.csv")
         df_predictions.to_csv(predicted_path, index=False, encoding='utf-8')
         self.ctx.log('Predictions are saved to %s' % predicted_path)
+        return predicted_path
 
     def _predict_local(self, predict_data, model_id, threshold):
         from auger.api.cloud.utils.dataframe import DataFrame
@@ -255,6 +254,7 @@ class AzureA2ML(object):
 
         return fitted_model.predict(predict_data)
 
+    @error_handler
     def predict(self, filename, model_id, threshold=None, locally=False):
         from auger.api.cloud.utils.dataframe import DataFrame
         target = self.ctx.config.get('target', None)
@@ -265,11 +265,6 @@ class AzureA2ML(object):
             y_pred = self._predict_local(predict_data, model_id, threshold)
         else:
             input_payload = predict_data.to_json(orient='split', index=False)
-            # import requests
-            # headers = {'Content-Type': 'application/json; charset=utf-8'}
-            # scoring_uri = 'http://b2ddd7c1-697e-43a5-b050-ba48a77cbb56.eastus2.azurecontainer.io/score'
-            # resp = requests.post(scoring_uri, input_payload, headers=headers)
-            # print(resp.text)
 
             experiment = Experiment(self.ws, self.experiment_name)
             remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
@@ -283,13 +278,14 @@ class AzureA2ML(object):
                 'data': input_payload['data']
             }
             input_payload = json.dumps(input_payload)
-            #print(input_payload)
 
             response = aci_service.run(input_data = input_payload)
             y_pred = json.loads(response)['result']
 
         predict_data[target] = y_pred
-        self._save_predictions(predict_data, filename)
+        predicted = self._save_predictions(predict_data, filename)
+
+        return {'predicted': predicted}
 
     def review(self):
         pass
