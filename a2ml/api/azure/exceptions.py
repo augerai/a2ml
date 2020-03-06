@@ -1,0 +1,1 @@
+class AzureException(Exception): pass

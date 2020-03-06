@@ -1,6 +1,6 @@
 from auger.api.cloud.rest_api import RestApi
 from auger.api.credentials import Credentials
-from auger.cli.commands.cmd_model import ModelCmd
+from auger.cli.commands.impl.modelcmd import ModelCmd
 
 class AugerModel(ModelCmd):
 

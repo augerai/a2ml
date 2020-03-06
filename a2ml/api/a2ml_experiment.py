@@ -9,16 +9,16 @@ class A2MLExperiment(metaclass=ErrorHandler):
         self.runner = CRUDRunner(ctx, provider, 'experiment')
 
     def list(self):
-        self.runner.execute('list')
+        return self.runner.execute('list')
 
     def start(self):
-        self.runner.execute('start')
+        return self.runner.execute('start')
 
     def stop(self):
-        self.runner.execute('stop')
+        return self.runner.execute('stop')
 
     def leaderboard(self, run_id):
-        self.runner.execute('leaderboard', run_id)
+        return self.runner.execute('leaderboard', run_id)
 
     def history(self):
-        self.runner.execute('history')
+        return self.runner.execute('history')

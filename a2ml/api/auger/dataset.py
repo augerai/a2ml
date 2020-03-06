@@ -1,6 +1,6 @@
 from auger.api.cloud.rest_api import RestApi
 from auger.api.credentials import Credentials
-from auger.cli.commands.cmd_dataset import DataSetCmd
+from auger.cli.commands.impl.datasetcmd import DataSetCmd
 
 class AugerDataset(DataSetCmd):
 
