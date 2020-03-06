@@ -41,7 +41,6 @@ class CRUDRunner(object):
                     'result': False,
                     'data': str(e) }
 
-        print(results)
         return results
 
     def _load_providers(self, ctx, providers, obj_name):

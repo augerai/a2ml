@@ -1,5 +1,6 @@
 import os
 import pytest
+import click
 
 from a2ml.api.a2ml import A2ML
 from a2ml.api.auger.a2ml import AugerA2ML
@@ -22,7 +23,7 @@ class TestFacade(object):
         ctx.config.set('config', 'providers', 'auger')
         a2ml = A2ML(ctx)
         assert len(a2ml.runner.providers) == 1
-        assert isinstance(a2ml.runner.providers[0], AugerA2ML)
+        assert isinstance(a2ml.runner.providers['auger'], AugerA2ML)
         assert init_auger.times == 1
         assert init_google.times == 0
         # modify config on the fly
@@ -31,8 +32,8 @@ class TestFacade(object):
         init_google.reset()
         a2ml = A2ML(ctx)
         assert len(a2ml.runner.providers) == 2
-        assert isinstance(a2ml.runner.providers[0], AugerA2ML)
-        assert isinstance(a2ml.runner.providers[1], GoogleA2ML)
+        assert isinstance(a2ml.runner.providers['auger'], AugerA2ML)
+        assert isinstance(a2ml.runner.providers['google'], GoogleA2ML)
         assert init_auger.times == 1
         assert init_google.times == 1
 
