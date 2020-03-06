@@ -3,27 +3,48 @@ import importlib
 class CRUDRunner(object):
     """Runner executes provider crud operations."""
 
-    def __init__(self, ctx, provider, obj_name):
+    def __init__(self, ctx, providers, obj_name):
         super(CRUDRunner, self).__init__()
         self.ctx = ctx
-        self.providers = self._load_providers(ctx, provider, obj_name)
+        self.providers = self._load_providers(ctx, providers, obj_name)
 
     def execute(self, operation_name, *args, **kwargs):
+        def send_error(p, msg):
+            self.ctx.log('[%s]  %s' % (p, msg))
+            raise Exception(msg)
+
         if len(self.providers) == 0:
-            raise Exception(
-                'Please specify provider(s) to run %s' % operation_name)
+            msg = 'Please specify provider(s) to run %s' % operation_name
+            self.ctx.log(msg)
+            return {'error': msg}
 
-        for p in self.providers:
+        results = {}
+        for p in self.providers.keys():
+            pi = self.providers[p]
             try:
-                if isinstance(p, str):
-                    self.ctx.log(
-                        'Can\'t load %s to run \'%s\'' % (p, operation_name))
-                else:
-                    return getattr(p, operation_name)(*args, **kwargs)
-            except AttributeError:
-                p.ctx.log('%s not found', operation_name)
+                try:
+                    if isinstance(pi, str):
+                        send_error(p, 'Can\'t load %s to run \'%s\''\
+                            % (pi, operation_name))
+                    else:
+                        result = getattr(pi, operation_name)(*args, **kwargs)
+                        results[p] = {
+                            'result': True,
+                            'data': result }
+                except AttributeError:
+                    send_error(p, '%s not found' % operation_name)
+            except Exception as e:
+                if self.ctx.debug:
+                    import traceback
+                    traceback.print_exc()
+                results[p] = {
+                    'result': False,
+                    'data': str(e) }
 
-    def _load_providers(self, ctx, provider, obj_name):
+        print(results)
+        return results
+
+    def _load_providers(self, ctx, providers, obj_name):
         def get_instance(p):
             try:
                 module = importlib.import_module(
@@ -36,5 +57,8 @@ class CRUDRunner(object):
                     import traceback
                     traceback.print_exc()
                 return '%s%s' % (p.capitalize(),obj_name.capitalize())
-        providers = [provider] if provider else ctx.get_providers()
-        return [get_instance(p) for p in providers]
+        if providers:
+            providers = [p.strip() for p in providers.split(',')]
+        else:
+            providers = ctx.get_providers()
+        return {p: get_instance(p) for p in providers}
