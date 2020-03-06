@@ -1,8 +1,15 @@
 ---
+# Name of the DataSet on Azure Cloud
+dataset:
+
 # experiment settings unique to Azure, currently just metric used for scoring
 experiment:
-  metric: AUC_weighted
+  # Latest experiment name
+  name:
+  # Latest experiment run
   run_id:
+  ### Metric used to build Model
+  metric: AUC_weighted
 
 cluster:
   region: eastus2
