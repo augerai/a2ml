@@ -2,6 +2,7 @@ from .celery_app import celeryApp
 import logging
 import copy
 import os
+import json
 
 from a2ml.api.utils.context import Context
 from auger.api.cloud.rest_api import RestApi
@@ -13,15 +14,13 @@ def create_context(params, new_project=False):
     project_path = os.path.join(
         os.environ.get('A2ML_PROJECT_PATH'), params.get('project_name'))
 
-    providers_info = {
-        "auger" :{
-            'organization' : os.environ.get('AUGER_ORGANIZATION'),
-            'api_url' : os.environ.get('HUB_APP_URL'),
-            'token' : os.environ.get('AUGER_PROJECT_API_TOKEN')
-        }
-    }
-    ctx = Context(path=project_path, debug = params.get("debug_log", False),
-        providers_info = providers_info)
+    os.environ['AUGER_CREDENTIALS'] = json.dumps({
+        'organization' : os.environ.get('AUGER_ORGANIZATION'),
+        'url' : os.environ.get('HUB_APP_URL'),
+        'token' : os.environ.get('AUGER_PROJECT_API_TOKEN')
+    })
+
+    ctx = Context(path=project_path, debug = params.get("debug_log", False))
     ctx.runs_on_server = True
     ctx.setup_logger(format='')
 
@@ -32,12 +31,7 @@ def create_context(params, new_project=False):
         if params.get("source_path"):
             ctx.config.set('config', 'source', params.get("source_path"))
 
-    return ctx    
-    # ctx.config['config'].write()
-
-    # return Context(path=project_path, debug = params.get("debug_log", False),
-    #     providers_info = providers_info)
-
+    return ctx
 
 def execute_tasks(tasks_func, params):
     if os.environ.get('TEST_CALL_CELERY_TASKS', True):

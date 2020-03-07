@@ -11,14 +11,7 @@ class AugerBase(object):
         super(AugerBase, self).__init__()
         self.ctx = ctx
 
-        if 'auger' in self.ctx.providers_info:
-            self.credentials = Credentials(ctx)
-            self.credentials.organization = self.ctx.providers_info['auger']['organization']
-            self.credentials.api_url = self.ctx.providers_info['auger']['api_url']
-            self.credentials.token = self.ctx.providers_info['auger']['token']
-        else:    
-            self.credentials = Credentials(ctx).load()
-
+        self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
             self.credentials.api_url, self.credentials.token)
 
