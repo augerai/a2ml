@@ -21,16 +21,36 @@ class ProviderRunner(object):
         # if there is single operation requested
         # no need to run it on the thread
         if len(self.providers) == 1:
-            return getattr(self.providers[0], operation_name)(*args, **kwargs)
+            p = list(self.providers.keys())[0]
+            try:
+                result = getattr(self.providers[p], operation_name)(*args, **kwargs)
+                return {p: {
+                    'result': True,
+                    'data': result}}
+            except Exception as e:
+                return {p: {
+                    'result': False,
+                    'data': str(e) }}
 
         with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
-            futures = [
-                executor.submit(getattr(p, operation_name), *args, **kwargs)
-                for p in self.providers]
+            futures = {
+                executor.submit(getattr(
+                    self.providers[p], operation_name), *args, **kwargs): p
+                for p in self.providers.keys()}
 
             try:
+                results = {}
                 for future in as_completed(futures):
-                    future.result()
+                    try:
+                        result = future.result()
+                        results[futures[future]] = {
+                            'result': True,
+                            'data': result }
+                    except Exception as e:
+                        results[futures[future]] = {
+                            'result': False,
+                            'data': str(e) }
+                return results
             except KeyboardInterrupt:
                 # not a graceful termination
                 executor._threads.clear()
@@ -42,4 +62,4 @@ class ProviderRunner(object):
             module = importlib.import_module('a2ml.api.%s.a2ml' % p)
             provider_class = getattr(module, '%sA2ML' % p.capitalize())
             return provider_class(self.ctx.copy(p))
-        return [get_instance(p) for p in self.ctx.get_providers(provider)]
+        return {p: get_instance(p) for p in self.ctx.get_providers(provider)}
