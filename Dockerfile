@@ -41,4 +41,4 @@ COPY --from=builder $WORKDIR $WORKDIR
 COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
-ENTRYPOINT /usr/local/bin/a2ml
+#ENTRYPOINT /usr/local/bin/a2ml

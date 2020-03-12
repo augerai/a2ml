@@ -12,7 +12,7 @@ import logging
 
 celeryApp = Celery('a2ml.tasks_queue',
              include=[
-             'auger_ml.tasks_queue.api_queue'])
+             'a2ml.tasks_queue.tasks_api'])
 
 celeryApp.conf.enable_utc = True
 celeryApp.conf.broker_url = os.environ.get(

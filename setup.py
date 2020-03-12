@@ -31,7 +31,7 @@ class VerifyVersionCommand(install):
 install_requires = [
     'auger.ai>=0.2.1',
     'auger-hub-api-client>=0.6.1',
-    'celery',
+    'celery==4.4.0',
     'click',
     'numpy<=1.16.2,>=1.16.0',
     'scipy<=1.1.0,>=1.0.0',

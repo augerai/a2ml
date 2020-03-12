@@ -34,11 +34,11 @@ def create_context(params, new_project=False):
     return ctx
 
 def execute_tasks(tasks_func, params):
-    if os.environ.get('TEST_CALL_CELERY_TASKS', True):
+    if os.environ.get('TEST_CALL_CELERY_TASKS'):
         return tasks_func(params)
     else:
-        raise Exception("Not implemented.")
-
+        ar = tasks_func.delay(params)
+        return ar.get() 
 
 @celeryApp.task()
 def new_project_task(params):

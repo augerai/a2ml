@@ -21,7 +21,7 @@ services:
       - .:/app
     depends_on:
       - minio
-      - rabbitmq
+      - redis
 
   minio:
     image: minio/minio:RELEASE.2019-10-12T01-39-57Z
@@ -30,12 +30,14 @@ services:
       - 9000:9000
     volumes:
       - ./tmp/data/:/data/
-    env_file: develop.env  
+    env_file: develop.env
+    
+  redis:
+    image: "redis:alpine"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save "" --appendonly no
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
-
+volumes:
+  redis_data:
+  node_modules:
