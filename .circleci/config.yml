@@ -96,6 +96,8 @@ workflows:
       - build-docs
       - deploy-docs:
           name: deploy3.7
+          requires:
+            - build-docs
           filters:
             branches:
               only:
