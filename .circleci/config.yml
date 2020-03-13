@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Deploy docs to gh-pages branch
           command: |
-            git config user.email "bots@auger.ai"
+            git config user.email "23641280+augerbot@users.noreply.github.com"
             git config user.name "augerbot"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
