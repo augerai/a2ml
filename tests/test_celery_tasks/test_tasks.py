@@ -1,5 +1,6 @@
 import os
 import pytest
+import logging
 
 from a2ml.tasks_queue.tasks_api import *
 
@@ -15,7 +16,6 @@ class TestTasks(object):
             'debug_log': True,
             'project_name': 'cli-integration-test'
         }
-
         execute_tasks(import_data_task, params)
 
     @pytest.mark.skip(reason='run it locally')
@@ -23,7 +23,7 @@ class TestTasks(object):
         params = {
             'provider': 'auger',
             'debug_log': True,
-			'project_name': 'new-project-test-s3-5',
+			'project_name': 'new-project-test-s3-7',
             # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
         }
 
@@ -51,7 +51,7 @@ class TestTasks(object):
 
         execute_tasks(train_task, params)
 
-    @pytest.mark.skip(reason='run it locally')
+    #@pytest.mark.skip(reason='run it locally')
     def test_evaluate_s3(self):
         params = {
             'provider': 'auger',
@@ -108,9 +108,9 @@ class TestTasks(object):
         params = {
             'providers': ['auger', 'azure'],
             'debug_log': True,
-            'project_name': 'new-project-test-s3-5',
-            'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv',
-            'target': 'income',
+            'project_name': 'new-project-test-s3-7',
+            'source_path': 's3://auger-demo-datasets/iris_data_sample.csv',
+            'target': 'class',
             'model_type': 'classification'
         }
 

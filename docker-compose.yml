@@ -5,7 +5,7 @@ services:
     build: .
     image: deeplearninc/a2ml
     working_dir: /app
-    command: pytest -vv -s -o log_cli=True -o log_cli_level=info -W ignore tests/test_celery_tasks/test_tasks.py::TestTasks::test_import
+    command: pytest -vv -s -o log_cli=True -o log_cli_level=info -W ignore tests/test_celery_tasks/test_tasks.py::TestTasks::test_import_s3
     env_file: develop.env
     volumes:
       - .:/app
