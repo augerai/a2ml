@@ -97,7 +97,9 @@ workflows:
       - deploy-docs:
           name: deploy3.7
           filters:
-            branches: "cicd-docs"
+            branches:
+              only:
+                - cicd-docs
   commit:
     jobs:
       - build-test:
