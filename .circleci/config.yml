@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  docs_build:
+  build-docs:
     docker:
       - image: python:3.7
     steps:
@@ -14,7 +14,7 @@ jobs:
       - persist_to_workspace:
           root: docs/build
           paths: html
-  docs_deploy:
+  deploy-docs:
     docker:
       - image: node:10.15.0
     steps:
@@ -36,13 +36,99 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: |
             git config user.email "auger@dplrn.com"
-            git config user.name "CircleCI docs-deploy job"
+            git config user.name "CircleCI deploy-docs job"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
+  build-test:
+    parameters:
+      python_version:
+        default: "3.7"
+        type: string
+    working_directory: ~/a2ml
+    docker:
+      - image: circleci/python:<< parameters.python_version >>
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python_version >>/site-packages
+      - restore_cache:
+          key: a2ml-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            sudo pip install pipenv
+            pipenv install --dev
+      - save_cache:
+          key: a2ml-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
+      # TODO: Fix flake8 issues
+      # - run:
+      #     command: |
+      #       pipenv run python setup.py flake8
+      - run: pipenv run python setup.py test
+
+  deploy:
+    working_directory: ~/a2ml
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          key: a2ml-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            sudo pip install pipenv
+            pipenv install
+      - run: pipenv run python setup.py verify
+      - run:
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run: pipenv run python setup.py bdist_wheel
+      - run:
+          command: |
+            sudo pip install twine
+            echo "Deploying new package to pypi.org..."
+            twine upload dist/*
 
 workflows:
-  version: 2.1
-  build_docs:
+  build_and_deploy_docs:
     jobs:
-      - docs_build
-      - docs_deploy
+      - build-docs
+      - deploy-docs
+  commit:
+    jobs:
+      - build-test:
+          name: build3.7
+          python_version: "3.7"
+  build_and_deploy:
+    jobs:
+      - build-test:
+          name: build3.6
+          python_version: "3.7"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build-test:
+          name: build3.7
+          python_version: "3.7"
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          requires:
+            - build3.7
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

@@ -39,12 +39,13 @@ PROJECT_FILE = {
 class TestConfigs(object):
 
     def test_experiment_settings(self, project, ctx, monkeypatch):
-        config = ctx.get_config('auger')
-        config.experiment.cross_validation_folds = 55
-        config.experiment.max_total_time = 606
-        config.experiment.max_eval_time = 55
-        config.experiment.max_n_trials = 101
-        config.experiment.use_ensemble = False
+        config = ctx.config
+        config.set('config','target', 'species')
+        config.set('config','experiment/cross_validation_folds', 55)
+        config.set('config','experiment/max_total_time', 606)
+        config.set('config','experiment/max_eval_time', 55)
+        config.set('config','experiment/max_n_trials', 101)
+        config.set('config','experiment/use_ensemble', False)
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,
@@ -73,8 +74,9 @@ class TestConfigs(object):
         assert config['evaluation_options']['scoring'] == 'f1_macro'
 
     def test_exclude_setting(self, project, ctx, monkeypatch):
-        config = ctx.get_config('config')
-        config.exclude = ['sepal_length']
+        config = ctx.config
+        config.set('config','target', 'species')
+        config.set('config','exclude',['sepal_length'])
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,
@@ -92,10 +94,9 @@ class TestConfigs(object):
             ['species']
 
     def test_model_type_setting(self, project, ctx, monkeypatch):
-        config = ctx.get_config('config')
-        config.model_type = 'regression'
-        config = ctx.get_config('auger')
-        config.experiment.metric = None
+        ctx.config.set('config','target', 'species')
+        ctx.config.set('config','model_type','regression')
+        ctx.config.set('auger','experiment/metric', None)
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,

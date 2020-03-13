@@ -9,7 +9,7 @@ class A2MLModel(metaclass=ErrorHandler):
         self.runner = CRUDRunner(ctx, provider, 'model')
 
     def deploy(self, model_id, locally):
-        self.runner.execute('deploy', model_id, locally)
+        return self.runner.execute('deploy', model_id, locally)
 
     def predict(self, filename, model_id, threshold, locally):
-        self.runner.execute('predict', filename, model_id, threshold, locally)
+        return self.runner.execute('predict', filename, model_id, threshold, locally)

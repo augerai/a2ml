@@ -1,6 +1,6 @@
 from auger.api.cloud.rest_api import RestApi
 from auger.api.credentials import Credentials
-from auger.cli.commands.cmd_experiment import ExperimentCmd
+from auger.cli.commands.impl.experimentcmd import ExperimentCmd
 
 class AugerExperiment(ExperimentCmd):
 
