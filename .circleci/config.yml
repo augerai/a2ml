@@ -101,7 +101,7 @@ workflows:
           filters:
             branches:
               only:
-                - cicd-docs
+                - master
   commit:
     jobs:
       - build-test:
