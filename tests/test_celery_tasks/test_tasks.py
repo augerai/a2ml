@@ -51,7 +51,7 @@ class TestTasks(object):
 
         execute_tasks(train_task, params)
 
-    #@pytest.mark.skip(reason='run it locally')
+    @pytest.mark.skip(reason='run it locally')
     def test_evaluate_s3(self):
         params = {
             'provider': 'auger',
