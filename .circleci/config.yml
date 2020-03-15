@@ -1,6 +1,38 @@
 version: 2.1
-
 jobs:
+  build-docs:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Build docs
+          command: cd docs/ && make html
+      - persist_to_workspace:
+          root: docs/build
+          paths: html
+  deploy-docs:
+    docker:
+      - image: node:10.15.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: docs/build
+      - run:
+          name: Disable jekyll builds
+          command: touch docs/build/html/.nojekyll
+      - add_ssh_keys:
+          fingerprints: "44:aa:23:95:60:12:6b:b5:8d:b2:e5:05:24:1f:94:cf"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: |
+            git config user.email "23641280+augerbot@users.noreply.github.com"
+            git config user.name "augerbot"
+            npm install -g --silent gh-pages@2.2.0
+            gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
   build-test:
     parameters:
       python_version:
@@ -59,7 +91,17 @@ jobs:
             twine upload dist/*
 
 workflows:
-  version: 2.1
+  build_and_deploy_docs:
+    jobs:
+      - build-docs
+      - deploy-docs:
+          name: deploy3.7
+          requires:
+            - build-docs
+          filters:
+            branches:
+              only:
+                - master
   commit:
     jobs:
       - build-test:
