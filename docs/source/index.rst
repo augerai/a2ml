@@ -5,12 +5,20 @@
 
 Welcome to a2ml's documentation!
 ================================
-.. automodule:: a2ml.api.auger.a2ml
-    :members:
+
+
+The API Documentation / Guide
+-----------------------------
+
+If you are looking for information on a specific function, class, or method,
+this part of the documentation is for you.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   
+   api
+
+   
 
 
 
