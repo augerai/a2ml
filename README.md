@@ -120,7 +120,7 @@ To get detailed information on available options for each command, please run:
 $ a2ml command --help
 ```
 
-## Using the A2ML API
+## Using the A2ML API from Python
 After you have configured the YAML files as shown above (whether from scratch
 or using the templates provided by "a2ml new") you can use the API to
 import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured files should be in the directory you are running from.
@@ -138,6 +138,18 @@ ctx = Context()
 a2ml = A2ML(ctx)
 result = a2ml.import_data()
 ```
+
+### Import 
+
+### Train
+
+### Evaluate
+
+### Deploy
+
+### Predict
+
+### Review
 
 ## Development Setup
 
