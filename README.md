@@ -252,7 +252,7 @@ Project interface to A2ML Provider Projects.
 
 - **list()** - lists all Projects for the specified providers.
 
--- **Returns** - dictionary with iterators to list of provider projects.
+**Returns** - dictionary with iterators to list of provider projects.
 ```
   {
     result: True|False,
@@ -274,7 +274,7 @@ Project interface to A2ML Provider Projects.
 
 - **create()** - creates Project on Provider Cloud.
 
--- **Returns**
+**Returns**
 ```
   {
     result: True|False,
@@ -290,7 +290,7 @@ Project interface to A2ML Provider Projects.
 
 - **delete()** - deletes Project on Provider Cloud.
 
--- **Returns**
+**Returns**
 ```
   {
     result: True|False,
