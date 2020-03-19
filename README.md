@@ -135,11 +135,12 @@ From that client object you will execute the various PREDIT pipeline methods
   from a2ml.api.a2ml import A2ML
   from a2ml.api.utils.context import Context
   ctx = Context()
-  a2ml = A2ML(ctx)
+  a2ml = A2ML(ctx, 'auger, azure')
   result = a2ml.import_data()
   ```
 
 ## Base Classes
+
 ### a2ml.api.utils.Context
 Context provides environment to run A2ML Experiments and Models:
 - loads Credentials;
@@ -149,7 +150,7 @@ to A2ML classes and business objects;
 
 ### a2ml.api.A2ML - A2ML PREDIT API
 
-- **A2ML(context, providers)** - constructs A2ML PREDIT instance.
+- **A2ML(context, providers = None)** - constructs A2ML PREDIT instance.
   - context - instance of a2ml Context
   - providers - list of providers (auger, azure, etc.)
 
