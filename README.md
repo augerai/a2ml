@@ -147,7 +147,7 @@ Context provides environment to run A2ML Experiments and Models:
 to A2ML classes and business objects;
 - provides logging interface to all A2ML classes and business objects.
 
-###a2ml.api.A2ML - A2ML PREDIT API
+### a2ml.api.A2ML - A2ML PREDIT API
 
 - **A2ML(context, providers)** - constructs A2ML PREDIT instance.
   - context - instance of a2ml Context
@@ -169,6 +169,7 @@ to A2ML classes and business objects;
   ```
 
 - **train()** - Train models with multiple algorithms and hyperparameters
+
   Returns:
   ```
     {
@@ -182,6 +183,7 @@ to A2ML classes and business objects;
 
 - **evaluate(run_id = None)** - Evaluate model performance and choose one or
 more for deployment
+
   Returns:
   ```
     {
