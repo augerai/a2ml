@@ -48,6 +48,7 @@ jobs:
           docker_layer_caching: true
       - checkout
       - run: |
+          cp develop.env.example develop.env
           docker-compose build
           docker-compose -f docker-compose.test.yml run tests
 

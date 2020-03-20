@@ -16,9 +16,6 @@ services:
     build: .
     image: deeplearninc/a2ml
     command: wait-for-it rabbitmq:5672 -t 30 -- celery -A a2ml.tasks_queue.celery_app worker --loglevel=info
-    entrypoint:
-      - /bin/bash
-      - -c
     env_file: develop.env
     volumes:
       - .:/app
