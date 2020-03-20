@@ -44,6 +44,7 @@ class Config(object):
     def __init__(self, name = 'config'):
         super(Config, self).__init__()
         self.name = name
+        self.path = None
         self.parts = ConfigParts()
         self.load()
 
