@@ -132,8 +132,7 @@ From that client object you will execute the various PREDIT pipeline methods
 
   ```python
   import os
-  from a2ml.api.a2ml import A2ML
-  from a2ml.api.utils.context import Context
+  from a2ml import A2ML, Context
   ctx = Context()
   a2ml = A2ML(ctx, 'auger, azure')
   result = a2ml.import_data()
