@@ -23,10 +23,6 @@ RUN find /usr/local/lib/python3.7 \
   && find /usr/local/lib/python3.7 \
   -name '*.so*' | xargs strip
 
-COPY a2ml/ $WORKDIR/a2ml
-COPY tests $WORKDIR/tests
-RUN pip install -e .
-
 FROM python:3.7-slim-stretch
 
 ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
@@ -34,11 +30,20 @@ ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
+RUN apt-get update \
+  && apt-get -y --no-install-recommends install \
+  libgomp1 \
+  wait-for-it
+
 COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
 COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
-COPY --from=builder /usr/local/bin/a2ml /usr/local/bin/a2ml
-COPY --from=builder $WORKDIR $WORKDIR
 COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
+COPY LICENSE README.md setup.py $WORKDIR/
+COPY a2ml/ $WORKDIR/a2ml
+COPY tests $WORKDIR/tests
+RUN pip install -e .
+
 #ENTRYPOINT /usr/local/bin/a2ml
+CMD /usr/local/bin/a2ml

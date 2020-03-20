@@ -18,13 +18,13 @@ class TestTasks(object):
         }
         execute_tasks(import_data_task, params)
 
-    @pytest.mark.skip(reason='run it locally')
+
     def test_import_s3(self):
         params = {
             'provider': 'auger',
             'debug_log': True,
-			'project_name': 'new-project-test-s3-7',
-            # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
+			'project_name': 'a2ml-app',
+            'source_path': 's3://sample-bucket/workspace/projects/a2ml-app/files/iris.csv'
         }
 
         execute_tasks(import_data_task, params)
