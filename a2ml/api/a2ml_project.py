@@ -7,15 +7,28 @@ class A2MLProject(metaclass=ErrorHandler):
         super(A2MLProject, self).__init__()
         self.ctx = ctx
         self.runner = CRUDRunner(ctx, provider, 'project')
+        self.showresult = True
 
     def list(self):
-        return self.runner.execute('list')
+        results = self.runner.execute('list')
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
     def create(self, name):
-        return self.runner.execute('create', name)
+        results = self.runner.execute('create', name)
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
     def delete(self, name):
-        return self.runner.execute('delete', name)
+        results = self.runner.execute('delete', name)
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
     def select(self, name):
-        return self.runner.execute('select', name)
+        results = self.runner.execute('select', name)
+        if self.showresult:
+            self.ctx.log(results)
+        return results
