@@ -40,7 +40,7 @@ COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
 COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
-COPY LICENSE README.md setup.py $WORKDIR/
+COPY LICENSE README.md setup.py tox.ini $WORKDIR/
 COPY a2ml/ $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
 RUN pip install -e .
