@@ -98,14 +98,6 @@ workflows:
   build_and_deploy:
     jobs:
       - build-test:
-          name: build3.6
-          python_version: "3.7"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build-test:
           name: build3.7
           python_version: "3.7"
           filters:
@@ -113,7 +105,7 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy:
+      - deploy-pip:
           requires:
             - build3.7
           filters:
