@@ -7,15 +7,28 @@ class A2MLDataset(metaclass=ErrorHandler):
         super(A2MLDataset, self).__init__()
         self.ctx = ctx
         self.runner = CRUDRunner(ctx, provider, 'dataset')
+        self.showresult = True
 
     def list(self):
-        return self.runner.execute('list')
+        results = self.runner.execute('list')
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
-    def create(self, source):
-        return self.runner.execute('create', source)
+    def create(self, source = None):
+        results = self.runner.execute('create', source)
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
-    def delete(self, name):
-        return self.runner.execute('delete', name)
+    def delete(self, name = None):
+        results = self.runner.execute('delete', name)
+        if self.showresult:
+            self.ctx.log(results)
+        return results
 
-    def select(self, name):
-        return self.runner.execute('select', name)
+    def select(self, name = None):
+        results = self.runner.execute('select', name)
+        if self.showresult:
+            self.ctx.log(results)
+        return results

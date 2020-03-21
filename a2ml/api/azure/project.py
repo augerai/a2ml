@@ -1,4 +1,6 @@
 from azureml.core import Workspace
+from azureml.exceptions import WorkspaceException
+from .exceptions import AzureException
 
 
 class AzureProject(object):
@@ -18,12 +20,12 @@ class AzureProject(object):
         name = self._project_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
         if subscription_id is None:
-            raise Exception('Please provide Azure subscription id...')
+            raise AzureException('Please provide Azure subscription id...')
         region = self.ctx.config.get('cluster/region', 'eastus2')
         resource_group = self.ctx.config.get(
             'resource_group', name+'-resources')
         self.ctx.log('Creating %s' % name)
-        ws = Workspace.create(
+        self.ws = Workspace.create(
             name=name,
             subscription_id=subscription_id,
             resource_group=resource_group,
@@ -43,7 +45,7 @@ class AzureProject(object):
         self.ctx.log('%s deleted' % name)
         return {'deleted': name}
 
-    def select(self, name):
+    def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected project %s' % name)
         return {'selected': name}
@@ -56,5 +58,19 @@ class AzureProject(object):
         if name is None:
             name =  self.ctx.config.get('name', None)
         if name is None:
-            raise Exception('Please provide project name...')
+            raise AzureException('Please provide project name...')
         return name
+
+    def _get_ws(self, name = None, create_if_not_exist = False):
+        name = self._project_name(name)
+        subscription_id = self.ctx.config.get('subscription_id', None)
+        if subscription_id is None:
+            raise AzureException('Please provide Azure subscription id...')
+        try:
+            self.ws = Workspace.get(name, subscription_id=subscription_id)
+        except WorkspaceException as e:
+            if create_if_not_exist:
+                self.create(name)
+            else:
+                raise e
+        return self.ws
