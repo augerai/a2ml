@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath("../a2ml/api"))
+sys.path.insert(0, os.path.abspath(".."))
 import sphinx_rtd_theme
 
 
@@ -33,13 +33,15 @@ release = '1.0'
 # ones.
 extensions = [
   'sphinx.ext.autodoc',
+  'sphinx.ext.napoleon',
   'sphinx.ext.coverage',
   'sphinx.ext.intersphinx',
-  'sphinx.ext.napoleon',
   'sphinx.ext.ifconfig',
   'sphinx_rtd_theme'
 ]
 
+napoleon_include_init_with_doc = True
+napoleon_google_docstring = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -54,7 +56,17 @@ language = 'python3'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
+html_sidebars = {
+    "index": ["sidebarintro.html", "sourcelink.html", "searchbox.html", "hacks.html"],
+    "**": [
+        "sidebarlogo.html",
+        "localtoc.html",
+        "relations.html",
+        "sourcelink.html",
+        "searchbox.html",
+        "hacks.html",
+    ],
+}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -62,7 +74,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-
+html_show_sphinx = False
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".

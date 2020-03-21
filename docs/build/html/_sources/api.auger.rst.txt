@@ -1,0 +1,78 @@
+a2ml.api.auger package
+======================
+
+Submodules
+----------
+
+a2ml.api.auger.a2ml module
+--------------------------
+
+.. automodule:: a2ml.api.auger.a2ml
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.auth module
+--------------------------
+
+.. automodule:: a2ml.api.auger.auth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.config module
+----------------------------
+
+.. automodule:: a2ml.api.auger.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.credentials module
+---------------------------------
+
+.. automodule:: a2ml.api.auger.credentials
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.dataset module
+-----------------------------
+
+.. automodule:: a2ml.api.auger.dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.experiment module
+--------------------------------
+
+.. automodule:: a2ml.api.auger.experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.model module
+---------------------------
+
+.. automodule:: a2ml.api.auger.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+a2ml.api.auger.project module
+-----------------------------
+
+.. automodule:: a2ml.api.auger.project
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: a2ml.api.auger
+   :members:
+   :undoc-members:
+   :show-inheritance:

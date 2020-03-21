@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python3" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python3" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A2ML API &mdash; a2ml 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CLI" href="cli.html" />
+    <link rel="prev" title="QuickStart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> a2ml
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">A2ML API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-dataset-module">a2ml.api.a2ml_dataset module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_experiment">a2ml.api.a2ml_experiment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_model">a2ml.api.a2ml_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_project">a2ml.api.a2ml_project module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/todo.html">Todo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">a2ml</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>A2ML API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/user/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a2ml-api">
+<h1>A2ML API<a class="headerlink" href="#a2ml-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a2ml-api-package">
+<h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a2ml-api-a2ml-dataset-module">
+<h3>a2ml.api.a2ml_dataset module<a class="headerlink" href="#a2ml-api-a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_dataset.</code><code class="sig-name descname">A2MLDataset</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Contains the dataset CRUD operations that interact with provider.</p>
+<dl class="method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_experiment">
+<span id="a2ml-api-a2ml-experiment-module"></span><h3>a2ml.api.a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_experiment.</code><code class="sig-name descname">A2MLExperiment</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.history">
+<code class="sig-name descname">history</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard">
+<code class="sig-name descname">leaderboard</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_model">
+<span id="a2ml-api-a2ml-model-module"></span><h3>a2ml.api.a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="a2ml.api.a2ml_model.A2MLModel">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_model.</code><code class="sig-name descname">A2MLModel</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.actual">
+<code class="sig-name descname">actual</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_project">
+<span id="a2ml-api-a2ml-project-module"></span><h3>a2ml.api.a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="a2ml.api.a2ml_project.A2MLProject">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_project.</code><code class="sig-name descname">A2MLProject</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cli.html" class="btn btn-neutral float-right" title="CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="QuickStart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, a2ml
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

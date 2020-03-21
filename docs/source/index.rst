@@ -1,30 +1,29 @@
-.. a2ml documentation master file, created by
-   sphinx-quickstart on Fri Mar 13 10:18:41 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+A2ML - Automation of AutoML
+---------------------------
 
-Welcome to a2ml's documentation!
-================================
-
-
-The API Documentation / Guide
------------------------------
-
-If you are looking for information on a specific function, class, or method,
-this part of the documentation is for you.
+The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors. Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model. May the best "algorithm/hyperparameter search" win.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Development
+   :hidden:
+
+   user/intro
+   user/install
+   user/authentication
+   user/quickstart
+   user/api
+   user/cli
+   user/advanced
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Community
+   :hidden:
+
+   dev/contributing
+   dev/philosophy
+   dev/todo
+   dev/authors
    
-   api
-
-   
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
