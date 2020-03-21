@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -38,8 +38,9 @@ install_requires = [
     'pandas==0.23.4',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'scikit-learn<=0.20.3,>=0.19.0',
+    'shap==0.32.1',
     'shortuuid',
-    'wheel==0.30.0'
+    'wheel>=0.34.0'
 ]
 
 extras = {
@@ -50,7 +51,8 @@ extras = {
         'pytest-cov',
         'pytest-runner',
         'pytest-xdist',
-        'tox'
+        'tox',
+        'twine'
     ],
     'azure': [
         'azureml-sdk[automl]'
@@ -70,8 +72,7 @@ setup(
     name='a2ml',
     version=VERSION,
     description=(
-        'The A2ML ("Automate AutoML") project is a set of scripts to '
-        'automate Automated Machine Learning tools from multiple vendors.'
+        'A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
     ),
     long_description=long_description,
     long_description_content_type='text/markdown',
