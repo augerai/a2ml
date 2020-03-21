@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install -r requirements.txt
+          command: pip install .[testing]
       - run:
           name: Build docs
           command: cd docs/ && make html
