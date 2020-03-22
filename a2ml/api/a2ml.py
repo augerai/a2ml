@@ -1,5 +1,6 @@
 from a2ml.api.utils.error_handler import ErrorHandler
 from a2ml.api.utils.provider_runner import ProviderRunner
+from a2ml.api.utils.show_result import show_result
 
 
 class A2ML(metaclass=ErrorHandler):
@@ -9,40 +10,27 @@ class A2ML(metaclass=ErrorHandler):
         super(A2ML, self).__init__()
         self.ctx = ctx
         self.runner = ProviderRunner(ctx, provider)
-        self.showresult = False
 
+    @show_result
     def import_data(self):
-        results = self.runner.execute('import_data')
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('import_data')
 
+    @show_result
     def train(self):
-        results = self.runner.execute('train')
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('train')
 
+    @show_result
     def evaluate(self, run_id = None):
-        results = self.runner.execute('evaluate', run_id = run_id)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('evaluate', run_id = run_id)
 
+    @show_result
     def deploy(self, model_id, locally=False):
-        results = self.runner.execute('deploy', model_id, locally)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('deploy', model_id, locally)
 
+    @show_result
     def predict(self, filename, model_id, threshold=None, locally=False):
-        results = self.runner.execute('predict', filename, model_id, threshold, locally)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('predict', filename, model_id, threshold, locally)
 
+    @show_result
     def review(self):
-        results = self.runner.execute('review')
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('review')

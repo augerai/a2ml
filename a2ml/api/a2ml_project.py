@@ -1,5 +1,6 @@
 from a2ml.api.utils.crud_runner import CRUDRunner
 from a2ml.api.utils.error_handler import ErrorHandler
+from a2ml.api.utils.show_result import show_result
 
 class A2MLProject(metaclass=ErrorHandler):
 
@@ -7,28 +8,19 @@ class A2MLProject(metaclass=ErrorHandler):
         super(A2MLProject, self).__init__()
         self.ctx = ctx
         self.runner = CRUDRunner(ctx, provider, 'project')
-        self.showresult = True
 
+    @show_result
     def list(self):
-        results = self.runner.execute('list')
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('list')
 
+    @show_result
     def create(self, name):
-        results = self.runner.execute('create', name)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('create', name)
 
+    @show_result
     def delete(self, name):
-        results = self.runner.execute('delete', name)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('delete', name)
 
+    @show_result
     def select(self, name):
-        results = self.runner.execute('select', name)
-        if self.showresult:
-            self.ctx.log(results)
-        return results
+        return self.runner.execute('select', name)

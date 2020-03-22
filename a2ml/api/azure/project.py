@@ -17,7 +17,7 @@ class AzureProject(object):
         return {'projects': workspaces.keys()}
 
     def create(self, name):
-        name = self._project_name(name)
+        name = self._get_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
         if subscription_id is None:
             raise AzureException('Please provide Azure subscription id...')
@@ -36,7 +36,7 @@ class AzureProject(object):
         return {'created': name}
 
     def delete(self, name):
-        name = self._project_name(name)
+        name = self._get_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
         ws = Workspace.get(name, subscription_id=subscription_id)
         self.ctx.log('Deleting %s' % name)
@@ -54,7 +54,7 @@ class AzureProject(object):
         self.ctx.config.set('config', 'name', name)
         self.ctx.config.write('config')
 
-    def _project_name(self, name):
+    def _get_name(self, name = None):
         if name is None:
             name =  self.ctx.config.get('name', None)
         if name is None:
@@ -62,7 +62,7 @@ class AzureProject(object):
         return name
 
     def _get_ws(self, name = None, create_if_not_exist = False):
-        name = self._project_name(name)
+        name = self._get_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
         if subscription_id is None:
             raise AzureException('Please provide Azure subscription id...')

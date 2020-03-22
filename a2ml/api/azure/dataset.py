@@ -1,5 +1,4 @@
 import os
-from azureml.core import Workspace
 from azureml.core import Dataset
 from .project import AzureProject
 from .exceptions import AzureException
