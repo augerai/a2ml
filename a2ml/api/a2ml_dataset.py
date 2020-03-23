@@ -9,13 +9,13 @@ class A2MLDataset(metaclass=ErrorHandler):
         self.runner = CRUDRunner(ctx, provider, 'dataset')
 
     def list(self):
-        self.runner.execute('list')
+        return self.runner.execute('list')
 
     def create(self, source):
-        self.runner.execute('create', source)
+        return self.runner.execute('create', source)
 
     def delete(self, name):
-        self.runner.execute('delete', name)
+        return self.runner.execute('delete', name)
 
     def select(self, name):
-        self.runner.execute('select', name)
+        return self.runner.execute('select', name)

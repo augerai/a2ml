@@ -15,4 +15,4 @@ class A2MLModel(metaclass=ErrorHandler):
         return self.runner.execute('predict', filename, model_id, threshold, locally)
 
     def actual(self, filename, model_id):
-        self.runner.execute('actual', filename, model_id)
+        return self.runner.execute('actual', filename, model_id)
