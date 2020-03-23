@@ -52,6 +52,10 @@ extras = {
         'pytest-xdist',
         'tox'
     ],
+    'docs': [
+        'sphinx',
+        'sphinx-rtd-theme'
+    ],
     'azure': [
         'azureml-sdk[automl]'
     ],
