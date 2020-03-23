@@ -120,7 +120,7 @@ To get detailed information on available options for each command, please run:
 $ a2ml command --help
 ```
 
-## Using the A2ML API
+## Using the A2ML API from Python
 After you have configured the YAML files as shown above (whether from scratch
 or using the templates provided by "a2ml new") you can use the API to
 import, train, evaluate, deploy, predict and review (the PREDIT pipeline).  These configured files should be in the directory you are running from.
@@ -130,14 +130,476 @@ to a Context() object.  Then you can create a client for the A2ML class.
 From that client object you will execute the various PREDIT pipeline methods
 (starting from "import_data"). Below is example Python code for this.
 
-```python
-import os
-from a2ml.api.a2ml import A2ML
-from a2ml.api.utils.context import Context
-ctx = Context()
-a2ml = A2ML(ctx)
-result = a2ml.import_data()
-```
+  ```python
+  import os
+  from a2ml import A2ML, Context
+  ctx = Context()
+  a2ml = A2ML(ctx, 'auger, azure')
+  result = a2ml.import_data()
+  ```
+
+## Base Classes
+
+### a2ml.api.utils.Context
+Context provides environment to run A2ML Experiments and Models:
+- loads Credentials;
+- loads app settings from .yaml files and provides access to these settings
+to A2ML classes and business objects;
+- provides logging interface to all A2ML classes and business objects.
+
+### a2ml.api.A2ML - A2ML PREDIT API
+
+- **A2ML(context, providers = None)** - constructs A2ML PREDIT instance.
+  - context - instance of a2ml Context
+  - providers - list of providers (auger, azure, etc.)
+
+- **import_data()** - Importing data for training
+
+  Source should be set in config (TBD - pass source as parameter)
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {created: dataset_name}|error
+        }
+    }
+  ```
+
+- **train()** - Train models with multiple algorithms and hyperparameters
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+        }
+    }
+  ```
+
+- **evaluate(run_id = None)** - Evaluate model performance and choose one or
+more for deployment
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'run_id': run_id, 'leaderboard': iterator, 'status': status}|error
+        }
+    }
+  ```
+  Status:  
+  - preprocess - Search is preprocessing data for traing;
+  - started - Search is in progress;
+  - completed - Search is completed;
+  - interrupted - Search was interrupted.
+
+  Leaderboard entry:
+  - 'model id': model id
+  - score name: score value
+  - 'algorithm': algorithm name
+
+- **deploy(model_id, locally=False)** - Deploy selected model
+  - model_id - id of the model from the any Experiment leaderboard
+  - locally - deploys model locally if True, on Provider Cloud if False; optional,
+    default is False.
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'model_id': model_id}|error
+        }
+    }
+  ```
+
+- **predict(filename, model_id, threshold=None, locally=False)** - Predict
+results with new data against deployed model.
+Predictions stored next to the file with data to be
+predicted on; file name will be appended with suffix `_predicted`.
+  - filename - file with data to be predicted
+  - model_id - id of the deployed model
+  - threshold - prediction threshold
+  - locally - if True predict using locally deployed model, predict using model
+    deployed on Provider Cloud
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': dataset_predicted.csv}|error
+        }
+    }
+  ```
+- **review** - Review performance of deployed model(s)
+  TBD
+
+### a2ml.api.A2MLProject
+Project interface to A2ML Provider Projects.
+
+- **A2MLProject(context, providers)** - constructs Project instance.
+  - context - instance of a2ml Context
+  - providers - list of providers (auger, azure, etc.)
+
+- **list()** - lists all Projects for the specified providers.
+
+  Returns: dictionary with iterators to the list of Projects for each provider.
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {projects: iterator}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLProject(ctx, 'auger, azure').list()
+  for provider in ['auger', 'azure']
+    if rv[provider].result is True:
+      for project in iter(rv[provider].data.projects):
+        ctx.log(project.get('name'))
+    else:
+      ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **create(project_name)** - creates Project on Provider Clouds.
+
+  Returns:
+  ```
+  {
+    provider_name:
+      {
+        result: True|False,
+        data: {'created': project_name}|error
+      }
+  }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLProject(ctx, 'auger, azure').create(new_project_name)  
+  ```
+
+- **delete(project_name)** - deletes Project on Provider Clouds.
+
+  Returns:
+  ```
+  {
+    provider_name:   
+      {
+        result: True|False,
+        data: {'deleted': project_name}|error
+      }
+  }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLProject(ctx, 'auger, azure').delete(existing_project_name)
+  ```
+- **select(project_name)** - sets project name in Context
+
+- **properties()** - TBD
+
+### a2ml.api.A2MLDataset
+DataSet for training on Provider Cloud.
+
+- **A2MLDataset(context, providers)** - constructs A2MLDataset instance.
+  - context - instance of A2ML Context.
+  - providers - list of providers (auger, azure, etc.)
+
+- **list()** - lists all DataSets(s) for the Project specified in the .yaml.
+
+  Returns: dictionary with iterators to the list of Projects for each provider.
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {datasets: iterator}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLDataset(ctx, 'auger, azure').list()
+  for provider in ['auger', 'azure']
+    if rv[provider].result is True:
+      for dataset in iter(rv[provider].data.datasets):
+        ctx.log(dataset.get('name'))
+    else:
+      ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **create(source)** - creates new DataSet on Provider Cloud(s).
+
+  - source - path to local or link to remote .csv or .arff file
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {created: dataset_name}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = DataSet(ctx, 'auger, azure').create('../iris.csv')
+  if rv[provider].result is True:
+    ctx.log('Created dataset %s' % rv[provider].data.created)
+  else:
+    ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **delete(dataset_name)** - deletes DataSet on Provider Cloud(s).   
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {deleted: dataset_name}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  DataSet(ctx, 'auger, azure').delete(dataset_name)
+  ctx.log('Deleted dataset %s' % dataset_name)
+  ```
+
+- **select(dataset_name)** - sets dataset name in Context
+
+- **properties()** - TBD
+
+### a2ml.api.Experiment
+Experiment searches for the best Model(s) for a given DataSet.
+
+- **A2MLExperiment(context, providers)** - constructs Experiment instance.
+  - context - instance of A2ML Context.
+  - providers - list of providers (auger, azure, etc.)
+
+- **list()** - list all Experiment(s)
+  Returns: dictionary with iterators to the list of Projects for each provider.
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {experiments: iterator}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLExperiment(ctx, 'auger, azure').list()
+  for provider in ['auger', 'azure']
+    if rv[provider].result is True:
+      for experiment in iter(rv[provider].data.experiments):
+        ctx.log(experiment.get('name'))
+    else:
+      ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **start()** - starts Experiment(s) with selected DataSet; If name of Experiment
+is not set in Context config, new Experiment will be created, otherwise existing
+Experiment will be run.  
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLExperiment(ctx, providers).start()
+  ```
+
+- **stop()** - stops running Experiment(s).
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'stopped': experiment_name}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLExperiment(ctx, providers).stop()
+  ```
+
+- **leaderboard(run_id)** - leaderboard of the currently running or
+  previously completed experiment(s).
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'run_id': run_id, 'leaderboard': iterator, 'status': status}|error
+        }
+    }
+  ```
+  Status:  
+  - preprocess - Search is preprocessing data for traing;
+  - started - Search is in progress;
+  - completed - Search is completed;
+  - interrupted - Search was interrupted.
+
+  Leaderboard entry:
+  - 'model id': model id
+  - score name: score value
+  - 'algorithm': algorithm name
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLExperiment(ctx, 'auger, azure').leaderboard()
+  for provider in ['auger', 'azure']
+    if rv[provider].result is True:
+      for entry in iter(rv[provider].data.leaderboard):
+        ctx.log(entry['model id'])
+      ctx.log('status %s' % rv[provider].data.status)
+    else:
+      ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **history()** - history (leaderboards and settings) of the previous
+  experiment runs. Returns iterator where each item is dictionary with properties
+  of the previous Experiment runs.
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'history': iterator}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = A2MLExperiment(ctx, 'auger, azure').history()
+  for provider in ['auger', 'azure']
+    if rv[provider].result is True:
+      for run in iter(rv[provider].data.history):
+        ctx.log("run id: {}, status: {}".format(
+          run.get('id'),
+          run.get('status')))
+    else:
+      ctx.log('error %s' % rv[provider].data)
+  ```
+
+- **properties()** - TBD
+
+- **delete()** - TBD
+
+### a2ml.api.A2MLModel
+Deploys or predicts using one of the Models from the Project Experiment(s)
+leaderboards.
+
+- **A2MLModel(context, providers)** - constructs Model instance.
+  - context - instance of A2ML Context.
+  - providers - list of providers (auger, azure, etc.)
+
+- **list()** - lists all deployed models for a Project;
+
+- **deploy(model_id, locally)** - deploys selected model locally or on
+  Provider Cloud. Returns deployed model id.
+  - model_id - id of the model from the any Experiment leaderboard
+  - locally - deploys model locally if True, on Provider Cloud if False; optional,
+    default is False.
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'model_id': model_id}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  # deploys model locally
+  rv = Model(ctx, providers).deploy(model_id, True)
+  ```
+
+- **predict(filename, model_id, threshold, locally)** - predicts using deployed
+  model. Predictions stored next to the file with data to be
+  predicted on; file name will be appended with suffix `_predicted`.
+  - filename - file with data to be predicted
+  - model_id - id of the deployed model
+  - threshold - prediction threshold
+  - locally - if True predict using locally deployed model, predict using model
+    deployed on Provider Cloud
+
+  Returns:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': dataset_predicted.csv}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = Model(ctx, project).predict('../irises.csv', model_id, None, True)
+  # if rv[provider].result is True
+  # predictions are stored in ../irises_predicted.csv
+  ```
+
+- **actual(filename, model_id)** - submit actuals
 
 ## Development Setup
 
@@ -222,6 +684,7 @@ The following shows which authentication components are necessary depending on y
 | **Self-Hosted Endpoint** | | | |
 | Provider Credentials Required? | Yes  | Yes | Yes |
 
+## Python API
 
 ## Implementing A2ML for Another AutoML Provider
 The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.  Implementations are provided for Google Cloud AutoML Tables (GCModel), Azure AutoML (AZModel) and Auger.AI (Auger). If you want to add support for another AutoML provider of your choice, implement a child class of Model as shown below (replacing each "pass" with your own code.
