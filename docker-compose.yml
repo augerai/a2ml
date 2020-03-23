@@ -6,8 +6,6 @@ services:
     image: deeplearninc/a2ml
     command: wait-for-it rabbitmq:5672 -t 30 -- celery -A a2ml.tasks_queue.celery_app worker --loglevel=info
     env_file: develop.env
-    volumes:
-      - .:/app
     depends_on:
       - minio
       - rabbitmq
@@ -17,8 +15,6 @@ services:
     command: server --compat /data
     ports:
       - 9000:9000
-    volumes:
-      - ./tmp/data/:/data/
     env_file: develop.env
 
   rabbitmq:
