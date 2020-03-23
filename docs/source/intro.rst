@@ -16,10 +16,15 @@ common set of stages:
   :alt: AutoML PREDIT
 
 - Importing data for training
+
 - Train models with multiple algorithms and hyperparameters
+
 - Evaluate model performance and choose one or more for deployment
+
 - Deploy selected models
+
 - Predict results with new data against deployed models
+
 - Review performance of deployed models
 
 Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
