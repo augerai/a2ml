@@ -1,9 +1,14 @@
-FROM python:3.7-slim-stretch as builder
+FROM python:3.7-slim-stretch as base
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
-  g++ \
-  gcc
+    g++ \
+    gcc \
+    libgomp1 \
+    wait-for-it \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM base as builder
 
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
@@ -23,17 +28,12 @@ RUN find /usr/local/lib/python3.7 \
   && find /usr/local/lib/python3.7 \
   -name '*.so*' | xargs strip
 
-FROM python:3.7-slim-stretch
+FROM base
 
 ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
 
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
-
-RUN apt-get update \
-  && apt-get -y --no-install-recommends install \
-  libgomp1 \
-  wait-for-it
 
 COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
 COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
