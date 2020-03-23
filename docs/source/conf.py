@@ -56,17 +56,17 @@ language = 'python3'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-html_sidebars = {
-    "index": ["sidebarintro.html", "sourcelink.html", "searchbox.html", "hacks.html"],
-    "**": [
-        "sidebarlogo.html",
-        "localtoc.html",
-        "relations.html",
-        "sourcelink.html",
-        "searchbox.html",
-        "hacks.html",
-    ],
-}
+# html_sidebars = {
+#     "index": ["sidebarintro.html", "sourcelink.html", "searchbox.html", "hacks.html"],
+#     "**": [
+#         "sidebarlogo.html",
+#         "localtoc.html",
+#         "relations.html",
+#         "sourcelink.html",
+#         "searchbox.html",
+#         "hacks.html",
+#     ],
+# }
 
 # -- Options for HTML output -------------------------------------------------
 

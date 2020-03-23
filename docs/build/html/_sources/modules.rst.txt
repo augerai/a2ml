@@ -1,7 +1,0 @@
-a2ml
-====
-
-.. toctree::
-   :maxdepth: 4
-
-   a2ml
