@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -40,7 +40,9 @@ install_requires = [
     'scikit-learn<=0.20.3,>=0.19.0',
     'shap==0.32.1',
     'shortuuid',
-    'wheel>=0.34.0'
+    'docutils<0.16,>=0.10',
+    'auger.ai>=0.2.1',
+    'auger-hub-api-client>=0.6.1',
 ]
 
 extras = {
@@ -52,7 +54,8 @@ extras = {
         'pytest-runner',
         'pytest-xdist',
         'tox',
-        'twine'
+        'twine',
+        'wheel>=0.30.0,<0.31.0'
     ],
     'azure': [
         'azureml-sdk[automl]'
@@ -68,15 +71,17 @@ for group_name in extras:
     all_deps += extras[group_name]
 extras['all'] = all_deps
 
+description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
+
 setup(
     name='a2ml',
     version=VERSION,
-    description=(
-        'A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
-    ),
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    author='Deep Learn',
+    description=description,
+    long_description=description,
+    # TODO: Convert readme to rst for azureml / wheels bug
+    # long_description=long_description,
+    # long_description_content_type='text/markdown',
+    author='Auger AI',
     author_email='hello@auger.ai',
     url='https://github.com/augerai/a2ml',
     license='MIT',
