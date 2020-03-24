@@ -33,12 +33,6 @@ install_requires = [
     'auger-hub-api-client>=0.6.1',
     'celery==4.4.0',
     'click',
-    'numpy<=1.16.2,>=1.16.0',
-    'scipy<=1.1.0,>=1.0.0',
-    'pandas==0.23.4',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
-    'scikit-learn<=0.20.3,>=0.19.0',
-    'shap==0.32.1',
     'shortuuid',
     'docutils<0.16,>=0.10',
     'auger.ai>=0.2.1',
@@ -57,7 +51,20 @@ extras = {
         'twine',
         'wheel>=0.30.0,<0.31.0'
     ],
+    'docs': [
+        'sphinx',
+        'sphinx-rtd-theme'
+    ],
     'azure': [
+        'azureml-train-automl-client'
+    ],
+    'azure-local': [
+        'numpy<=1.16.2,>=1.16.0',
+        'scipy<=1.1.0,>=1.0.0',
+        'pandas==0.23.4',
+        'ruamel.yaml<=0.15.89,>=0.15.35',
+        'scikit-learn<=0.20.3,>=0.19.0',
+        'shap==0.32.1',
         'azureml-sdk[automl]'
     ],
     'google': [
