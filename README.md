@@ -15,6 +15,39 @@ common set of stages:
 Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
 
+## Setup
+A2ML is distributed as a python package, so to install it:
+
+```sh
+$ pip install -U a2ml
+```
+
+A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.
+
+To run Azure AutoML:
+
+```sh
+$ pip install "a2ml[azure]"
+```
+
+To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):
+
+```sh
+$ pip install "a2ml[azure-local]"
+```
+
+For Google Cloud:
+
+```sh
+$ pip install "a2ml[google]"
+```
+
+For everything:
+
+```sh
+$ pip install "a2ml[all]"
+```
+
 ## Command Line Interface
 
 The command line is a convenient way to start an A2ML project even if you plan to use the API.  
