@@ -56,6 +56,15 @@ extras = {
     'azure': [
         'azureml-train-automl-client'
     ],
+    'azure-local': [
+        'numpy<=1.16.2,>=1.16.0',
+        'scipy<=1.1.0,>=1.0.0',
+        'pandas==0.23.4',
+        'ruamel.yaml<=0.15.89,>=0.15.35',
+        'scikit-learn<=0.20.3,>=0.19.0',
+        'shap==0.32.1',
+        'azureml-sdk[automl]'
+    ],
     'google': [
         'google-cloud-automl'
     ]
