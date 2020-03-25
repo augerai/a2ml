@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -35,6 +35,7 @@ install_requires = [
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
+    'ruamel.yaml<=0.15.89,>=0.15.35',
     'auger.ai>=0.2.1',
     'auger-hub-api-client>=0.6.1',
 ]
@@ -62,7 +63,6 @@ extras = {
         'numpy<=1.16.2,>=1.16.0',
         'scipy<=1.1.0,>=1.0.0',
         'pandas==0.23.4',
-        'ruamel.yaml<=0.15.89,>=0.15.35',
         'scikit-learn<=0.20.3,>=0.19.0',
         'shap==0.32.1',
         'azureml-sdk[automl]'
