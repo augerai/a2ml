@@ -75,7 +75,6 @@ jobs:
             echo "Deploying new package to pypi.org..."
             twine check dist/*
             twine upload dist/*
-
 workflows:
   build_and_deploy_docs:
     jobs:

@@ -24,7 +24,7 @@ class TestNewCmd(object):
 
     def test_new_requires_project_name(self, runner):
         result = runner.invoke(cmdl, ['new'])
-        assert 'Error: Missing argument ' in result.output
+        assert 'Error: Missing argument' in result.output
         assert 'PROJECT' in result.output
         assert result.exit_code == 2
 
