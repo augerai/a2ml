@@ -1,9 +1,14 @@
-FROM python:3.7-slim-stretch as builder
+FROM python:3.7-slim-stretch as base
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
-  g++ \
-  gcc
+    g++ \
+    gcc \
+    libgomp1 \
+    wait-for-it \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM base as builder
 
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
@@ -23,11 +28,7 @@ RUN find /usr/local/lib/python3.7 \
   && find /usr/local/lib/python3.7 \
   -name '*.so*' | xargs strip
 
-COPY a2ml/ $WORKDIR/a2ml
-COPY tests $WORKDIR/tests
-RUN pip install -e .
-
-FROM python:3.7-slim-stretch
+FROM base
 
 ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
 
@@ -36,9 +37,13 @@ WORKDIR $WORKDIR
 
 COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
 COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
-COPY --from=builder /usr/local/bin/a2ml /usr/local/bin/a2ml
-COPY --from=builder $WORKDIR $WORKDIR
 COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
-ENTRYPOINT /usr/local/bin/a2ml
+COPY LICENSE README.md setup.py tox.ini $WORKDIR/
+COPY a2ml/ $WORKDIR/a2ml
+COPY tests $WORKDIR/tests
+RUN pip install -e .
+
+#ENTRYPOINT /usr/local/bin/a2ml
+CMD /usr/local/bin/a2ml
