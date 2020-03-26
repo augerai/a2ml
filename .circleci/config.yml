@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
 jobs:
   build-docs:
     docker:
@@ -7,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install -r requirements.txt
+          command: pip install ".[docs]"
       - run:
           name: Build docs
           command: cd docs/ && make html
@@ -40,43 +44,36 @@ jobs:
       python_version:
         default: "3.7"
         type: string
-    working_directory: ~/a2ml
     docker:
       - image: circleci/python:<< parameters.python_version >>
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: |
-          cp develop.env.example develop.env
-          docker-compose build
-          docker-compose -f docker-compose.test.yml run tests
+      - run: cp develop.env.example develop.env
+      - run: docker-compose -f docker-compose.test.yml build
+      - run: docker-compose -f docker-compose.test.yml run tests
 
   deploy-pip:
-    working_directory: ~/a2ml
+    parameters:
+      python_version:
+        default: "3.7"
+        type: string
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:<< parameters.python_version >>
     steps:
       - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          key: a2ml-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          command: |
-            sudo pip install pipenv
-            pipenv install
-      - run: pipenv run python setup.py verify
+      - run: python setup.py sdist bdist_wheel
       - run:
           command: |
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run: pipenv run python setup.py bdist_wheel
       - run:
           command: |
             sudo pip install twine
             echo "Deploying new package to pypi.org..."
+            twine check dist/*
             twine upload dist/*
 
 workflows:

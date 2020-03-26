@@ -32,6 +32,8 @@ WORKDIR $WORKDIR
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
+  gcc \
+  g++ \
   libgomp1 \
   wait-for-it
 
@@ -43,7 +45,7 @@ COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 COPY LICENSE README.md setup.py tox.ini $WORKDIR/
 COPY a2ml/ $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
-RUN pip install -e .
+RUN pip install -e ".[all]"
 
 #ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml
