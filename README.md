@@ -709,9 +709,7 @@ class AnotherAutoMLModel(Model):
 
 ## Docs
 
-Documents are generated using <a href='https://www.sphinx-doc.org/en/master/usage/quickstart.html' target='_blank'>sphinx</a>.
-
-To generate new docs locally you will want to navigate to the /docs directory located in the root of this project.
+Documents are generated using <a href='https://www.sphinx-doc.org/en/master/usage/quickstart.html' target='_blank'>sphinx</a>. To generate new docs locally you will want to navigate to the /docs directory located in the root of this project.
 
 There is currently an index.rst file which is the entry point. This file loads all other document files.
 
