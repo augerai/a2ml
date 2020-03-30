@@ -13,6 +13,7 @@ from azureml.core.compute import ComputeTarget
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 from azureml.train.automl.run import AutoMLRun
+from azureml.automl.core.featurization import FeaturizationConfig
 # deployment
 from azureml.core.model import InferenceConfig
 from azureml.core.webservice import AciWebservice
@@ -65,10 +66,14 @@ class AzureA2ML(object):
         source = self.ctx.config.get('source', None)
         if source is None:
             raise AzureException('Please specify data source file...')
-        ds = self.ws.get_default_datastore()
-        ds.upload_files(files=[source], relative_root=None,
-            target_path=None, overwrite=True, show_progress=True)
-        dataset = os.path.basename(source)
+        if source.startswith("http:") or source.startswith("https:"):
+            dataset = source
+        else:    
+            ds = self.ws.get_default_datastore()
+            ds.upload_files(files=[source], relative_root=None,
+                target_path=None, overwrite=True, show_progress=True)
+            dataset = os.path.basename(source)
+
         self.ctx.config.set('azure', 'dataset', dataset)
         self.ctx.config.write('azure')
         return {'dataset': dataset}
@@ -76,15 +81,6 @@ class AzureA2ML(object):
     @error_handler
     def train(self):
         config = self.ctx.config
-        dataset = config.get('dataset', None)
-        self.ctx.log("Starting search on %s Dataset..." % dataset)
-        ds = self.ws.get_default_datastore()
-        training_data = Dataset.Tabular.from_delimited_files(
-            path=ds.path(dataset))
-        #TODO training_data.drop_columns(columns)
-
-        compute_target = self._get_compute_target()
-
         model_type = config.get('model_type')
         if (not model_type):
             raise AzureException('Please specify model type...')
@@ -95,13 +91,34 @@ class AzureA2ML(object):
 
         automl_settings = {
             #"name": "AutoML_Experiment_{0}".format(time.time()),
-            "iteration_timeout_minutes" : config.get('experiment/iteration_timeout_minutes',10),
+            "iteration_timeout_minutes" : config.get('experiment/max_eval_time',10),
             "iterations" : config.get('experiment/max_n_trials',10),
             "primary_metric" : primary_metric,
             "verbosity" : logging.INFO,
             "n_cross_validations": config.get('experiment/cross_validation_folds',5),
             "enable_stack_ensemble": config.get('experiment/use_ensemble',False)
         }
+
+        if config.get('experiment/max_total_time'):
+            automl_settings["experiment_timeout_hours"] = float(config.get('experiment/max_total_time'))/60.0
+
+        if config.get('exclude'):
+            fc = FeaturizationConfig()
+            fc.drop_columns = config.get('exclude').split(",")
+            automl_settings["featurization"] = fc
+
+        dataset = config.get('dataset', None)
+        self.ctx.log("Starting search on %s Dataset..." % dataset)
+        if dataset.startswith("http:") or dataset.startswith("https:"):
+            training_data = Dataset.Tabular.from_delimited_files(
+                path=dataset)
+        else:    
+            ds = self.ws.get_default_datastore()
+            training_data = Dataset.Tabular.from_delimited_files(
+                path=ds.path(dataset))
+        #TODO training_data.drop_columns(columns)
+
+        compute_target = self._get_compute_target()
 
         self.automl_config = AutoMLConfig(
             task=model_type,
