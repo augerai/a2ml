@@ -1,0 +1,6 @@
+,Auger.AI Provider,Azure Provider,Google Cloud Provider
+Auger.AI Endpoint,,,
+Provider Credentials Required?,Yes,No,No
+,,,
+Self-Hosted Endpoint,,,
+Provider Credentials Required?,Yes,Yes,Yes

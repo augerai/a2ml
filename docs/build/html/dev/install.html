@@ -161,6 +161,27 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>A2ML is distributed as a python package.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U a2ml
+</pre></div>
+</div>
+<p>A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.</p>
+<p>To run Azure AutoML:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[azure]&quot;</span>
+</pre></div>
+</div>
+<p>To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[azure-local]&quot;</span>
+</pre></div>
+</div>
+<p>For Google Cloud:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[google]&quot;</span>
+</pre></div>
+</div>
+<p>For everything:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[all]&quot;</span>
+</pre></div>
+</div>
 </div>
 
 

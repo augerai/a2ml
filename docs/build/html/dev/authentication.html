@@ -83,7 +83,13 @@
               <p class="caption"><span class="caption-text">Development</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#auger-ai-provider">Auger.AI Provider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#google-cloud-provider">Google Cloud Provider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#azure-provider">Azure Provider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a2ml-authentication-matrix">A2ML Authentication Matrix</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
@@ -161,6 +167,98 @@
             
   <div class="section" id="authentication">
 <h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<p>Authentication with A2ML involves two parts.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>There is authentication between your client (whether it's the <cite>a2ml</cite> cli or the <cite>a2ml</cite> python API) and the service endpoint (either self-hosted or with Auger.AI).</p></li>
+<li><p>There is authentication between the service endpoint and each provider. Note that in the case where you run A2ML locally, endpoint authentication is handled automatically.
+The <a class="reference internal" href="#auth-matrix"><span class="std std-ref">A2ML Authentication Matrix</span></a> at the end of this section shows this in more detail.</p></li>
+</ol>
+</div></blockquote>
+<div class="section" id="auger-ai-provider">
+<h2>Auger.AI Provider<a class="headerlink" href="#auger-ai-provider" title="Permalink to this headline">¶</a></h2>
+<p>You can login to the Auger.AI endpoint and provider with the <cite>a2ml auth login</cite> command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml auth login
+</pre></div>
+</div>
+<p>You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">AUGER_CREDENTIALS</span><span class="o">=</span>~/auger_credentials.json
+</pre></div>
+</div>
+<p>You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML for you. If you choose to set up your own endpoints, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running from.  Here are abbreviated directions for that step for Google, Azure and Auger.</p>
+</div>
+</div>
+<div class="section" id="google-cloud-provider">
+<h2>Google Cloud Provider<a class="headerlink" href="#google-cloud-provider" title="Permalink to this headline">¶</a></h2>
+<p>If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the GOOGLE_APPLICATION CREDENTIALS environment variable to point to the saved file.  For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span><span class="s2">&quot;/Users/adamblum/a2ml/automl.json&quot;</span>
+</pre></div>
+</div>
+<p>For ease of use you can set up a default project ID to use with your project with the PROJECT_ID environment variable. For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;automl-test-237311&quot;</span>
+</pre></div>
+</div>
+<p>Detailed instructions for setting up <a href="https://cloud.google.com/vision/automl/docs/before-you-begin" target="_blank">Google Cloud AutoML</a></p>
+</div>
+<div class="section" id="azure-provider">
+<h2>Azure Provider<a class="headerlink" href="#azure-provider" title="Permalink to this headline">¶</a></h2>
+<p>The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ **/.azureml/config.json
+</pre></div>
+</div>
+<p>The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">AZURE_SUBSCRIPTION_ID</span><span class="o">=</span><span class="s2">&quot;d1b17dd2-ba8a-4492-9b5b-10c6418420ce&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a2ml-authentication-matrix">
+<span id="auth-matrix"></span><h2>A2ML Authentication Matrix<a class="headerlink" href="#a2ml-authentication-matrix" title="Permalink to this headline">¶</a></h2>
+<p>The following shows which authentication components are necessary depending on your A2ML use case.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Authentication Matrix</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>Auger.AI Provider</p></td>
+<td><p>Azure Provider</p></td>
+<td><p>Google Cloud Provider</p></td>
+</tr>
+<tr class="row-even"><td><p>Auger.AI Endpoint</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Provider Credentials Required?</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Self-Hosted Endpoint</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Provider Credentials Required?</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
