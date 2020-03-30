@@ -13,6 +13,7 @@ from azureml.core.compute import ComputeTarget
 from azureml.train.automl import AutoMLConfig
 from azureml.core.experiment import Experiment
 from azureml.train.automl.run import AutoMLRun
+from azureml.core.authentication import ServicePrincipalAuthentication
 # deployment
 from azureml.core.model import InferenceConfig
 from azureml.core.webservice import AciWebservice
@@ -34,10 +35,31 @@ class AzureA2ML(object):
         self.ctx = ctx
         project_name = self.ctx.config.get('name', '')
         self.experiment_name = ctx.config.get('experiment/name', project_name)
+
+        # TODO: check name: It can include letters, digits and dashes. It must start with a letter, 
+        #end with a letter or digit, and be between 2 and 16 characters in length.        
         self.cluster_name = self.ctx.config.get('cluster/name', project_name)
 
         # get the preloaded workspace definition
-        self.ws = Workspace.from_config()
+        if 'AZURE_CREDENTIALS' in os.environ:
+            content = os.environ.get('AZURE_CREDENTIALS', None)
+            content = json.loads(content) if content else {}
+            svc_pr = None
+
+            if content.get('service_principal_password'):
+                svc_pr = ServicePrincipalAuthentication(
+                    tenant_id=content.get('service_principal_tenant_id'),
+                    service_principal_id=content.get('service_principal_id'),
+                    service_principal_password=content.get('service_principal_password'))
+
+            self.ws = Workspace(
+                subscription_id = content.get('subscription_id'), 
+                resource_group = content.get('resource_group'), 
+                workspace_name = content.get('workspace_name'),
+                auth = svc_pr
+            )
+        else:    
+            self.ws = Workspace.from_config()
 
     def _get_compute_target(self):
         compute_min_nodes = self.ctx.config.get('cluster/min_nodes',1)
@@ -62,13 +84,21 @@ class AzureA2ML(object):
 
     @error_handler
     def import_data(self):
-        source = self.ctx.config.get('source', None)
-        if source is None:
+        import urllib.parse
+        from  auger.api.utils import fsclient
+
+        data_source_file = self.ctx.config.get('source', None)
+        if data_source_file is None:
             raise AzureException('Please specify data source file...')
+
+        if not urllib.parse.urlparse(data_source_file).scheme in ['http', 'https'] and \
+           not fsclient.is_s3_path(data_source_file) and self.ctx.config.path:
+            data_source_file = os.path.join(self.ctx.config.path, data_source_file)
+
         ds = self.ws.get_default_datastore()
-        ds.upload_files(files=[source], relative_root=None,
+        ds.upload_files(files=[data_source_file], relative_root=None,
             target_path=None, overwrite=True, show_progress=True)
-        dataset = os.path.basename(source)
+        dataset = os.path.basename(data_source_file)
         self.ctx.config.set('azure', 'dataset', dataset)
         self.ctx.config.write('azure')
         return {'dataset': dataset}
@@ -84,7 +114,6 @@ class AzureA2ML(object):
         #TODO training_data.drop_columns(columns)
 
         compute_target = self._get_compute_target()
-
         model_type = config.get('model_type')
         if (not model_type):
             raise AzureException('Please specify model type...')

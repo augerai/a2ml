@@ -14,12 +14,25 @@ def create_context(params, new_project=False):
     project_path = os.path.join(
         os.environ.get('A2ML_PROJECT_PATH'), params.get('project_name'))
 
-    os.environ['AUGER_CREDENTIALS'] = json.dumps({
-        'organization' : os.environ.get('AUGER_ORGANIZATION'),
-        'url' : os.environ.get('HUB_APP_URL'),
-        'token' : os.environ.get('AUGER_PROJECT_API_TOKEN')
-    })
+    if os.environ.get('AUGER_PROJECT_API_TOKEN'):
+        os.environ['AUGER_CREDENTIALS'] = json.dumps({
+            'organization' : os.environ.get('AUGER_ORGANIZATION'),
+            'url' : os.environ.get('HUB_APP_URL'),
+            'token' : os.environ.get('AUGER_PROJECT_API_TOKEN')
+        })
 
+    if os.environ.get('AZURE_SUBSCRIPTION_ID'):
+        os.environ['AZURE_CREDENTIALS'] = json.dumps({
+            'subscription_id' : os.environ.get('AZURE_SUBSCRIPTION_ID'),
+            'resource_group' : os.environ.get('AZURE_RESOURCE_GROUP'),
+            'workspace_name' : os.environ.get('AZURE_WORKSPACE_NAME'),
+            'service_principal_tenant_id' : os.environ.get('AZURE_SERVICE_PRINCIPAL_TENANT_ID'),
+            'service_principal_id' : os.environ.get('AZURE_SERVICE_PRINCIPAL_ID'),
+            'service_principal_password' : os.environ.get('AZURE_SERVICE_PRINCIPAL_PASSWORD')
+        })
+
+    os.chdir("tmp")    
+    print(os.getcwd())
     ctx = Context(path=project_path, debug = params.get("debug_log", False))
     ctx.runs_on_server = True
     ctx.setup_logger(format='')
