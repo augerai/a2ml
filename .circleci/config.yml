@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install -r requirements.txt
+          command: pip install .[docs]
       - run:
           name: Build docs
           command: cd docs/ && make html
@@ -42,28 +42,14 @@ jobs:
     docker:
       - image: circleci/python:<< parameters.python_version >>
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python_version >>/site-packages
-      - restore_cache:
-          key: a2ml-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          command: |
-            sudo pip install pipenv
-            pipenv install --dev
-      - save_cache:
-          key: a2ml-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ".venv"
-            - "/usr/local/bin"
-            - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
-      # TODO: Fix flake8 issues
-      # - run:
-      #     command: |
-      #       pipenv run python setup.py flake8
-      - run: pipenv run python setup.py test
-
-  deploy:
+      - run: |
+          cp develop.env.example develop.env
+          docker-compose build
+          docker-compose -f docker-compose.test.yml run tests
+  deploy-pip:
     working_directory: ~/a2ml
     docker:
       - image: circleci/python:3.7
@@ -89,7 +75,6 @@ jobs:
             sudo pip install twine
             echo "Deploying new package to pypi.org..."
             twine upload dist/*
-
 workflows:
   build_and_deploy_docs:
     jobs:
@@ -110,14 +95,6 @@ workflows:
   build_and_deploy:
     jobs:
       - build-test:
-          name: build3.6
-          python_version: "3.7"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build-test:
           name: build3.7
           python_version: "3.7"
           filters:
@@ -125,7 +102,7 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy:
+      - deploy-pip:
           requires:
             - build3.7
           filters:

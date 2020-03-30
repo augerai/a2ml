@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.1.2'
+VERSION = '0.1.5'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -29,17 +29,13 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'auger.ai>=0.2.1',
-    'auger-hub-api-client>=0.6.1',
     'celery',
     'click',
-    'numpy<=1.16.2,>=1.16.0',
-    'scipy<=1.1.0,>=1.0.0',
-    'pandas==0.23.4',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
-    'scikit-learn<=0.20.3,>=0.19.0',
     'shortuuid',
-    'wheel==0.30.0'
+    'docutils<0.16,>=0.10',
+    'ruamel.yaml<=0.15.89,>=0.15.35',
+    'auger.ai>=0.2.1',
+    'auger-hub-api-client>=0.6.1',
 ]
 
 extras = {
@@ -50,9 +46,23 @@ extras = {
         'pytest-cov',
         'pytest-runner',
         'pytest-xdist',
-        'tox'
+        'tox',
+        'twine',
+        'wheel>=0.30.0,<0.31.0'
+    ],
+    'docs': [
+        'sphinx',
+        'sphinx-rtd-theme'
     ],
     'azure': [
+        'azureml-train-automl-client'
+    ],
+    'azure-local': [
+        'numpy<=1.16.2,>=1.16.0',
+        'scipy<=1.1.0,>=1.0.0',
+        'pandas==0.23.4',
+        'scikit-learn<=0.20.3,>=0.19.0',
+        'shap==0.32.1',
         'azureml-sdk[automl]'
     ],
     'google': [
@@ -66,16 +76,17 @@ for group_name in extras:
     all_deps += extras[group_name]
 extras['all'] = all_deps
 
+description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
+
 setup(
     name='a2ml',
     version=VERSION,
-    description=(
-        'The A2ML ("Automate AutoML") project is a set of scripts to '
-        'automate Automated Machine Learning tools from multiple vendors.'
-    ),
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    author='Deep Learn',
+    description=description,
+    long_description=description,
+    # TODO: Convert readme to rst for azureml / wheels bug
+    # long_description=long_description,
+    # long_description_content_type='text/markdown',
+    author='Auger AI',
     author_email='hello@auger.ai',
     url='https://github.com/augerai/a2ml',
     license='MIT',

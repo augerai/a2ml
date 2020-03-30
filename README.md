@@ -15,6 +15,39 @@ common set of stages:
 Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
 
+## Setup
+A2ML is distributed as a python package, so to install it:
+
+```sh
+$ pip install -U a2ml
+```
+
+A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.
+
+To run Azure AutoML:
+
+```sh
+$ pip install "a2ml[azure]"
+```
+
+To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):
+
+```sh
+$ pip install "a2ml[azure-local]"
+```
+
+For Google Cloud:
+
+```sh
+$ pip install "a2ml[google]"
+```
+
+For everything:
+
+```sh
+$ pip install "a2ml[all]"
+```
+
 ## Command Line Interface
 
 The command line is a convenient way to start an A2ML project even if you plan to use the API.  
@@ -706,3 +739,30 @@ class AnotherAutoMLModel(Model):
     def train(self):
         pass
 ```
+
+## Docs
+
+Documents are generated using <a href='https://www.sphinx-doc.org/en/master/usage/quickstart.html' target='_blank'>sphinx</a>. To generate new docs locally you will want to navigate to the /docs directory located in the root of this project.
+
+There is currently an index.rst file which is the entry point. This file loads all other document files.
+
+There are currently two top level directories with documentation.
+- /dev
+- /community
+
+You can edit the files in here directly using <a href='https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html' target='_blank'>restructured text</a> syntax or you can add files for new sections.  Any new sections will need to have the path added in index.rst file.
+
+### Building Documentation
+From inside the /docs directory run:
+
+```
+make html
+```
+
+This will create new files inside of the /build directory.  If you notice that your changes aren't showing up try deleting all the contents inside build/ and running make html to force rebuild.
+
+### Viewing Documentation in the Browser
+
+```
+open ./build/html/index.html
+
