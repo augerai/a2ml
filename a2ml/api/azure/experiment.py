@@ -9,6 +9,7 @@ from azureml.core.compute import AmlCompute
 from azureml.core.compute import ComputeTarget
 from azureml.train.automl import AutoMLConfig
 from azureml.train.automl.run import AutoMLRun
+from azureml.automl.core.featurization import FeaturizationConfig
 from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.formatter import print_table
@@ -61,7 +62,7 @@ class AzureExperiment(object):
 
         automl_settings = {
             "iteration_timeout_minutes" : self.ctx.config.get(
-                'experiment/iteration_timeout_minutes',10),
+                'experiment/max_eval_time',10),
             "iterations" : self.ctx.config.get(
                 'experiment/max_n_trials',10),
             "primary_metric" : primary_metric,
@@ -71,6 +72,14 @@ class AzureExperiment(object):
             "enable_stack_ensemble": self.ctx.config.get(
                 'experiment/use_ensemble', False)
         }
+
+        if config.get('experiment/max_total_time'):
+            automl_settings["experiment_timeout_hours"] = float(config.get('experiment/max_total_time'))/60.0
+
+        if config.get('exclude'):
+            fc = FeaturizationConfig()
+            fc.drop_columns = config.get('exclude').split(",")
+            automl_settings["featurization"] = fc
 
         automl_config = AutoMLConfig(
             task = model_type,
