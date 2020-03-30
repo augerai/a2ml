@@ -19,6 +19,7 @@ class TestTasks(object):
         execute_tasks(import_data_task, params)
 
 
+    @pytest.mark.skip(reason='run it locally')    
     def test_import_s3(self):
         params = {
             'provider': 'auger',
