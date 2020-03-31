@@ -73,12 +73,12 @@ class AzureExperiment(object):
                 'experiment/use_ensemble', False)
         }
 
-        if config.get('experiment/max_total_time'):
-            automl_settings["experiment_timeout_hours"] = float(config.get('experiment/max_total_time'))/60.0
+        if self.ctx.config.get('experiment/max_total_time'):
+            automl_settings["experiment_timeout_hours"] = float(self.ctx.config.get('experiment/max_total_time'))/60.0
 
-        if config.get('exclude'):
+        if self.ctx.config.get('exclude'):
             fc = FeaturizationConfig()
-            fc.drop_columns = config.get('exclude').split(",")
+            fc.drop_columns = self.ctx.config.get('exclude').split(",")
             automl_settings["featurization"] = fc
 
         automl_config = AutoMLConfig(

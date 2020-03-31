@@ -1,8 +1,7 @@
 from a2ml.api.utils.crud_runner import CRUDRunner
-from a2ml.api.utils.error_handler import ErrorHandler
 from a2ml.api.utils.show_result import show_result
 
-class A2MLExperiment(metaclass=ErrorHandler):
+class A2MLExperiment(object):
 
     def __init__(self, ctx, provider):
         super(A2MLExperiment, self).__init__()

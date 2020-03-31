@@ -26,12 +26,18 @@ class AzureDataset(object):
             source = self.ctx.config.get('source', None)
         if source is None:
             raise AzureException('Please specify data source file...')
-        ds = self.ws.get_default_datastore()
-        ds.upload_files(files=[source], relative_root=None,
-            target_path=None, overwrite=True, show_progress=True)
-        dataset_name = os.path.basename(source)
-        dataset = Dataset.Tabular.from_delimited_files(
-            path=ds.path(dataset_name))
+
+        if source.startswith("http:") or source.startswith("https:"):
+            dataset = Dataset.Tabular.from_delimited_files(path=source)
+            dataset_name = os.path.basename(source)
+        else:    
+            ds = self.ws.get_default_datastore()
+            ds.upload_files(files=[source], relative_root=None,
+                target_path=None, overwrite=True, show_progress=True)
+            dataset_name = os.path.basename(source)
+            dataset = Dataset.Tabular.from_delimited_files(
+                path=ds.path(dataset_name))
+
         dataset.register(workspace = ws, name = dataset_name,
             create_new_version = True)
         self._select(dataset_name)

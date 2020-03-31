@@ -1,8 +1,7 @@
 from a2ml.api.utils.crud_runner import CRUDRunner
-from a2ml.api.utils.error_handler import ErrorHandler
 from a2ml.api.utils.show_result import show_result
 
-class A2MLDataset(metaclass=ErrorHandler):
+class A2MLDataset(object):
     """Contains the dataset CRUD operations that interact with provider."""
     def __init__(self, ctx, provider):
         """Initializes a new a2ml.
