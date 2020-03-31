@@ -13,7 +13,7 @@ from azureml.automl.core.featurization import FeaturizationConfig
 from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.formatter import print_table
-
+from a2ml.api.azure.dataset import AzureDataset
 
 class AzureExperiment(object):
 
@@ -67,11 +67,25 @@ class AzureExperiment(object):
                 'experiment/max_n_trials',10),
             "primary_metric" : primary_metric,
             "verbosity" : logging.INFO,
-            "n_cross_validations": self.ctx.config.get(
-                'experiment/cross_validation_folds',5),
             "enable_stack_ensemble": self.ctx.config.get(
                 'experiment/use_ensemble', False)
         }
+
+        validation_data = None
+        if self.ctx.config.get('experiment/validation_data'):
+            if self.ctx.config.get('validation_dataset'):
+                validation_data = Dataset.get_by_name(ws, self.ctx.config.get('validation_dataset'))
+            if not validation_data:
+                res = AzureDataset(self.ctx).create(
+                    source = self.ctx.config.get('experiment/validation_data'),
+                    validation = True
+                )
+                validation_data = Dataset.get_by_name(ws, res['dataset'])
+        else:    
+            automl_settings["n_cross_validations"] = self.ctx.config.get(
+                'experiment/cross_validation_folds', 5)
+            if self.ctx.config.get('experiment/validation_size'):
+                automl_settings["validation_size"] = self.ctx.config.get('experiment/validation_size')
 
         if self.ctx.config.get('experiment/max_total_time'):
             automl_settings["experiment_timeout_hours"] = float(self.ctx.config.get('experiment/max_total_time'))/60.0
@@ -87,6 +101,7 @@ class AzureExperiment(object):
             path = os.getcwd(),
             compute_target = compute_target,
             training_data = dataset,
+            validation_data = validation_data,
             label_column_name = target,
             **automl_settings)
 

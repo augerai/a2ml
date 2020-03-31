@@ -20,7 +20,7 @@ class AzureDataset(object):
         self.ctx.log('%s DataSet(s) listed' % ndatasts)
         return {'datasets': [name for name in datasets.keys()]}
 
-    def create(self, source = None):
+    def create(self, source = None, validation=False):
         ws = self._get_ws(True)
         if source is None:
             source = self.ctx.config.get('source', None)
@@ -40,7 +40,7 @@ class AzureDataset(object):
 
         dataset.register(workspace = ws, name = dataset_name,
             create_new_version = True)
-        self._select(dataset_name)
+        self._select(dataset_name, validation)
         self.ctx.log('Created DataSet %s' % dataset_name)
         return {'dataset': dataset_name}
 
@@ -61,8 +61,12 @@ class AzureDataset(object):
         self.ctx.log('Selected dataset %s' % name)
         return {'selected': name}
 
-    def _select(self, name):
-        self.ctx.config.set('azure', 'dataset', name)
+    def _select(self, name, validation):
+        if validation:
+            self.ctx.config.set('azure', 'validation_dataset', name)
+        else:
+            self.ctx.config.set('azure', 'dataset', name)
+
         self.ctx.config.write('azure')
 
     def _get_ws(self, create_if_not_exist = False):
