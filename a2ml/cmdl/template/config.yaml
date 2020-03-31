@@ -23,3 +23,6 @@ experiment:
   max_n_trials: 10
   # Try to improve model performance by creating ensembles from the trial models
   use_ensemble: true
+
+  # Path to validation dataset
+  #validation_data: 
