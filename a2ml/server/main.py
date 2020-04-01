@@ -2,11 +2,11 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
 import asyncio
-import asyncio_redis
 import uuid
 import websockets
 
 from a2ml.server.tasks import process_transaction
+from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
 
@@ -15,6 +15,11 @@ def log(*args):
 
 @app.get("/")
 async def get():
+    return HTMLResponse(html)
+
+@app.get("/test")
+async def get():
+    await asyncio.sleep(1)
     return HTMLResponse(html)
 
 @app.get("/hello")
@@ -87,27 +92,19 @@ async def websocket_endpoint(websocket: WebSocket, id: str = None):
             await websocket.accept()
             await websocket.send_json({"message": f"Tracking transaction: {id}"}, mode="text")
 
-            connection = await asyncio_redis.Connection.create("localhost", 6379)
-
-            try:
-                # Subscribe to a channel.
-                subscriber = await connection.start_subscribe()
-                await subscriber.subscribe([id])
-
-                # Print published values in a while/true loop.
-                while True:
-                    try:
-                        # Periodically iterrupt waiting of message from subscription
-                        # to check is websocket is still alive or not
-                        reply = await asyncio.wait_for(subscriber.next_published(), timeout=5.0)
-                        log("Received: ", repr(reply.value), "on channel", reply.channel)
-                        await websocket.send_json({"message": reply.value}, mode="text")
-                    except asyncio.TimeoutError:
-                        await websocket.send_json({"type": "ping"}, mode="text")
-            except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError) as e:
-                log(f"WebSocket {id} disconnected: {str(e)}")
-            finally:
-                connection.close()
+            with AsyncReceiver(id) as notificator:
+                try:
+                    while True:
+                        try:
+                            # Periodically iterrupt waiting of message from subscription
+                            # to check is websocket is still alive or not
+                            reply = await asyncio.wait_for(notificator.get_message(), timeout=5.0)
+                            log("Received: ", repr(reply))
+                            await websocket.send_json({"message": reply}, mode="text")
+                        except asyncio.TimeoutError:
+                            await websocket.send_json({"type": "ping"}, mode="text")
+                except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError) as e:
+                    log(f"WebSocket {id} disconnected: {str(e)}")
     finally:
         log('WebSocket stopped')
         await websocket.close()
