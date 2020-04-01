@@ -46,7 +46,7 @@ def delete(ctx, provider, name):
 
 
 @click.command(short_help='Select data set')
-@click.argument('name', required=True, type=click.STRING)
+@click.argument('name', required=False, type=click.STRING)
 @click.option('--provider', '-p', type=click.STRING, required=False,
     help='Cloud AutoML Provider.')
 @pass_context
