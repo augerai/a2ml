@@ -1,17 +1,14 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
-import _thread
 import asyncio
 import asyncio_redis
-import redis
-import time
 import uuid
 import websockets
 
+from a2ml.server.tasks import process_transaction
 
 app = FastAPI()
-redis_connection = redis.StrictRedis(host='localhost', port=6379)
 
 def log(*args):
     print(*args)
@@ -27,26 +24,8 @@ def read_root():
 @app.get("/start_transaction", response_class=PlainTextResponse)
 def start_transaction():
     id = str(uuid.uuid4())
-    # This will be not a thread but Celery job instead
-    _thread.start_new_thread(process_transaction, (id,))
+    process_transaction.delay(id)
     return id
-
-def process_transaction(id):
-    log(f"Process transaction {id}")
-    redis_connection.publish(id, f"Process transaction {id}")
-
-    time.sleep(5)
-    log(f"Continue processing transaction {id}")
-    redis_connection.publish(id, f"Continue processing transaction {id}")
-
-    time.sleep(5)
-    log(f"One step more processing transaction {id}")
-    redis_connection.publish(id, f"One step more processing transaction {id}")
-
-    time.sleep(5)
-    log(f"Processing transaction is done {id}")
-    redis_connection.publish(id, f"Processing transaction is done {id}")
-    # redis_connection.publish(id, b'stop')
 
 html = """
 <!DOCTYPE html>
