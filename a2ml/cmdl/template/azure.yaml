@@ -19,3 +19,4 @@ cluster:
   min_nodes: 0
   max_nodes: 2
   type: STANDARD_D2_V2
+  name: a2ml-azure

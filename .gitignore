@@ -34,5 +34,6 @@ tags
 # Setuptools distribution and build folders
 /dist/
 /build
-/tmp
+
 develop.env
+tmp/

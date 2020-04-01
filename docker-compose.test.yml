@@ -24,6 +24,8 @@ services:
     command: server --compat /data
     ports:
       - 9000:9000
+    volumes:
+      - ./tmp/data/:/data/
     env_file: develop.env
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "9000" ]
@@ -45,10 +47,11 @@ services:
       /usr/bin/mc cp /data/iris.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
       exit 0;
       "
+    volumes:
+      - ./tests/fixtures/:/data/
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672

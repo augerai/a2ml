@@ -2,6 +2,7 @@ import os
 from azureml.core import Dataset
 from .project import AzureProject
 from .exceptions import AzureException
+from .decorators import error_handler
 
 class AzureDataset(object):
 
@@ -10,6 +11,7 @@ class AzureDataset(object):
         self.ctx = ctx
         self.ws = None
 
+    @error_handler
     def list(self):
         selected = self.ctx.config.get('dataset', None)
         datasets = Dataset.get_all(self._get_ws())
@@ -20,6 +22,7 @@ class AzureDataset(object):
         self.ctx.log('%s DataSet(s) listed' % ndatasts)
         return {'datasets': [name for name in datasets.keys()]}
 
+    @error_handler
     def create(self, source = None, validation=False):
         ws = self._get_ws(True)
         if source is None:
@@ -32,6 +35,10 @@ class AzureDataset(object):
             dataset_name = os.path.basename(source)
         else:    
             ds = self.ws.get_default_datastore()
+
+            if self.ctx.config.path and not source.startswith("/"):
+                source = os.path.join(self.ctx.config.path, source)
+
             ds.upload_files(files=[source], relative_root=None,
                 target_path=None, overwrite=True, show_progress=True)
             dataset_name = os.path.basename(source)
@@ -44,6 +51,7 @@ class AzureDataset(object):
         self.ctx.log('Created DataSet %s' % dataset_name)
         return {'dataset': dataset_name}
 
+    @error_handler
     def delete(self, name = None):
         ws = self._get_ws()
         if name is None:
@@ -56,6 +64,7 @@ class AzureDataset(object):
         self.ctx.log('Deleted dataset %s' % name)
         return {'deleted': name}
 
+    @error_handler        
     def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected dataset %s' % name)

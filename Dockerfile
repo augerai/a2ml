@@ -2,11 +2,12 @@ FROM python:3.7-slim-stretch as base
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
-    g++ \
     gcc \
+    g++ \
     libgomp1 \
     wait-for-it \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 FROM base as builder
 
@@ -43,7 +44,7 @@ COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 COPY LICENSE README.md setup.py tox.ini $WORKDIR/
 COPY a2ml/ $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
-RUN pip install -e .
+RUN pip install -e ".[all]"
 
 #ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml
