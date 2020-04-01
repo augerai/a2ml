@@ -26,5 +26,5 @@ def process_transaction(id):
     time.sleep(5)
     log(f"Processing transaction is done {id}")
     redis_connection.publish(id, f"Processing transaction is done {id}")
-    # redis_connection.publish(id, b'stop')
+    redis_connection.publish(id, 'done')
     return 'hello world'

@@ -61,7 +61,6 @@ html = """
             }
 
             function sendMessage(event) {
-                var input = document.getElementById("messageText")
                 var id = httpGet("http://localhost:8000/start_transaction");
                 ws = new WebSocket("ws://localhost:8000/ws?id=" + id);
                 ws.onmessage = function(event) {
@@ -72,7 +71,6 @@ html = """
                     messages.appendChild(message)
                 };
 
-                input.value = ''
                 event.preventDefault()
                 return false;
             }
@@ -104,12 +102,6 @@ async def websocket_endpoint(websocket: WebSocket, id: str = None):
                         reply = await asyncio.wait_for(subscriber.next_published(), timeout=5.0)
                         log("Received: ", repr(reply.value), "on channel", reply.channel)
                         await websocket.send_json({"message": reply.value}, mode="text")
-
-                        # We need some kind of stop command which signals about process end
-                        # but looks like better to handle it on client side completely
-                        # Just an example
-                        if reply.value == 'stop':
-                            break
                     except asyncio.TimeoutError:
                         await websocket.send_json({"type": "ping"}, mode="text")
             except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError) as e:
