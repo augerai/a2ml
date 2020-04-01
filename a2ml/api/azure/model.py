@@ -9,6 +9,7 @@ from azureml.exceptions import WebserviceException
 from azureml.train.automl.run import AutoMLRun
 from .project import AzureProject
 from .exceptions import AzureException
+from .decorators import error_handler
 from auger.api.cloud.utils.dataframe import DataFrame
 
 
@@ -18,6 +19,7 @@ class AzureModel(object):
         super(AzureModel, self).__init__()
         self.ctx = ctx
 
+    @error_handler
     def deploy(self, model_id, locally):
         if locally:
             self.ctx.log('Local deployment step is not required for Azure..')
@@ -73,6 +75,7 @@ class AzureModel(object):
 
         return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
+    @error_handler
     def predict(self, filename, model_id, threshold, locally):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
@@ -96,6 +99,7 @@ class AzureModel(object):
 
         return {'predicted': predicted}
 
+    @error_handler        
     def actual(self, filename, model_id):
         pass
 

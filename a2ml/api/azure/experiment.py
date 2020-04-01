@@ -12,6 +12,7 @@ from azureml.train.automl.run import AutoMLRun
 from azureml.automl.core.featurization import FeaturizationConfig
 from .project import AzureProject
 from .exceptions import AzureException
+from .decorators import error_handler
 from a2ml.api.utils.formatter import print_table
 from a2ml.api.azure.dataset import AzureDataset
 
@@ -21,6 +22,7 @@ class AzureExperiment(object):
         super(AzureExperiment, self).__init__()
         self.ctx = ctx
 
+    @error_handler    
     def list(self):
         ws = AzureProject(self.ctx)._get_ws()
         experiments = Experiment.list(workspace=ws)
@@ -31,6 +33,7 @@ class AzureExperiment(object):
         self.ctx.log('%s Experiment(s) listed' % str(nexperiments))
         return {'experiments': experiments}
 
+    @error_handler    
     def start(self):
         ws = AzureProject(self.ctx)._get_ws()
 
@@ -114,6 +117,7 @@ class AzureExperiment(object):
 
         return {'eperiment_name': experiment_name, 'run_id': run.run_id}
 
+    @error_handler    
     def stop(self):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
@@ -128,6 +132,7 @@ class AzureExperiment(object):
         run.cancel()
         return {'stopped': experiment_name}
 
+    @error_handler    
     def leaderboard(self, run_id = None):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
@@ -150,6 +155,7 @@ class AzureExperiment(object):
             'leaderboard': leaderboard,
             'status': status }
 
+    @error_handler        
     def history(self):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)

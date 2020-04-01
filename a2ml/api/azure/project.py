@@ -1,6 +1,8 @@
 from azureml.core import Workspace
 from azureml.exceptions import WorkspaceException
+from azureml.core.authentication import ServicePrincipalAuthentication
 from .exceptions import AzureException
+from .decorators import error_handler
 
 
 class AzureProject(object):
@@ -9,6 +11,7 @@ class AzureProject(object):
         super(AzureProject, self).__init__()
         self.ctx = ctx
 
+    @error_handler    
     def list(self):
         subscription_id = self.ctx.config.get('subscription_id', None)
         workspaces = Workspace.list(subscription_id)
@@ -16,6 +19,7 @@ class AzureProject(object):
             self.ctx.log(project)
         return {'projects': workspaces.keys()}
 
+    @error_handler    
     def create(self, name):
         name = self._get_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
@@ -25,16 +29,30 @@ class AzureProject(object):
         resource_group = self.ctx.config.get(
             'resource_group', name+'-resources')
         self.ctx.log('Creating %s' % name)
+
+        svc_pr = None
+        if 'AZURE_CREDENTIALS' in os.environ:
+            content = os.environ.get('AZURE_CREDENTIALS', None)
+            content = json.loads(content) if content else {}
+
+            if content.get('service_principal_password'):
+                svc_pr = ServicePrincipalAuthentication(
+                    tenant_id=content.get('service_principal_tenant_id'),
+                    service_principal_id=content.get('service_principal_id'),
+                    service_principal_password=content.get('service_principal_password'))
+
         self.ws = Workspace.create(
             name=name,
             subscription_id=subscription_id,
             resource_group=resource_group,
             create_resource_group=True,
-            location=region)
+            location=region,
+            auth=svc_pr)
         self._select(name)
         self.ctx.log('%s created' % name)
         return {'created': name}
 
+    @error_handler    
     def delete(self, name):
         name = self._get_name(name)
         subscription_id = self.ctx.config.get('subscription_id', None)
@@ -45,6 +63,7 @@ class AzureProject(object):
         self.ctx.log('%s deleted' % name)
         return {'deleted': name}
 
+    @error_handler    
     def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected project %s' % name)
