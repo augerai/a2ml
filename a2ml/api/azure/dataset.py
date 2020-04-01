@@ -35,6 +35,10 @@ class AzureDataset(object):
             dataset_name = os.path.basename(source)
         else:    
             ds = self.ws.get_default_datastore()
+
+            if self.ctx.config.path and not source.startswith("/"):
+                source = os.path.join(self.ctx.config.path, source)
+
             ds.upload_files(files=[source], relative_root=None,
                 target_path=None, overwrite=True, show_progress=True)
             dataset_name = os.path.basename(source)
