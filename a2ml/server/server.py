@@ -5,7 +5,7 @@ import asyncio
 import uuid
 import websockets
 
-from a2ml.server.tasks import process_transaction
+from a2ml.server.tasks import process_transaction, http_call_task
 from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
@@ -31,6 +31,11 @@ def start_transaction():
     id = str(uuid.uuid4())
     process_transaction.delay(id)
     return id
+
+@app.get("/http_call")
+def http_call(url: str = None):
+    http_call_task.delay(url)
+    return 'ok'
 
 html = """
 <!DOCTYPE html>

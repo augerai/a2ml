@@ -38,6 +38,14 @@ install_requires = [
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'auger.ai>=0.2.1',
     'auger-hub-api-client>=0.6.1',
+
+    # Server
+    'asyncio',
+    'asyncio_redis',
+    'fastapi',
+    'gevent',
+    'redis',
+    'uvicorn',
 ]
 
 extras = {

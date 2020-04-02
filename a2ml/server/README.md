@@ -16,7 +16,7 @@ asyncio-redis
 Run dev server:
 ```
 cd a2ml/server
-uvicorn main:app --reload
+uvicorn server:app --reload
 ```
 
 Run Celery worker:
