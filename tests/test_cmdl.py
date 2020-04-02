@@ -42,6 +42,6 @@ class TestNewCmd(object):
             result = runner.invoke(cmdl, ['new', self.PROJECT_NAME])
             assert result.exit_code == 0
             result = runner.invoke(cmdl, ['new', self.PROJECT_NAME])
-            assert result.exit_code != 0
+            assert result.exit_code == 0
             assert (log.messages[-1] ==
-                "Can't create 'new_project'. Folder already exists.")
+                "[config] Can't create 'new_project'. Folder already exists.")

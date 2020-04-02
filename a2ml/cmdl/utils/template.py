@@ -1,5 +1,7 @@
 import os
-import shutil
+
+from  auger.api.utils import fsclient
+
 
 class Template(object):
 
@@ -10,5 +12,5 @@ class Template(object):
             src_config = os.path.abspath(os.path.join(
                 module_path, '../template/%s.yaml' % provider))
             dest_config = os.path.join(experiment_path, '%s.yaml' % provider)
-            shutil.copy2(src_config, dest_config)
-        shutil.copy2(src_config,dest_config)
+
+            fsclient.copy_file(src_config, dest_config)

@@ -13,13 +13,16 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
 
-    def __init__(self, name=''):
+    def __init__(self, name='config', path=None, debug=False):
         super(Context, self).__init__()
-        self.config = Config()
-        if len(name) > 0:
-            name = "{:<9}".format('[%s]' % name)
-        self.name = name
-        self.debug = self.config.get('debug', False)
+
+        self.config = Config(name=name, path=path)
+        self.name = self.config.name
+
+        if len(self.name) > 0:
+            self.name = "{:<9}".format('[%s]' % self.name)
+        self.debug = self.config.get('debug', debug)
+        self.runs_on_server = False
 
     def get_providers(self, provider = None):
         if provider:
@@ -39,8 +42,9 @@ class Context(object):
         raise Exception('Expecting list of providers in config.yaml\providers')
 
     def copy(self, name):
-        new = Context(name)
-        new.config = Config(name)
+        new = Context(name, self.config.path, self.debug)
+        new.runs_on_server = self.runs_on_server
+        #new.config = Config(name)
         return new
 
     def log(self, msg, *args, **kwargs):

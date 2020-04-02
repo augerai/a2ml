@@ -3,8 +3,8 @@ import json
 import csv
 import sys
 import inspect
-from google.cloud import automl_v1beta1 as automl
-from google.cloud.automl_v1beta1 import enums
+from google.cloud.automl_v1 import AutoMlClient, PredictionServiceClient
+from google.cloud.automl_v1 import enums
 import google.auth
 from a2ml.api.utils.config import Config
 from google.auth.transport.requests import AuthorizedSession
@@ -15,7 +15,7 @@ class GoogleA2ML(object):
     def __init__(self,ctx):
         super(GoogleA2ML, self).__init__()
         self.ctx = ctx
-        self.client = automl.AutoMlClient()
+        self.client = AutoMlClient()
         self.name = ctx.config.get('name',None)
         self.project_id = ctx.config.get('project',None)
         self.compute_region = ctx.config.get('cluster/region','us-central1')
@@ -173,7 +173,7 @@ class GoogleA2ML(object):
 
     def predict(self, filename, model_id, threshold=None, locally=False):
         self.ctx.log('Google Predict')
-        prediction_client = automl.PredictionServiceClient()
+        prediction_client = PredictionServiceClient()
         basefile, file_extension = os.path.splitext(filename)
         predictions_file = basefile+'_predicted.csv'
         self.ctx.log('Saving to file {}'.format(predictions_file))

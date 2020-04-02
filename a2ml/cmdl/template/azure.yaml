@@ -1,4 +1,7 @@
 ---
+# Azure subscription id
+subscription_id:
+
 # Name of the DataSet on Azure Cloud
 dataset:
 
@@ -16,3 +19,4 @@ cluster:
   min_nodes: 0
   max_nodes: 2
   type: STANDARD_D2_V2
+  name: a2ml-azure

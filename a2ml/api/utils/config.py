@@ -2,6 +2,7 @@ import os
 import logging
 
 from auger.api.utils.config_yaml import ConfigYaml
+from auger.api.utils import fsclient
 
 log = logging.getLogger("a2ml")
 
@@ -15,8 +16,12 @@ class ConfigParts(object):
         if path is None:
             path = os.getcwd()
         for pname in ConfigParts.part_names:
-            filename = os.path.abspath(os.path.join(path, '%s.yaml' % pname))
-            if os.path.isfile(filename):
+            filename = os.path.join(path, '%s.yaml' % pname)
+
+            if not fsclient.is_s3_path(filename):
+                filename = os.path.abspath(filename)
+
+            if fsclient.is_file_exists(filename):
                 ConfigParts.parts[pname] = ConfigParts._load(filename)
         ConfigParts.is_loaded = True
 
@@ -35,18 +40,18 @@ class ConfigParts(object):
     @classmethod
     def _load(cls, name):
         part = ConfigYaml()
-        if os.path.isfile(name):
+        if fsclient.is_file_exists(name):
             part.load_from_file(name)
         return part
 
 class Config(object):
 
-    def __init__(self, name = 'config'):
+    def __init__(self, name = 'config', path=None):
         super(Config, self).__init__()
         self.name = name
-        self.path = None
+        self.path = path
         self.parts = ConfigParts()
-        self.load()
+        self.load(path)
 
     def get(self, path, default=None):
         if len(self.parts.keys()) == 0:

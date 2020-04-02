@@ -28,6 +28,10 @@ class ProviderRunner(object):
                     'result': True,
                     'data': result}}
             except Exception as e:
+                if self.ctx.debug:
+                    import traceback
+                    traceback.print_exc()
+                
                 return {p: {
                     'result': False,
                     'data': str(e) }}
