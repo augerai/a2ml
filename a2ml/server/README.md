@@ -2,7 +2,7 @@
 
 ## Deps
 
-Install these packages:
+Use these packages:
 ```
 fastapi
 uvicorn
@@ -21,13 +21,17 @@ uvicorn server:app --reload
 
 Run Celery worker:
 ```
-celery -A tasks worker --loglevel=info
+cd a2ml/tasks_queue
+celery -A celery_app worker --loglevel=info --pool=prefork -c 2
 ```
 
-
-Run one on more clients
+Add these options in your config.yaml:
 ```
-python client.py
+use_server: true
+server_endpoint: http://localhost:8000
 ```
 
-Go to http://localhost:8000/ and click `Start transaction`
+Use CLI as usual
+```
+a2ml project list
+```

@@ -44,6 +44,7 @@ install_requires = [
     'asyncio_redis',
     'fastapi',
     'gevent',
+    'jsonpickle',
     'redis',
     'uvicorn',
 ]

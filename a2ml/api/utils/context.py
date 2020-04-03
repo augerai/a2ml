@@ -19,6 +19,7 @@ class Context(object):
         self.config = Config(name=name, path=path)
         self.name = self.config.name
         self.notificator = None
+        self.request_id = None
 
         if len(self.name) > 0:
             self.name = "{:<9}".format('[%s]' % self.name)
