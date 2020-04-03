@@ -1,0 +1,22 @@
+---
+# Azure subscription id
+subscription_id:
+
+# Name of the DataSet on Azure Cloud
+dataset:
+
+# experiment settings unique to Azure, currently just metric used for scoring
+experiment:
+  # Latest experiment name
+  name:
+  # Latest experiment run
+  run_id:
+  ### Metric used to build Model
+  metric: AUC_weighted
+
+cluster:
+  region: eastus2
+  min_nodes: 0
+  max_nodes: 2
+  type: STANDARD_D2_V2
+  name: a2ml-azure

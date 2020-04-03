@@ -2,13 +2,15 @@
 
 ## Deps
 
-Use these packages:
+Uses these packages:
 ```
-fastapi
-uvicorn
-redis
 asyncio
 asyncio-redis
+fastapi
+gevent
+jsonpickle
+redis
+uvicorn
 ```
 
 ## Test
@@ -22,7 +24,7 @@ uvicorn server:app --reload
 Run Celery worker:
 ```
 cd a2ml/tasks_queue
-celery -A celery_app worker --loglevel=info --pool=prefork -c 2
+celery -A celery_app worker --loglevel=info --pool=gevent -c 100
 ```
 
 Add these options in your config.yaml:

@@ -6,7 +6,7 @@ import asyncio
 import uuid
 import websockets
 
-from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task
+from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task
 from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
@@ -19,39 +19,33 @@ async def read_root():
     await asyncio.sleep(1)
     return {"Hello": "World"}
 
-@app.get("/start_transaction", response_class=PlainTextResponse)
-def start_transaction():
-    id = _generate_request_id()
-    process_transaction.delay(id)
-    return id
-
-@app.get("/http_call")
-def http_call(url: str = None):
-    http_call_task.delay(url)
-    return 'ok'
-
-# @app.post("/api/v1/projects")
-# def create_project():
-#     request_id = _generate_request_id()
-#     new_project_task.delay(request_id)
-#     return _render_response(request_id)
-
 @app.get("/api/v1/projects")
 async def list_projects(request: Request):
-    request_id = _generate_request_id()
-    params = await _get_body_and_query_params(request)
-    params['_request_id'] = request_id
-    list_projects_task.delay(params)
-    return _render_response(request_id)
+    return await __run_task(list_projects_task, request)
 
-async def _get_body_and_query_params(request):
+@app.post("/api/v1/projects")
+async def create_project(request: Request):
+    return await __run_task(new_project_task, request)
+
+@app.delete("/api/v1/projects")
+async def list_projects(request: Request):
+    return await __run_task(delete_project_task, request)
+
+async def __run_task(task, request):
+    request_id = __generate_request_id()
+    params = await __get_body_and_query_params(request)
+    params['_request_id'] = request_id
+    task.delay(params)
+    return __render_response(request_id)
+
+async def __get_body_and_query_params(request):
     params = dict(request.query_params)
     if len(await request.body()) > 0:
         params.update(await request.json())
 
     return params
 
-def _render_response(request_id):
+def __render_response(request_id):
     res = {
         'meta': { 'status': 200 },
         'data': { 'request_id': request_id },
@@ -60,7 +54,7 @@ def _render_response(request_id):
     content = jsonable_encoder(res)
     return JSONResponse(content=content)
 
-def _generate_request_id():
+def __generate_request_id():
     return str(uuid.uuid4())
 
 @app.websocket("/ws")

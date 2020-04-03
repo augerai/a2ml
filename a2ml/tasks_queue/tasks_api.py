@@ -91,20 +91,16 @@ def execute_tasks(tasks_func, params):
         ar = tasks_func.delay(params)
         return ar.get()
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def new_project_task(params):
-    from a2ml.cmdl.commands.cmd_new import NewCmd
-
-    ctx = create_context(params, new_project = True)
-
-    NewCmd(ctx, params.get('project_name'), params.get('providers'),
-        params.get('target'), params.get("source_path"),
-        params.get("model_type")).create_project()
+    ctx = create_context(params)
+    res = A2MLProject(ctx, None).create(*params['args'], **params['kwargs'])
+    return res
 
 @celeryApp.task(after_return=__handle_task_result)
 def list_projects_task(params):
     ctx = create_context(params)
-    res = A2MLProject(ctx, None).list()
+    res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
 
     for provder in res.keys():
         res[provder]['data']['projects'] = list(
@@ -112,6 +108,12 @@ def list_projects_task(params):
         )
 
     return  res
+
+@celeryApp.task(after_return=__handle_task_result)
+def delete_project_task(params):
+    ctx = create_context(params)
+    res = A2MLProject(ctx, None).delete(*params['args'], **params['kwargs'])
+    return res
 
 @celeryApp.task()
 def import_data_task(params):

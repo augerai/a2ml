@@ -1,0 +1,28 @@
+---
+# Name of the DataSet on Auger Cloud
+dataset:
+# Experiment settings that are unique to Auger
+experiment:
+  # Latest experiment name
+  name:
+  # Latest experiment session
+  experiment_session_id:
+  # Time series feature. If Data Source contains more then one DATETIME feature
+  # you will have to explicitly specify feature to use as time series
+  time_series:
+  # List of columns which should be used as label encoded features
+  label_encoded: []
+  ### Metric used to build Model
+  # Score used to optimize ML model.
+  # Supported scores for classification: accuracy, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, precision_weighted, recall_macro, recall_micro, recall_weighted
+  # Supported scores for binary classification: accuracy, average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, precision_weighted, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
+  # Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
+  metric: accuracy
+
+# CPU cluster hardware settings
+cluster:
+  # Type could be standard or high_memory
+  type: standard
+  min_nodes: 2
+  max_nodes: 2
+  stack_version: stable

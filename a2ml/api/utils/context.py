@@ -48,7 +48,10 @@ class Context(object):
         new.runs_on_server = self.runs_on_server
         new.notificator = self.notificator
         new.request_id = self.request_id
-        #new.config = Config(name)
+
+        if self.runs_on_server:
+            new.config = self.config
+
         return new
 
     def log(self, msg, *args, **kwargs):

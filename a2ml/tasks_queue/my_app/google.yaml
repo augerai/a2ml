@@ -1,0 +1,10 @@
+# defaults to environment variable PROJECT_ID if emptuy
+project: 
+# experiment settings for Google AutoML only (currently just metric)
+experiment: 
+  metric: MINIMIZE_MAE
+# CPU cluster settings
+cluster: 
+  region: us-central1
+# what Google Cloud Storage bucket to upload to
+gsbucket:
