@@ -1,4 +1,5 @@
 import asyncio_redis
+import json
 import redis
 
 from a2ml.server.config import Config
@@ -9,11 +10,26 @@ class SyncSender:
     def __init__(self):
         self.connection = None
 
-    def publish(self, transaction_id, message):
+    def publish(self, request_id, message):
         if not self.connection:
             self._open()
 
-        self.connection.publish(transaction_id, message)
+        if isinstance(message, dict):
+            message = json.dumps(message)
+
+        self.connection.publish(request_id, message)
+
+    def publish_result(self, request_id, status, result):
+        self.publish(
+            request_id,
+            {'type': 'result', 'status': status, 'result': result}
+        )
+
+    def publish_log(self, request_id, level, msg, args, kwargs):
+        self.publish(
+            request_id,
+            {'type': 'log', 'level': level, 'msg': msg, 'args': args, 'kwargs': kwargs}
+        )
 
     def _open(self):
         self.connection = redis.Redis(host=config.redis_host, port=config.redis_port)
@@ -31,14 +47,14 @@ class SyncSender:
 
 
 class AsyncReceiver:
-    def __init__(self, transaction_id):
+    def __init__(self, request_id):
         self.connection = None
-        self.transaction_id = transaction_id
+        self.request_id = request_id
 
     async def _open(self):
         self.connection = await asyncio_redis.Connection.create(config.redis_host, config.redis_port)
         self.subscriber = await self.connection.start_subscribe()
-        await self.subscriber.subscribe([self.transaction_id])
+        await self.subscriber.subscribe([self.request_id])
 
     async def get_message(self):
         if not self.connection:

@@ -1,45 +1,51 @@
 import os
 import logging
+import ruamel.yaml
 
 from auger.api.utils.config_yaml import ConfigYaml
 from auger.api.utils import fsclient
 
 log = logging.getLogger("a2ml")
 
-class ConfigParts(object):
-    parts = {}
-    part_names = ['config', 'auger', 'azure', 'google']
-    is_loaded = False
 
-    @classmethod
-    def load(cls, path = None):
+class SerializableConfigYaml(ConfigYaml):
+    def __getstate__(self):
+        return {'yaml': ruamel.yaml.dump(self.yaml, Dumper=ruamel.yaml.RoundTripDumper)}
+
+    def __setstate__(self, state):
+        self.yaml = ruamel.yaml.load(state['yaml'], Loader=ruamel.yaml.RoundTripLoader)
+
+
+class ConfigParts(object):
+    def __init__(self):
+        self.parts = {}
+        self.part_names = ['config', 'auger', 'azure', 'google']
+        self.is_loaded = False
+
+    def load(self, path = None):
         if path is None:
             path = os.getcwd()
-        for pname in ConfigParts.part_names:
+        for pname in self.part_names:
             filename = os.path.join(path, '%s.yaml' % pname)
 
             if not fsclient.is_s3_path(filename):
                 filename = os.path.abspath(filename)
 
             if fsclient.is_file_exists(filename):
-                ConfigParts.parts[pname] = ConfigParts._load(filename)
-        ConfigParts.is_loaded = True
+                self.parts[pname] = self._load(filename)
+        self.is_loaded = True
 
-    @classmethod
-    def ismultipart(cls):
-        return(len(ConfigParts.parts.keys()) > 1)
+    def ismultipart(self):
+        return(len(self.parts.keys()) > 1)
 
-    @classmethod
-    def keys(cls):
-        return ConfigParts.parts.keys()
+    def keys(self):
+        return self.parts.keys()
 
-    @classmethod
-    def part(cls, name):
-        return ConfigParts.parts[name]
+    def part(self, name):
+        return self.parts[name]
 
-    @classmethod
-    def _load(cls, name):
-        part = ConfigYaml()
+    def _load(self, name):
+        part = SerializableConfigYaml()
         if fsclient.is_file_exists(name):
             part.load_from_file(name)
         return part
@@ -76,6 +82,6 @@ class Config(object):
         return self.parts.ismultipart()
 
     def load(self, path = None, reload = False):
-        if (not ConfigParts.is_loaded) or reload:
-            ConfigParts.load(path)
+        if (not self.parts.is_loaded) or reload:
+            self.parts.load(path)
         return self

@@ -18,6 +18,7 @@ class Context(object):
 
         self.config = Config(name=name, path=path)
         self.name = self.config.name
+        self.notificator = None
 
         if len(self.name) > 0:
             self.name = "{:<9}".format('[%s]' % self.name)
@@ -44,17 +45,26 @@ class Context(object):
     def copy(self, name):
         new = Context(name, self.config.path, self.debug)
         new.runs_on_server = self.runs_on_server
+        new.notificator = self.notificator
+        new.request_id = self.request_id
         #new.config = Config(name)
         return new
 
     def log(self, msg, *args, **kwargs):
         log.info('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('info', '%s%s' %(self.name, msg), *args, **kwargs)
 
     def debug(self, msg, *args, **kwargs):
         log.debug('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('debug', '%s%s' %(self.name, msg), *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('error', '%s%s' %(self.name, msg), *args, **kwargs)
+
+    def publish_log(self, level, msg, *args, **kwargs):
+        if self.notificator:
+            self.notificator.publish_log(self.request_id, level, msg, args, kwargs)
 
     @staticmethod
     def setup_logger(format='%(asctime)s %(name)s | %(message)s'):
