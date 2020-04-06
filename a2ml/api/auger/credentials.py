@@ -1,7 +1,6 @@
 import os
 import json
 
-
 class Credentials(object):
     """Manage credentials on user computer."""
     def __init__(self, ctx):
@@ -15,7 +14,14 @@ class Credentials(object):
         self.token = None
 
     def load(self):
-        if 'AUGER_CREDENTIALS' in os.environ:
+        if hasattr(self.ctx, 'credentials'):
+            content = {
+                'url': self.ctx.credentials.api_url,
+                'organization': self.ctx.credentials.organization,
+                'token': self.ctx.credentials.token,
+                'username': self.ctx.credentials.username,
+            }
+        elif 'AUGER_CREDENTIALS' in os.environ:
             content = os.environ.get('AUGER_CREDENTIALS', None)
             content = json.loads(content) if content else {}
         else:

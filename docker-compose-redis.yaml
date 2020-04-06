@@ -11,17 +11,31 @@ services:
       - .:/app
     depends_on:
       - a2ml-worker
+      - a2ml-server
 
   a2ml-worker:
     build: .
     image: deeplearninc/a2ml
-    command: celery -A a2ml.tasks_queue.celery_app worker --loglevel=info
+    command: a2ml worker
     env_file: develop.env
     volumes:
       - .:/app
     depends_on:
       - minio
       - redis
+
+  a2ml-server:
+    build: .
+    image: deeplearninc/a2ml
+    command: a2ml server
+    env_file: develop.env
+    volumes:
+      - .:/app
+    depends_on:
+      - minio
+      - redis
+    ports:
+      - 8000:8000
 
   minio:
     image: minio/minio:RELEASE.2019-10-12T01-39-57Z
@@ -31,7 +45,7 @@ services:
     volumes:
       - ./tmp/data/:/data/
     env_file: develop.env
-    
+
   redis:
     image: "redis:alpine"
     volumes:

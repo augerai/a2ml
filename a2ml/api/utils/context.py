@@ -51,6 +51,7 @@ class Context(object):
 
         if self.runs_on_server:
             new.config = self.config
+            new.credentials = self.credentials
 
         return new
 

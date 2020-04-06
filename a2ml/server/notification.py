@@ -32,7 +32,10 @@ class SyncSender:
         )
 
     def _open(self):
-        self.connection = redis.Redis(host=config.redis_host, port=config.redis_port)
+        self.connection = redis.Redis(
+            host=config.notificator_redis_host,
+            port=config.notificator_redis_port
+        )
 
     def close(self):
         if self.connection:
@@ -52,7 +55,10 @@ class AsyncReceiver:
         self.request_id = request_id
 
     async def _open(self):
-        self.connection = await asyncio_redis.Connection.create(config.redis_host, config.redis_port)
+        self.connection = await asyncio_redis.Connection.create(
+            config.notificator_redis_host,
+            config.notificator_redis_port
+        )
         self.subscriber = await self.connection.start_subscribe()
         await self.subscriber.subscribe([self.request_id])
 

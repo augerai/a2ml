@@ -9,9 +9,14 @@ import websockets
 
 def show_output(data):
     if isinstance(data, dict):
-        if data.get('type', None) == 'log':
+        data_type = data.get('type', None)
+
+        if  data_type == 'log':
             sys.stdout.write('\b')
             print(data['msg'])
+        elif  data_type == 'result':
+            sys.stdout.write('\b')
+            print(data['status'] + ':', data['result'])
     else:
         sys.stdout.write('\b')
         print(data)

@@ -103,9 +103,10 @@ def list_projects_task(params):
     res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
 
     for provder in res.keys():
-        res[provder]['data']['projects'] = list(
-            map(lambda x: x.get('name'), res[provder]['data']['projects'])
-        )
+        if 'projects' in res[provder]['data']:
+            res[provder]['data']['projects'] = list(
+                map(lambda x: x.get('name'), res[provder]['data']['projects'])
+            )
 
     return  res
 

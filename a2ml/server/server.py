@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket, id: str = None):
                             # Periodically iterrupt waiting of message from subscription
                             # to check is websocket is still alive or not
                             reply = await asyncio.wait_for(notificator.get_message(), timeout=5.0)
-                            log("Received: ", repr(reply))
+                            log("Broadcast: ", repr(reply))
                             await websocket.send_text(reply)
                         except asyncio.TimeoutError:
                             await websocket.send_json({"type": "ping"}, mode="text")
