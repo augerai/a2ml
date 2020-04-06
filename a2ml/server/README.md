@@ -2,6 +2,10 @@
 
 ## Deps
 
+```
+pip install ".[server]"
+```
+
 Uses these packages:
 ```
 asyncio
@@ -17,14 +21,12 @@ uvicorn
 
 Run dev server:
 ```
-cd a2ml/server
-uvicorn server:app --reload
+a2ml server -r true
 ```
 
 Run Celery worker:
 ```
-cd a2ml/tasks_queue
-celery -A celery_app worker --loglevel=info --pool=gevent -c 100
+a2ml worker
 ```
 
 Add these options in your config.yaml:

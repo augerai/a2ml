@@ -38,15 +38,6 @@ install_requires = [
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'auger.ai>=0.2.1',
     'auger-hub-api-client>=0.6.1',
-
-    # Server
-    'asyncio',
-    'asyncio_redis',
-    'fastapi',
-    'gevent',
-    'jsonpickle',
-    'redis',
-    'uvicorn',
 ]
 
 extras = {
@@ -64,6 +55,15 @@ extras = {
     'docs': [
         'sphinx',
         'sphinx-rtd-theme'
+    ],
+    'server': [
+        'asyncio',
+        'asyncio_redis',
+        'fastapi',
+        'gevent',
+        'jsonpickle',
+        'redis',
+        'uvicorn',
     ],
     'azure': [
         'azureml-train-automl-client'
