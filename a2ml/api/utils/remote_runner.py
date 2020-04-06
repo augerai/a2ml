@@ -4,10 +4,17 @@ import asyncio
 import json
 import jsonpickle
 import requests
+import sys
 import websockets
 
-def log(*args):
-    print(*args)
+def show_output(data):
+    if isinstance(data, dict):
+        if data.get('type', None) == 'log':
+            sys.stdout.write('\b')
+            print(data['msg'])
+    else:
+        sys.stdout.write('\b')
+        print(data)
 
 class RemoteRunner(object):
     CRUD_TO_METHOD = {
@@ -49,15 +56,25 @@ class RemoteRunner(object):
         if response.status_code == 200:
             return response.json()
         else:
-            log(f"Request error: {response.status_code} {response.text}")
+            show_output(f"Request error: {response.status_code} {response.text}")
             raise Exception(f"Request error: {response.status_code} {response.text}")
+
+    async def spinning_cursor(self):
+        while True:
+            for cursor in '|/-\\':
+                sys.stdout.write(cursor)
+                sys.stdout.flush()
+                await asyncio.sleep(0.2)
+                sys.stdout.write('\b')
 
     async def wait_result(self, request_id):
         async with websockets.connect(self.ws_endpoint + "/ws?id=" + request_id) as websocket:
+            asyncio.run_coroutine_threadsafe(self.spinning_cursor(), asyncio.get_event_loop())
+
             while True:
                 data = await websocket.recv()
                 data = json.loads(data)
-                log(data)
+                show_output(data)
 
                 if data.get('type', None) == 'result':
                     break
