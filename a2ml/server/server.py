@@ -15,7 +15,7 @@ def log(*args):
     print(*args)
 
 @app.get("/hello")
-async def read_root():
+async def say_hello():
     await asyncio.sleep(1)
     return {"Hello": "World"}
 
