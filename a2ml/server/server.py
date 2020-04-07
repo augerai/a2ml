@@ -14,20 +14,20 @@ app = FastAPI()
 def log(*args):
     print(*args)
 
-@app.get("/hello")
+@app.get('/hello')
 async def say_hello():
     await asyncio.sleep(1)
-    return {"Hello": "World"}
+    return {'Hello': 'World'}
 
-@app.get("/api/v1/projects")
+@app.get('/api/v1/projects')
 async def list_projects(request: Request):
     return await __run_task(list_projects_task, request)
 
-@app.post("/api/v1/projects")
+@app.post('/api/v1/projects')
 async def create_project(request: Request):
     return await __run_task(new_project_task, request)
 
-@app.delete("/api/v1/projects")
+@app.delete('/api/v1/projects')
 async def list_projects(request: Request):
     return await __run_task(delete_project_task, request)
 
@@ -59,25 +59,31 @@ def __generate_request_id():
 
 @app.websocket("/ws")
 # id - id of request
-async def websocket_endpoint(websocket: WebSocket, id: str = None):
+async def websocket_endpoint(websocket: WebSocket, id: str = None, last_msg_id: str = '0'):
     try:
         if id:
             await websocket.accept()
             await websocket.send_json({"type": "start", 'request_id': id}, mode="text")
 
-            with AsyncReceiver(id) as notificator:
+            try:
+                notificator = AsyncReceiver(id, last_msg_id)
                 try:
                     while True:
                         try:
                             # Periodically iterrupt waiting of message from subscription
                             # to check is websocket is still alive or not
                             reply = await asyncio.wait_for(notificator.get_message(), timeout=5.0)
-                            log("Broadcast: ", repr(reply))
-                            await websocket.send_text(reply)
+                            if reply:
+                                log("Broadcast: ", repr(reply))
+                                await websocket.send_text(reply)
+                            else:
+                                await websocket.send_json({"type": "ping"}, mode="text")
                         except asyncio.TimeoutError:
                             await websocket.send_json({"type": "ping"}, mode="text")
                 except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError) as e:
                     log(f"WebSocket {id} disconnected: {str(e)}")
+            finally:
+                await notificator.close()
     finally:
         log('WebSocket stopped')
         await websocket.close()

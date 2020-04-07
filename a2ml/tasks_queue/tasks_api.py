@@ -70,20 +70,6 @@ def __handle_task_result(self, status, retval, task_id, args, kwargs, einfo):
             __error_to_result(retval, einfo)
         )
 
-def __exception_message_with_all_causes(e):
-    if isinstance(e, Exception) and e.__cause__:
-        return str(e) + ' caused by ' + __exception_message_with_all_causes(e.__cause__)
-    else:
-        return str(e)
-
-def __error_to_result(retval, einfo):
-    res = __exception_message_with_all_causes(retval)
-
-    if einfo:
-        res += '\n' + str(einfo)
-
-    return res
-
 def execute_tasks(tasks_func, params):
     if os.environ.get('TEST_CALL_CELERY_TASKS'):
         return tasks_func(params)
@@ -118,9 +104,17 @@ def delete_project_task(params):
 
 @celeryApp.task()
 def import_data_task(params):
-    ctx = create_context(params)
+    # ctx = create_context(params)
 
-    return A2ML(ctx).import_data()
+    # return A2ML(ctx).import_data()
+
+    import time
+    request_id = params['_request_id']
+    for i in range(0, 10):
+        notificator.publish_log(request_id, 'info', 'log ' + str(i))
+        time.sleep(2)
+
+    notificator.publish_result(request_id, 'SUCCESS', 'done')
 
 @celeryApp.task()
 def train_task(params):
@@ -148,3 +142,17 @@ def predict_task(params):
         params.get('filename'),
         params.get('model_id'),
         params.get('threshold'))
+
+def __exception_message_with_all_causes(e):
+    if isinstance(e, Exception) and e.__cause__:
+        return str(e) + ' caused by ' + __exception_message_with_all_causes(e.__cause__)
+    else:
+        return str(e)
+
+def __error_to_result(retval, einfo):
+    res = __exception_message_with_all_causes(retval)
+
+    if einfo:
+        res += '\n' + str(einfo)
+
+    return res

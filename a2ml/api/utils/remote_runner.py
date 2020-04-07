@@ -17,6 +17,9 @@ def show_output(data):
         elif  data_type == 'result':
             sys.stdout.write('\b')
             print(data['status'] + ':', data['result'])
+    elif isinstance(data, Exception):
+        sys.stdout.write('\b')
+        print('Error:', data)
     else:
         sys.stdout.write('\b')
         print(data)
@@ -73,14 +76,27 @@ class RemoteRunner(object):
                 sys.stdout.write('\b')
 
     async def wait_result(self, request_id):
-        async with websockets.connect(self.ws_endpoint + "/ws?id=" + request_id) as websocket:
-            asyncio.run_coroutine_threadsafe(self.spinning_cursor(), asyncio.get_event_loop())
+        done = False
+        last_msg_id = '0'
+        while not done:
+            try:
+                endpoint = self.ws_endpoint + "/ws?id=" + request_id + '&last_msg_id=' + str(last_msg_id)
+                async with websockets.connect(endpoint) as websocket:
+                    asyncio.run_coroutine_threadsafe(self.spinning_cursor(), asyncio.get_event_loop())
 
-            while True:
-                data = await websocket.recv()
-                data = json.loads(data)
-                show_output(data)
+                    while True:
+                        data = await websocket.recv()
+                        data = json.loads(data)
 
-                if data.get('type', None) == 'result':
-                    break
+                        if '_msg_id' in data:
+                            last_msg_id = data['_msg_id']
+
+                        show_output(data)
+
+                        if data.get('type', None) == 'result':
+                            done = True
+                            break
+            except Exception as e:
+                show_output(e)
+                await asyncio.sleep(2)
 

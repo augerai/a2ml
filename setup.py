@@ -57,8 +57,8 @@ extras = {
         'sphinx-rtd-theme'
     ],
     'server': [
+        'aioredis',
         'asyncio',
-        'asyncio_redis',
         'fastapi',
         'gevent',
         'jsonpickle',
