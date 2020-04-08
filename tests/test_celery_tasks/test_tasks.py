@@ -3,6 +3,7 @@ import pytest
 import logging
 
 from a2ml.tasks_queue.tasks_api import *
+from a2ml.api.utils.context import Context
 
 pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -18,6 +19,33 @@ class TestTasks(object):
         }
         execute_tasks(import_data_task, params)
 
+    @pytest.mark.skip(reason='run it locally')
+    def test_import_server(self):
+        from a2ml.api.a2ml import A2ML
+
+        ctx = Context(
+            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
+            debug = True)
+        provider = "auger"
+        ctx.config.set('config', 'providers', [provider])
+        ctx.config.set('config', 'use_server', True)
+        ctx.config.set('config', 'server_endpoint', 'http://a2ml-server:8000')
+
+        A2ML(ctx, provider).import_data()
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_list_projects_server(self):
+        from a2ml.api.a2ml_project import A2MLProject
+
+        ctx = Context(
+            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
+            debug = True)
+        provider = "azure"
+        ctx.config.set('config', 'providers', [provider])
+        ctx.config.set('config', 'use_server', True)
+        ctx.config.set('config', 'server_endpoint', 'http://a2ml-server:8000')
+
+        A2MLProject(ctx, provider).list()
 
     @pytest.mark.skip(reason='run it locally')    
     def test_import_s3(self):

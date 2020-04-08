@@ -1,15 +1,12 @@
 import os
 import json
-from auger.api.utils import fsclient
 
+from a2ml.api.utils.base_credentials import BaseCredentials
 
-class Credentials(object):
+class Credentials(BaseCredentials):
     """Manage credentials on user computer."""
     def __init__(self, ctx):
-        super(Credentials, self).__init__()
-        self.ctx = ctx
-        self.creds_path = self._path_to_credentials()
-        self.creds_file = os.path.join(self.creds_path, 'auger.json')
+        super(Credentials, self).__init__(ctx, "auger")
         self.organization = None
         self.username = None
         self.api_url = None
@@ -17,12 +14,7 @@ class Credentials(object):
 
     def load(self):
         if hasattr(self.ctx, 'credentials'):
-            content = {
-                'url': self.ctx.credentials.get('api_url'),
-                'organization': self.ctx.credentials.get('organization'),
-                'token': self.ctx.credentials.get('token'),
-                'username': self.ctx.credentials.get('username')
-            }
+            content = self.ctx.credentials
         elif 'AUGER_CREDENTIALS' in os.environ:
             content = os.environ.get('AUGER_CREDENTIALS', None)
             content = json.loads(content) if content else {}
@@ -33,7 +25,7 @@ class Credentials(object):
 
         self.username = content.get('username')
         self.organization = content.get('organization')
-        self.api_url = content.get('url', 'https://app.auger.ai')
+        self.api_url = content.get('api_url', 'https://app.auger.ai')
         self.token = content.get('token')
 
         return self
@@ -42,18 +34,14 @@ class Credentials(object):
         return {
             'organization' : self.organization,
             'api_url': self.api_url,
-            'token': self.token
+            'token': self.token,
+            'username': self.username
         }
 
     def save(self):
         self._ensure_credentials_file()
 
-        content = {}
-        content['username'] = self.username
-        content['url'] = self.api_url
-        content['token'] = self.token
-        content['organization'] = self.organization
-
+        content = self.serialize()
         with open(self.creds_file, 'w') as file:
             file.write(json.dumps(content))
 
@@ -62,28 +50,3 @@ class Credentials(object):
             raise Exception(
                 'Please provide your credentials to Auger...')
         return True
-
-    def _path_to_credentials(self):
-        if self.ctx.config.get('path_to_credentials'):
-            creds_path = os.path.abspath(self.ctx.config.get('path_to_credentials'))
-        elif os.environ.get('AUGER_CREDENTIALS_PATH'):
-            creds_path = os.environ.get('AUGER_CREDENTIALS_PATH')
-        else:
-            cur_path = os.getcwd()
-            if self.ctx.config.path:
-                cur_path = self.ctx.config.path
-
-            if fsclient.is_file_exists(os.path.join(cur_path, "auger.json")):
-                creds_path = cur_path
-            else:
-                creds_path = os.path.abspath('%s/.augerai' % os.environ.get('HOME', os.getcwd()))
-
-        return creds_path
-
-    def _ensure_credentials_file(self):
-        if not os.path.exists(self.creds_path):
-            os.makedirs(self.creds_path)
-
-        if not os.path.exists(self.creds_file):
-            with open(self.creds_file, 'w') as f:
-                f.write('{}')

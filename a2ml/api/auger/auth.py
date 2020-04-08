@@ -1,7 +1,7 @@
 import sys
 
 from auger.api.cloud.auth import AugerAuthApi
-from auger.api.credentials import Credentials
+from .credentials import Credentials
 from auger.api.cloud.utils.exception import AugerException
 
 

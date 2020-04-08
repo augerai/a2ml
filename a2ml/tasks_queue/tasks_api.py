@@ -39,8 +39,8 @@ def create_context(params, new_project=False):
                 ctx.config.set('config', 'source', params.get("source_path"))
 
 
-        #For Azure, since it package current directory
-        os.chdir("tmp")
+    #For Azure, since it package current directory
+    os.chdir("tmp")
 
     return ctx
 

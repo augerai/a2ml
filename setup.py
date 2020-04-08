@@ -35,9 +35,7 @@ install_requires = [
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
-    'auger.ai>=0.2.1',
-    'auger-hub-api-client>=0.6.1',
+    'ruamel.yaml<=0.15.89,>=0.15.35'
 ]
 
 extras = {

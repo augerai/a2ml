@@ -3,9 +3,9 @@ import json
 import jsonpickle
 import requests
 import sys
-import websockets
 
 from a2ml.api.a2ml_credentials import A2MLCredentials
+
 
 def show_output(data):
     if isinstance(data, dict):
@@ -99,6 +99,8 @@ class RemoteRunner(object):
                 sys.stdout.write('\b')
 
     async def wait_result(self, request_id):
+        import websockets
+        
         done = False
         last_msg_id = '0'
         while not done:
