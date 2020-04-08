@@ -14,16 +14,19 @@ from a2ml.server.notification import SyncSender
 notificator = SyncSender()
 
 def create_context(params, new_project=False):
-    if params['context']:
+    if params.get('context'):
         ctx = jsonpickle.decode(params['context'])
+
+        ctx.runs_on_server = True
+        ctx.notificator = notificator
+        ctx.request_id = params.get('_request_id')
+        ctx.setup_logger(format='')        
     else:
-        # TODO:path to config files
+        # For Tasks Test Only!
         project_path = os.path.join(
             os.environ.get('A2ML_PROJECT_PATH', ''), params.get('project_name')
         )
 
-        os.chdir("tmp")
-        print(os.getcwd())
         ctx = Context(path=project_path, debug = params.get("debug_log", False))
 
         if not new_project:
@@ -33,28 +36,10 @@ def create_context(params, new_project=False):
             if params.get("source_path"):
                 ctx.config.set('config', 'source', params.get("source_path"))
 
-        if os.environ.get('AUGER_PROJECT_API_TOKEN'):
-            os.environ['AUGER_CREDENTIALS'] = json.dumps({
-                'organization' : os.environ.get('AUGER_ORGANIZATION'),
-                'url' : os.environ.get('HUB_APP_URL'),
-                'token' : os.environ.get('AUGER_PROJECT_API_TOKEN')
-            })
+    #For Azure, since it package current directory    
+    os.chdir("tmp")
 
-        if os.environ.get('AZURE_SUBSCRIPTION_ID'):
-            ctx.config.set('azure', 'subscription_id', os.environ.get('AZURE_SUBSCRIPTION_ID'))
-
-        if os.environ.get('AZURE_SERVICE_PRINCIPAL_TENANT_ID'):
-            os.environ['AZURE_CREDENTIALS'] = json.dumps({
-                'service_principal_tenant_id' : os.environ.get('AZURE_SERVICE_PRINCIPAL_TENANT_ID'),
-                'service_principal_id' : os.environ.get('AZURE_SERVICE_PRINCIPAL_ID'),
-                'service_principal_password' : os.environ.get('AZURE_SERVICE_PRINCIPAL_PASSWORD')
-            })
-
-    ctx.runs_on_server = True
-    ctx.notificator = notificator
-    ctx.request_id = params['_request_id']
     ctx.config.set('config', 'use_server', False)
-    ctx.setup_logger(format='')
 
     return ctx
 

@@ -1,11 +1,11 @@
-from auger.api.credentials import Credentials
-
 import asyncio
 import json
 import jsonpickle
 import requests
 import sys
 import websockets
+
+from a2ml.api.a2ml_credentials import A2MLCredentials
 
 def show_output(data):
     if isinstance(data, dict):
@@ -35,7 +35,7 @@ class RemoteRunner(object):
         super(RemoteRunner, self).__init__()
         self.ctx = ctx
         self.obj_name = obj_name
-        self.ctx.credentials = Credentials(ctx).load()
+        self.ctx.credentials = A2MLCredentials(ctx, provider).load()
         self.server_endpoint = ctx.config.get('server_endpoint')
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
 
