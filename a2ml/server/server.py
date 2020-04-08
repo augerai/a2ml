@@ -6,7 +6,9 @@ import asyncio
 import uuid
 import websockets
 
-from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task
+from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
+    import_data_task
+
 from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
@@ -30,6 +32,14 @@ async def create_project(request: Request):
 @app.delete('/api/v1/projects')
 async def list_projects(request: Request):
     return await __run_task(delete_project_task, request)
+
+@app.patch('/api/v1/projects')
+async def select_project(request: Request):
+    return await __run_task(select_project_task, request)
+
+@app.patch('/api/v1/import_data')
+async def import_data(request: Request):
+    return await __run_task(import_data_task, request)
 
 async def __run_task(task, request):
     request_id = __generate_request_id()

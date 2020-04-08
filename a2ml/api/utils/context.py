@@ -24,7 +24,11 @@ class Context(object):
         if len(self.name) > 0:
             self.name = "{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
-        self.runs_on_server = False
+        self.set_runs_on_server(False)
+
+    def set_runs_on_server(self, value):
+        self._runs_on_server = value
+        self.config.runs_on_server = value
 
     def get_providers(self, provider = None):
         if provider:
@@ -45,11 +49,11 @@ class Context(object):
 
     def copy(self, name):
         new = Context(name, self.config.path, self.debug)
-        new.runs_on_server = self.runs_on_server
+        new._runs_on_server = self._runs_on_server
         new.notificator = self.notificator
         new.request_id = self.request_id
 
-        if self.runs_on_server:
+        if self._runs_on_server:
             new.config = self.config
             new.credentials = self.credentials
 

@@ -29,10 +29,17 @@ class RemoteRunner(object):
         'create': 'post',
         'list': 'get',
         'delete': 'delete',
+        'select': 'patch',
     }
 
     def __init__(self, ctx, provider, obj_name = None):
         super(RemoteRunner, self).__init__()
+        providers = ctx.get_providers(provider)
+        if len(providers) == 0:
+            raise Exception("Please specify provider")
+
+        provider = providers[0]
+
         self.ctx = ctx
         self.obj_name = obj_name
         self.ctx.credentials = A2MLCredentials(ctx, provider).load()
@@ -50,8 +57,13 @@ class RemoteRunner(object):
     def execute(self, operation_name, *args, **kwargs):
         method_name = self.CRUD_TO_METHOD.get(operation_name)
 
+        if self.obj_name:
+            path = f'/api/v1/{self.obj_name}s'
+        else:
+            path = f'/api/v1/{operation_name}'
+
         if method_name:
-            res = self.make_requst(method_name, f'/api/v1/{self.obj_name}s', self._params(*args, **kwargs))
+            res = self.make_requst(method_name, path, self._params(*args, **kwargs))
             asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
         else:
             raise ValueError(f'unknown operation {operation_name}')
@@ -66,6 +78,16 @@ class RemoteRunner(object):
         else:
             show_output(f"Request error: {response.status_code} {response.text}")
             raise Exception(f"Request error: {response.status_code} {response.text}")
+
+    def handle_weboscket_respone(self, data):
+        data_type = data.get('type', None)
+
+        if data_type == 'result':
+            config = jsonpickle.decode(data['result']['config'])
+            data['result'] = data['result']['response']
+            config.write_all()
+
+        show_output(data)
 
     async def spinning_cursor(self):
         while True:
@@ -91,7 +113,7 @@ class RemoteRunner(object):
                         if '_msg_id' in data:
                             last_msg_id = data['_msg_id']
 
-                        show_output(data)
+                        self.handle_weboscket_respone(data)
 
                         if data.get('type', None) == 'result':
                             done = True

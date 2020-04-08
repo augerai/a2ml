@@ -3,7 +3,8 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, ANY
 
 from a2ml.server.server import app
-from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task
+from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
+    import_data_task
 
 client = TestClient(app)
 
@@ -13,7 +14,11 @@ class TestServer():
             'get': list_projects_task,
             'post': new_project_task,
             'delete': delete_project_task,
-        }
+            'patch': select_project_task,
+        },
+        '/api/v1/import_data': {
+            'patch': import_data_task,
+        },
     }
 
     def test_hello(self):

@@ -17,10 +17,11 @@ def create_context(params, new_project=False):
     if params.get('context'):
         ctx = jsonpickle.decode(params['context'])
 
-        ctx.runs_on_server = True
+        ctx.set_runs_on_server(True)
+        ctx.config.set('config', 'use_server', False)
         ctx.notificator = notificator
-        ctx.request_id = params.get('_request_id')
-        ctx.setup_logger(format='')        
+        ctx.request_id = params['_request_id']
+        ctx.setup_logger(format='')
     else:
         # For Tasks Test Only!
         project_path = os.path.join(
@@ -36,10 +37,9 @@ def create_context(params, new_project=False):
             if params.get("source_path"):
                 ctx.config.set('config', 'source', params.get("source_path"))
 
-    #For Azure, since it package current directory    
-    os.chdir("tmp")
 
-    ctx.config.set('config', 'use_server', False)
+        #For Azure, since it package current directory
+        os.chdir("tmp")
 
     return ctx
 
@@ -64,42 +64,46 @@ def execute_tasks(tasks_func, params):
 
 @celeryApp.task(after_return=__handle_task_result)
 def new_project_task(params):
-    ctx = create_context(params)
-    res = A2MLProject(ctx, None).create(*params['args'], **params['kwargs'])
-    return res
+    return with_context(
+        params,
+        lambda ctx: A2MLProject(ctx, None).create(*params['args'], **params['kwargs'])
+    )
 
 @celeryApp.task(after_return=__handle_task_result)
 def list_projects_task(params):
-    ctx = create_context(params)
-    res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
+    def func(ctx):
+        res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
 
-    for provder in res.keys():
-        if 'projects' in res[provder]['data']:
-            res[provder]['data']['projects'] = list(
-                map(lambda x: x.get('name'), res[provder]['data']['projects'])
-            )
+        for provder in res.keys():
+            if 'projects' in res[provder]['data']:
+                res[provder]['data']['projects'] = list(
+                    map(lambda x: x.get('name'), res[provder]['data']['projects'])
+                )
 
-    return  res
+        res
+
+    return with_context(params, func)
 
 @celeryApp.task(after_return=__handle_task_result)
 def delete_project_task(params):
-    ctx = create_context(params)
-    res = A2MLProject(ctx, None).delete(*params['args'], **params['kwargs'])
-    return res
+    return with_context(
+        params,
+        lambda ctx: A2MLProject(ctx, None).delete(*params['args'], **params['kwargs'])
+    )
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
+def select_project_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLProject(ctx, None).select(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
 def import_data_task(params):
-    # ctx = create_context(params)
-
-    # return A2ML(ctx).import_data()
-
-    import time
-    request_id = params['_request_id']
-    for i in range(0, 10):
-        notificator.publish_log(request_id, 'info', 'log ' + str(i))
-        time.sleep(2)
-
-    notificator.publish_result(request_id, 'SUCCESS', 'done')
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).import_data()
+    )
 
 @celeryApp.task()
 def train_task(params):
@@ -127,6 +131,25 @@ def predict_task(params):
         params.get('filename'),
         params.get('model_id'),
         params.get('threshold'))
+
+@celeryApp.task()
+def demo_task(params):
+    import time
+    request_id = params['_request_id']
+    for i in range(0, 10):
+        notificator.publish_log(request_id, 'info', 'log ' + str(i))
+        time.sleep(2)
+
+    notificator.publish_result(request_id, 'SUCCESS', 'done')
+
+def with_context(params, proc):
+    ctx = create_context(params)
+
+    res = proc(ctx)
+
+    ctx.set_runs_on_server(False)
+    ctx.config.set('config', 'use_server', True)
+    return {'response': res, 'config': jsonpickle.encode(ctx.config)}
 
 def __exception_message_with_all_causes(e):
     if isinstance(e, Exception) and e.__cause__:

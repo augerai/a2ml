@@ -7,13 +7,21 @@ from auger.api.utils import fsclient
 
 log = logging.getLogger("a2ml")
 
-
+'''Config to serialize pass to server side deserialize, then pass back and save on CLI side'''
 class SerializableConfigYaml(ConfigYaml):
     def __getstate__(self):
-        return {'yaml': ruamel.yaml.dump(self.yaml, Dumper=ruamel.yaml.RoundTripDumper)}
+        return {
+            'filename': self.filename,
+            'yaml': ruamel.yaml.dump(self.yaml, Dumper=ruamel.yaml.RoundTripDumper)
+        }
 
     def __setstate__(self, state):
+        self.filename = state['filename']
         self.yaml = ruamel.yaml.load(state['yaml'], Loader=ruamel.yaml.RoundTripLoader)
+
+    def write(self, filename=None, client_side=True):
+        if client_side:
+            super().write(filename)
 
 
 class ConfigParts(object):
@@ -54,6 +62,7 @@ class Config(object):
 
     def __init__(self, name = 'config', path=None):
         super(Config, self).__init__()
+        self.runs_on_server = False
         self.name = name
         self.path = path
         self.parts = ConfigParts()
@@ -74,9 +83,13 @@ class Config(object):
 
     def write(self, part_name):
         if (part_name == 'config' and self.ismultipart()):
-            self.parts.part('config').write()
+            self.parts.part('config').write(client_side=not self.runs_on_server)
         else:
-            self.parts.part(self.name).write()
+            self.parts.part(self.name).write(client_side=not self.runs_on_server)
+
+    def write_all(self):
+        for part_name in self.parts.parts.keys():
+            self.write(part_name)
 
     def ismultipart(self):
         return self.parts.ismultipart()
