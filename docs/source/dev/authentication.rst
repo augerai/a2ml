@@ -34,7 +34,7 @@ If you haven't run Google Cloud AutoML, set up a service account and save the cr
 
 .. code-block:: bash
 
-  $ export GOOGLE_APPLICATION_CREDENTIALS="/Users/adamblum/a2ml/automl.json"
+  $ export GOOGLE_APPLICATION_CREDENTIALS="/Users/user/a2ml/automl.json"
 
 
 For ease of use you can set up a default project ID to use with your project with the PROJECT_ID environment variable. For example:  

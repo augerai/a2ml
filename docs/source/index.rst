@@ -23,4 +23,3 @@
    community/philosophy
    community/todo
    community/authors
-   

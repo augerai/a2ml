@@ -12,8 +12,23 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 
 class Context(object):
-
+    """The Context class provides an environment to run A2ML"""
     def __init__(self, name='config', path=None, debug=False):
+        """Initializes the Context instance
+        
+        Args:
+            name (str): The name of the config file. Default is 'config'
+            path(str): The path to your config file. If the config file is in the root directory leave as None.
+            debug (bool): True | False. Default is False.
+        
+        Returns:
+            object: Context object
+
+        Example:
+            .. code-block:: python
+
+                ctx = Context()
+        """
         super(Context, self).__init__()
 
         self.config = Config(name=name, path=path)
@@ -25,6 +40,23 @@ class Context(object):
         self.runs_on_server = False
 
     def get_providers(self, provider = None):
+        """constructs Context instance
+
+        Args:
+            name (str): The name of the config file. Default is 'config'
+            path(str): The path to your config file. If the config file is in the root directory leave as None.
+            debug (bool): True | False. Default is False.
+
+        Returns:
+            list[str]: ['azure', 'auger']
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                ctx.get_providers()
+
+        """
         if provider:
             providers = provider
         else:
@@ -42,9 +74,22 @@ class Context(object):
         raise Exception('Expecting list of providers in config.yaml\providers')
 
     def copy(self, name):
+        """creates a copy of an existing Context
+        
+        Args:
+            name (str): The name of the config file. Default is 'config'
+
+        Returns:
+            object: Context object
+
+        Example:
+            .. code-block:: python
+
+                ctx = Context()
+                new_ctx = ctx.copy()
+        """
         new = Context(name, self.config.path, self.debug)
         new.runs_on_server = self.runs_on_server
-        #new.config = Config(name)
         return new
 
     def log(self, msg, *args, **kwargs):
