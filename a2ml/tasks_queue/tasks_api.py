@@ -9,6 +9,7 @@ from a2ml.api.utils.context import Context
 from auger.api.cloud.rest_api import RestApi
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
+from a2ml.api.a2ml_experiment import A2MLExperiment
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
 
@@ -63,6 +64,7 @@ def execute_tasks(tasks_func, params):
         ar = tasks_func.delay(params)
         return ar.get()
 
+# Projects
 @celeryApp.task(after_return=__handle_task_result)
 def new_project_task(params):
     return with_context(
@@ -99,6 +101,7 @@ def select_project_task(params):
         lambda ctx: A2MLProject(ctx, None).select(*params['args'], **params['kwargs'])
     )
 
+# Datasets
 @celeryApp.task(after_return=__handle_task_result)
 def new_dataset_task(params):
     return with_context(
@@ -135,6 +138,51 @@ def select_dataset_task(params):
         lambda ctx: A2MLDataset(ctx, None).select(*params['args'], **params['kwargs'])
     )
 
+# Experiment
+@celeryApp.task(after_return=__handle_task_result)
+def list_experiments_task(params):
+    def func(ctx):
+        res = A2MLExperiment(ctx, None).list(*params['args'], **params['kwargs'])
+
+        for provder in res.keys():
+            if 'experiments' in res[provder]['data']:
+                res[provder]['data']['experiments'] = list(
+                    map(lambda x: x.get('name'), res[provder]['data']['experiments'])
+                )
+
+        res
+
+    return with_context(params, func)
+
+@celeryApp.task(after_return=__handle_task_result)
+def leaderboard_experiment_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLExperiment(ctx, None).leaderboard(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def history_experiment_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLExperiment(ctx, None).history(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def start_experiment_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLExperiment(ctx, None).start(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def stop_experiment_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLExperiment(ctx, None).stop(*params['args'], **params['kwargs'])
+    )
+
+# Complex tasks
 @celeryApp.task(after_return=__handle_task_result)
 def import_data_task(params):
     return with_context(
