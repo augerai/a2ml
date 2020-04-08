@@ -27,10 +27,17 @@ def show_output(data):
 class RemoteRunner(object):
     CRUD_TO_METHOD = {
         'create': 'post',
-        'list': 'get',
         'delete': 'delete',
+        'list': 'get',
+    }
+
+    NON_CRUD_TO_METHOD = {
+        'history': 'get',
         'import_data': 'patch',
+        'leaderboard': 'get',
         'select': 'patch',
+        'start': 'patch',
+        'stop': 'patch',
     }
 
     def __init__(self, ctx, provider, obj_name = None):
@@ -55,22 +62,35 @@ class RemoteRunner(object):
             'kwargs': kwargs,
         }
 
-    def execute(self, operation_name, *args, **kwargs):
-        method_name = self.CRUD_TO_METHOD.get(operation_name)
+    def get_http_verb_and_path(self, operation_name):
+        crud = False
 
-        if self.obj_name:
-            path = f'/api/v1/{self.obj_name}s'
-        else:
-            path = f'/api/v1/{operation_name}'
-
-        if method_name:
-            res = self.make_requst(method_name, path, self._params(*args, **kwargs))
-            asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
+        if operation_name in self.CRUD_TO_METHOD:
+            http_verb = self.CRUD_TO_METHOD[operation_name]
+            crud = True
+        elif operation_name in self.NON_CRUD_TO_METHOD:
+            http_verb = self.NON_CRUD_TO_METHOD[operation_name]
         else:
             raise ValueError(f'unknown operation {operation_name}')
 
-    def make_requst(self, method_name, path, params):
-        method = getattr(requests, method_name)
+        if self.obj_name:
+            if crud:
+                path = f'/api/v1/{self.obj_name}s'
+            else:
+                path = f'/api/v1/{self.obj_name}s/{operation_name}'
+        else:
+            path = f'/api/v1/{operation_name}'
+
+        return (http_verb, path)
+
+    def execute(self, operation_name, *args, **kwargs):
+        http_verb, path = self.get_http_verb_and_path(operation_name)
+
+        res = self.make_requst(http_verb, path, self._params(*args, **kwargs))
+        asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
+
+    def make_requst(self, http_verb, path, params):
+        method = getattr(requests, http_verb)
         return self.handle_respone(method(f"{self.server_endpoint}{path}", json=params))
 
     def handle_respone(self, response):

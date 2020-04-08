@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from unittest.mock import patch, ANY
 
-from a2ml.server.server import app
+from a2ml.server.server import app, API_SCHEMA
 from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
     new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
     import_data_task
@@ -10,24 +10,6 @@ from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, del
 client = TestClient(app)
 
 class TestServer():
-    TEST_SCHEMA = {
-        '/api/v1/datasets': {
-            'get': list_datasets_task,
-            'post': new_dataset_task,
-            'delete': delete_dataset_task,
-            'patch': select_dataset_task,
-        },
-        '/api/v1/projects': {
-            'get': list_projects_task,
-            'post': new_project_task,
-            'delete': delete_project_task,
-            'patch': select_project_task,
-        },
-        '/api/v1/import_data': {
-            'patch': import_data_task,
-        },
-    }
-
     def test_hello(self):
         response = client.get('/hello')
         assert response.status_code == 200
@@ -35,10 +17,10 @@ class TestServer():
 
 
     @classmethod
-    def define_tests(cls):
-        for path in cls.TEST_SCHEMA.keys():
-            for verb in cls.TEST_SCHEMA[path].keys():
-                task = cls.TEST_SCHEMA[path][verb]
+    def define_tests(cls, schema):
+        for path in schema.keys():
+            for verb in schema[path].keys():
+                task = schema[path][verb]
                 cls.define_test(verb, path, task)
 
     @classmethod
@@ -59,7 +41,6 @@ class TestServer():
                 '_request_id': ANY
             })
 
-
         setattr(cls, f'test_{http_verb}' + path.replace('/', '_'), test)
 
-TestServer.define_tests()
+TestServer.define_tests(API_SCHEMA)

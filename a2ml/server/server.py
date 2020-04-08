@@ -5,60 +5,80 @@ from fastapi.encoders import jsonable_encoder
 import asyncio
 import uuid
 import websockets
+import sys
 
 from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
     new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
+    list_experiments_task, leaderboard_experiment_task, history_experiment_task, \
+    start_experiment_task, stop_experiment_task, \
     import_data_task
 
 from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
 
-def log(*args):
-    print(*args)
+API_SCHEMA = {
+    '/api/v1/datasets': {
+        'get': list_datasets_task,
+        'post': new_dataset_task,
+        'delete': delete_dataset_task,
+    },
+    '/api/v1/datasets/select': {
+        'patch': select_dataset_task,
+    },
+    '/api/v1/experiments': {
+        'get': list_experiments_task,
+    },
+    '/api/v1/experiments/history': {
+        'get': history_experiment_task,
+    },
+    '/api/v1/experiments/leaderboard': {
+        'get': leaderboard_experiment_task,
+    },
+    '/api/v1/experiments/start': {
+        'patch': start_experiment_task,
+    },
+    '/api/v1/experiments/stop': {
+        'patch': stop_experiment_task,
+    },
+    '/api/v1/projects': {
+        'get': list_projects_task,
+        'post': new_project_task,
+        'delete': delete_project_task,
+    },
+    '/api/v1/projects/select': {
+        'patch': select_project_task,
+    },
+    '/api/v1/import_data': {
+        'patch': import_data_task,
+    },
+}
 
 @app.get('/hello')
 async def say_hello():
     await asyncio.sleep(1)
     return {'Hello': 'World'}
 
-# CRUD TODO: DRY
-@app.get('/api/v1/datasets')
-async def list_datasets(request: Request):
-    return await __run_task(list_datasets_task, request)
+def define_endpoints(schema):
+    for path in schema.keys():
+        endpoints = schema[path]
+        for http_verb in endpoints.keys():
+            task = endpoints[http_verb]
+            define_endpoint(http_verb, path, task)
 
-@app.post('/api/v1/datasets')
-async def create_dataset(request: Request):
-    return await __run_task(new_dataset_task, request)
+def define_endpoint(http_verb, path, task):
+    decorator_method = getattr(app, http_verb)
 
-@app.delete('/api/v1/datasets')
-async def delete_dataset(request: Request):
-    return await __run_task(delete_dataset_task, request)
+    @decorator_method(path)
+    async def handler(request: Request):
+        return await __run_task(task, request)
 
-@app.patch('/api/v1/datasets')
-async def select_dataset(request: Request):
-    return await __run_task(select_dataset_task, request)
+    setattr(sys.modules[__name__], task.__name__.replace('_task', ''), handler)
 
-@app.get('/api/v1/projects')
-async def list_projects(request: Request):
-    return await __run_task(list_projects_task, request)
+define_endpoints(API_SCHEMA)
 
-@app.post('/api/v1/projects')
-async def create_project(request: Request):
-    return await __run_task(new_project_task, request)
-
-@app.delete('/api/v1/projects')
-async def delete_project(request: Request):
-    return await __run_task(delete_project_task, request)
-
-@app.patch('/api/v1/projects')
-async def select_project(request: Request):
-    return await __run_task(select_project_task, request)
-
-# Non CRUD
-@app.patch('/api/v1/import_data')
-async def import_data(request: Request):
-    return await __run_task(import_data_task, request)
+def log(*args):
+    print(*args)
 
 async def __run_task(task, request):
     request_id = __generate_request_id()
