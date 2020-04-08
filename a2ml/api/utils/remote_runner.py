@@ -29,6 +29,7 @@ class RemoteRunner(object):
         'create': 'post',
         'list': 'get',
         'delete': 'delete',
+        'import_data': 'patch',
         'select': 'patch',
     }
 

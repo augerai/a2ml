@@ -8,6 +8,7 @@ import jsonpickle
 from a2ml.api.utils.context import Context
 from auger.api.cloud.rest_api import RestApi
 from a2ml.api.a2ml import A2ML
+from a2ml.api.a2ml_dataset import A2MLDataset
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
 
@@ -96,6 +97,42 @@ def select_project_task(params):
     return with_context(
         params,
         lambda ctx: A2MLProject(ctx, None).select(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def new_dataset_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLDataset(ctx, None).create(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def list_datasets_task(params):
+    def func(ctx):
+        res = A2MLDataset(ctx, None).list(*params['args'], **params['kwargs'])
+
+        for provder in res.keys():
+            if 'datasets' in res[provder]['data']:
+                res[provder]['data']['datasets'] = list(
+                    map(lambda x: x.get('name'), res[provder]['data']['datasets'])
+                )
+
+        res
+
+    return with_context(params, func)
+
+@celeryApp.task(after_return=__handle_task_result)
+def delete_dataset_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLDataset(ctx, None).delete(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def select_dataset_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLDataset(ctx, None).select(*params['args'], **params['kwargs'])
     )
 
 @celeryApp.task(after_return=__handle_task_result)

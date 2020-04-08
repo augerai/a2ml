@@ -7,6 +7,7 @@ import uuid
 import websockets
 
 from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
+    new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
     import_data_task
 
 from a2ml.server.notification import AsyncReceiver
@@ -21,6 +22,23 @@ async def say_hello():
     await asyncio.sleep(1)
     return {'Hello': 'World'}
 
+# CRUD TODO: DRY
+@app.get('/api/v1/datasets')
+async def list_datasets(request: Request):
+    return await __run_task(list_datasets_task, request)
+
+@app.post('/api/v1/datasets')
+async def create_dataset(request: Request):
+    return await __run_task(new_dataset_task, request)
+
+@app.delete('/api/v1/datasets')
+async def delete_dataset(request: Request):
+    return await __run_task(delete_dataset_task, request)
+
+@app.patch('/api/v1/datasets')
+async def select_dataset(request: Request):
+    return await __run_task(select_dataset_task, request)
+
 @app.get('/api/v1/projects')
 async def list_projects(request: Request):
     return await __run_task(list_projects_task, request)
@@ -30,13 +48,14 @@ async def create_project(request: Request):
     return await __run_task(new_project_task, request)
 
 @app.delete('/api/v1/projects')
-async def list_projects(request: Request):
+async def delete_project(request: Request):
     return await __run_task(delete_project_task, request)
 
 @app.patch('/api/v1/projects')
 async def select_project(request: Request):
     return await __run_task(select_project_task, request)
 
+# Non CRUD
 @app.patch('/api/v1/import_data')
 async def import_data(request: Request):
     return await __run_task(import_data_task, request)

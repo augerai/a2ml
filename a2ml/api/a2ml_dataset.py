@@ -1,4 +1,5 @@
 from a2ml.api.utils.crud_runner import CRUDRunner
+from a2ml.api.utils.remote_runner import RemoteRunner
 from a2ml.api.utils.show_result import show_result
 
 class A2MLDataset(object):
@@ -13,7 +14,11 @@ class A2MLDataset(object):
         """
         super(A2MLDataset, self).__init__()
         self.ctx = ctx
-        self.runner = CRUDRunner(ctx, provider, 'dataset')
+
+        if self.ctx.config.get('use_server') == True:
+            self.runner = RemoteRunner(ctx, provider, 'dataset')
+        else:
+            self.runner = CRUDRunner(ctx, provider, 'dataset')
 
     @show_result
     def list(self):

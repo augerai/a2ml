@@ -4,12 +4,19 @@ from unittest.mock import patch, ANY
 
 from a2ml.server.server import app
 from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
+    new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
     import_data_task
 
 client = TestClient(app)
 
 class TestServer():
     TEST_SCHEMA = {
+        '/api/v1/datasets': {
+            'get': list_datasets_task,
+            'post': new_dataset_task,
+            'delete': delete_dataset_task,
+            'patch': select_dataset_task,
+        },
         '/api/v1/projects': {
             'get': list_projects_task,
             'post': new_project_task,
