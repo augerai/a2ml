@@ -215,36 +215,43 @@ def predict_model_task(params):
 def import_data_task(params):
     return with_context(
         params,
-        lambda ctx: A2ML(ctx).import_data()
+        lambda ctx: A2ML(ctx).import_data(*params['args'], **params['kwargs'])
     )
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def train_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).train(*params['args'], **params['kwargs'])
+    )
 
-    return A2ML(ctx).train()
-
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def evaluate_task(params):
-    ctx = create_context(params)
-
-    return A2ML(ctx).evaluate()
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).evaluate(*params['args'], **params['kwargs'])
+    )
 
 @celeryApp.task(after_return=__handle_task_result)
 def deploy_task(params):
     return with_context(
         params,
-        lambda ctx: A2ML(ctx).deploy(params.get('model_id'))
+        lambda ctx: A2ML(ctx).deploy(*params['args'], **params['kwargs'])
     )
 
 @celeryApp.task(after_return=__handle_task_result)
 def predict_task(params):
     return with_context(
         params,
-        lambda ctx: A2ML(ctx).predict(params.get('filename'), params.get('model_id'), params.get('threshold'))
+        lambda ctx: A2ML(ctx).predict(*params['args'], **params['kwargs'])
     )
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
+def review_task(params):
+    # TODO
+    raise Exception('not inplemented yet')
+
+@celeryApp.task(after_return=__handle_task_result)
 def demo_task(params):
     import time
     request_id = params['_request_id']
@@ -256,6 +263,12 @@ def demo_task(params):
 
 def with_context(params, proc):
     ctx = create_context(params)
+
+    if not 'args' in params:
+        params['args'] = []
+
+    if not 'kwargs' in params:
+        params['kwargs'] = {}
 
     res = proc(ctx)
 

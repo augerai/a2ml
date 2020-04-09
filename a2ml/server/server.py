@@ -12,7 +12,7 @@ from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, del
     list_experiments_task, leaderboard_experiment_task, history_experiment_task, \
     start_experiment_task, stop_experiment_task, \
     actual_model_task, deploy_model_task, predict_model_task, \
-    import_data_task
+    deploy_task, evaluate_task, import_data_task, predict_task, train_task, review_task
 
 from a2ml.server.notification import AsyncReceiver
 
@@ -26,6 +26,12 @@ API_SCHEMA = {
     },
     '/api/v1/datasets/select': {
         'patch': select_dataset_task,
+    },
+    '/api/v1/deploy': {
+        'patch': deploy_task,
+    },
+    '/api/v1/evaluate': {
+        'patch': evaluate_task,
     },
     '/api/v1/experiments': {
         'get': list_experiments_task,
@@ -54,6 +60,9 @@ API_SCHEMA = {
     '/api/v1/models/predict': {
         'post': predict_model_task,
     },
+    '/api/v1/predict': {
+        'patch': predict_task,
+    },
     '/api/v1/projects': {
         'get': list_projects_task,
         'post': new_project_task,
@@ -61,6 +70,12 @@ API_SCHEMA = {
     },
     '/api/v1/projects/select': {
         'patch': select_project_task,
+    },
+    '/api/v1/review': {
+        'patch': review_task,
+    },
+    '/api/v1/train': {
+        'patch': train_task,
     },
 }
 
