@@ -1,6 +1,6 @@
 import os
 
-from  auger.api.utils import fsclient
+from  a2ml.api.utils import fsclient
 
 
 class Template(object):

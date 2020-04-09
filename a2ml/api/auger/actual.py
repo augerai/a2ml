@@ -1,21 +1,23 @@
 import os
 import csv
-from a2ml.api.auger.base import AugerBase
-from auger.api.cloud.pipeline import AugerPipelineApi
+
+from .impl.pipeline import AugerPipelineApi
+from .impl.decorators import error_handler, authenticated, with_project
 
 
-
-class AugerAcutal(AugerBase):
+class AugerActual(object):
     """Actual value for deployed Auger Pipeline."""
 
     def __init__(self, ctx):
-        super(AugerPredict, self).__init__(ctx)
-
-    @AugerBase._error_handler
+        super(AugerActual, self).__init__(ctx)
+        self.ctx.credentials = Credentials(ctx).load()
+        self.ctx.rest_api = RestApi(
+            self.ctx.credentials.api_url, self.ctx.credentials.token)
+        
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
     def actual(self, filename, model_id):
-        # verify avalability of auger credentials
-        self.credentials.verify()
-
         self.ctx.log('Sending actuals on data in %s' % filename)
         filename = os.path.abspath(filename)
         self._actual_to_cloud(filename, model_id)

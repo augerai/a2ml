@@ -6,7 +6,6 @@ import json
 import jsonpickle
 
 from a2ml.api.utils.context import Context
-from auger.api.cloud.rest_api import RestApi
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
 from a2ml.api.a2ml_experiment import A2MLExperiment
