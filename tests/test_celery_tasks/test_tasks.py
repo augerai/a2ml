@@ -29,7 +29,6 @@ class TestTasks(object):
         provider = "auger"
         ctx.config.set('config', 'providers', [provider])
         ctx.config.set('config', 'use_server', True)
-        ctx.config.set('config', 'server_endpoint', 'http://a2ml-server:8000')
 
         A2ML(ctx, provider).import_data()
 
@@ -43,7 +42,6 @@ class TestTasks(object):
         provider = "azure"
         ctx.config.set('config', 'providers', [provider])
         ctx.config.set('config', 'use_server', True)
-        ctx.config.set('config', 'server_endpoint', 'http://a2ml-server:8000')
 
         A2MLProject(ctx, provider).list()
 

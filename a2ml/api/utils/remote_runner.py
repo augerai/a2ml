@@ -3,6 +3,7 @@ import json
 import jsonpickle
 import requests
 import sys
+import os
 
 from a2ml.api.a2ml_credentials import A2MLCredentials
 
@@ -51,7 +52,7 @@ class RemoteRunner(object):
         self.ctx = ctx
         self.obj_name = obj_name
         self.ctx.credentials = A2MLCredentials(ctx, provider).load()
-        self.server_endpoint = ctx.config.get('server_endpoint')
+        self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
 
     def _params(self, *args, **kwargs):
