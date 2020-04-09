@@ -3,6 +3,7 @@ import pytest
 import logging
 
 from a2ml.tasks_queue.tasks_api import *
+from a2ml.api.utils.context import Context
 
 pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -18,8 +19,33 @@ class TestTasks(object):
         }
         execute_tasks(import_data_task, params)
 
+    @pytest.mark.skip(reason='run it locally')
+    def test_import_server(self):
+        from a2ml.api.a2ml import A2ML
 
-    @pytest.mark.skip(reason='run it locally')    
+        ctx = Context(
+            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
+            debug = True)
+        provider = "auger"
+        ctx.config.set('config', 'providers', [provider])
+        ctx.config.set('config', 'use_server', True)
+
+        A2ML(ctx, provider).import_data()
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_list_projects_server(self):
+        from a2ml.api.a2ml_project import A2MLProject
+
+        ctx = Context(
+            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
+            debug = True)
+        provider = "azure"
+        ctx.config.set('config', 'providers', [provider])
+        ctx.config.set('config', 'use_server', True)
+
+        A2MLProject(ctx, provider).list()
+
+    @pytest.mark.skip(reason='run it locally')
     def test_import_s3(self):
         params = {
             'provider': 'auger',
@@ -64,26 +90,28 @@ class TestTasks(object):
         res = execute_tasks(evaluate_task, params)
         print(res)
 
-    @pytest.mark.skip(reason='run it locally')    
+    @pytest.mark.skip(reason='run it locally')
     def test_deploy_s3(self):
         params = {
             'provider': 'auger',
             'debug_log': True,
             'project_name': 'new-project-test-s3-5',
-            'model_id': '9E248B642D0E497'
+            'args': ['9E248B642D0E497']
         }
 
         res = execute_tasks(deploy_task, params)
         print(res)
 
-    @pytest.mark.skip(reason='run it locally')    
+    @pytest.mark.skip(reason='run it locally')
     def test_predict_s3(self):
         params = {
             'provider': 'auger',
             'debug_log': True,
             'project_name': 'new-project-test-s3-5',
-            'model_id': '9E248B642D0E497',
-            'filename': 's3://auger-demo-datasets/a2ml_app/adult.data_test.csv',
+            'args': [
+                's3://auger-demo-datasets/a2ml_app/adult.data_test.csv',
+                '9E248B642D0E497',
+            ]
         }
 
         res = execute_tasks(predict_task, params)

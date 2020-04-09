@@ -1,12 +1,12 @@
-from a2ml.api.utils.crud_runner import CRUDRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
-class A2MLExperiment(object):
+class A2MLExperiment(BaseA2ML):
 
     def __init__(self, ctx, provider):
         super(A2MLExperiment, self).__init__()
         self.ctx = ctx
-        self.runner = CRUDRunner(ctx, provider, 'experiment')
+        self.runner = self.build_runner(ctx, provider, 'experiment')
 
     @show_result
     def list(self):

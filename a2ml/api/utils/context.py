@@ -18,11 +18,17 @@ class Context(object):
 
         self.config = Config(name=name, path=path)
         self.name = self.config.name
+        self.notificator = None
+        self.request_id = None
 
         if len(self.name) > 0:
             self.name = "{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
-        self.runs_on_server = False
+        self.set_runs_on_server(False)
+
+    def set_runs_on_server(self, value):
+        self._runs_on_server = value
+        self.config.runs_on_server = value
 
     def get_providers(self, provider = None):
         if provider:
@@ -43,18 +49,31 @@ class Context(object):
 
     def copy(self, name):
         new = Context(name, self.config.path, self.debug)
-        new.runs_on_server = self.runs_on_server
-        #new.config = Config(name)
+        new._runs_on_server = self._runs_on_server
+        new.notificator = self.notificator
+        new.request_id = self.request_id
+
+        if self._runs_on_server:
+            new.config = self.config
+            new.credentials = self.credentials
+
         return new
 
     def log(self, msg, *args, **kwargs):
         log.info('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('info', '%s%s' %(self.name, msg), *args, **kwargs)
 
     def debug(self, msg, *args, **kwargs):
         log.debug('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('debug', '%s%s' %(self.name, msg), *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('error', '%s%s' %(self.name, msg), *args, **kwargs)
+
+    def publish_log(self, level, msg, *args, **kwargs):
+        if self.notificator:
+            self.notificator.publish_log(self.request_id, level, msg, args, kwargs)
 
     @staticmethod
     def setup_logger(format='%(asctime)s %(name)s | %(message)s'):
