@@ -33,9 +33,12 @@ class RemoteRunner(object):
     }
 
     NON_CRUD_TO_METHOD = {
+        'actual': 'post',
+        'deploy': 'patch',
         'history': 'get',
         'import_data': 'patch',
         'leaderboard': 'get',
+        'predict': 'post',
         'select': 'patch',
         'start': 'patch',
         'stop': 'patch',
@@ -121,7 +124,7 @@ class RemoteRunner(object):
 
     async def wait_result(self, request_id):
         import websockets
-        
+
         done = False
         last_msg_id = '0'
         while not done:

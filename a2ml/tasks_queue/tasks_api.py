@@ -10,6 +10,7 @@ from auger.api.cloud.rest_api import RestApi
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
 from a2ml.api.a2ml_experiment import A2MLExperiment
+from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
 
@@ -40,8 +41,13 @@ def create_context(params, new_project=False):
                 ctx.config.set('config', 'source', params.get("source_path"))
 
 
-    #For Azure, since it package current directory
-    os.chdir("tmp")
+    tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+
+    # For Azure, since it package current directory
+    os.chdir(tmp_dir)
 
     return ctx
 
@@ -182,6 +188,28 @@ def stop_experiment_task(params):
         lambda ctx: A2MLExperiment(ctx, None).stop(*params['args'], **params['kwargs'])
     )
 
+# Models
+@celeryApp.task(after_return=__handle_task_result)
+def actual_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).actual(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def deploy_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).deploy(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def predict_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
+    )
+
 # Complex tasks
 @celeryApp.task(after_return=__handle_task_result)
 def import_data_task(params):
@@ -202,20 +230,19 @@ def evaluate_task(params):
 
     return A2ML(ctx).evaluate()
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def deploy_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).deploy(params.get('model_id'))
+    )
 
-    return A2ML(ctx).deploy(params.get('model_id'))
-
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def predict_task(params):
-    ctx = create_context(params)
-
-    return A2ML(ctx).predict(
-        params.get('filename'),
-        params.get('model_id'),
-        params.get('threshold'))
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).predict(params.get('filename'), params.get('model_id'), params.get('threshold'))
+    )
 
 @celeryApp.task()
 def demo_task(params):

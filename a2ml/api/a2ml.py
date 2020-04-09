@@ -1,19 +1,14 @@
-from a2ml.api.utils.provider_runner import ProviderRunner
-from a2ml.api.utils.remote_runner import RemoteRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
 
-class A2ML(object):
+class A2ML(BaseA2ML):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx, provider = None):
         super(A2ML, self).__init__()
         self.ctx = ctx
-
-        if self.ctx.config.get('use_server') == True:
-            self.runner = RemoteRunner(ctx, provider)
-        else:
-            self.runner = ProviderRunner(ctx, provider)
+        self.runner = self.build_runner(ctx, provider)
 
     @show_result
     def import_data(self):
