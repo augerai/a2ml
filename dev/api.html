@@ -88,9 +88,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">A2ML API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-dataset-module">a2ml.api.a2ml_dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_experiment">a2ml.api.a2ml_experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_model">a2ml.api.a2ml_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_project">a2ml.api.a2ml_project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-experiment-module">a2ml.api.a2ml_experiment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-model-module">a2ml.api.a2ml_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-project-module">a2ml.api.a2ml_project module</a></li>
 </ul>
 </li>
 </ul>
@@ -174,134 +174,15 @@
 <h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="a2ml-api-a2ml-dataset-module">
 <h3>a2ml.api.a2ml_dataset module<a class="headerlink" href="#a2ml-api-a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_dataset.</code><code class="sig-name descname">A2MLDataset</code><span class="sig-paren">(</span><em class="sig-param">ctx</em>, <em class="sig-param">provider</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Contains the dataset CRUD operations that interact with provider.</p>
-<dl class="method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">ctx</em>, <em class="sig-param">provider</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes a new a2ml.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A2ML object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.create" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.delete" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </div>
-<div class="section" id="module-a2ml.api.a2ml_experiment">
-<span id="a2ml-api-a2ml-experiment-module"></span><h3>a2ml.api.a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_experiment.</code><code class="sig-name descname">A2MLExperiment</code><span class="sig-paren">(</span><em class="sig-param">ctx</em>, <em class="sig-param">provider</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.history">
-<code class="sig-name descname">history</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.history" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard">
-<code class="sig-name descname">leaderboard</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="a2ml-api-a2ml-experiment-module">
+<h3>a2ml.api.a2ml_experiment module<a class="headerlink" href="#a2ml-api-a2ml-experiment-module" title="Permalink to this headline">¶</a></h3>
 </div>
-<div class="section" id="module-a2ml.api.a2ml_model">
-<span id="a2ml-api-a2ml-model-module"></span><h3>a2ml.api.a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="a2ml.api.a2ml_model.A2MLModel">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_model.</code><code class="sig-name descname">A2MLModel</code><span class="sig-paren">(</span><em class="sig-param">ctx</em>, <em class="sig-param">provider</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.actual">
-<code class="sig-name descname">actual</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actual" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="a2ml-api-a2ml-model-module">
+<h3>a2ml.api.a2ml_model module<a class="headerlink" href="#a2ml-api-a2ml-model-module" title="Permalink to this headline">¶</a></h3>
 </div>
-<div class="section" id="module-a2ml.api.a2ml_project">
-<span id="a2ml-api-a2ml-project-module"></span><h3>a2ml.api.a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="a2ml.api.a2ml_project.A2MLProject">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_project.</code><code class="sig-name descname">A2MLProject</code><span class="sig-paren">(</span><em class="sig-param">ctx</em>, <em class="sig-param">provider</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.create" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.delete" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="a2ml-api-a2ml-project-module">
+<h3>a2ml.api.a2ml_project module<a class="headerlink" href="#a2ml-api-a2ml-project-module" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 </div>
