@@ -82,14 +82,7 @@ def new_project_task(params):
 def list_projects_task(params):
     def func(ctx):
         res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'projects' in res[provder]['data']:
-                res[provder]['data']['projects'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['projects'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'projects')
 
     return with_context(params, func)
 
@@ -119,14 +112,7 @@ def new_dataset_task(params):
 def list_datasets_task(params):
     def func(ctx):
         res = A2MLDataset(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'datasets' in res[provder]['data']:
-                res[provder]['data']['datasets'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['datasets'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'datasets')
 
     return with_context(params, func)
 
@@ -149,14 +135,7 @@ def select_dataset_task(params):
 def list_experiments_task(params):
     def func(ctx):
         res = A2MLExperiment(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'experiments' in res[provder]['data']:
-                res[provder]['data']['experiments'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['experiments'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'experiments')
 
     return with_context(params, func)
 
@@ -289,3 +268,10 @@ def __error_to_result(retval, einfo):
         res += '\n' + str(einfo)
 
     return res
+
+def __map_collection_to_name(res, collection_name):
+    for provder in res.keys():
+        if collection_name in res[provder]['data']:
+            res[provder]['data'][collection_name] = list(
+                map(lambda x: x.get('name'), res[provder]['data'][collection_name])
+            )
