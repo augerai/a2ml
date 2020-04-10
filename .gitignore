@@ -33,7 +33,7 @@ tags
 
 # Setuptools distribution and build folders
 /dist/
-/build
+build/
 
 develop.env
 develop.client.env
