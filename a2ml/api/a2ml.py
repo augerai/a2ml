@@ -1,19 +1,15 @@
-from a2ml.api.utils.provider_runner import ProviderRunner
-from a2ml.api.utils.remote_runner import RemoteRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
 
-class A2ML(object):
+class A2ML(BaseA2ML):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx, provider = None):
         super(A2ML, self).__init__()
         self.ctx = ctx
-
-        if self.ctx.config.get('use_server') == True:
-            self.runner = RemoteRunner(ctx, provider)
-        else:
-            self.runner = ProviderRunner(ctx, provider)
+        self.runner = self.build_runner(ctx, provider)
+        self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
     def import_data(self):
@@ -29,12 +25,18 @@ class A2ML(object):
 
     @show_result
     def deploy(self, model_id, locally=False):
-        return self.runner.execute('deploy', model_id, locally)
+        return self.__get_runner(locally).execute('deploy', model_id, locally)
 
     @show_result
     def predict(self, filename, model_id, threshold=None, locally=False):
-        return self.runner.execute('predict', filename, model_id, threshold, locally)
+        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally)
 
     @show_result
     def review(self):
         return self.runner.execute('review')
+
+    def __get_runner(self, locally):
+        if locally:
+            return self.local_runner()
+        else:
+            return self.runner

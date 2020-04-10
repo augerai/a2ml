@@ -33,12 +33,18 @@ class RemoteRunner(object):
     }
 
     NON_CRUD_TO_METHOD = {
+        'actual': 'post',
+        'deploy': 'patch',
+        'evaluate': 'patch',
         'history': 'get',
         'import_data': 'patch',
         'leaderboard': 'get',
+        'predict': 'post',
+        'review': 'patch',
         'select': 'patch',
         'start': 'patch',
         'stop': 'patch',
+        'train': 'patch',
     }
 
     def __init__(self, ctx, provider, obj_name = None):
@@ -104,7 +110,7 @@ class RemoteRunner(object):
     def handle_weboscket_respone(self, data):
         data_type = data.get('type', None)
 
-        if data_type == 'result':
+        if data_type == 'result' and isinstance(data['result'], dict):
             config = jsonpickle.decode(data['result']['config'])
             data['result'] = data['result']['response']
             config.write_all()
@@ -121,7 +127,7 @@ class RemoteRunner(object):
 
     async def wait_result(self, request_id):
         import websockets
-        
+
         done = False
         last_msg_id = '0'
         while not done:

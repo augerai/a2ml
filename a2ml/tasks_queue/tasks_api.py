@@ -9,6 +9,7 @@ from a2ml.api.utils.context import Context
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
 from a2ml.api.a2ml_experiment import A2MLExperiment
+from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
 
@@ -39,8 +40,13 @@ def create_context(params, new_project=False):
                 ctx.config.set('config', 'source', params.get("source_path"))
 
 
-    #For Azure, since it package current directory
-    os.chdir("tmp")
+    tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+
+    # For Azure, since it package current directory
+    os.chdir(tmp_dir)
 
     return ctx
 
@@ -75,14 +81,7 @@ def new_project_task(params):
 def list_projects_task(params):
     def func(ctx):
         res = A2MLProject(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'projects' in res[provder]['data']:
-                res[provder]['data']['projects'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['projects'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'projects')
 
     return with_context(params, func)
 
@@ -112,14 +111,7 @@ def new_dataset_task(params):
 def list_datasets_task(params):
     def func(ctx):
         res = A2MLDataset(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'datasets' in res[provder]['data']:
-                res[provder]['data']['datasets'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['datasets'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'datasets')
 
     return with_context(params, func)
 
@@ -142,14 +134,7 @@ def select_dataset_task(params):
 def list_experiments_task(params):
     def func(ctx):
         res = A2MLExperiment(ctx, None).list(*params['args'], **params['kwargs'])
-
-        for provder in res.keys():
-            if 'experiments' in res[provder]['data']:
-                res[provder]['data']['experiments'] = list(
-                    map(lambda x: x.get('name'), res[provder]['data']['experiments'])
-                )
-
-        res
+        return __map_collection_to_name(res, 'experiments')
 
     return with_context(params, func)
 
@@ -181,42 +166,70 @@ def stop_experiment_task(params):
         lambda ctx: A2MLExperiment(ctx, None).stop(*params['args'], **params['kwargs'])
     )
 
+# Models
+@celeryApp.task(after_return=__handle_task_result)
+def actual_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).actual(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def deploy_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).deploy(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def predict_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
+    )
+
 # Complex tasks
 @celeryApp.task(after_return=__handle_task_result)
 def import_data_task(params):
     return with_context(
         params,
-        lambda ctx: A2ML(ctx).import_data()
+        lambda ctx: A2ML(ctx).import_data(*params['args'], **params['kwargs'])
     )
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def train_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).train(*params['args'], **params['kwargs'])
+    )
 
-    return A2ML(ctx).train()
-
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def evaluate_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).evaluate(*params['args'], **params['kwargs'])
+    )
 
-    return A2ML(ctx).evaluate()
-
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def deploy_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).deploy(*params['args'], **params['kwargs'])
+    )
 
-    return A2ML(ctx).deploy(params.get('model_id'))
-
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def predict_task(params):
-    ctx = create_context(params)
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).predict(*params['args'], **params['kwargs'])
+    )
 
-    return A2ML(ctx).predict(
-        params.get('filename'),
-        params.get('model_id'),
-        params.get('threshold'))
+@celeryApp.task(after_return=__handle_task_result)
+def review_task(params):
+    # TODO
+    raise Exception('not inplemented yet')
 
-@celeryApp.task()
+@celeryApp.task(after_return=__handle_task_result)
 def demo_task(params):
     import time
     request_id = params['_request_id']
@@ -228,6 +241,12 @@ def demo_task(params):
 
 def with_context(params, proc):
     ctx = create_context(params)
+
+    if not 'args' in params:
+        params['args'] = []
+
+    if not 'kwargs' in params:
+        params['kwargs'] = {}
 
     res = proc(ctx)
 
@@ -248,3 +267,10 @@ def __error_to_result(retval, einfo):
         res += '\n' + str(einfo)
 
     return res
+
+def __map_collection_to_name(res, collection_name):
+    for provder in res.keys():
+        if collection_name in res[provder]['data']:
+            res[provder]['data'][collection_name] = list(
+                map(lambda x: x.get('name'), res[provder]['data'][collection_name])
+            )
