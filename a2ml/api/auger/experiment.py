@@ -31,10 +31,10 @@ class AugerExperiment(object):
     def start(self, dataset):
         experiment_name = \
             self.ctx.config.get('experiment/name', None)
-        eperiment_name, session_id = \
+        experiment_name, session_id = \
             Experiment(self.ctx, dataset, experiment_name).start()
-        AugerConfig(self.ctx).set_experiment(eperiment_name, session_id)
-        return {'eperiment_name': eperiment_name, 'session_id': session_id}
+        AugerConfig(self.ctx).set_experiment(experiment_name, session_id)
+        return {'experiment_name': experiment_name, 'session_id': session_id}
 
     @error_handler
     @authenticated
@@ -66,7 +66,7 @@ class AugerExperiment(object):
         self.ctx.log('Leaderboard for Run %s' % run_id)
         print_table(self.ctx.log, leaderboard[::-1])
         messages = {
-            'preprocess': 'Search is preprocessing data for traing...',
+            'preprocess': 'Search is preprocessing data for training...',
             'started': 'Search is in progress...',
             'completed': 'Search is completed.',
             'interrupted': 'Search was interrupted.'
