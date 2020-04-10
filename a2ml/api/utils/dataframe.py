@@ -14,7 +14,7 @@ class DataFrame(object):
         except Exception as e:
             df = DataFrame._read_csv(filename, '|', features, nrows)
 
-        features = df.columns.get_values().tolist()
+        features = df.columns.tolist()
         if target in features:
             df.drop(columns=[target], inplace=True)
 
@@ -24,7 +24,7 @@ class DataFrame(object):
     def load_records(filename, target, features=None, nrows=None):
         df = DataFrame.load(filename, target, features, nrows)
 
-        features = df.columns.get_values().tolist()
+        features = df.columns.tolist()
         df.replace({pandas.np.nan: None}, inplace=True)
         records = df.values.tolist()
 

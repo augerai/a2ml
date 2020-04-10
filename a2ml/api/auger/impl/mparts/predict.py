@@ -49,7 +49,7 @@ class ModelPredict():
 
         if not is_model_loaded:
             raise AugerException('Model isn\'t loaded locally. '
-                'Please use augerai depoly command to download model.')
+                'Please use a2ml deploy command to download model.')
 
         model_path, model_existed = self._extract_model(model_name)
 
