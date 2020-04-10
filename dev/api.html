@@ -87,10 +87,13 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">A2ML API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-dataset-module">a2ml.api.a2ml_dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-experiment-module">a2ml.api.a2ml_experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-model-module">a2ml.api.a2ml_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-api-a2ml-project-module">a2ml.api.a2ml_project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-module-a2ml-predit-api">a2ml module - A2ML PREDIT API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-dataset-module">a2ml_dataset module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-experiment-module">a2ml_experiment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-model-module">a2ml_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-project-module">a2ml_project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.utils.context">context module</a></li>
 </ul>
 </li>
 </ul>
@@ -172,17 +175,105 @@
 <h1>A2ML API<a class="headerlink" href="#a2ml-api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="a2ml-api-package">
 <h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="a2ml-api-a2ml-dataset-module">
-<h3>a2ml.api.a2ml_dataset module<a class="headerlink" href="#a2ml-api-a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a2ml-module-a2ml-predit-api">
+<h3>a2ml module - A2ML PREDIT API<a class="headerlink" href="#a2ml-module-a2ml-predit-api" title="Permalink to this headline">¶</a></h3>
 </div>
-<div class="section" id="a2ml-api-a2ml-experiment-module">
-<h3>a2ml.api.a2ml_experiment module<a class="headerlink" href="#a2ml-api-a2ml-experiment-module" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a2ml-dataset-module">
+<h3>a2ml_dataset module<a class="headerlink" href="#a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
 </div>
-<div class="section" id="a2ml-api-a2ml-model-module">
-<h3>a2ml.api.a2ml_model module<a class="headerlink" href="#a2ml-api-a2ml-model-module" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a2ml-experiment-module">
+<h3>a2ml_experiment module<a class="headerlink" href="#a2ml-experiment-module" title="Permalink to this headline">¶</a></h3>
 </div>
-<div class="section" id="a2ml-api-a2ml-project-module">
-<h3>a2ml.api.a2ml_project module<a class="headerlink" href="#a2ml-api-a2ml-project-module" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a2ml-model-module">
+<h3>a2ml_model module<a class="headerlink" href="#a2ml-model-module" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="a2ml-project-module">
+<h3>a2ml_project module<a class="headerlink" href="#a2ml-project-module" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="submodules">
+<h3>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="module-a2ml.api.utils.context">
+<span id="context-module"></span><h3>context module<a class="headerlink" href="#module-a2ml.api.utils.context" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.utils.context.Context">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.utils.context.</code><code class="sig-name descname">Context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'config'</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Context class provides an environment to run A2ML</p>
+<dl class="py method">
+<dt id="a2ml.api.utils.context.Context.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'config'</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the Context instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) -- The name of the config file. Default is 'config'</p></li>
+<li><p><strong>path</strong> (<em>str</em>) -- The path to your config file. If the config file is in the root directory leave as None.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) -- True | False. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Context object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.utils.context.Context.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a copy of an existing Context</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- The name of the config file. Default is 'config'</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Context object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">new_ctx</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.utils.context.Context.get_providers">
+<code class="sig-name descname">get_providers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.get_providers" title="Permalink to this definition">¶</a></dt>
+<dd><p>constructs Context instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) -- The name of the config file. Default is 'config'</p></li>
+<li><p><strong>path</strong> (<em>str</em>) -- The path to your config file. If the config file is in the root directory leave as None.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) -- True | False. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>['azure', 'auger']</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">get_providers</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
