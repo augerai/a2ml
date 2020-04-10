@@ -6,7 +6,7 @@ class A2ML(object):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx, provider = None):
-        """constructs A2ML PREDIT instance.
+        """Initializes A2ML PREDIT instance.
 
         Args:
             context (object): An instance of the a2ml Context.
@@ -127,19 +127,26 @@ class A2ML(object):
                 started: Search is in progress
                 completed: Search is completed
                 interrupted: Search was interrupted
+
+            Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                a2ml = A2ML(ctx, 'auger, azure')
+                a2ml.evaluate()
         """
         return self.runner.execute('evaluate', run_id = run_id)
         
     @show_result
     def deploy(self, model_id, locally=False):
-        """Deploy a selected model.
+        """Deploy a model locally or to specified provider/s.
 
         Note:
             See evaluate function to get model_id
 
         Args:
             model_id (str): The model id from any experiment you will deploy
-                locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
+            locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
         
         Returns:
             Results for each provider. ::
@@ -156,7 +163,7 @@ class A2ML(object):
 
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
-                a2ml.deploy(model_id=<model_id>)
+                a2ml.deploy(model_id='A017AC8EAD094FD')
         """
         return self.runner.execute('deploy', model_id, locally)
 
@@ -169,6 +176,7 @@ class A2ML(object):
             model_id(str): The deployed model id you want to use.
             threshold(float, optional): For classification models only. This will return class probabilities with response.
             locally(bool, optional): Predicts using a local model if True, on the Provider Cloud if False. The default is False.
+        
         Results:
             Results for each provider. ::
 
@@ -185,7 +193,7 @@ class A2ML(object):
 
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
-                a2ml.predict(model_id=<model_id>,filename=<path_to_file>/<filename>)
+                a2ml.predict(model_id='D881079E1ED14FB',filename=<path_to_file>/dataset.csv)
            
         """
         return self.runner.execute('predict', filename, model_id, threshold, locally)
