@@ -52,7 +52,6 @@ extras = {
     ],
     'docs': [
         'sphinx',
-        'jsonpickle',
         'sphinx-rtd-theme'
     ],
     'server': [

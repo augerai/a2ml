@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install ".[docs]"
+          command: pip install ".[all]"
       - run:
           name: Build docs
           command: cd docs/ && make html

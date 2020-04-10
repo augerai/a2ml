@@ -94,10 +94,15 @@ class A2MLModel(BaseA2ML):
         Note:
             It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id. 
             
-            .. csv-table:: actuals.csv
-                :file: ../../docs/source/dev/actuals_example.csv
-                :widths: 30, 70
+            .. list-table:: actuals.csv
+                :widths: 50 50
                 :header-rows: 1
+
+                * - prediction_id
+                  - actual
+                * - eaed9cd8-ba49-4c06-86d5-71d453c681d1
+                  - Iris-setosa
+                
 
 
 
