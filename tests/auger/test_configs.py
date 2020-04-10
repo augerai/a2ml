@@ -1,5 +1,5 @@
 from .mock_rest_api import interceptor
-from a2ml.api.impl.experiment_api import AugerExperimentApi
+from a2ml.api.auger.impl.experiment_api import AugerExperimentApi
 
 
 EXPERIMENT = {
