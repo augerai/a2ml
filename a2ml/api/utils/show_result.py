@@ -1,4 +1,7 @@
+from functools import wraps
+
 def show_result(decorated):
+    @wraps(decorated)
     def wrapper(self, *args, **kwargs):
         showresult = self.ctx.config.get('showresult', False)
         result = decorated(self, *args, **kwargs)
