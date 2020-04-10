@@ -88,13 +88,18 @@ class AzureModel(object):
 
         y_pred = []
         if locally:
-            y_pred = self._predict_locally(
+            y_pred, y_proba, proba_classes = self._predict_locally(
                 experiment, predict_data, model_id, threshold)
         else:
-            y_pred = self._predict_remotely(
+            y_pred, y_proba, proba_classes = self._predict_remotely(
                 ws, experiment, predict_data, model_id, threshold)
 
         predict_data[target] = y_pred
+
+        if y_proba is not None:
+            for idx, name in enumerate(proba_classes):
+                predict_data['proba_'+str(name)] = list(y_proba[:,idx])
+
         predicted = self._save_predictions(predict_data, filename)
 
         return {'predicted': predicted}
@@ -129,17 +134,26 @@ class AzureModel(object):
         aci_service = AciWebservice(ws, aci_service_name)
 
         input_payload = json.loads(input_payload)
+        # If you have a classification model, you can get probabilities by changing this to 'predict_proba'.        
+        method = 'predict'
+        if threshold is not None:
+            method = 'predict_proba'
         input_payload = {
-            'method': 'predict',
+            'method': method,
             'data': input_payload['data']
         }
         input_payload = json.dumps(input_payload)
         try:
             response = aci_service.run(input_data = input_payload)
+            print(response)
         except Exception as e:
             print('err log', aci_service.get_logs())
             raise e
-        return json.loads(response)['result']
+
+        results_proba = None
+        proba_classes = None
+
+        return json.loads(response)['result'], results_proba, proba_classes
 
     def _predict_locally(self, experiment, predict_data, model_id, threshold):
         run_id = model_id
@@ -152,8 +166,88 @@ class AzureModel(object):
         remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
         best_run, fitted_model = remote_run.get_output(iteration=iteration)
 
-        return fitted_model.predict(predict_data)
+        results_proba = None
+        proba_classes = None
+        if threshold is not None:
+            results_proba = fitted_model.predict_proba(predict_data)
 
+            proba_classes = list(fitted_model.classes_)
+
+            result = self._calculate_proba_target(results_proba,
+                proba_classes, None, threshold, None)
+        else:
+            result = fitted_model.predict(predict_data)
+
+        return result, results_proba, proba_classes
+
+    def _calculate_proba_target(self, results_proba, proba_classes, proba_classes_orig, threshold, minority_target_class=None):
+        import json
+        results = []
+
+        if type(threshold) == str:
+            try:
+                threshold = float(threshold)
+            except:
+                try:
+                    threshold = json.loads(threshold)
+                except Exception as e:
+                    raise Exception("Threshold '%s' should be float or hash with target classes. Error: %s"%(threshold, str(e)))
+
+        if type(threshold) != dict and minority_target_class is not None:
+            threshold = {minority_target_class:threshold}
+
+        print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
+        #print(results_proba)
+        if type(threshold) == dict:
+            mapped_threshold = {}
+            if not proba_classes_orig:
+                proba_classes_orig = proba_classes
+
+            for name, value in threshold.items():
+                idx_class = None
+                for idx, item in enumerate(proba_classes_orig):
+                    if item == name:
+                        idx_class = idx
+                        break
+
+                if idx_class is None:
+                    raise Exception("Unknown target class in threshold: %s, %s"%(name, proba_classes_orig))
+
+                mapped_threshold[idx_class] = value
+
+            for item in results_proba:
+                proba_idx = None
+                for idx, value in mapped_threshold.items():
+                    if item[idx] >= value:
+                        proba_idx = idx
+                        break
+
+                if proba_idx is None:
+                    proba_idx = 0
+                    for idx, value in enumerate(item):
+                        if idx not in mapped_threshold:
+                            proba_idx = idx
+                            break
+
+                results.append(proba_classes[proba_idx])
+        else:
+            #TODO: support multiclass classification
+            for item in results_proba:
+                max_proba_idx = 0
+                for idx, prob in enumerate(item):
+                    if prob > item[max_proba_idx]:
+                        max_proba_idx = idx
+
+                if item[max_proba_idx] < threshold:
+                    if max_proba_idx > 0:
+                        max_proba_idx = 0
+                    else:
+                        max_proba_idx = 1
+
+                results.append(proba_classes[max_proba_idx])
+
+        return results
+             
     def _save_predictions(self, df_predictions, filename):
         predicted_path = os.path.abspath(
             os.path.splitext(filename)[0] + "_predicted.csv")

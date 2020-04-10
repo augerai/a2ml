@@ -8,7 +8,7 @@ from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
 from auger.api.cloud.data_set import AugerDataSetApi
-from a2ml.api.auger.credentials import Credentials
+# from a2ml.api.auger.credentials import Credentials
 from auger.api.utils import fsclient
 
 class NewCmd(object):

@@ -15,7 +15,9 @@ COMMANDS = [
   'project',
   'dataset',
   'experiment',
-  'model'
+  'model',
+  'server',
+  'worker'
 ]
 
 

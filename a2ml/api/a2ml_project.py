@@ -1,7 +1,7 @@
-from a2ml.api.utils.crud_runner import CRUDRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
-class A2MLProject(object):
+class A2MLProject(BaseA2ML):
     """Contains the project CRUD operations that interact with provider."""
     def __init__(self, ctx, provider):
         """Initializes a new a2ml project.
@@ -21,7 +21,7 @@ class A2MLProject(object):
         """
         super(A2MLProject, self).__init__()
         self.ctx = ctx
-        self.runner = CRUDRunner(ctx, provider, 'project')
+        self.runner = self.build_runner(ctx, provider, 'project')
 
     @show_result
     def list(self):

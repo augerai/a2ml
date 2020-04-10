@@ -1,7 +1,7 @@
-from a2ml.api.utils.crud_runner import CRUDRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
-class A2MLModel(object):
+class A2MLModel(BaseA2ML):
     """Contains the model operations that interact with provider."""
     def __init__(self, ctx, provider):
         """Initializes a new a2ml model.
@@ -21,7 +21,9 @@ class A2MLModel(object):
         """
         super(A2MLModel, self).__init__()
         self.ctx = ctx
-        self.runner = CRUDRunner(ctx, provider, 'model')
+        self.provider = provider
+        self.runner = self.build_runner(ctx, provider, 'model')
+        self.local_runner = lambda: self.build_runner(ctx, provider, 'model', force_local=True)
 
     @show_result
     def deploy(self, model_id, locally):
@@ -54,7 +56,7 @@ class A2MLModel(object):
                 ctx = Context()
                 model = Model(ctx, 'auger,azure').deploy(model_id='D881079E1ED14FB', locally=True)
         """
-        return self.runner.execute('deploy', model_id, locally)
+        return self.__get_runner(locally).execute('deploy', model_id, locally)
 
     @show_result
     def predict(self, filename, model_id, threshold, locally):
@@ -83,7 +85,7 @@ class A2MLModel(object):
                 ctx = Context()
                 model = A2MLModel(ctx, 'auger, azure').predict(filename=<path_to_file>/dataset.csv,model_id='D881079E1ED14FB',threshold=None,locally=False)
         """
-        return self.runner.execute('predict', filename, model_id, threshold, locally)
+        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally)
 
     @show_result
     def actual(self, filename, model_id):
@@ -121,3 +123,9 @@ class A2MLModel(object):
                 model = A2MLModel(ctx, 'auger, azure').actual(filename=<path_to_file>/dataset_actuals.csv,model_id='D881079E1ED14FB')
         """
         return self.runner.execute('actual', filename, model_id)
+
+    def __get_runner(self, locally):
+        if locally:
+            return self.local_runner()
+        else:
+            return self.runner

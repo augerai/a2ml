@@ -1,8 +1,8 @@
-from a2ml.api.utils.provider_runner import ProviderRunner
+from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 
 
-class A2ML(object):
+class A2ML(BaseA2ML):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx, provider = None):
@@ -23,7 +23,8 @@ class A2ML(object):
         """
         super(A2ML, self).__init__()
         self.ctx = ctx
-        self.runner = ProviderRunner(ctx, provider)
+        self.runner = self.build_runner(ctx, provider)
+        self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
     def import_data(self):
@@ -136,7 +137,7 @@ class A2ML(object):
                 a2ml.evaluate()
         """
         return self.runner.execute('evaluate', run_id = run_id)
-        
+
     @show_result
     def deploy(self, model_id, locally=False):
         """Deploy a model locally or to specified provider/s.
@@ -165,7 +166,7 @@ class A2ML(object):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.deploy(model_id='A017AC8EAD094FD')
         """
-        return self.runner.execute('deploy', model_id, locally)
+        return self.__get_runner(locally).execute('deploy', model_id, locally)
 
     @show_result
     def predict(self, filename, model_id, threshold=None, locally=False):
@@ -196,9 +197,15 @@ class A2ML(object):
                 a2ml.predict(model_id='D881079E1ED14FB',filename=<path_to_file>/dataset.csv)
            
         """
-        return self.runner.execute('predict', filename, model_id, threshold, locally)
+        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally)
 
     @show_result
     def review(self):
         """Review the performance of deployed model."""
         return self.runner.execute('review')
+
+    def __get_runner(self, locally):
+        if locally:
+            return self.local_runner()
+        else:
+            return self.runner
