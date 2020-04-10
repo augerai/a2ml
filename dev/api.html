@@ -89,9 +89,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a2ml-module-a2ml-predit-api">a2ml module - A2ML PREDIT API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#a2ml-dataset-module">a2ml_dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-experiment-module">a2ml_experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-model-module">a2ml_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-project-module">a2ml_project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_experiment">a2ml_experiment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_model">a2ml_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_project">a2ml_project module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.utils.context">context module</a></li>
 </ul>
@@ -177,18 +177,882 @@
 <h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="a2ml-module-a2ml-predit-api">
 <h3>a2ml module - A2ML PREDIT API<a class="headerlink" href="#a2ml-module-a2ml-predit-api" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.a2ml.A2ML">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml.</code><code class="sig-name descname">A2ML</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Facade to A2ML providers.</p>
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes A2ML PREDIT instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>object</em>) -- An instance of the a2ml Context.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A2ML object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.deploy">
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.deploy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deploy a model locally or to specified provider/s.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See evaluate function to get model_id</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>str</em>) -- The model id from any experiment you will deploy</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Deploys the model locally if True, on the Provider Cloud if False. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the results of training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>run_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The run id for a training session. A unique run id is created for every train. Default is last experiment train.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;9ccfe04eca67757a&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;LGBMRegressor&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;4602AFCEEEAE413&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;ExtraTreesRegressor&#39;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;started&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Status:</p>
+<blockquote>
+<div><p>preprocess: Search is preprocessing data for traing
+started: Search is in progress
+completed: Search is completed
+interrupted: Search was interrupted</p>
+</div></blockquote>
+<p>Examples:
+.. code-block:: python</p>
+<blockquote>
+<div><p>ctx = Context()
+a2ml = A2ML(ctx, 'auger, azure')
+a2ml.evaluate()</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.import_data">
+<code class="sig-name descname">import_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.import_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports data defined in context. Uploading the same file name will result in versions being appended to the file name.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Your context points to a config file where <code class="docutils literal notranslate"><span class="pre">source</span></code> is defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Local file name or remote url to the data source file</span>
+<span class="nt">source</span><span class="p">:</span> <span class="s">&#39;./dataset.csv&#39;</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv&#39;</span><span class="p">}},</span>
+
+    <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv&#39;</span><span class="p">}}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Failures will return error messages.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Please specify data source file...&#39;</span><span class="p">},</span>
+
+    <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Please specify data source file...&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">import_data</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) -- For classification models only. This will return class probabilities with response.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Predicts using a local model if True, on the Provider Cloud if False. The default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Results:</dt><dd><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;path_to_file&gt;/dataset_predicted.csv&#39;</span><span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">dataset</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.review">
+<code class="sig-name descname">review</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.review" title="Permalink to this definition">¶</a></dt>
+<dd><p>Review the performance of deployed model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts training session based on context state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;eperiment_name&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv-4-experiment&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;session_id&#39;</span><span class="p">:</span> <span class="s1">&#39;9ccfe04eca67757a&#39;</span>
+         <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Failures will return error messages.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Please set target to build model.&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="a2ml-dataset-module">
 <h3>a2ml_dataset module<a class="headerlink" href="#a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_dataset.</code><code class="sig-name descname">A2MLDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the dataset CRUD operations that interact with provider.</p>
+<dl class="py method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a new a2ml dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>object</em>) -- An instance of the a2ml Context.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A2MLDataset object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="a2ml-experiment-module">
-<h3>a2ml_experiment module<a class="headerlink" href="#a2ml-experiment-module" title="Permalink to this headline">¶</a></h3>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new DataSet for the Project specified in the .yaml.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em>) -- path to local or link to remote file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
-<div class="section" id="a2ml-model-module">
-<h3>a2ml_model module<a class="headerlink" href="#a2ml-model-module" title="Permalink to this headline">¶</a></h3>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;../dataset.csv&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="a2ml-project-module">
-<h3>a2ml_project module<a class="headerlink" href="#a2ml-project-module" title="Permalink to this headline">¶</a></h3>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a DataSet for the Project specified in the .yaml.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of dataset.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;deleted&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Deleted dataset </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all of the DataSets for the Project specified in the .yaml.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need to user the <a class="reference external" href="https://www.programiz.com/python-programming/methods/built-in/iter">iter</a> function to access the dataset elements.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">dataset_list</span> <span class="o">=</span> <span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">dataset_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">dataset_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_dataset.A2MLDataset.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a DataSet name in the context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of dataset.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;selected&#39;</span><span class="p">:</span> <span class="s1">&#39;fortunetest&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>ctx = Context()
+DataSet(ctx, 'auger, azure').select(dataset_name)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_experiment">
+<span id="a2ml-experiment-module"></span><h3>a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_experiment.</code><code class="sig-name descname">A2MLExperiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the experiment operations that interact with provider.</p>
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a new a2ml experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>object</em>) -- An instance of the a2ml Context.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A2MLExperiment object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.history">
+<code class="sig-name descname">history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>The history of the currently running or previously completed experiment/s.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need to user the <a class="reference external" href="https://www.programiz.com/python-programming/methods/built-in/iter">iter</a> function to access the dataset elements.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;history&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">history</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">history</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;run id: </span><span class="si">{}</span><span class="s2">, status: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">history</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard">
+<code class="sig-name descname">leaderboard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>The leaderboard of the currently running or previously completed experiment/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>run_id</strong> (<em>str</em>) -- The run id for a training session. A unique run id is created for every train. If set to None default is last experiment train.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">experiment_name</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">leaderboard</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">leaderboard</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">leaderboard</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">leaderboard</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">leaderboard</span><span class="p">):</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;model id&#39;</span><span class="p">])</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;status </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">leaderboard</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">leaderboard</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all of the experiments for the Project specified in the .yaml.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need to user the <a class="reference external" href="https://www.programiz.com/python-programming/methods/built-in/iter">iter</a> function to access the dataset elements.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;experiments&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">experiment_list</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">experiment_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">experiment_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">experiment_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts experiment/s for selected dataset. If the name of experiment is not set in context config, new experiment will be created, otherwise an existing experiment will be run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;experiment_name&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">experiment_name</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s1">&#39;session_id&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">session_id</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">providers</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops runninng experiment/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;stopped&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">experiment_name</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">A2MLExperiment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">providers</span><span class="p">)</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_model">
+<span id="a2ml-model-module"></span><h3>a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.a2ml_model.A2MLModel">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_model.</code><code class="sig-name descname">A2MLModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the model operations that interact with provider.</p>
+<dl class="py method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a new a2ml model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>object</em>) -- An instance of the a2ml Context.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A2MLModel object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.actual">
+<code class="sig-name descname">actual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">actual</span><span class="p">(</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">dataset_actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deploy a model locally or to specified provider/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>str</em>) -- Model ID from the any experiment leaderboard.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Deploys using a local model if True, on the Provider Cloud if False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p>Status:</p>
+<blockquote>
+<div><p>preprocess: Search is preprocessing data for traing
+started: Search is in progress
+completed: Search is completed
+interrupted: Search was interrupted</p>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger,azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">locally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_model.A2MLModel.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">locally</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">dataset</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span><span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">locally</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-a2ml.api.a2ml_project">
+<span id="a2ml-project-module"></span><h3>a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="a2ml.api.a2ml_project.A2MLProject">
+<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_project.</code><code class="sig-name descname">A2MLProject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the project CRUD operations that interact with provider.</p>
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a new a2ml project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>object</em>) -- An instance of the a2ml Context.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider/s you wish to run. For example 'auger,azure,google'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A2MLProject object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a project for the specified providers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- the name of the project.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;project_name&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">project_list</span> <span class="o">=</span> <span class="n">A2MLProject</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;new_project_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a project for the specified providers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- the name of the project.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;deleted&#39;</span><span class="p">:</span> <span class="s1">&#39;existing_project_name&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">project_list</span> <span class="o">=</span> <span class="n">A2MLProject</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;existinng_project_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all of the projects for the specified providers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need to user the <a class="reference external" href="https://www.programiz.com/python-programming/methods/built-in/iter">iter</a> function to access the dataset elements.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;projects&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">project_list</span> <span class="o">=</span> <span class="n">A2MLProject</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">project_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">project_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">projects</span><span class="p">):</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">project_list</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.select">
+<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a Project name in the context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of project.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;selected&#39;</span><span class="p">:</span> <span class="s1">&#39;fortunetest&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>ctx = Context()
+DataSet(ctx, 'auger, azure').select(dataset_name)</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="submodules">
 <h3>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h3>
