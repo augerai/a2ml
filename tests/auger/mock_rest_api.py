@@ -1,4 +1,4 @@
-from auger.api.cloud.rest_api import RestApi
+from a2ml.api.auger.impl.rest_api import RestApi
 
 
 def interceptor(payload, monkeypatch):
