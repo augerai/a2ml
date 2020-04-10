@@ -15,7 +15,7 @@ class TestFacade(object):
         MockHelpers.pass_method(AugerA2ML, "__init__", monkeypatch)
         MockHelpers.pass_method(GoogleA2ML, "__init__", monkeypatch)
 
-    def test_init_a2ml(self, ctx, project, monkeypatch):
+    def test_init_a2ml(self, project, ctx, monkeypatch):
         init_auger = MockHelpers.count_calls(
             AugerA2ML, "__init__", monkeypatch)
         init_google = MockHelpers.count_calls(
@@ -37,7 +37,7 @@ class TestFacade(object):
         assert init_auger.times == 1
         assert init_google.times == 1
 
-    def test_calling_operations(self, ctx, project, mock_inits, monkeypatch):
+    def test_calling_operations(self, project, ctx, mock_inits, monkeypatch):
         def test_operation(operation, args):
             auger_operation = MockHelpers.called_with(
                 AugerA2ML, operation, monkeypatch)

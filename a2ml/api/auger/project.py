@@ -1,5 +1,5 @@
 from auger.api.cloud.rest_api import RestApi
-from auger.api.credentials import Credentials
+from .credentials import Credentials
 from auger.cli.commands.impl.projectcmd import ProjectCmd
 
 class AugerProject(ProjectCmd):
