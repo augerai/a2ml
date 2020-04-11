@@ -7,8 +7,11 @@ class AugerConfig(object):
 
     def _with_auger_config(decorated):
         def wrapper(self, *args, **kwargs) :
-            decorated(self, *args, **kwargs)
+            res = decorated(self, *args, **kwargs)
             self.ctx.config.write('auger')
+
+            return res
+            
         return wrapper
 
     @_with_auger_config
@@ -26,6 +29,8 @@ class AugerConfig(object):
         if self.ctx.config.ismultipart():
             self.ctx.config.write('config')
 
+        return self
+            
     @_with_auger_config
     def set_experiment(self, experiment_name, experiment_session_id):
         self.ctx.config.set('auger', 'experiment/name', experiment_name)

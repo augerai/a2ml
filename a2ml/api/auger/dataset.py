@@ -46,7 +46,7 @@ class AugerDataset(object):
             name = self.ctx.config.get('dataset', None)
         DataSet(self.ctx, project, name).delete()
         if name == self.ctx.config.get('dataset', None):
-            AugerConfig(self.ctx).set_data_set(None, None, False).set_experiment(None)
+            AugerConfig(self.ctx).set_data_set(None, None, False).set_experiment(None, None)
         self.ctx.log('Deleted dataset %s' % name)
         return {'deleted': name}
 
@@ -54,7 +54,7 @@ class AugerDataset(object):
     def select(self, name):
         old_name = self.ctx.config.get('dataset', None)
         if name != old_name:
-            AugerConfig(self.ctx).set_data_set(name, None, False).set_experiment(None)
+            AugerConfig(self.ctx).set_data_set(name, None, False).set_experiment(None, None)
         self.ctx.log('Selected DataSet %s' % name)
         return {'selected': name}
 

@@ -156,6 +156,10 @@ class AzureExperiment(object):
             'status': status }
 
     @error_handler        
+    def get_experiment_settings(self):
+        return 
+                
+    @error_handler        
     def history(self):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)

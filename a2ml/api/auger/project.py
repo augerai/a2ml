@@ -80,7 +80,7 @@ class AugerProject(object):
         AugerConfig(self.ctx).\
             set_project(name).\
             set_data_set(None).\
-            set_experiment(None)
+            set_experiment(None, None)
 
     def _setup_op(self, name, verify_project=True):
         old_name = self.ctx.config.get('name', None)
