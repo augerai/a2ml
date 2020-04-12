@@ -52,6 +52,6 @@ class TestDataSet():
         assert result.get('deleted') == 'test_dataset1'
 
     def test_select(self, log, project, ctx, authenticated):
-        result = AugerDataset(ctx).select(name='iris-1.csv')
-        assert result.get('selected') == 'iris-1.csv'
+        result = AugerDataset(ctx).select(name='iris.csv')
+        assert result.get('selected') == 'iris.csv'
         print(result)

@@ -31,6 +31,7 @@ class AugerExperiment(object):
     def start(self, dataset):
         experiment_name = \
             self.ctx.config.get('experiment/name', None)
+        print(experiment_name)    
         experiment_name, session_id = \
             Experiment(self.ctx, dataset, experiment_name).start()
         AugerConfig(self.ctx).set_experiment(experiment_name, session_id)

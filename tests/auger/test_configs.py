@@ -1,40 +1,6 @@
-from .utils import interceptor
+from .utils import interceptor, EXPERIMENT, PROJECT_FILE
 from a2ml.api.auger.impl.experiment_api import AugerExperimentApi
 
-
-EXPERIMENT = {
-    'data': {
-        'name': 'iris-1.csv-experiment',
-        'project_file_id': 1256,
-    }
-}
-
-PROJECT_FILE = {
-    'data': {
-        'name': 'iris-1.csv',
-        'id': 1256,
-        'statistics': {
-            'columns_count': 2, 'count': 150,
-            'stat_data': [{
-                'datatype': 'categorical',
-                'column_name': 'species',
-                'unique_values': 3
-            },{
-                'datatype': 'integer',
-                'column_name': 'sepal_length'
-            },{
-                'datatype': 'integer',
-                'column_name': 'sepal_width'
-            },{
-                'datatype': 'integer',
-                'column_name': 'petal_length'
-            },{
-                'datatype': 'integer',
-                'column_name': 'petal_width'
-            }]
-         },
-    }
-}
 
 class TestConfigs(object):
 
@@ -53,7 +19,7 @@ class TestConfigs(object):
         }
         interceptor(PAYLOAD, monkeypatch)
         config, model_type = AugerExperimentApi(
-            ctx_api, 'project-api', 'iris-1.csv-experiment', '1234').\
+            ctx_api, 'project-api', 'iris.csv-experiment', '1234').\
             get_experiment_settings()
 
         assert config['evaluation_options']['crossValidationFolds'] == 55
@@ -84,7 +50,7 @@ class TestConfigs(object):
         }
         interceptor(PAYLOAD, monkeypatch)
         config, model_type = AugerExperimentApi(
-            ctx_api, 'project-api', 'iris-1.csv-experiment', '1234').\
+            ctx_api, 'project-api', 'iris.csv-experiment', '1234').\
             get_experiment_settings()
 
         assert config['evaluation_options']['targetFeature'] == 'species'
@@ -104,7 +70,7 @@ class TestConfigs(object):
         }
         interceptor(PAYLOAD, monkeypatch)
         config, model_type = AugerExperimentApi(
-            ctx_api, 'project-api', 'iris-1.csv-experiment', '1234').\
+            ctx_api, 'project-api', 'iris.csv-experiment', '1234').\
             get_experiment_settings()
 
         assert config['evaluation_options']['timeSeriesFeatures'] == []

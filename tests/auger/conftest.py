@@ -47,8 +47,9 @@ def project(isolated):
 
 @pytest.fixture
 def ctx(project):
-    ctx = Context(debug = True)
+    ctx = Context(debug = False)
     ctx.config.set('config', 'providers', ["auger"])
+    ctx.config.set('config', 'experiment/name', 'iris-1.csv-experiment')
 
     return ctx
 

@@ -10,6 +10,55 @@ ORGANIZATIONS = {
     'data': [{'name': 'auger'}]
 }
 
+PROJECT_FILE = {
+    'data': {
+        'name': 'iris.csv',
+        'id': 1256,
+        'statistics': {
+            'columns_count': 5, 'count': 150,
+            'stat_data': [
+            {
+                'datatype': 'categorical',
+                'column_name': 'species',
+                'unique_values': 3
+            },{
+                'datatype': 'integer',
+                'column_name': 'sepal_length'
+            },{
+                'datatype': 'integer',
+                'column_name': 'sepal_width'
+            },{
+                'datatype': 'integer',
+                'column_name': 'petal_length'
+            },{
+                'datatype': 'integer',
+                'column_name': 'petal_width'
+            }]
+         },
+    }
+}
+
+PROJECT_FILES = {
+    'meta': {
+        'pagination': {'offset': 0, 'count': 1, 'total': 1, 'limit': 100},
+        'status': 200},
+    'data': [PROJECT_FILE['data']]
+}
+
+EXPERIMENT = {
+    'data': {
+        'name': 'iris-1.csv-experiment',
+        'project_file_id': 1256,
+    }
+}
+
+EXPERIMENTS = {
+    'meta': {
+        'pagination': {'offset': 0, 'count': 1, 'total': 1, 'limit': 100},
+        'status': 200},
+    'data': [EXPERIMENT['data']]
+}
+
 PROJECTS = {
     'meta': {
         'status': 200,
@@ -49,3 +98,4 @@ def object_status_chain(statuses, monkeypatch):
         monkeypatch.setattr(
             RestApi, 'wait_for_object_status', lambda x, *a, **kw: current)
     return current
+
