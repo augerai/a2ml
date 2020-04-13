@@ -50,6 +50,7 @@ def ctx(project):
     ctx = Context(debug = False)
     ctx.config.set('config', 'providers', ["auger"])
     ctx.config.set('config', 'experiment/name', 'iris-1.csv-experiment')
+    ctx.config.set('config', 'dataset', 'iris.csv')
 
     return ctx
 
