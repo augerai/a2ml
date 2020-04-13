@@ -65,8 +65,8 @@ PROJECTS = {
         'pagination': {
             'count': 2, 'limit': 100, 'offset': 0, 'total': 2}},
     'data': [
-        {"id": 2, "name": "project_1",},
-        {"id": 1, "name": "cli-integration-test",}]
+        {"id": 2, "name": "project_1"},
+        {"id": 1, "name": "cli-integration-test"}]
 }
 
 PAYLOAD_DEFAULT = {

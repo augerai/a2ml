@@ -2,6 +2,8 @@ import os
 import pytest
 import shutil
 import logging
+import json
+
 from click.testing import CliRunner
 from a2ml.api.utils.context import Context
 
@@ -32,3 +34,15 @@ def project(isolated):
         'cli-integration-test')
     shutil.copytree(source, './cli-integration-test')
     os.chdir('cli-integration-test')
+
+TEST_AUGER_CREDENTIALS = {
+    'username': 'test_user',
+    'organization': 'auger',
+    'api_url': 'https://example.com',
+    'token': 'fake_token',
+}
+
+@pytest.fixture
+def auger_authenticated(monkeypatch, isolated):
+    monkeypatch.setenv("AUGER_CREDENTIALS", json.dumps(TEST_AUGER_CREDENTIALS))
+    #monkeypatch.setenv("AUGER_CREDENTIALS_PATH", os.getcwd())
