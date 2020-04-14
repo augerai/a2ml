@@ -1,12 +1,10 @@
-import os
 import pytest
-import click
-
 from a2ml.api.a2ml import A2ML
 from a2ml.api.auger.a2ml import AugerA2ML
 from a2ml.api.google.a2ml import GoogleA2ML
 
 from .utils.mock_helpers import MockHelpers
+
 
 class TestFacade(object):
 
@@ -71,4 +69,4 @@ class TestFacade(object):
             'review': []
         }
         for opname, args in ops.items():
-            test_operation(opname,args)
+            test_operation(opname, args)

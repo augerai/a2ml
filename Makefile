@@ -1,20 +1,23 @@
 
-.PHONY: build clean init server test-build test
+.PHONY: config docker-build docker-clean docker-server docker-test-build docker-test
 
-build:
-	docker-compose build
-
-clean:
-	docker-compose down -v --remove-orphans
-
-init:
+config:
 	cp develop.env.example develop.env
 
-server:
+docker-build:
+	docker-compose build
+
+docker-clean:
+	docker-compose down -v --remove-orphans
+
+docker-clean-full: docker-clean
+	rm -rf tmp/docker
+
+docker-up:
 	docker-compose up
 
-test-build:
+docker-test-build:
 	docker-compose -f docker-compose.test.yml build
 
-test:
+docker-test: docker-clean docker-test-build
 	docker-compose -f docker-compose.test.yml run tests
