@@ -91,7 +91,7 @@ class TestProject():
         }
         interceptor(PAYLOAD, monkeypatch)
         object_status_chain(['running', 'undeploying', 'undeployed'], monkeypatch)
-        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project_api.AugerProjectApi.status', lambda x: 'undeployed')
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.status', lambda x: 'undeployed')
 
         result = AugerProject(ctx).stop("project_1")
         print(result)

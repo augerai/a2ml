@@ -1,5 +1,5 @@
 from .utils import interceptor, EXPERIMENT, PROJECT_FILE
-from a2ml.api.auger.impl.cloud.experiment_api import AugerExperimentApi
+from a2ml.api.auger.impl.cloud.experiment import AugerExperimentApi
 
 
 class TestConfigs(object):

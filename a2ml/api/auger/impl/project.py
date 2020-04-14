@@ -1,4 +1,4 @@
-from .cloud.project_api import AugerProjectApi
+from .cloud.project import AugerProjectApi
 from .cloud.org import AugerOrganizationApi
 
 

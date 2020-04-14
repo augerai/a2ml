@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .cloud.experiment_api import AugerExperimentApi
+from .cloud.experiment import AugerExperimentApi
 from .exceptions import AugerException
 from .cloud.experiment_session import AugerExperimentSessionApi
 

@@ -1,4 +1,4 @@
-from .cloud.dataset_api import AugerDataSetApi
+from .cloud.dataset import AugerDataSetApi
 from .exceptions import AugerException
 
 

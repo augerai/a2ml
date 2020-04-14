@@ -1,5 +1,5 @@
 from .base import AugerBaseApi
-from .dataset_api import AugerDataSetApi
+from .dataset import AugerDataSetApi
 from .experiment_session import AugerExperimentSessionApi
 from ..exceptions import AugerException
 
