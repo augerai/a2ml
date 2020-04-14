@@ -1,6 +1,7 @@
 from .base import AugerBaseApi
 from .dataset_api import AugerDataSetApi
 from .experiment_session import AugerExperimentSessionApi
+from ..exceptions import AugerException
 
 MODEL_TYPES = ['classification', 'regression', 'timeseries']
 

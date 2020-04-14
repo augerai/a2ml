@@ -2,7 +2,7 @@ import time
 
 from .base import AugerBaseApi
 from .trial import AugerTrialApi
-
+from ..exceptions import AugerException
 
 class AugerExperimentSessionApi(AugerBaseApi):
     """Auger Experiment Api."""

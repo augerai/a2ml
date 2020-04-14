@@ -3,6 +3,7 @@ import urllib.parse
 import urllib.request
 
 from .base import AugerBaseApi
+from ..exceptions import AugerException
 
 
 class AugerPipelineFileApi(AugerBaseApi):

@@ -1,6 +1,7 @@
 import time
 from .base import AugerBaseApi
 from .cluster import AugerClusterApi
+from ..exceptions import AugerException
 
 
 class AugerProjectApi(AugerBaseApi):

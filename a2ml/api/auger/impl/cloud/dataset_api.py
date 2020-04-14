@@ -9,7 +9,8 @@ import xml.etree.ElementTree as ElementTree
 
 from .cluster import AugerClusterApi
 from .project_file import AugerProjectFileApi
-from.cluster_task import AugerClusterTaskApi
+from .cluster_task import AugerClusterTaskApi
+from ..exceptions import AugerException
 
 from  a2ml.api.utils import fsclient
 

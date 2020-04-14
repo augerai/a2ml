@@ -1,4 +1,5 @@
 from .base import AugerBaseApi
+from ..exceptions import AugerException
 
 
 class AugerProjectFileApi(AugerBaseApi):

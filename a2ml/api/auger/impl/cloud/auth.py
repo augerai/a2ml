@@ -1,6 +1,6 @@
 from .rest_api import RestApi
 from .org import AugerOrganizationApi
-from .exceptions import AugerException
+from ..exceptions import AugerException
 
 
 class AugerAuthApi(object):

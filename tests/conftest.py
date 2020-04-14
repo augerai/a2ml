@@ -11,7 +11,7 @@ from a2ml.api.utils.context import Context
 @pytest.fixture
 def ctx():
     # load config(s) from the test app
-    return Context()
+    return Context(debug=True)
 
 @pytest.fixture
 def runner():
