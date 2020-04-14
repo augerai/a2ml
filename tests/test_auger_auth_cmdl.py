@@ -2,7 +2,7 @@ import os
 import pytest
 
 from a2ml.cmdl.cmdl import cmdl
-from a2ml.api.auger.impl.rest_api import RestApi
+from a2ml.api.auger.impl.cloud.rest_api import RestApi
 
 
 def interceptor(payload, monkeypatch):

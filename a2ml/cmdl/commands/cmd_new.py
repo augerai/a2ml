@@ -6,7 +6,7 @@ import click
 from a2ml.api.utils.context import PROVIDERS
 from a2ml.cmdl.utils.template import Template
 from a2ml.api.utils.context import pass_context
-from a2ml.api.auger.impl.dataset_api import AugerDataSetApi
+from a2ml.api.auger.impl.cloud.dataset_api import AugerDataSetApi
 from a2ml.api.utils import fsclient
 
 

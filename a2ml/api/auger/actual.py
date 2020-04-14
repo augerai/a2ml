@@ -1,7 +1,7 @@
 import os
 import csv
 
-from .impl.pipeline import AugerPipelineApi
+from .impl.cloud.pipeline import AugerPipelineApi
 from .impl.decorators import error_handler, authenticated, with_project
 
 

@@ -1,4 +1,4 @@
-from a2ml.api.auger.impl.rest_api import RestApi
+from a2ml.api.auger.impl.cloud.rest_api import RestApi
 
 
 ORGANIZATIONS = {

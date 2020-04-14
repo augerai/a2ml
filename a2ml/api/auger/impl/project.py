@@ -1,5 +1,5 @@
-from .project_api import AugerProjectApi
-from .org import AugerOrganizationApi
+from .cloud.project_api import AugerProjectApi
+from .cloud.org import AugerOrganizationApi
 
 
 class Project(AugerProjectApi):

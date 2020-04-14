@@ -8,7 +8,6 @@ import urllib.request
 import xml.etree.ElementTree as ElementTree
 
 from .cluster import AugerClusterApi
-from .exceptions import AugerException
 from .project_file import AugerProjectFileApi
 from.cluster_task import AugerClusterTaskApi
 

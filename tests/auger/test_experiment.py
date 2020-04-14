@@ -111,7 +111,7 @@ class TestExperiment():
             'update_experiment_session': EXPERIMENT_SESSION,
         }
         interceptor(PAYLOAD, monkeypatch)
-        monkeypatch.setattr('a2ml.api.auger.impl.experiment_session.AugerExperimentSessionApi.status', lambda *a, **kw: 'started')
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.experiment_session.AugerExperimentSessionApi.status', lambda *a, **kw: 'started')
 
         result = AugerExperiment(ctx).stop()
         assert result.get('stopped') == 'iris-1.csv-experiment'

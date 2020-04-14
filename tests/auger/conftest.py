@@ -5,7 +5,7 @@ import json
 
 import pytest
 from a2ml.api.utils.context import Context
-from a2ml.api.auger.impl.rest_api import RestApi
+from a2ml.api.auger.impl.cloud.rest_api import RestApi
 
 # from click.testing import CliRunner
 

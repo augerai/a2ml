@@ -16,8 +16,8 @@ class TestModel():
         monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy._start_project', lambda self: None)
         os.remove('models/model-87C81FE615DE46D.zip')
         # FIXME: let AugerPipelineFileApi do it's work
-        monkeypatch.setattr('a2ml.api.auger.impl.pipeline_file.AugerPipelineFileApi.create', lambda self, model_id: {'signed_s3_model_path': 'None'})
-        monkeypatch.setattr('a2ml.api.auger.impl.pipeline_file.AugerPipelineFileApi.download', lambda *a, **kw: 'models/export-%s.zip' % '87C81FE615DE46D')
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.create', lambda self, model_id: {'signed_s3_model_path': 'None'})
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.download', lambda *a, **kw: 'models/export-%s.zip' % '87C81FE615DE46D')
 
         result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True)
         assert result['model_id'] == '87C81FE615DE46D'

@@ -1,6 +1,6 @@
 import sys
 
-from .impl.auth import AugerAuthApi
+from .impl.cloud.auth import AugerAuthApi
 from .credentials import Credentials
 from .impl.exceptions import AugerException
 

@@ -1,4 +1,4 @@
-from .impl.rest_api import RestApi
+from .impl.cloud.rest_api import RestApi
 from .impl.decorators import error_handler, authenticated, with_dataset
 from .impl.experiment import Experiment
 from .impl.exceptions import AugerException

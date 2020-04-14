@@ -1,7 +1,6 @@
 from .base import AugerBaseApi
 from .prediction import AugerPredictionApi
 from .actual import AugerActualApi
-from .exceptions import AugerException
 
 
 class AugerPipelineApi(AugerBaseApi):

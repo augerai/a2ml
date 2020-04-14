@@ -1,5 +1,5 @@
 import re
-from .exceptions import AugerException
+from ..exceptions import AugerException
 
 
 class AugerBaseApi(object):

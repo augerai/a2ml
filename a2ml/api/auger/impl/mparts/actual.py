@@ -1,6 +1,6 @@
 import os
 import csv
-from ..pipeline import AugerPipelineApi
+from ..cloud.pipeline import AugerPipelineApi
 
 
 class ModelActual():

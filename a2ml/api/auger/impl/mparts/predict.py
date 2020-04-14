@@ -4,8 +4,8 @@ import subprocess
 from zipfile import ZipFile
 
 from .deploy import ModelDeploy
-from ..cluster import AugerClusterApi
-from ..pipeline import AugerPipelineApi
+from ..cloud.cluster import AugerClusterApi
+from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
 from a2ml.api.utils.dataframe import DataFrame
 

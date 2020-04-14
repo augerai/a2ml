@@ -1,7 +1,7 @@
 from .impl.project import Project
 from .impl.exceptions import AugerException
 from .impl.decorators import error_handler, authenticated
-from .impl.rest_api import RestApi
+from .impl.cloud.rest_api import RestApi
 from .credentials import Credentials
 from .config import AugerConfig
 

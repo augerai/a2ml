@@ -6,7 +6,7 @@ import pytest
 import copy
 
 from a2ml.api.auger.dataset import AugerDataset
-from a2ml.api.auger.impl.project_api import AugerProjectApi
+from a2ml.api.auger.impl.cloud.project_api import AugerProjectApi
 from .utils import interceptor, PAYLOAD_DEFAULT, object_status_chain
 
 
@@ -37,7 +37,7 @@ class TestDataSet():
         interceptor(PAYLOAD, monkeypatch)
         object_status_chain(['processing', 'processed'], monkeypatch)
         monkeypatch.setattr(AugerProjectApi, 'is_running', lambda x: True)
-        monkeypatch.setattr('a2ml.api.auger.impl.dataset_api.AugerDataSetApi._upload_to_cloud', lambda *args: 's3://iris.csv')
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.dataset_api.AugerDataSetApi._upload_to_cloud', lambda *args: 's3://iris.csv')
 
         result = AugerDataset(ctx).create(source='iris.csv')
         assert result.get('created') == 'iris-1.csv'

@@ -1,10 +1,10 @@
 import os
 import subprocess
 
-from ..cluster import AugerClusterApi
-from ..pipeline import AugerPipelineApi
+from ..cloud.cluster import AugerClusterApi
+from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
-from ..pipeline_file import AugerPipelineFileApi
+from ..cloud.pipeline_file import AugerPipelineFileApi
 
 
 class ModelDeploy(object):
