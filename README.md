@@ -669,12 +669,15 @@ You can login to the Auger.AI endpoint and provider with the `a2ml auth login` c
 ```sh
 a2ml auth login
 ```
-You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.
+You will be prompted for your Auger service user and password. You can also download your Auger credentials as a auger.json file and put it to application folder.
+You can also put the path to auger.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
 
-```sh
-export AUGER_CREDENTIALS=~/auger_credentials.json
+```json
+{ 
+  "organization":"",
+  "token":""
+}
 ```
-You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
 
 The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML for you. If you choose to set up your own endpoints, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running from.  Here are abbreviated directions for that step for Google, Azure and Auger.
 
@@ -694,17 +697,26 @@ export PROJECT_ID="automl-test-237311"
 Detailed instructions for setting up Google Cloud AutoML are [here](https://cloud.google.com/vision/automl/docs/before-you-begin)])    
 
 ### Azure AutoML
-The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:
+The Azure AutoML service allows browser login. Just run any a2ml command and login url will open in default browser.
+
+To login from python code without browser, use service principal credentials:
+1. Using azure.json file. Put this file into application folder or to AZURE_CREDENTIALS_PATH.
+Be sure to include this file in your .gitignore:
 
 ```sh
-**/.azureml/config.json
+**/azure.json
 ```
 
-The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.
-
-```sh
-export AZURE_SUBSCRIPTION_ID="d1b17dd2-ba8a-4492-9b5b-10c6418420ce"
+```json
+{
+  "subscription_id":"",
+  "service_principal_tenant_id":"",
+  "service_principal_id":"",
+  "service_principal_password":""
+}
 ```
+
+2. AZURE_CREDENTIALS environment variable should contain json string, same as azure.json file.
 
 ### A2ML Authentication Components
 The following shows which authentication components are necessary depending on your A2ML use case:
