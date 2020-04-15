@@ -30,6 +30,7 @@ class VerifyVersionCommand(install):
 
 install_requires = [
     'auger-hub-api-client>=0.6.1',
+    'celery<4.5.0,>=4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
@@ -37,7 +38,7 @@ install_requires = [
     'requests',
     'pandas==0.23.4',
     'smart_open==1.9.0',
-    'jsonpickle'    
+    'jsonpickle'
 ]
 
 extras = {
@@ -65,7 +66,7 @@ extras = {
         'redis',
         'uvicorn',
         's3fs',
-        'boto3'        
+        'boto3'
     ],
     'azure': [
         'azureml-train-automl-client',
@@ -90,7 +91,8 @@ for group_name in extras:
     all_deps += extras[group_name]
 extras['all'] = all_deps
 
-description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
+description = """A2ML ("Automate AutoML") is a set of scripts to automate
+ Automated Machine Learning workflows from multiple vendors."""
 
 setup(
     name='a2ml',
@@ -108,7 +110,8 @@ setup(
     platforms='any',
     test_suite='tests',
     python_requires='>=3',
-    keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai machine learning automl deeplearn api sdk',
+    keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai '
+        'machine learning automl deeplearn api sdk',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

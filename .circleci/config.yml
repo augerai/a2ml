@@ -1,17 +1,25 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
   build-docs:
+    parameters:
+      python_version:
+        default: "3.7"
+        type: string
     docker:
-      - image: python:3.7
+      - image: circleci/python:<< parameters.python_version >>
     steps:
       - checkout
+      - restore_cache:
+          key: a2ml-python-deps-{{ .Branch }}
       - run:
           name: Install dependencies
           command: pip install ".[all]"
+      - save_cache:
+          key: a2ml-python-deps-{{ .Branch }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
       - run:
           name: Build docs
           command: cd docs/ && make html
@@ -19,16 +27,13 @@ jobs:
           root: docs/build
           paths: html
 
-  deploy-docs:
+  publish-docs:
     docker:
       - image: node:10.15.0
     steps:
       - checkout
       - attach_workspace:
           at: docs/build
-      - run:
-          name: Disable jekyll builds
-          command: touch docs/build/html/.nojekyll
       - add_ssh_keys:
           fingerprints: "44:aa:23:95:60:12:6b:b5:8d:b2:e5:05:24:1f:94:cf"
       - run:
@@ -39,7 +44,7 @@ jobs:
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
 
-  build-test:
+  build:
     parameters:
       python_version:
         default: "3.7"
@@ -52,9 +57,22 @@ jobs:
       - checkout
       - run: cp develop.env.example develop.env
       - run: docker-compose -f docker-compose.test.yml build
+
+  test:
+    parameters:
+      python_version:
+        default: "3.7"
+        type: string
+    docker:
+      - image: circleci/python:<< parameters.python_version >>
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run: cp develop.env.example develop.env
       - run: docker-compose -f docker-compose.test.yml run tests
 
-  deploy-pip:
+  publish-pip:
     parameters:
       python_version:
         default: "3.7"
@@ -75,36 +93,40 @@ jobs:
             echo "Deploying new package to pypi.org..."
             twine check dist/*
             twine upload dist/*
+
 workflows:
-  build_and_deploy_docs:
+  build-and-test:
+    jobs:
+      - build:
+          name: build3.7
+      - test:
+          name: test3.7
+  build-and-publish-docs:
     jobs:
       - build-docs
-      - deploy-docs:
-          name: deploy3.7
+      - publish-docs:
           requires:
             - build-docs
           filters:
             branches:
               only:
                 - master
-  commit:
+  build-and-publish:
     jobs:
-      - build-test:
-          name: build3.7
-          python_version: "3.7"
-  build_and_deploy:
-    jobs:
-      - build-test:
-          name: build3.7
-          python_version: "3.7"
+      - publish-image:
+          requires:
+            - build3.7
+            - test3.7
           filters:
             tags:
               only: /^v.*/
             branches:
-              ignore: /.*/
-      - deploy-pip:
+              only:
+                - master
+      - publish-pip:
           requires:
             - build3.7
+            - test3.7
           filters:
             tags:
               only: /^v.*/

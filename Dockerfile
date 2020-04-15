@@ -42,9 +42,10 @@ COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
 COPY LICENSE README.md setup.py tox.ini $WORKDIR/
-COPY a2ml/ $WORKDIR/a2ml
+COPY a2ml $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
-RUN pip install -e ".[all]"
+RUN python setup.py bdist_wheel -q && \
+  pip install --no-deps dist/*
 
 #ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml
