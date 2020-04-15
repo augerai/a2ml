@@ -10,7 +10,7 @@ from azureml.train.automl.run import AutoMLRun
 from .project import AzureProject
 from .exceptions import AzureException
 from .decorators import error_handler
-from auger.api.cloud.utils.dataframe import DataFrame
+from a2ml.api.utils.dataframe import DataFrame
 
 
 class AzureModel(object):

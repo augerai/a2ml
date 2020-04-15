@@ -209,7 +209,7 @@ to A2ML classes and business objects;
       provider_name:
         {
           result: True|False,
-          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+          data: {'experiment_name': experiment_name, 'session_id': session_id}|error
         }
     }
   ```
@@ -471,7 +471,7 @@ Experiment will be run.
       provider_name:
         {
           result: True|False,
-          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+          data: {'experiment_name': experiment_name, 'session_id': session_id}|error
         }
     }
   ```

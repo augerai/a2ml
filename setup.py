@@ -29,13 +29,15 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'auger.ai>=0.2.1',
     'auger-hub-api-client>=0.6.1',
-    'celery==4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35'
+    'ruamel.yaml<=0.15.89,>=0.15.35',
+    'requests',
+    'pandas==0.23.4',
+    'smart_open==1.9.0',
+    'jsonpickle'    
 ]
 
 extras = {
@@ -55,16 +57,19 @@ extras = {
         'sphinx-rtd-theme'
     ],
     'server': [
+        'celery==4.4.0',
         'aioredis',
         'asyncio',
         'fastapi',
         'gevent',
-        'jsonpickle',
         'redis',
         'uvicorn',
+        's3fs',
+        'boto3'        
     ],
     'azure': [
-        'azureml-train-automl-client'
+        'azureml-train-automl-client',
+        'azureml-train-automl-runtime'
     ],
     'azure-local': [
         'numpy<=1.16.2,>=1.16.0',

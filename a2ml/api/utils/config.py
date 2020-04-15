@@ -2,8 +2,8 @@ import os
 import logging
 import ruamel.yaml
 
-from auger.api.utils.config_yaml import ConfigYaml
-from auger.api.utils import fsclient
+from a2ml.api.utils.config_yaml import ConfigYaml
+from a2ml.api.utils import fsclient
 
 log = logging.getLogger("a2ml")
 

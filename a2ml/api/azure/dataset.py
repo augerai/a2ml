@@ -60,7 +60,7 @@ class AzureDataset(object):
             raise AzureException('Please specify dataset name...')
         ds = Dataset.get_by_name(ws, name)
         ds.unregister_all_versions()
-        self._select(None)
+        self._select(None, False)
         self.ctx.log('Deleted dataset %s' % name)
         return {'deleted': name}
 

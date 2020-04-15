@@ -29,7 +29,7 @@ class Credentials(BaseCredentials):
             else:
                 azure_creds_file = os.path.abspath('%s/.azureml/auth/azureProfile.json' % os.environ.get('HOME', ''))
                 if os.path.exists(azure_creds_file):
-                    from auger.api.utils import fsclient
+                    from a2ml.api.utils import fsclient
                     try:
                         with fsclient.open_file(azure_creds_file, "r", encoding='utf-8-sig', num_tries=0) as file:
                             res = json.load(file)

@@ -44,7 +44,7 @@ celeryApp.conf.task_acks_late = False
 celeryApp.conf.task_send_sent_event = True
 
 from kombu.utils import json as _json
-from auger.api.utils.json_utils import convert_simple_numpy_type
+from a2ml.api.utils.json_utils import convert_simple_numpy_type
 
 class NumpyKombuJSONEncoder(_json.JSONEncoder):
     """ Special json encoder for numpy types """
