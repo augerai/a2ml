@@ -5,18 +5,10 @@ services:
     build: .
     image: deeplearninc/a2ml
     working_dir: /app
-    command: wait-for-it redis:6379 -t 30 -- python -m py.test tests
+    command: python -m py.test tests
     env_file: develop.env
     depends_on:
-      - worker
-
-  worker:
-    build: .
-    image: deeplearninc/a2ml
-    command: wait-for-it redis:6379 -t 30 -- a2ml worker --loglevel=info
-    env_file: develop.env
-    depends_on:
-      - createbucket
+      - minio
       - redis
 
   minio:

@@ -30,7 +30,7 @@ class ConfigParts(object):
         self.part_names = ['config', 'auger', 'azure', 'google']
         self.is_loaded = False
 
-    def load(self, path = None):
+    def load(self, path=None):
         if path is None:
             path = os.getcwd()
         for pname in self.part_names:
@@ -60,7 +60,7 @@ class ConfigParts(object):
 
 class Config(object):
 
-    def __init__(self, name = 'config', path=None):
+    def __init__(self, name='config', path=None):
         super(Config, self).__init__()
         self.runs_on_server = False
         self.name = name
@@ -94,7 +94,7 @@ class Config(object):
     def ismultipart(self):
         return self.parts.ismultipart()
 
-    def load(self, path = None, reload = False):
+    def load(self, path=None, reload=False):
         if (not self.parts.is_loaded) or reload:
             self.parts.load(path)
         return self

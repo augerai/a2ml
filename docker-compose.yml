@@ -4,7 +4,7 @@ services:
   server:
     build: .
     image: deeplearninc/a2ml
-    command: wait-for-it redis:6379 -t 30 -- a2ml server --loglevel=info
+    command: a2ml server --loglevel=info
     env_file: develop.env
     ports:
       - 3000:3000
@@ -17,7 +17,7 @@ services:
   worker:
     build: .
     image: deeplearninc/a2ml
-    command: wait-for-it redis:6379 -t 30 -- a2ml worker --loglevel=info
+    command: a2ml worker --loglevel=info
     env_file: develop.env
     volumes:
       - .:/app

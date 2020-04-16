@@ -21,3 +21,15 @@ docker-test-build:
 
 docker-test: docker-clean docker-test-build
 	docker-compose -f docker-compose.test.yml run tests
+
+clean:
+	find . -name
+
+install:
+	pip install -e ".[all]"
+
+setup:
+	virtualenv .venv
+
+test:
+	tox
