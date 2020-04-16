@@ -2,31 +2,55 @@
 Authentication
 **************
 
-Authentication with A2ML involves two parts. 
+Depending on the :doc:`configuration` of A2ML, authentication will be with the A2ML Cloud or directly to providers.
 
- #. There is authentication between your client (whether it's the `a2ml` cli or the `a2ml` python API) and the service endpoint (either self-hosted or with Auger.AI). 
- #. There is authentication between the service endpoint and each provider. Note that in the case where you run A2ML locally, endpoint authentication is handled automatically. 
-    The :ref:`Auth_Matrix` at the end of this section shows this in more detail.
+A2ML Cloud
+==========
 
-Auger.AI Provider
-----------------------------
-You can login to the Auger.AI endpoint and provider with the `a2ml auth login` command.
+Authenticating with A2ML Cloud will allow you to have one account which manages all provider credentials. All providers can then be run without individual configuration.
+
+CLI Login
+---------
+
+You can login to the A2ML Cloud with the `a2ml auth login` command.
 
 .. code-block:: bash
 
   $ a2ml auth login
 
-You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.
+You will be prompted for your A2ML service user and password. 
+
+Download Credentials
+--------------------
+
+A2ML credentials can be downloaded as a credentials.json file from your organization's https://app.auger.ai/<project_name>/**settings**.
 
 .. code-block:: bash
 
-  $ export AUGER_CREDENTIALS=~/auger_credentials.json
-
-You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
+  $ export AUGER_CREDENTIALS=~/credentials.json
 
 .. note::
 
-  The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML for you. If you choose to set up your own endpoints, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running from.  Here are abbreviated directions for that step for Google, Azure and Auger.
+  This would be a JSON string of your credentials.
+
+The credentials.json file can also be referred to by:
+
+  - An environment variable called AUGER_CREDENTIALS_PATH
+  - An attribute path_to_credentials inside config.yaml
+
+
+Individual Providers
+====================
+
+.. |a2mlcloud| raw:: html
+
+   <a href="https://app.auger/signup" target="_blank">A2ML Cloud</a>
+
+
+|a2mlcloud| can manage the usage of Google Cloud AutoML or Azure AutoML for you. If set up on your own, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running.
+
+
+To connect directly to any or all providers configure each individually.
 
 Google Cloud Provider
 ---------------------
@@ -52,18 +76,48 @@ Detailed instructions for setting up |gcautoml|
 
 Azure Provider
 --------------
-The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:
+
+CLI Login
+^^^^^^^^^
+The Azure AutoML service allows browser login. Run any a2ml command and a login URL will open in the default browser.
+
+
+JSON File
+^^^^^^^^^
+.. |spc| raw:: html
+
+  <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal" target="_blank">service principal credentials</a>
+
+To login programmatically without the browser use the |spc|.
+
+.. note::
+
+  Follow the above directions to create an azure.json file with values specific to your account.
+
+azure.json
+
+.. code-block:: JSON
+
+  {
+    "subscription_id":"",
+    "service_principal_tenant_id":"",
+    "service_principal_id":"",
+    "service_principal_password":""
+  }
+
 
 .. code-block:: bash
 
-  $ **/.azureml/config.json
+  $ export AZURE_CREDENTIALS=~/azure.json
 
-The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.
+.. note::
 
-.. code-block:: bash
+  This would be a JSON string of your azure credentials.
 
-  $ export AZURE_SUBSCRIPTION_ID="d1b17dd2-ba8a-4492-9b5b-10c6418420ce"
+The azure.json file can also be referred to by:
 
+  - An environment variable called AZURE_CREDENTIALS_PATH
+  - An attribute path_to_credentials inside config.yaml
 
 .. _Auth_Matrix:
 
