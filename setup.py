@@ -27,8 +27,8 @@ class VerifyVersionCommand(install):
             )
             sys.exit(info)
 
-
 install_requires = [
+    'numpy<=1.16.2,>=1.16.0',
     'auger-hub-api-client>=0.6.1',
     'celery<4.5.0,>=4.4.0',
     'click',
@@ -69,11 +69,12 @@ extras = {
         'boto3'
     ],
     'azure': [
+        'pyarrow',
+        'fusepy',
         'azureml-train-automl-client',
         'azureml-train-automl-runtime'
     ],
     'azure-local': [
-        'numpy<=1.16.2,>=1.16.0',
         'scipy<=1.1.0,>=1.0.0',
         'pandas==0.23.4',
         'scikit-learn<=0.20.3,>=0.19.0',
@@ -88,7 +89,8 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if group_name != 'azure-local':
+        all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description = """A2ML ("Automate AutoML") is a set of scripts to automate

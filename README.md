@@ -22,27 +22,31 @@ A2ML is distributed as a python package, so to install it:
 $ pip install -U a2ml
 ```
 
-A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.
+It will install Auger provider.
 
-To run Azure AutoML:
+To use Azure AutoML:
+
+### Mac:
+```sh
+$ brew install libomp
+```
+
+### Linix:
+```sh
+$ apt-get update && apt-get -y install gcc g++ libgomp1
+```
 
 ```sh
 $ pip install "a2ml[azure]"
 ```
 
-To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):
-
-```sh
-$ pip install "a2ml[azure-local]"
-```
-
-For Google Cloud:
+To use Google Cloud:
 
 ```sh
 $ pip install "a2ml[google]"
 ```
 
-For everything:
+To install everything including testing and server code:
 
 ```sh
 $ pip install "a2ml[all]"
