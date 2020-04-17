@@ -34,6 +34,7 @@ services:
       mkdir -p /data;
       echo 'hello,world' > /data/iris.csv;
       /usr/bin/mc cp /data/iris.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
+      /usr/bin/mc cp /data/iris_for_predict.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
       "
     depends_on:
       - minio

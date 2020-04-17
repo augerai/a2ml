@@ -51,6 +51,7 @@ extras = {
         'pytest-xdist',
         'tox',
         'twine',
+        'vcrpy',
         'wheel>=0.30.0,<0.31.0'
     ],
     'docs': [
@@ -58,15 +59,17 @@ extras = {
         'sphinx-rtd-theme'
     ],
     'server': [
-        'celery==4.4.0',
         'aioredis',
         'asyncio',
+        'boto3',
+        'celery==4.4.0',
         'fastapi',
         'gevent',
+        'joblib',
+        'liac-arff',
         'redis',
-        'uvicorn',
         's3fs',
-        'boto3'
+        'uvicorn',
     ],
     'azure': [
         'shap==0.32.1',

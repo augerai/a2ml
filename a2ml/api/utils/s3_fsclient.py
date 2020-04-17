@@ -1,3 +1,4 @@
+import botocore
 import os
 import datetime
 from dateutil.tz import tzutc
@@ -155,32 +156,47 @@ class S3FSClient:
         path = self._get_relative_path(path)
         path = path + "/" if not path.endswith("/") else path
 
+        self.ensure_bucket_created(self.s3BucketName)
+
         # If no path we shouldn't create it
         if path != "/":
-            self.client.put_object(Bucket=self.s3BucketName, Key=path)
+            self.client.put_object(Bucket=self.s3BucketName, Key=path.lstrip('/'))
 
     def create_parent_folder(self, path):
         parent = os.path.dirname(path)
         self.create_folder(parent)
+
+    def ensure_bucket_created(self, Bucket):
+        try:
+            self.client.head_bucket(Bucket=Bucket)
+        except botocore.client.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                self.client.create_bucket(Bucket=Bucket)
+            else:
+                raise e
 
     def remove_folder(self, path, remove_self=True):
         path = self._get_relative_path(path)
         self._s3_removeFolder(path, remove_self)
 
     def remove_file(self, path, wild=False):
-        if wild:
-            files = self.list_folder(path, wild)
-            path = self._get_relative_path(path)
-            for file in files:
-                path_to_remove = os.path.join(os.path.dirname(path), file)
-                # print(path_to_remove)
-                self.client.delete_object(
-                    Bucket=self.s3BucketName, Key=path_to_remove)
+        try:
+            if wild:
+                files = self.list_folder(path, wild)
+                path = self._get_relative_path(path)
+                for file in files:
+                    path_to_remove = os.path.join(os.path.dirname(path), file)
+                    # print(path_to_remove)
+                    self.client.delete_object(
+                        Bucket=self.s3BucketName, Key=path_to_remove)
 
-            #raise Exception("S3FSClient::remove_file wild is not implemented:%s"%path)
-        else:
-            path = self._get_relative_path(path)
-            self.client.delete_object(Bucket=self.s3BucketName, Key=path)
+                #raise Exception("S3FSClient::remove_file wild is not implemented:%s"%path)
+            else:
+                path = self._get_relative_path(path)
+                self.client.delete_object(Bucket=self.s3BucketName, Key=path)
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] != 'NoSuchBucket':
+                raise e
 
     def _s3_removeFolder(self, path, remove_self=True):
         path = path + "/" if not path.endswith("/") else path
@@ -288,7 +304,7 @@ class S3FSClient:
         return listFiles is not None
 
     def read_text_file(self, path):
-        from .LocalFSClient import LocalFSClient
+        from .local_fsclient import LocalFSClient
 
         with LocalFSClient().save_atomic(path) as local_tmp_path:
             self.download_file(path, local_tmp_path)
@@ -347,7 +363,7 @@ class S3FSClient:
                 path_src), file), os.path.join(path_dst, file))
 
     def copy_folder(self, path_src, path_dst):
-        from .FSClient import FSClient
+        from .fsclient import FSClient
 
         files = FSClient().list_folder(path_src)
         for file in files:
@@ -358,8 +374,8 @@ class S3FSClient:
                 self.copy_folder(full_src, os.path.join(path_dst, file))
 
     def download_file(self, path, local_path):
-        from .LocalFSClient import LocalFSClient
-        from .FSClient import FSClient
+        from .local_fsclient import LocalFSClient
+        from .fsclient import FSClient
         import boto3
         try:
             from urllib.parse import urlparse
@@ -400,5 +416,5 @@ class S3FSClient:
         if path_src.startswith("s3"):
             self.remove_file(path_src)
         else:
-            from .LocalFSClient import LocalFSClient
+            from .local_fsclient import  LocalFSClient
             LocalFSClient().remove_file(path_src)

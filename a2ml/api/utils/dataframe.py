@@ -1,4 +1,5 @@
 import pandas
+from a2ml.api.utils import fsclient
 
 
 class DataFrame(object):
@@ -9,6 +10,8 @@ class DataFrame(object):
 
     @staticmethod
     def load(filename, target, features=None, nrows=None):
+        filename = fsclient.s3fs_open(filename)
+
         try:
             df = DataFrame._read_csv(filename, ',', features, nrows)
         except Exception as e:
@@ -33,7 +36,8 @@ class DataFrame(object):
     @staticmethod
     def save(filename, data):
         df = pandas.DataFrame.from_records(data['data'], columns=data['columns'])
-        df.to_csv(filename, index=False, encoding='utf-8')
+        str_data = df.to_csv(None, index=False, encoding='utf-8')
+        fsclient.write_text_file(filename, str_data)
 
     @staticmethod
     def _read_csv(filename, sep, features=None, nrows=None):
