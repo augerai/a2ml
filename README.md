@@ -22,7 +22,7 @@ A2ML is distributed as a python package, so to install it:
 $ pip install -U a2ml
 ```
 
-It will install all supported providers - Auger, Azure and Google.
+It will install Auger provider.
 
 To use Azure AutoML:
 
@@ -36,12 +36,11 @@ $ brew install libomp
 $ apt-get update && apt-get -y install gcc g++ libgomp1
 ```
 
-To use only Azure AutoML:
 ```sh
 $ pip install "a2ml[azure]"
 ```
 
-To use only Google Cloud:
+To use Google Cloud:
 
 ```sh
 $ pip install "a2ml[google]"
