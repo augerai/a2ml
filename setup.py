@@ -27,19 +27,6 @@ class VerifyVersionCommand(install):
             )
             sys.exit(info)
 
-
-install_requires = [
-    'auger-hub-api-client>=0.6.1',
-    'click',
-    'shortuuid',
-    'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
-    'requests',
-    'pandas==0.23.4',
-    'smart_open==1.9.0',
-    'jsonpickle'    
-]
-
 extras = {
     'testing': [
         'flake8',
@@ -67,12 +54,25 @@ extras = {
         's3fs',
         'boto3'        
     ],
+    'auger': [
+        'numpy<=1.16.2,>=1.16.0',
+        'auger-hub-api-client>=0.6.1',
+        'click',
+        'shortuuid',
+        'docutils<0.16,>=0.10',
+        'ruamel.yaml<=0.15.89,>=0.15.35',
+        'requests',
+        'pandas==0.23.4',
+        'smart_open==1.9.0',
+        'jsonpickle'    
+    ],
     'azure': [
+        'pyarrow',
+        'fusepy',
         'azureml-train-automl-client',
         'azureml-train-automl-runtime'
     ],
     'azure-local': [
-        'numpy<=1.16.2,>=1.16.0',
         'scipy<=1.1.0,>=1.0.0',
         'pandas==0.23.4',
         'scikit-learn<=0.20.3,>=0.19.0',
@@ -84,10 +84,17 @@ extras = {
     ]
 }
 
+DEFAULT_EXTRAS = ['auger', 'azure', 'google']
+install_requires = []
+
+for group_name in DEFAULT_EXTRAS:
+    install_requires += extras[group_name]
+
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if not group_name in DEFAULT_EXTRAS and group_name != 'azure-local':
+        all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
