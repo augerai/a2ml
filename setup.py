@@ -52,7 +52,7 @@ extras = {
     ],
     'docs': [
         'sphinx',
-        'sphinx-rtd-theme'
+        'sphinx_rtd_theme @ https://github.com/augerai/sphinx_rtd_theme/tarball/master'
     ],
     'server': [
         'aioredis',
