@@ -115,7 +115,7 @@ class AzureExperiment(object):
         self.ctx.config.set('azure', 'experiment/run_id', run.run_id)
         self.ctx.config.write('azure')
 
-        return {'eperiment_name': experiment_name, 'run_id': run.run_id}
+        return {'experiment_name': experiment_name, 'run_id': run.run_id}
 
     @error_handler    
     def stop(self):
@@ -155,6 +155,10 @@ class AzureExperiment(object):
             'leaderboard': leaderboard,
             'status': status }
 
+    @error_handler        
+    def get_experiment_settings(self):
+        return 
+                
     @error_handler        
     def history(self):
         ws = AzureProject(self.ctx)._get_ws()

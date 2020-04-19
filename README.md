@@ -1,5 +1,5 @@
 # a2ml - Automation of AutoML
-The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.
+The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.  Full documentation for A2ML is available at [a2ml.org](http://a2ml.org)
 
 ## The PREDIT Pipeline
 Every AutoML vendor has their own API to manage the datasets and create and
@@ -22,27 +22,31 @@ A2ML is distributed as a python package, so to install it:
 $ pip install -U a2ml
 ```
 
-A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.
+It will install Auger provider.
 
-To run Azure AutoML:
+To use Azure AutoML:
+
+### Mac:
+```sh
+$ brew install libomp
+```
+
+### Linix:
+```sh
+$ apt-get update && apt-get -y install gcc g++ libgomp1
+```
 
 ```sh
 $ pip install "a2ml[azure]"
 ```
 
-To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):
-
-```sh
-$ pip install "a2ml[azure-local]"
-```
-
-For Google Cloud:
+To use Google Cloud:
 
 ```sh
 $ pip install "a2ml[google]"
 ```
 
-For everything:
+To install everything including testing and server code:
 
 ```sh
 $ pip install "a2ml[all]"
@@ -209,7 +213,7 @@ to A2ML classes and business objects;
       provider_name:
         {
           result: True|False,
-          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+          data: {'experiment_name': experiment_name, 'session_id': session_id}|error
         }
     }
   ```
@@ -471,7 +475,7 @@ Experiment will be run.
       provider_name:
         {
           result: True|False,
-          data: {'eperiment_name': eperiment_name, 'session_id': session_id}|error
+          data: {'experiment_name': experiment_name, 'session_id': session_id}|error
         }
     }
   ```
@@ -669,12 +673,15 @@ You can login to the Auger.AI endpoint and provider with the `a2ml auth login` c
 ```sh
 a2ml auth login
 ```
-You will be prompted for your Auger service user and password. You can also download your Auger credentials as a credentials.json file and refer to it with an AUGER_CREDENTIALS environment variable.
+You will be prompted for your Auger service user and password. You can also download your Auger credentials as a auger.json file and put it to application folder.
+You can also put the path to auger.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
 
-```sh
-export AUGER_CREDENTIALS=~/auger_credentials.json
+```json
+{ 
+  "organization":"",
+  "token":""
+}
 ```
-You can also put the path to credentials.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
 
 The Auger service can manage your usage of Google Cloud AutoML or Azure AutoML for you. If you choose to set up your own endpoints, you must configure the underlying AutoML service corrrectly to be accessed from the server you are running from.  Here are abbreviated directions for that step for Google, Azure and Auger.
 
@@ -694,17 +701,26 @@ export PROJECT_ID="automl-test-237311"
 Detailed instructions for setting up Google Cloud AutoML are [here](https://cloud.google.com/vision/automl/docs/before-you-begin)])    
 
 ### Azure AutoML
-The Azure AutoML service allows credentials to be downloaded as a JSON file (such as a config.json file).  This should then be placed in a .azureml subdirectory of your project directory.  Be sure to include this file in your .gitignore:
+The Azure AutoML service allows browser login. Just run any a2ml command and login url will open in default browser.
+
+To login from python code without browser, use service principal credentials:
+1. Using azure.json file. Put this file into application folder or to AZURE_CREDENTIALS_PATH.
+Be sure to include this file in your .gitignore:
 
 ```sh
-**/.azureml/config.json
+**/azure.json
 ```
 
-The Azure subscription ID can be set with the AZURE_SUBSCRIPTION_ID environment variable as in the following example.
-
-```sh
-export AZURE_SUBSCRIPTION_ID="d1b17dd2-ba8a-4492-9b5b-10c6418420ce"
+```json
+{
+  "subscription_id":"",
+  "service_principal_tenant_id":"",
+  "service_principal_id":"",
+  "service_principal_password":""
+}
 ```
+
+2. AZURE_CREDENTIALS environment variable should contain json string, same as azure.json file.
 
 ### A2ML Authentication Components
 The following shows which authentication components are necessary depending on your A2ML use case:

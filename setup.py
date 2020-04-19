@@ -27,15 +27,17 @@ class VerifyVersionCommand(install):
             )
             sys.exit(info)
 
-
 install_requires = [
-    'auger.ai>=0.2.1',
+    'numpy<=1.16.2,>=1.16.0',
     'auger-hub-api-client>=0.6.1',
-    'celery==4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35'
+    'ruamel.yaml<=0.15.89,>=0.15.35',
+    'requests',
+    'pandas==0.23.4',
+    'smart_open==1.9.0',
+    'jsonpickle'    
 ]
 
 extras = {
@@ -55,19 +57,23 @@ extras = {
         'sphinx_rtd_theme @ https://github.com/augerai/sphinx_rtd_theme/tarball/master'
     ],
     'server': [
+        'celery==4.4.0',
         'aioredis',
         'asyncio',
         'fastapi',
         'gevent',
-        'jsonpickle',
         'redis',
         'uvicorn',
+        's3fs',
+        'boto3'        
     ],
     'azure': [
-        'azureml-train-automl-client'
+        'pyarrow',
+        'fusepy',
+        'azureml-train-automl-client',
+        'azureml-train-automl-runtime'
     ],
     'azure-local': [
-        'numpy<=1.16.2,>=1.16.0',
         'scipy<=1.1.0,>=1.0.0',
         'pandas==0.23.4',
         'scikit-learn<=0.20.3,>=0.19.0',
@@ -82,7 +88,8 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if group_name != 'azure-local':
+        all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
