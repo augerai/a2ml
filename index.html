@@ -161,7 +161,16 @@
   <div class="section" id="a2ml-automation-of-automl">
 <h1>A2ML - Automation of AutoML<a class="headerlink" href="#a2ml-automation-of-automl" title="Permalink to this headline">¶</a></h1>
 <p>The A2ML (&quot;Automate AutoML&quot;) project is a Python API and set of command line tools to <strong>automate Automated Machine Learning</strong> tools from multiple vendors.</p>
-<p>The intention is to provide a common API for all Cloud-oriented AutoML vendors. Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model. May the best &quot;algorithm/hyperparameter search&quot; win.</p>
+<p>A2ML provides a common API for all cloud-oriented AutoML vendors.
+Today that is Microsoft Azure AutoML, Google Cloud AutoML, and [Auger.AI](<a class="reference external" href="http://auger.ai">http://auger.ai</a>).
+Other AutoML providers can be added as the fundamental stages apply to all them.</p>
+<p>Performing all phases of the model building, training and usage process with those other cloud vendors' products is hundreds of lines of code.
+A short perusal of the source in this repo can validate that.</p>
+<p>Writing to the A2ML API also removes vendor lockin to each particular cloud providers' API.</p>
+<p>Google and Microsoft do not provide ongoing review and monitoring of deployed model accuracy
+with their cloud AutoML APIs.  A2ML adds a model review capability for those providers.</p>
+<p>With A2ML, data scientists and developers can now train their datasets against multiple AutoML providers
+to get the best possible predictive model.</p>
 <div class="section" id="the-predit-pipeline">
 <h2>The PREDIT Pipeline<a class="headerlink" href="#the-predit-pipeline" title="Permalink to this headline">¶</a></h2>
 <p>Every AutoML vendor has their own API to manage the datasets and create and
