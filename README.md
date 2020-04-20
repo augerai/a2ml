@@ -714,9 +714,9 @@ Be sure to include this file in your .gitignore:
 ```json
 {
   "subscription_id":"",
-  "service_principal_tenant_id":"",
-  "service_principal_id":"",
-  "service_principal_password":""
+  "directory_tenant_id":"",
+  "application_client_id":"",
+  "client_secret":""
 }
 ```
 
