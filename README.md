@@ -655,13 +655,13 @@ $ git clone https://github.com/augerai/a2ml.git
 Setup dependencies and A2ML command line:
 
 ```sh
-$ pip install -e ".[all]"
+$ make develop
 ```
 
 Running tests and getting test coverage:
 
 ```sh
-$ tox
+$ make test
 ```
 
 ## Authentication with A2ML

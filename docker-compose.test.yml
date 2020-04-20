@@ -4,10 +4,12 @@ services:
   tests:
     build: .
     image: deeplearninc/a2ml
-    working_dir: /app
     command: python -m py.test tests
     env_file: develop.env
+    ports:
+      - 8000:8000
     depends_on:
+      - createbucket
       - minio
       - redis
 
@@ -22,12 +24,11 @@ services:
 
   createbucket:
     image: minio/mc
-    depends_on:
-      - minio
     env_file: develop.env
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc config host add myminio http://minio:9000 secret strongsecret;
+      sleep 5;
+      /usr/bin/mc config host add myminio http://minio:9000 $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
       /usr/bin/mc rm -r --force myminio/sample-bucket;
       /usr/bin/mc mb myminio/sample-bucket;
       /usr/bin/mc policy set upload myminio/sample-bucket;
@@ -35,6 +36,8 @@ services:
       "
     volumes:
       - ./tests/fixtures/:/data/
+    depends_on:
+      - minio
 
   redis:
     image: redis

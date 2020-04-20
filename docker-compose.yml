@@ -4,10 +4,10 @@ services:
   server:
     build: .
     image: deeplearninc/a2ml
-    command: a2ml server --loglevel=info
+    command: a2ml server
     env_file: develop.env
     ports:
-      - 3000:3000
+      - 8000:8000
     volumes:
       - .:/app
     depends_on:
@@ -17,7 +17,7 @@ services:
   worker:
     build: .
     image: deeplearninc/a2ml
-    command: a2ml worker --loglevel=info
+    command: a2ml worker
     env_file: develop.env
     volumes:
       - .:/app

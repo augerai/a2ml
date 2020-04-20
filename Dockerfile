@@ -16,7 +16,7 @@ WORKDIR $WORKDIR
 COPY LICENSE README.md $WORKDIR/
 COPY setup.py $WORKDIR/
 
-RUN pip install ".[all]"
+RUN pip install ".[testing,server,azure,azure-local,google]"
 RUN find /usr/local/lib/python3.7 \
   -name '*.pxd' -o \
   -name '*.pyd' -o \
@@ -44,7 +44,7 @@ COPY LICENSE README.md setup.py tox.ini $WORKDIR/
 COPY a2ml $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
 RUN python setup.py bdist_wheel -q && \
-  pip install --no-deps dist/*
+  pip install -U --no-deps dist/*
 
 #ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml

@@ -55,8 +55,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: cp develop.env.example develop.env
-      - run: docker-compose -f docker-compose.test.yml build
+      - run: make docker-build
 
   test:
     parameters:
@@ -69,8 +68,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: cp develop.env.example develop.env
-      - run: docker-compose -f docker-compose.test.yml run tests
+      - run: make config docker-test
 
   publish-pip:
     parameters:
@@ -81,18 +79,21 @@ jobs:
       - image: circleci/python:<< parameters.python_version >>
     steps:
       - checkout
-      - run: python setup.py sdist bdist_wheel
       - run:
           command: |
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
-          command: |
-            sudo pip install twine
-            echo "Deploying new package to pypi.org..."
-            twine check dist/*
-            twine upload dist/*
+      - run: make build
+      - run: make release
+
+  publish-image:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: make build
+      - run: make release
 
 workflows:
   build-and-test:
@@ -123,6 +124,7 @@ workflows:
             branches:
               only:
                 - master
+          context: docker-hub
       - publish-pip:
           requires:
             - build3.7
@@ -132,3 +134,4 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+          context: pypi
