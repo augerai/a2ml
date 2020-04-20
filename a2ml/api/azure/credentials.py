@@ -10,9 +10,9 @@ class Credentials(BaseCredentials):
     def __init__(self, ctx):
         super(Credentials, self).__init__(ctx, "azure")
         self.subscription_id = None
-        self.service_principal_tenant_id = None
-        self.service_principal_id = None
-        self.service_principal_password = None
+        self.directory_tenant_id = None
+        self.application_client_id = None
+        self.client_secret = None
 
     def load(self):
         content = {}
@@ -42,27 +42,27 @@ class Credentials(BaseCredentials):
                             traceback.print_exc()
 
         self.subscription_id = content.get('subscription_id')
-        self.service_principal_tenant_id = content.get('service_principal_tenant_id')
-        self.service_principal_id = content.get('service_principal_id')
-        self.service_principal_password = content.get('service_principal_password')
+        self.directory_tenant_id = content.get('directory_tenant_id')
+        self.application_client_id = content.get('application_client_id')
+        self.client_secret = content.get('client_secret')
 
         return self
 
     def serialize(self):
         return {
             'subscription_id' : self.subscription_id,
-            'service_principal_tenant_id' : self.service_principal_tenant_id,
-            'service_principal_id': self.service_principal_id,
-            'service_principal_password': self.service_principal_password
+            'directory_tenant_id' : self.directory_tenant_id,
+            'application_client_id': self.application_client_id,
+            'client_secret': self.client_secret
         }
 
     def get_serviceprincipal_auth(self):        
         svc_pr = None
-        if self.service_principal_password:
+        if self.client_secret:
             svc_pr = ServicePrincipalAuthentication(
-                tenant_id=self.service_principal_tenant_id,
-                service_principal_id=self.service_principal_id,
-                service_principal_password=self.service_principal_password
+                tenant_id=self.directory_tenant_id,
+                service_principal_id=self.application_client_id,
+                service_principal_password=self.client_secret
             )
 
         return svc_pr
