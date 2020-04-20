@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -68,17 +68,13 @@ extras = {
         'boto3'        
     ],
     'azure': [
+        'shap==0.32.1',
+        'scipy<=1.1.0,>=1.0.0',
+        'scikit-learn<=0.20.3,>=0.19.0',
         'pyarrow',
         'fusepy',
         'azureml-train-automl-client',
         'azureml-train-automl-runtime'
-    ],
-    'azure-local': [
-        'scipy<=1.1.0,>=1.0.0',
-        'pandas==0.23.4',
-        'scikit-learn<=0.20.3,>=0.19.0',
-        'shap==0.32.1',
-        'azureml-sdk[automl]'
     ],
     'google': [
         'google-cloud-automl'
@@ -88,8 +84,7 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    if group_name != 'azure-local':
-        all_deps += extras[group_name]
+    all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
