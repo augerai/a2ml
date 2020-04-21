@@ -16,7 +16,7 @@ WORKDIR $WORKDIR
 COPY LICENSE README.md $WORKDIR/
 COPY setup.py $WORKDIR/
 
-RUN pip install ".[testing,server,azure,azure-local,google]"
+RUN pip install ".[testing,server,azure,google]"
 RUN find /usr/local/lib/python3.7 \
   -name '*.pxd' -o \
   -name '*.pyd' -o \
