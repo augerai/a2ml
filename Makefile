@@ -25,14 +25,15 @@ docker-test-clean:
 	docker-compose -f docker-compose.test.yml down -v --remove-orphans
 
 docker-test: docker-test-clean docker-minio-clean docker-test-build
-	docker-compose -f docker-compose.test.yml run createbucket && docker-compose -f docker-compose.test.yml run --rm tests
+	docker-compose -f docker-compose.test.yml run createbucket && \
+	docker-compose -f docker-compose.test.yml run --rm tests
 
 build: clean
 	python setup.py -q bdist_wheel sdist
 
 clean:
 	@find . -name '__pycache__' | xargs rm -rf
-	@rm -rf "*.egg-info" htmlcov build dist
+	@rm -rf a2ml.egg-info htmlcov build dist
 
 develop:
 	pip install -e ".[all]"
