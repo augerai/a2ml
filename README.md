@@ -1,4 +1,7 @@
 # a2ml - Automation of AutoML
+
+[![Join the chat at https://gitter.im/augerai/a2ml](https://badges.gitter.im/augerai/a2ml.svg)](https://gitter.im/augerai/a2ml?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.  Full documentation for A2ML is available at [a2ml.org](http://a2ml.org)
 
 ## The PREDIT Pipeline
@@ -714,9 +717,9 @@ Be sure to include this file in your .gitignore:
 ```json
 {
   "subscription_id":"",
-  "service_principal_tenant_id":"",
-  "service_principal_id":"",
-  "service_principal_password":""
+  "directory_tenant_id":"",
+  "application_client_id":"",
+  "client_secret":""
 }
 ```
 
