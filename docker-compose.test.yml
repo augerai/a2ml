@@ -1,5 +1,6 @@
 ---
 version: '3'
+
 services:
   tests:
     build: .
@@ -27,8 +28,8 @@ services:
     env_file: develop.env
     entrypoint: >
       /bin/sh -c "
-      sleep 5;
-      /usr/bin/mc config host add myminio http://minio:9000 $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
+      wget http://minio:9000/minio/health/ready;
+      until /usr/bin/mc config host add myminio http://minio:9000 $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY}; do sleep 0.5; done;
       /usr/bin/mc rm -r --force myminio/sample-bucket;
       /usr/bin/mc mb myminio/sample-bucket;
       /usr/bin/mc policy set upload myminio/sample-bucket;
