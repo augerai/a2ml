@@ -10,14 +10,21 @@ jobs:
       - image: circleci/python:<< parameters.python_version >>
     steps:
       - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python_version >>/site-packages
       - restore_cache:
-          key: a2ml-python-deps-{{ .Branch }}
+          keys:
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>
       - run:
           name: Install dependencies
-          command: pip install ".[all]"
+          command: |
+            pip install ".[docs]"
       - save_cache:
-          key: a2ml-python-deps-{{ .Branch }}
+          key: a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
           paths:
+            # https://github.com/circleci/circleci-docs/pull/4214 ???
             - "/usr/local/bin"
             - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
       - run:
@@ -43,7 +50,6 @@ jobs:
             git config user.name "augerbot"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
-
   build:
     parameters:
       python_version:
@@ -55,18 +61,16 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: make docker-build
+      - run: make config docker-build
 
   test:
+    machine:
+      docker_layer_caching: true
     parameters:
       python_version:
         default: "3.7"
         type: string
-    docker:
-      - image: circleci/python:<< parameters.python_version >>
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
       - checkout
       - run: make config docker-test
 
@@ -96,12 +100,34 @@ jobs:
       - run: make release
 
 workflows:
-  build-and-test:
+  build-test-publish:
     jobs:
-      - build:
-          name: build3.7
+      - build
       - test:
-          name: test3.7
+          requires:
+            - build
+      - publish-image:
+          requires:
+            - build
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only:
+                - master
+          context: docker-hub
+      - publish-pip:
+          requires:
+            - build
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          context: pypi
+
   build-and-publish-docs:
     jobs:
       - build-docs
@@ -112,26 +138,3 @@ workflows:
             branches:
               only:
                 - master
-  build-and-publish:
-    jobs:
-      - publish-image:
-          requires:
-            - build3.7
-            - test3.7
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              only:
-                - master
-          context: docker-hub
-      - publish-pip:
-          requires:
-            - build3.7
-            - test3.7
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          context: pypi
