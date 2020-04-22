@@ -26,7 +26,7 @@ docker-test-clean:
 
 docker-test: docker-test-clean docker-minio-clean docker-test-build
 	docker-compose -f docker-compose.test.yml run createbucket && \
-	docker-compose -f docker-compose.test.yml run --rm tests
+	docker-compose -f docker-compose.test.yml run --rm a2ml
 
 build: clean
 	python setup.py -q bdist_wheel sdist

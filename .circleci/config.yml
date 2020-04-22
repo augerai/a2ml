@@ -97,7 +97,7 @@ jobs:
     steps:
       - checkout
       - run: make build
-      - run: make release
+      - run: make docker-release
 
 workflows:
   build-test-publish:

@@ -102,7 +102,6 @@ setup(
     author='Auger AI',
     author_email='hello@auger.ai',
     url='https://github.com/augerai/a2ml',
-    license='MIT',
     zip_safe=False,
     platforms='any',
     test_suite='tests',
@@ -114,9 +113,8 @@ setup(
         'Intended Audience :: Developers',
         "Intended Audience :: System Administrators",
         'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         "Programming Language :: Python :: 3 :: Only"
     ],

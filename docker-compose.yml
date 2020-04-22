@@ -1,9 +1,9 @@
 ---
 version: '3'
 services:
-  server:
+  a2ml:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     command: a2ml server
     env_file: develop.env
     ports:
@@ -16,7 +16,7 @@ services:
 
   worker:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     command: a2ml worker
     env_file: develop.env
     volumes:

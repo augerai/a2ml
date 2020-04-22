@@ -2,9 +2,9 @@
 version: '3'
 
 services:
-  tests:
+  a2ml:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     command: python -m py.test tests
     env_file: develop.env
     ports:
