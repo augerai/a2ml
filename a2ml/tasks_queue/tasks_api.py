@@ -25,19 +25,17 @@ def create_context(params, new_project=False):
         ctx.request_id = params['_request_id']
         ctx.setup_logger(format='')
     else:
-        # For Tasks Test Only!
-        project_path = os.path.join(
-            os.environ.get('A2ML_PROJECT_PATH', ''), params.get('project_name')
+        ctx = Context(
+            path=params.get('project_path'),
+            debug=params.get('debug_log', False)
         )
 
-        ctx = Context(path=project_path, debug = params.get("debug_log", False))
-
         if not new_project:
-            if params.get("provider"):
-                ctx.config.set('config', 'providers', [params.get("provider")])
+            if params.get('provider'):
+                ctx.config.set('config', 'providers', [params.get('provider')])
 
-            if params.get("source_path"):
-                ctx.config.set('config', 'source', params.get("source_path"))
+            if params.get('source_path'):
+                ctx.config.set('config', 'source', params.get('source_path'))
 
 
     tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
@@ -61,13 +59,6 @@ def __handle_task_result(self, status, retval, task_id, args, kwargs, einfo):
             status,
             __error_to_result(retval, einfo)
         )
-
-def execute_tasks(tasks_func, params):
-    if os.environ.get('TEST_CALL_CELERY_TASKS'):
-        return tasks_func(params)
-    else:
-        ar = tasks_func.delay(params)
-        return ar.get()
 
 # Projects
 @celeryApp.task(after_return=__handle_task_result)
@@ -242,10 +233,10 @@ def demo_task(params):
 def with_context(params, proc):
     ctx = create_context(params)
 
-    if not 'args' in params:
+    if 'args' not in params:
         params['args'] = []
 
-    if not 'kwargs' in params:
+    if 'kwargs' not in params:
         params['kwargs'] = {}
 
     res = proc(ctx)

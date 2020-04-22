@@ -1,17 +1,35 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@0.2.1
+  docker: circleci/docker@1.0.1
 
 jobs:
   build-docs:
+    parameters:
+      python_version:
+        default: "3.7"
+        type: string
     docker:
-      - image: python:3.7
+      - image: circleci/python:<< parameters.python_version >>
     steps:
       - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python_version >>/site-packages
+      - restore_cache:
+          keys:
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}
+            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>
       - run:
           name: Install dependencies
-          command: pip install ".[all]"
+          command: |
+            pip install ".[docs]"
+      - save_cache:
+          key: a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
+          paths:
+            # https://github.com/circleci/circleci-docs/pull/4214 ???
+            - "/usr/local/bin"
+            - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
       - run:
           name: Build docs
           command: cd docs/ && make html
@@ -19,16 +37,13 @@ jobs:
           root: docs/build
           paths: html
 
-  deploy-docs:
+  publish-docs:
     docker:
       - image: node:10.15.0
     steps:
       - checkout
       - attach_workspace:
           at: docs/build
-      - run:
-          name: Disable jekyll builds
-          command: touch docs/build/html/.nojekyll
       - add_ssh_keys:
           fingerprints: "44:aa:23:95:60:12:6b:b5:8d:b2:e5:05:24:1f:94:cf"
       - run:
@@ -38,75 +53,74 @@ jobs:
             git config user.name "augerbot"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
-
-  build-test:
-    parameters:
-      python_version:
-        default: "3.7"
-        type: string
+  build:
     docker:
-      - image: circleci/python:<< parameters.python_version >>
+      - image: circleci/python
     steps:
+      - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - checkout
-      - run: cp develop.env.example develop.env
-      - run: docker-compose -f docker-compose.test.yml build
-      - run: docker-compose -f docker-compose.test.yml run tests
+      - run: make config docker-build
 
-  deploy-pip:
-    parameters:
-      python_version:
-        default: "3.7"
-        type: string
+  test:
     docker:
-      - image: circleci/python:<< parameters.python_version >>
+      - image: circleci/python
     steps:
       - checkout
-      - run: python setup.py sdist bdist_wheel
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: make config docker-test
+
+  publish-pip:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
       - run:
           command: |
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
-          command: |
-            sudo pip install twine
-            echo "Deploying new package to pypi.org..."
-            twine check dist/*
-            twine upload dist/*
+      - run: make build
+      - run: make release
+
 workflows:
-  build_and_deploy_docs:
+  build-test-publish:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - docker/publish:
+          cache_from: "augerai/a2ml:latest"
+          context: docker-hub
+          image: augerai/a2ml
+          tag: $CIRCLE_BRANCH,latest
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only:
+                - master
+      - publish-pip:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          context: pypi
+
+  build-and-publish-docs:
     jobs:
       - build-docs
-      - deploy-docs:
-          name: deploy3.7
+      - publish-docs:
           requires:
             - build-docs
           filters:
             branches:
               only:
                 - master
-  commit:
-    jobs:
-      - build-test:
-          name: build3.7
-          python_version: "3.7"
-  build_and_deploy:
-    jobs:
-      - build-test:
-          name: build3.7
-          python_version: "3.7"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy-pip:
-          requires:
-            - build3.7
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/

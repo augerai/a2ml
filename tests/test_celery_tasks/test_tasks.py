@@ -1,9 +1,15 @@
 import os
 import pytest
-import logging
-
-from a2ml.tasks_queue.tasks_api import *
+from a2ml.tasks_queue.tasks_api import (
+    import_data_task,
+    evaluate_task,
+    train_task,
+    deploy_task,
+    predict_task,
+    new_project_task
+)
 from a2ml.api.utils.context import Context
+from unittest.mock import ANY
 
 pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -17,15 +23,20 @@ class TestTasks(object):
             'debug_log': True,
             'project_name': 'cli-integration-test'
         }
-        execute_tasks(import_data_task, params)
+        import_data_task.s(params).apply()
 
     @pytest.mark.skip(reason='run it locally')
     def test_import_server(self):
         from a2ml.api.a2ml import A2ML
 
         ctx = Context(
-            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
-            debug = True)
+            path=os.path.join(
+                os.environ.get('A2ML_PROJECT_PATH', ''),
+                'cli-integration-test'
+            ),
+            debug=True
+        )
+
         provider = "auger"
         ctx.config.set('config', 'providers', [provider])
         ctx.config.set('config', 'use_server', True)
@@ -37,8 +48,12 @@ class TestTasks(object):
         from a2ml.api.a2ml_project import A2MLProject
 
         ctx = Context(
-            path = os.path.join(os.environ.get('A2ML_PROJECT_PATH', ''), 'cli-integration-test'),
-            debug = True)
+            path=os.path.join(
+                os.environ.get('A2ML_PROJECT_PATH', ''),
+                'cli-integration-test'
+            ),
+            debug=True
+        )
         provider = "azure"
         ctx.config.set('config', 'providers', [provider])
         ctx.config.set('config', 'use_server', True)
@@ -50,11 +65,13 @@ class TestTasks(object):
         params = {
             'provider': 'auger',
             'debug_log': True,
-			'project_name': 'a2ml-app',
+            'project_name': 'a2ml-app',
+            '_request_id': 'some-id',
             'source_path': 's3://sample-bucket/workspace/projects/a2ml-app/files/iris.csv'
         }
 
-        execute_tasks(import_data_task, params)
+        res = import_data_task.s(params).apply()
+        assert res == []
 
     @pytest.mark.skip(reason='run it locally')
     def test_train(self):
@@ -65,7 +82,7 @@ class TestTasks(object):
             # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
         }
 
-        execute_tasks(train_task, params)
+        train_task.s(params).apply()
 
     @pytest.mark.skip(reason='run it locally')
     def test_train_s3(self):
@@ -76,7 +93,7 @@ class TestTasks(object):
             # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
         }
 
-        execute_tasks(train_task, params)
+        train_task.s(params).apply()
 
     @pytest.mark.skip(reason='run it locally')
     def test_evaluate_s3(self):
@@ -87,7 +104,7 @@ class TestTasks(object):
             # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
         }
 
-        res = execute_tasks(evaluate_task, params)
+        res = evaluate_task.s(params).apply()
         print(res)
 
     @pytest.mark.skip(reason='run it locally')
@@ -99,7 +116,7 @@ class TestTasks(object):
             'args': ['9E248B642D0E497']
         }
 
-        res = execute_tasks(deploy_task, params)
+        res = deploy_task.s(params).apply()
         print(res)
 
     @pytest.mark.skip(reason='run it locally')
@@ -114,7 +131,7 @@ class TestTasks(object):
             ]
         }
 
-        res = execute_tasks(predict_task, params)
+        res = predict_task.s(params).apply()
         print(res)
 
     @pytest.mark.skip(reason='run it locally')
@@ -130,7 +147,7 @@ class TestTasks(object):
         params['source_path'] = os.path.join(
             os.environ.get('A2ML_PROJECT_PATH'), "iris.csv")
 
-        execute_tasks(new_project_task, params)
+        new_project_task.s(params).apply()
 
     @pytest.mark.skip(reason='run it locally')
     def test_new_project_s3(self):
@@ -143,4 +160,4 @@ class TestTasks(object):
             'model_type': 'classification'
         }
 
-        execute_tasks(new_project_task, params)
+        new_project_task.s(params).apply()
