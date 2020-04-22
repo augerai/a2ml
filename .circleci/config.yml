@@ -103,10 +103,9 @@ workflows:
               only: /^v.*/
             branches:
               only:
-                - k8s-deploy
+                - master
       - publish-pip:
           requires:
-            - build
             - test
           filters:
             tags:
