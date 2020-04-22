@@ -19,8 +19,6 @@ services:
     command: server --compat /data
     ports:
       - 9000:9000
-    volumes:
-      - ./tmp/docker/data/:/data/
     env_file: develop.env
 
   createbucket:
@@ -33,10 +31,10 @@ services:
       /usr/bin/mc rm -r --force myminio/sample-bucket;
       /usr/bin/mc mb myminio/sample-bucket;
       /usr/bin/mc policy set upload myminio/sample-bucket;
+      mkdir -p /data;
+      echo 'hello,world' > /data/iris.csv;
       /usr/bin/mc cp /data/iris.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
       "
-    volumes:
-      - ./tests/fixtures/:/data/
     depends_on:
       - minio
 

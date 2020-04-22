@@ -51,17 +51,21 @@ jobs:
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
   build:
-    machine:
-      docker_layer_caching: true
+    docker:
+      - image: circleci/python
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run: make config docker-build
 
   test:
-    machine:
-      docker_layer_caching: true
+    docker:
+      - image: circleci/python
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run: make config docker-test
 
   publish-pip:
@@ -82,11 +86,13 @@ jobs:
       - run: make release
 
   publish-image:
-    machine:
-      docker_layer_caching: true
+    docker:
+      - image: circleci/python
     steps:
       - checkout
-      - run: make docker-release
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: make config docker-release
 
 workflows:
   build-test-publish:
