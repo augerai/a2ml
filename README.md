@@ -1,10 +1,10 @@
 # a2ml - Automation of AutoML
 
-![CircleCI](https://img.shields.io/circleci/build/gh/augerai/a2ml/master)
-![Join the chat](https://img.shields.io/gitter/room/augerai/a2ml.svg)
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-![Python](https://img.shields.io/pypi/pyversions/a2ml.svg)
-![PyPI - A2ML Versions](https://img.shields.io/pypi/v/a2ml.svg)
+[![CircleCI](https://img.shields.io/circleci/build/gh/augerai/a2ml/master)](https://circleci.com/gh/augerai/a2ml)
+[![Join the chat](https://img.shields.io/gitter/room/augerai/a2ml.svg)](https://gitter.im/augerai/a2ml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://raw.githubusercontent.com/augerai/a2ml/master/LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/a2ml.svg)](https://pypi.org/project/a2ml/)
+[![PyPI - A2ML Versions](https://img.shields.io/pypi/v/a2ml.svg)](https://pypi.org/project/a2ml/)
 
 The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.  Full documentation for A2ML is available at [a2ml.org](http://a2ml.org)
 
