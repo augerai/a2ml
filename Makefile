@@ -1,5 +1,5 @@
-
 .PHONY: clean config develop docker-build docker-clean docker-clean-full docker-server docker-test-build docker-test-clean docker-test init test
+DOCKER_TAG?=latest
 
 config:
 	cp develop.env.example develop.env
@@ -17,6 +17,12 @@ docker-up:
 
 docker-minio-clean:
 	rm -rf tmp/docker
+
+docker-release:
+	docker push augerai/a2ml:${DOCKER_TAG}
+
+docker-tag: docker-build
+	docker tag augerai/a2ml:latest augerai/a2ml:${DOCKER_TAG}
 
 docker-test-build:
 	docker-compose -f docker-compose.test.yml build

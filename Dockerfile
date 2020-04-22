@@ -46,5 +46,4 @@ COPY tests $WORKDIR/tests
 RUN python setup.py bdist_wheel && \
   pip install -U --no-deps dist/*
 
-#ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml

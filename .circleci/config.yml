@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  docker: circleci/docker@1.0.1
+
 jobs:
   build-docs:
     parameters:
@@ -69,12 +72,8 @@ jobs:
       - run: make config docker-test
 
   publish-pip:
-    parameters:
-      python_version:
-        default: "3.7"
-        type: string
     docker:
-      - image: circleci/python:<< parameters.python_version >>
+      - image: circleci/python
     steps:
       - checkout
       - run:
@@ -85,15 +84,6 @@ jobs:
       - run: make build
       - run: make release
 
-  publish-image:
-    docker:
-      - image: circleci/python
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: make config docker-release
-
 workflows:
   build-test-publish:
     jobs:
@@ -101,17 +91,19 @@ workflows:
       - test:
           requires:
             - build
-      - publish-image:
+      - docker/publish:
+          cache_from: "augerai/a2ml:latest"
+          context: docker-hub
+          image: augerai/a2ml
+          tag: $CIRCLE_BRANCH,latest
           requires:
-            - build
             - test
           filters:
             tags:
               only: /^v.*/
             branches:
               only:
-                - master
-          context: docker-hub
+                - k8s-deploy
       - publish-pip:
           requires:
             - build
