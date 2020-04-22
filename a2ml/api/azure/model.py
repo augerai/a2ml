@@ -145,9 +145,9 @@ class AzureModel(object):
         input_payload = json.dumps(input_payload)
         try:
             response = aci_service.run(input_data = input_payload)
-            print(response)
+            # print(response)
         except Exception as e:
-            print('err log', aci_service.get_logs())
+            # print('err log', aci_service.get_logs())
             raise e
 
         results_proba = None
@@ -196,7 +196,7 @@ class AzureModel(object):
         if type(threshold) != dict and minority_target_class is not None:
             threshold = {minority_target_class:threshold}
 
-        print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
+        # print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
         #print(results_proba)
         if type(threshold) == dict:
             mapped_threshold = {}
