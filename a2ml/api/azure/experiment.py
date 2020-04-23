@@ -51,7 +51,7 @@ class AzureExperiment(object):
                 exclude_columns = [item.strip() for item in exclude_columns]
             else:
                 exclude_columns = list(self.ctx.config.get('exclude'))
-            
+
         ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
         if exclude_columns:
@@ -126,12 +126,13 @@ class AzureExperiment(object):
         return {'experiment_name': experiment_name, 'run_id': run.run_id}
 
     @error_handler    
-    def stop(self):
+    def stop(self, run_id = None):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
         if experiment_name is None:
             raise AzureException('Please specify Experiment name...')
-        run_id = self.ctx.config.get('experiment/run_id', None)
+        if run_id is None:
+            run_id = self.ctx.config.get('experiment/run_id', None)
         if run_id is None:
             raise AzureException(
                 'Pleae provide Run ID (experiment/run_id)...')

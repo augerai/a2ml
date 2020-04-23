@@ -39,11 +39,15 @@ class AugerExperiment(object):
     @error_handler
     @authenticated
     @with_dataset
-    def stop(self, dataset):
+    def stop(self, dataset, run_id = None):
         name = self.ctx.config.get('experiment/name', None)
         if name is None:
             raise AugerException('Please specify Experiment name...')
-        if Experiment(self.ctx, dataset, name).stop():
+        if run_id is None:
+            run_id = self.ctx.config.get(
+                'experiment/experiment_session_id', None)
+
+        if Experiment(self.ctx, dataset, name).stop(run_id):
             self.ctx.log('Search is stopped...')
         else:
             self.ctx.log('Search is not running. Stop is ignored.')
