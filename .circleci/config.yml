@@ -101,6 +101,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
       - docker/publish:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
@@ -112,6 +114,8 @@ workflows:
             branches:
               only:
                 - master
+            tags:
+              ignore: /^v.*/
       - publish-pip:
           requires:
             - test
