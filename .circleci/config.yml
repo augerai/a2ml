@@ -87,10 +87,16 @@ jobs:
 workflows:
   build-test-publish:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
       - test:
           requires:
             - build
+          filters:
+            tags:
+              only: /^v.*/
       - docker/publish:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
