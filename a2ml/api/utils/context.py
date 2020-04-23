@@ -3,6 +3,7 @@ import sys
 import click
 import logging
 from .config import Config
+import warnings
 
 log = logging.getLogger("a2ml")
 
@@ -40,6 +41,11 @@ class Context(object):
             self.name = "{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
         self.set_runs_on_server(False)
+
+        def warn(*args, **kwargs):
+            self.system_warning(*args, **kwargs)
+
+        warnings.warn = warn
 
     def set_runs_on_server(self, value):
         self._runs_on_server = value
@@ -117,9 +123,17 @@ class Context(object):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
         self.publish_log('error', '%s%s' %(self.name, msg), *args, **kwargs)
 
+    def system_warning(self, *args, **kwargs):
+        if self.debug and args:
+            name = '[warning] '
+            msg = args[0]
+            log.warning('%s%s' %(name, msg))
+            self.publish_log('warning', '%s%s' %(name, msg))
+
     def publish_log(self, level, msg, *args, **kwargs):
         if self.notificator:
             self.notificator.publish_log(self.request_id, level, msg, args, kwargs)
+
 
     @staticmethod
     def setup_logger(format='%(asctime)s %(name)s | %(message)s'):

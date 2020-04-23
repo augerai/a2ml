@@ -788,4 +788,22 @@ This will create new files inside of the /build directory.  If you notice that y
 
 ```
 open ./build/html/index.html
+```
 
+## Development
+To release a new version the flow should be:
+1. Change VERSION variable in setup.py  to match what you want to release, minus the “v”. By default it would be “<current-milestone>.dev0", for example “0.3.0.dev0”. This ensures we don’t accidentally release a dev version to pypi.org. So for when we’re ready to release 0.3.0, the  __version__ variable should simply be “0.3.0".
+
+2. Commit and push the changes above.
+
+```
+git tag v<the-version> (for example: git tag v0.3.0)
+git push --tags
+```
+
+3. verify circleci build passed and docker image tag exists:
+
+```
+pip install -U a2ml==0.3.0
+docker pull augerai/a2ml:v0.3.0
+```
