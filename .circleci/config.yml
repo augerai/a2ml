@@ -95,7 +95,7 @@ workflows:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
           image: augerai/a2ml
-          tag: $CIRCLE_BRANCH,latest
+          tag: $CIRCLECI_TAG,latest
           requires:
             - test
           filters:
