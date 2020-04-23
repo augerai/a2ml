@@ -95,12 +95,20 @@ workflows:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
           image: augerai/a2ml
-          tag: $CIRCLECI_TAG,latest
+          tag: $CIRCLECI_TAG
           requires:
             - test
           filters:
             tags:
               only: /^v.*/
+      - docker/publish:
+          cache_from: "augerai/a2ml:latest"
+          context: docker-hub
+          image: augerai/a2ml
+          tag: latest
+          requires:
+            - test
+          filters:
             branches:
               only:
                 - master
