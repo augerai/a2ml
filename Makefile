@@ -47,6 +47,9 @@ develop:
 init:
 	virtualenv .venv
 
+install: build
+	pip install -U dist/*
+
 release: build
 	@pip install -q twine
 	twine check dist/*

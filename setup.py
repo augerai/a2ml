@@ -5,8 +5,9 @@ import sys
 from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
+from a2ml import __version__
 
-VERSION = '0.2.3'
+VERSION = __version__
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
