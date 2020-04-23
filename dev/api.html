@@ -734,11 +734,14 @@ DataSet(ctx, 'auger, azure').select(dataset_name)</p>
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stops runninng experiment/s.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p>Results for each provider.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>run_id</strong> (<em>str</em>) -- The run id for a training session. A unique run id is created for every train. If set to None default is last experiment train.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
