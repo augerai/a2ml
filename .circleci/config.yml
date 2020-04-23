@@ -102,7 +102,7 @@ workflows:
           context: docker-hub
           image: augerai/a2ml
           name: docker-publish-tag
-          tag: $CIRCLECI_TAG
+          tag: $CIRCLE_TAG
           requires:
             - test
           filters:
