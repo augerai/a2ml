@@ -4,5 +4,3 @@ from .api.a2ml_dataset import A2MLDataset
 from .api.a2ml_experiment import A2MLExperiment
 from .api.a2ml_model import A2MLModel
 from .api.utils.context import Context
-
-__version__ = '0.2.4'
