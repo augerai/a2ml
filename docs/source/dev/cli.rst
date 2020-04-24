@@ -54,13 +54,35 @@ Here is an example with options that apply to all AutoML providers:
 
 .. code-block:: YAML
 
-  name: moneyball
-  providers: google,azure,auger
-  source: gs://moneyball/baseball.csv
+  source: ./moneyball/train.csv
   exclude: Team,League,Year
-  target: 'RS'
+  target: RS
   model_type: regression
-  budget: 3600
+  experiment:
+    cross_validation_folds: 5
+    max_total_time: 60
+    max_eval_time: 5
+    max_n_trials: 10
+    use_ensemble: true
+
+**azure.yaml**
+
+.. code-block:: YAML
+
+  experiment:
+    metric: regression
+
+  cluster:
+    region: eastus2
+    name: cpucluster
+    min_nodes: 0
+    max_nodes: 4
+    type: STANDARD_D2_V2
+
+  file_share:
+  account_name:
+  account_key:
+  dataset: train.csv
   
 **google.yaml**
 
@@ -78,8 +100,8 @@ Here is an example with options that apply to all AutoML providers:
 
 .. code-block:: YAML
 
-  project: test_app
-  dataset: some_test_data
+  project: moneyball
+  dataset: train.csv
 
   experiment:
     cross_validation_folds: 5

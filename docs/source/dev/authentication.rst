@@ -7,7 +7,7 @@ Depending on the :doc:`configuration` of A2ML, authentication will be with the A
 A2ML Cloud
 ==========
 
-Authenticating with A2ML Cloud will allow you to have one account which manages all provider credentials. All providers can then be run without individual configuration.
+Authenticating with |a2mlcloud| will allow you to have one account which manages all provider credentials. All providers can then be run without individual configuration.
 
 CLI Login
 ---------
@@ -94,15 +94,15 @@ To login programmatically without the browser use the |spc|.
 
   Follow the above directions to create an azure.json file with values specific to your account.
 
-azure.json
-
 .. code-block:: JSON
+  :caption: azure.json
+  :name: azure.json
 
   {
     "subscription_id":"",
-    "service_principal_tenant_id":"",
-    "service_principal_id":"",
-    "service_principal_password":""
+    "directory_tenant_id":"",
+    "application_client_id":"",
+    "client_secret":""
   }
 
 

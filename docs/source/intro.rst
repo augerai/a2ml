@@ -1,12 +1,19 @@
 
 A2ML - Automation of AutoML
 ---------------------------
+.. |augerai| raw:: html
+
+   <a href="https://auger.ai" target="_blank">Auger.AI</a>
+
+.. |augerairepo| raw:: html
+
+  <a href="http://github.com/augerai/a2ml" target="_blank">open source</a>
 
 The A2ML ("Automate AutoML") project is a Python API and set of command line tools to **automate Automated Machine Learning** tools from multiple vendors. 
 
 A2ML provides a common API for all cloud-oriented AutoML vendors. 
-Today that is Microsoft Azure AutoML, Google Cloud AutoML, and `Auger.AI <http://auger.ai>`_. 
-All of A2ML is `open source <http://github.com/augerai/a2ml>`_ and free in perpetuity. 
+Today that is Microsoft Azure AutoML, Google Cloud AutoML, and |augerai|. 
+All of A2ML is |augerairepo| and free in perpetuity. 
 Other AutoML providers can be added as the fundamental stages apply to all them.  
 
 Performing all phases of the model building, training and usage process with those other cloud vendors' products is hundreds of lines of code.
@@ -31,17 +38,17 @@ common set of stages:
   :align: center
   :alt: AutoML PREDIT
 
-- Importing data for training
+- \ **I**\mporting data for training
 
-- Train models with multiple algorithms and hyperparameters
+- \ **T**\rain models with multiple algorithms and hyperparameters
 
-- Evaluate model performance and choose one or more for deployment
+- \ **E**\valuate model performance and choose one or more for deployment
 
-- Deploy selected models
+- \ **D**\eploy selected models
 
-- Predict results with new data against deployed models
+- \ **P**\redict results with new data against deployed models
 
-- Review performance of deployed models
+- \ **R**\eview performance of deployed models
 
 Since ITEDPR is hard to remember we refer to this pipeline by its conveniently mnemonic anagram: "PREDIT" (French for "predict"). The A2ML project provides classes which implement this pipeline for various Cloud AutoML providers
 and a command line interface that invokes stages of the pipeline.
