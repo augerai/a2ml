@@ -5,31 +5,27 @@ orbs:
 
 jobs:
   build-docs:
-    parameters:
-      python_version:
-        default: "3.7"
-        type: string
     docker:
-      - image: circleci/python:<< parameters.python_version >>
+      - image: circleci/python:3.7-stretch
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python_version >>/site-packages
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
-            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
-            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}
-            - a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>
+            - a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
+            - a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}
+            - a2ml-python-doc-deps-{{ arch }}-3.7
       - run:
           name: Install dependencies
           command: |
             pip install ".[docs]"
       - save_cache:
-          key: a2ml-python-doc-deps-{{ arch }}-<< parameters.python_version >>-{{ .Branch }}-{{ checksum "setup.py" }}
+          key: a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
           paths:
             # https://github.com/circleci/circleci-docs/pull/4214 ???
             - "/usr/local/bin"
-            - "/usr/local/lib/python<< parameters.python_version >>/site-packages"
+            - "/usr/local/lib/python3.7/site-packages"
       - run:
           name: Build docs
           command: cd docs/ && make html
@@ -53,18 +49,9 @@ jobs:
             git config user.name "augerbot"
             npm install -g --silent gh-pages@2.2.0
             gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
-  build:
+  build-and-test:
     docker:
-      - image: circleci/python
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: make config docker-build
-
-  test:
-    docker:
-      - image: circleci/python
+      - image: circleci/python:3.7-stretch
     steps:
       - checkout
       - setup_remote_docker:
@@ -73,7 +60,7 @@ jobs:
 
   publish-pip:
     docker:
-      - image: circleci/python
+      - image: circleci/python:3.7-stretch
     steps:
       - checkout
       - run:
@@ -87,13 +74,7 @@ jobs:
 workflows:
   build-test-publish:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /^v.*/
-      - test:
-          requires:
-            - build
+      - build-and-test:
           filters:
             tags:
               only: /^v.*/
@@ -104,7 +85,7 @@ workflows:
           name: docker-publish-tag
           tag: $CIRCLE_TAG
           requires:
-            - test
+            - build-and-test
           filters:
             tags:
               only: /^v.*/
@@ -117,7 +98,7 @@ workflows:
           name: docker-publish-master
           tag: latest
           requires:
-            - test
+            - build-and-test
           filters:
             branches:
               only:
@@ -126,7 +107,7 @@ workflows:
               ignore: /^v.*/
       - publish-pip:
           requires:
-            - test
+            - build-and-test
           filters:
             tags:
               only: /^v.*/
