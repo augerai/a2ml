@@ -45,7 +45,7 @@ jobs:
         default: "3.7"
         type: string
     docker:
-      - image: circleci/python:<< parameters.python_version >>
+      - image: circleci/python:<< parameters.python_version >>-node
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
