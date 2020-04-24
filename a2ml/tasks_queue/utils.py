@@ -12,23 +12,6 @@ def get_uid4():
 def remove_dups_from_list(ar):
     return list(OrderedDict.fromkeys(ar))
 
-def convertStringsToUTF8(params):
-    # if params is None:
-    #     return params
-
-    # if type(params) is dict:
-    #     for key, value in params.items():
-    #         new_key = key.encode('utf-8')
-    #         del params[key]
-    #         params[new_key] = convertStringsToUTF8(value)
-    # elif type(params) is list:
-    #     for idx, value in enumerate(params):
-    #         params[idx] = convertStringsToUTF8(value)
-    # elif type(params) is str:
-    #     params = params.encode('utf-8')
-
-    return params
-
 def process_arff_line(line, date_attrs):
     if "@attribute" in line.lower():
         parts = line.split(maxsplit=3)
@@ -68,12 +51,6 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
     if fsclient.isFileExists(local_file_path):
         etag_changed = False
         file_size_changed = False
-
-        #TODO: check etag to download new file, data_path_reloaded flag should be passed to auger_ml
-        # if not remote_file_info:
-        #     remote_file_info = get_remote_file_info(remote_path)
-
-        # if remote_file_info.get('file_etag'):
 
         if force_download:
             logging.info("Force download file again.")
