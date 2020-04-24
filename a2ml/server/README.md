@@ -29,7 +29,7 @@ Run Celery worker:
 a2ml worker
 ```
 
-Add these options in your config.yaml:
+Add these options in your `config.yaml`:
 ```
 use_server: true
 server_endpoint: http://localhost:8000

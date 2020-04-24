@@ -5,8 +5,8 @@ Configuration
 A2ML can be configured in three different ways.
 
 
-A2ML Cloud
-==========
+A2ML Cloud (Coming Soon)
+========================
 
 .. image:: https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png
   :width: 70%

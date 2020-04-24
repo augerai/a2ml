@@ -22,7 +22,7 @@ This includes both general options that apply to all vendors and vendor specific
 
 **All Vendors**
 
-  - config.yaml
+  - ``config.yaml``
 
   .. code-block:: YAML
 
@@ -36,9 +36,9 @@ This includes both general options that apply to all vendors and vendor specific
 
 **Vendor Specfic**
 
- - auger.yaml 
- - azure.yaml 
- - google.yaml
+ - ``auger.yaml``
+ - ``azure.yaml``
+ - ``google.yaml``
 
  .. code-block:: YAML
 

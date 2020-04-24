@@ -12,7 +12,7 @@ Microsoft Azure and the Moneyball Dataset
   <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a>
 
 
-The following code shows how a2ml can be used with **Microsfot Azure** and **Auger** AutoML providers to perform a regression task against the |moneyball| dataset.
+The following code shows how a2ml can be used with **Microsoft Azure** and **Auger** AutoML providers to perform a regression task against the |moneyball| dataset.
 
 
 Dataset
@@ -81,7 +81,7 @@ Inside of a terminal create a new a2ml project.
   $ ls 
   auger.yaml  azure.yaml config.yaml  google.yaml
 
-To configure Microsoft Azure and Auger providers, open config.yaml. 
+To configure Microsoft Azure and Auger providers, open ``config.yaml``. 
 
 .. code-block:: yaml
   :caption: config.yaml
@@ -108,7 +108,7 @@ Import Dataset
 
 To import the local |moneyball| baseball dataset.
 
-.. code-block:: guess
+.. code-block::
   :emphasize-lines: 27,31
 
   $ a2ml import
@@ -170,7 +170,7 @@ Notice how many assets were created in Microsoft Azure and Auger. Make sure to l
 Train
 -----
 
-Before training update azure.yaml and auger.yaml to select a metric to evaluate models with.  **R2** will be used.
+Before training, update ``azure.yaml`` and ``auger.yaml`` to select a metric to evaluate models with.  **R2** will be used in this example.
 
 
 .. code-block:: yaml
@@ -318,7 +318,7 @@ This is because a Microsoft Azure **model id** was selected.  To deploy a model 
 Predict
 -------
 
-To use the deployed model/s pass a file of new observations with the target ommited.
+To use the deployed model(s), pass a file of new observations with the target omitted.
 
 .. code-block:: python
 
