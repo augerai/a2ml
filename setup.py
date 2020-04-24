@@ -55,7 +55,7 @@ extras = {
     ],
     'docs': [
         'sphinx',
-        'sphinx_rtd_theme @ https://github.com/augerai/sphinx_rtd_theme/tarball/master'
+        'sphinx_rtd_theme @ https://github.com/augerai/sphinx_rtd_theme/tarball/bump-version'
     ],
     'server': [
         'celery==4.4.0',
