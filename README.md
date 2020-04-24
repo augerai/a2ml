@@ -493,7 +493,7 @@ Experiment will be run.
   rv = A2MLExperiment(ctx, providers).start()
   ```
 
-- **stop()** - stops running Experiment(s).
+- **stop(run_id)** - stops running Experiment(s).
   Returns:
   ```
     {
