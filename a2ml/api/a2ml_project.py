@@ -8,7 +8,7 @@ class A2MLProject(BaseA2ML):
 
         Args:
             context (object): An instance of the a2ml Context.
-            provider (str): The automl provider/s you wish to run. For example 'auger,azure,google'.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
         
         Returns:
             A2MLProject object
