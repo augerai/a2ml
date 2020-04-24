@@ -42,7 +42,7 @@ To run Azure AutoML models locally.
 
 .. code-block:: bash
 
-  $ pip install "a2ml[azure-local]"
+  $ pip install "a2ml[azure]"
 
 
 Google Cloud Provider
