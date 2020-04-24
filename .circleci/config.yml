@@ -13,15 +13,15 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
-            - a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
-            - a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}
-            - a2ml-python-doc-deps-{{ arch }}-3.7
+            - a2ml-python-doc-deps-v2-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
+            - a2ml-python-doc-deps-v2-{{ arch }}-3.7-{{ .Branch }}
+            - a2ml-python-doc-deps-v2-{{ arch }}-3.7
       - run:
           name: Install dependencies
           command: |
             pip install ".[docs]"
       - save_cache:
-          key: a2ml-python-doc-deps-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
+          key: a2ml-python-doc-deps-v2-{{ arch }}-3.7-{{ .Branch }}-{{ checksum "setup.py" }}
           paths:
             # https://github.com/circleci/circleci-docs/pull/4214 ???
             - "/usr/local/bin"
