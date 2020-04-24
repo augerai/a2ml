@@ -70,7 +70,7 @@ Here is an example with options that apply to all AutoML providers:
 .. code-block:: YAML
 
   experiment:
-    metric: regression
+    metric: r2_score
 
   cluster:
     region: eastus2
