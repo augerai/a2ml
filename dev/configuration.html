@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Advanced &mdash; a2ml 1.0 documentation</title>
+  <title>Configuration &mdash; a2ml 1.0 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Contributing" href="../community/contributing.html" />
-    <link rel="prev" title="A2ML CLI" href="cli.html" /> 
+    <link rel="next" title="Authentication" href="authentication.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,12 +83,20 @@
               <p class="caption"><span class="caption-text">Development</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a2ml-cloud-coming-soon">A2ML Cloud (Coming Soon)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a2ml-local">A2ML Local</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#direct-provider-connection">Direct Provider Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-provider-connection">Server Provider Connection</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Community</span></p>
 <ul>
@@ -141,13 +149,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Advanced</li>
+      <li>Configuration</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/dev/advanced.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/dev/configuration.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -160,8 +168,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="advanced">
-<h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>A2ML can be configured in three different ways.</p>
+<div class="section" id="a2ml-cloud-coming-soon">
+<h2>A2ML Cloud (Coming Soon)<a class="headerlink" href="#a2ml-cloud-coming-soon" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png" style="width: 70%;" /></a>
+<p>Create one account in the <a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a> and let the cloud manage all the provider connections.</p>
+</div>
+<div class="section" id="a2ml-local">
+<h2>A2ML Local<a class="headerlink" href="#a2ml-local" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="direct-provider-connection">
+<h3>Direct Provider Connection<a class="headerlink" href="#direct-provider-connection" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png"><img alt="A2ML client direct providers" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png" style="width: 70%;" /></a>
+<p>Directly configure the provider(s) and connect to them from the a2ml client.</p>
+</div>
+<div class="section" id="server-provider-connection">
+<h3>Server Provider Connection<a class="headerlink" href="#server-provider-connection" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png" style="width: 70%;" /></a>
+<p>Host a server which manages provider connections. The a2ml client would then point to the server.</p>
+</div>
+</div>
 </div>
 
 
@@ -172,10 +199,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../community/contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="authentication.html" class="btn btn-neutral float-right" title="Authentication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cli.html" class="btn btn-neutral float-left" title="A2ML CLI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

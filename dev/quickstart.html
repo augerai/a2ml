@@ -83,8 +83,21 @@
               <p class="caption"><span class="caption-text">Development</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#microsoft-azure-and-the-moneyball-dataset">Microsoft Azure and the Moneyball Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dataset">Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-setup">Project Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-dataset">Import Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#train">Train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evaluate">Evaluate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy">Deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#predict">Predict</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
@@ -161,6 +174,303 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Please see <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> and <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> before starting.</p>
+<div class="section" id="microsoft-azure-and-the-moneyball-dataset">
+<h2>Microsoft Azure and the Moneyball Dataset<a class="headerlink" href="#microsoft-azure-and-the-moneyball-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The following code shows how a2ml can be used with <strong>Microsoft Azure</strong> and <strong>Auger</strong> AutoML providers to perform a regression task against the <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> dataset.</p>
+<div class="section" id="dataset">
+<h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
+<p><a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> is a baseball dataset from kaggle. The moneyball dataset can be used to build many different models as described in more <a href="https://towardsdatascience.com/moneyball-linear-regression-76034259af5e" target="_blank">detail</a>.
+The goal of this exercise is to find a highly accurate model to predict the number of runs scored<strong>(RS)</strong> a MLB team will have.</p>
+<p>The dataset will be imported to Microsoft Azure and Auger AutoML providers without any data wrangling.</p>
+<p>A quick look at the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;baseball.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_dataset.png"><img alt="baseball dataset kaggle" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_dataset.png" style="width: 100%;" /></a>
+<p>The main features that will be used.</p>
+<table class="colwidths-given docutils align-default" id="id1">
+<caption><span class="caption-text">baseball.csv</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>feature</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>RS</p></td>
+<td><p>runs scored</p></td>
+</tr>
+<tr class="row-odd"><td><p>RS</p></td>
+<td><p>runs scored</p></td>
+</tr>
+<tr class="row-even"><td><p>OBP</p></td>
+<td><p>on base percentage</p></td>
+</tr>
+<tr class="row-odd"><td><p>SLG</p></td>
+<td><p>slugging percentage</p></td>
+</tr>
+<tr class="row-even"><td><p>BA</p></td>
+<td><p>batting average</p></td>
+</tr>
+<tr class="row-odd"><td><p>OOBP</p></td>
+<td><p>opponent’s on base percentage</p></td>
+</tr>
+<tr class="row-even"><td><p>OSLG</p></td>
+<td><p>opponent’s slugging percentage</p></td>
+</tr>
+<tr class="row-odd"><td><p>W</p></td>
+<td><p>number of wins in that season</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="project-setup">
+<h3>Project Setup<a class="headerlink" href="#project-setup" title="Permalink to this headline">¶</a></h3>
+<p>Inside of a terminal create a new a2ml project.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml new moneyball_project
+<span class="o">[</span>config<span class="o">]</span> Created project folder moneyball_project
+<span class="o">[</span>config<span class="o">]</span> To build your model, please <span class="k">do</span>: <span class="nb">cd</span> moneyball_project <span class="o">&amp;&amp;</span> a2ml import <span class="o">&amp;&amp;</span> a2ml train
+
+$ <span class="nb">cd</span> moneyball_project
+$ ls
+auger.yaml  azure.yaml config.yaml  google.yaml
+</pre></div>
+</div>
+<p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="config-yaml">
+<div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#config-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">moneyball_proj</span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+</span><span class="hll"><span class="nt">exclude</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Team,League,Year,RankSeason,RankPlayoffs</span>
+</span><span class="hll"><span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RS</span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regression</span>
+</span><span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
+  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</div>
+<p><em>The highlighted lines are where manual changes have been made.</em></p>
+</div>
+<div class="section" id="import-dataset">
+<h3>Import Dataset<a class="headerlink" href="#import-dataset" title="Permalink to this headline">¶</a></h3>
+<p>To import the local <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> baseball dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ a2ml import
+[azure] Creating moneyball_proj
+UserWarning: The resource group doesn&#39;t exist or was not provided. AzureML SDK is creating a resource group=moneyball_proj-resources in location=eastus2 using subscription=28ca7f62-a275-4222-aaa1-c8e9ec93adbb.
+Deploying KeyVault with name moneybalkeyvaultf9fa9c80.
+Deploying StorageAccount with name moneybalstorage3643d4640.
+Deployed KeyVault with name moneybalkeyvaultf9fa9c80. Took 18.76 seconds.
+Deploying AppInsights with name moneybalinsights692c3d29.
+Deployed AppInsights with name moneybalinsights692c3d29. Took 24.88 seconds.
+Deployed StorageAccount with name moneybalstorage3643d4640. Took 23.02 seconds.
+Deploying Workspace with name moneyball_proj.
+Deployed Workspace with name moneyball_proj. Took 20.74 seconds.
+Called AzureBlobDatastore.upload_files
+Uploading an estimated of 1 files
+Uploading an estimated of 1 files
+Uploading baseball.csv
+Uploading baseball.csv
+Uploaded baseball.csv, 1 files out of an estimated total of 1
+Uploaded baseball.csv, 1 files out of an estimated total of 1
+Uploaded 1 files
+Uploaded 1 files
+Finished AzureBlobDatastore.upload with count=1.
+Could not load the run context. Logging offline
+[azure]  Created DataSet baseball.csv
+[auger]  Starting Project to process request...
+[auger]  Project status is deploying...
+Could not load the run context. Logging offline
+<span class="hll">[azure]  Created DataSet baseball.csv
+</span>[auger]  Project status is running...
+[auger]  DataSet status is processing...
+[auger]  DataSet status is processed...
+<span class="hll">[auger]  Created DataSet baseball.csv
+</span></pre></div>
+</div>
+<p>Notice how many assets were created in Microsoft Azure and Auger. Make sure to look for verification that import was successful.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>azure<span class="o">]</span>  Created DataSet baseball.csv
+<span class="o">[</span>auger<span class="o">]</span>  Created DataSet baseball.csv
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are not authenticated with either provider run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml auth login
+</pre></div>
+</div>
+<p>or see the different <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> options and then run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml import
+</pre></div>
+</div>
+<p>Only the remaining import steps will be run.</p>
+</div>
+</div>
+<div class="section" id="train">
+<h3>Train<a class="headerlink" href="#train" title="Permalink to this headline">¶</a></h3>
+<p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>R2</strong> will be used in this example.</p>
+<div class="literal-block-wrapper docutils container" id="azure-yaml">
+<div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#azure-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">subscription_id</span><span class="p">:</span>
+<span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">run_id</span><span class="p">:</span>
+<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="auger-yaml">
+<div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#auger-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">experiment_session_id</span><span class="p">:</span>
+  <span class="nt">time_series</span><span class="p">:</span>
+  <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard</span>
+  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">stack_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stable</span>
+</pre></div>
+</div>
+</div>
+<p>To start training run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml train
+<span class="o">[</span>azure<span class="o">]</span>  Starting search on baseball.csv Dataset...
+Could not load the run context. Logging offline
+<span class="o">[</span>azure<span class="o">]</span>  Found compute target a2ml-azure ...
+Created a worker pool <span class="k">for</span> first use
+<span class="o">[</span>auger<span class="o">]</span>  Created Experiment baseball.csv-experiment
+<span class="o">[</span>auger<span class="o">]</span>  Started Experiment baseball.csv-experiment search...
+<span class="o">[</span>azure<span class="o">]</span>  Started Experiment baseball-csv search...
+</pre></div>
+</div>
+</div>
+<div class="section" id="evaluate">
+<h3>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this headline">¶</a></h3>
+<p>To view the realtime model results of a train, run.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml evaluate
+
+<span class="o">[</span>auger<span class="o">]</span>  Leaderboard <span class="k">for</span> Run 0d8b32fedd073b8e
+<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span>  model id        <span class="p">|</span> r2      <span class="p">|</span> algorithm
+<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span>  FF4998552070427 <span class="p">|</span> <span class="m">0</span>.9392  <span class="p">|</span> SuperLearnerAlgorithmRegressor
+<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span>  60A26A1DBC7543E <span class="p">|</span> <span class="m">0</span>.9353  <span class="p">|</span> LGBMRegressor
+<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span>  Search is completed.
+<span class="o">[</span>azure<span class="o">]</span>  Leaderboard <span class="k">for</span> Run AutoML_feca2e53-618b-4407-a17c-f119ba9d7578
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  model id                                      <span class="p">|</span> algorithm                        <span class="p">|</span> r2_score
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9 <span class="p">|</span> StackEnsemble                    <span class="p">|</span> <span class="m">0</span>.9435518514990049
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_8 <span class="p">|</span> VotingEnsemble                   <span class="p">|</span> <span class="m">0</span>.942078490714301
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_0 <span class="p">|</span> MaxAbsScaler,LightGBM            <span class="p">|</span> <span class="m">0</span>.9338693722577552
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_1 <span class="p">|</span> StandardScalerWrapper,LightGBM   <span class="p">|</span> <span class="m">0</span>.9316232600551793
+<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span>  Status: Completed
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy">
+<h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">¶</a></h3>
+<p>To deploy a specific model simply copy the <strong>model id</strong> from the leaderboard output and run.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
+
+  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - CacheDriver:Cached token is expired at <span class="m">2020</span>-04-22 <span class="m">16</span>:13:41.536177.  Refreshing
+  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - TokenRequest:Getting a new token from a refresh token
+  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - CacheDriver:Returning token refreshed after expiry.
+  <span class="o">[</span>auger<span class="o">]</span>  Deploying model AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
+  Created a worker pool <span class="k">for</span> first use
+<span class="hll">  <span class="o">[</span>auger<span class="o">]</span>  status: <span class="m">404</span>, body: <span class="o">{</span><span class="s2">&quot;meta&quot;</span>:<span class="o">{</span><span class="s2">&quot;status&quot;</span>:404,<span class="s2">&quot;request_params&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>,<span class="s2">&quot;token&quot;</span>:<span class="s2">&quot;****&quot;</span>,<span class="s2">&quot;pipeline&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>,<span class="s2">&quot;is_review_model_enabled&quot;</span>:true<span class="o">}</span>,<span class="s2">&quot;errors&quot;</span>:<span class="o">[{</span><span class="s2">&quot;message&quot;</span>:<span class="s2">&quot;There is no such Trial&quot;</span>,<span class="s2">&quot;error_type&quot;</span>:<span class="s2">&quot;not_found&quot;</span><span class="o">}]}}</span> <span class="o">{</span><span class="s2">&quot;status&quot;</span>: <span class="m">404</span>, <span class="s2">&quot;request_params&quot;</span>: <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>, <span class="s2">&quot;token&quot;</span>: <span class="s2">&quot;****&quot;</span>, <span class="s2">&quot;pipeline&quot;</span>: <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>, <span class="s2">&quot;is_review_model_enabled&quot;</span>: true<span class="o">}</span>, <span class="s2">&quot;errors&quot;</span>: <span class="o">[{</span><span class="s2">&quot;message&quot;</span>: <span class="s2">&quot;There is no such Trial&quot;</span>, <span class="s2">&quot;error_type&quot;</span>: <span class="s2">&quot;not_found&quot;</span><span class="o">}]}</span> on: POST /api/v1/pipelines <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>
+</span>  <span class="o">[</span>azure<span class="o">]</span>  Regestiring model: AutoMLfeca2e5369
+  <span class="o">[</span>azure<span class="o">]</span>  Deploying AciWebservice automlfeca2e5369-service ...
+  Warning, azureml-defaults not detected in provided environment pip dependencies. The azureml-defaults package contains requirements <span class="k">for</span> the inference stack to run, and should be included.
+  Running.....................................................
+  Succeeded
+  ACI service creation operation finished, operation <span class="s2">&quot;Succeeded&quot;</span>
+<span class="hll">  <span class="o">[</span>azure<span class="o">]</span>  automlfeca2e5369-service state Healthy
+</span></pre></div>
+</div>
+<p>Notice the first highlighted line in the code block above outputs a not found error for the Auger provider.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span><span class="p">:</span> <span class="mi">404</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;meta&quot;</span><span class="p">:{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span><span class="mi">404</span><span class="p">,</span><span class="s2">&quot;request_params&quot;</span><span class="p">:{</span><span class="s2">&quot;trial_id&quot;</span><span class="p">:</span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="p">,</span><span class="s2">&quot;token&quot;</span><span class="p">:</span><span class="s2">&quot;****&quot;</span><span class="p">,</span><span class="s2">&quot;pipeline&quot;</span><span class="p">:{</span><span class="s2">&quot;trial_id&quot;</span><span class="p">:</span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="p">},</span><span class="s2">&quot;is_review_model_enabled&quot;</span><span class="p">:</span><span class="n">true</span><span class="p">},</span><span class="s2">&quot;errors&quot;</span><span class="p">:[{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;There is no such Trial&quot;</span><span class="p">,</span><span class="s2">&quot;error_type&quot;</span><span class="p">:</span><span class="s2">&quot;not_found&quot;</span><span class="p">}]}}</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;request_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;trial_id&quot;</span><span class="p">:</span> <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;trial_id&quot;</span><span class="p">:</span> <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="p">},</span> <span class="s2">&quot;is_review_model_enabled&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">},</span> <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;There is no such Trial&quot;</span><span class="p">,</span> <span class="s2">&quot;error_type&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">}]}</span> <span class="n">on</span><span class="p">:</span> <span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">pipelines</span> <span class="p">{</span><span class="s2">&quot;trial_id&quot;</span><span class="p">:</span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This is because a Microsoft Azure <strong>model id</strong> was selected.  To deploy a model to the Auger provider run.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy FF4998552070427 -p auger
+<span class="o">[</span>auger<span class="o">]</span>  Deploying model FF4998552070427
+<span class="o">[</span>auger<span class="o">]</span>  Pipeline status is packaging...
+<span class="o">[</span>auger<span class="o">]</span>  Pipeline status is ready...
+<span class="hll"><span class="o">[</span>auger<span class="o">]</span>  Deployed Model on Auger Cloud. Model id is FF4998552070427
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>-p</strong> argument allows a specific provider to be selected. At anytime to view a list of possible commands use <strong>--help</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy --help
+Usage: a2ml deploy <span class="o">[</span>OPTIONS<span class="o">]</span> MODEL_ID
+
+  Deploy trained model.
+
+Options:
+<span class="hll">  -p, --provider TEXT  Cloud AutoML Provider.
+</span>  --locally            Download and deploy trained model locally.
+  --help               Show this message and exit.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="predict">
+<h3>Predict<a class="headerlink" href="#predict" title="Permalink to this headline">¶</a></h3>
+<p>To use the deployed model(s), pass a file of new observations with the target omitted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;baseball_predict.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png"><img alt="baseball predict dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png" style="width: 100%;" /></a>
+<p><em>Notice RS is not included in the file</em></p>
+<p>To initate predictions run.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml predict -m AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9 -p azure baseball_predict.csv
+<span class="hll"><span class="o">[</span>azure<span class="o">]</span>  Predictions are saved to &lt;path_to&gt;/moneyball_proj/baseball_predict_predicted.csv
+</span></pre></div>
+</div>
+<p><em>Notice a file has been created in the project directory</em> <strong>baseball_predict_predicted.csv</strong></p>
+<p>Displaying <strong>baseball_predict_predicted.csv</strong> shows that predictions for the target <strong>RS</strong> have been appended.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;baseball_predict_predicted.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_predicted.png"><img alt="baseball predicted dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_predicted.png" style="width: 100%;" /></a>
+</div>
+</div>
 </div>
 
 

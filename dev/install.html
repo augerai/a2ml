@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Authentication" href="authentication.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
     <link rel="prev" title="A2ML - Automation of AutoML" href="../index.html" /> 
 </head>
 
@@ -82,7 +82,17 @@
             
               <p class="caption"><span class="caption-text">Development</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#provider-groups">Provider Groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#azure-automl-provider">Azure AutoML Provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#google-cloud-provider">Google Cloud Provider</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#server-installion">Server Installion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-everything">Install Everything</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
@@ -161,26 +171,55 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>A2ML is distributed as a python package.</p>
+<p>A2ML is distributed as a python package. To install the client with default AugerAI AutoML provider.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U a2ml
 </pre></div>
 </div>
-<p>A2ML also defines feature groups that can be used to install A2ML and the dependencies for a given feature.</p>
-<p>To run Azure AutoML:</p>
+<div class="section" id="provider-groups">
+<h2>Provider Groups<a class="headerlink" href="#provider-groups" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="azure-automl-provider">
+<h3>Azure AutoML Provider<a class="headerlink" href="#azure-automl-provider" title="Permalink to this headline">¶</a></h3>
+<p>To include the Azure AutoML provider.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[azure]&quot;</span>
 </pre></div>
 </div>
-<p>To run Azure AutoML models locally (this will install scikit-learn and several additional dependencies):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[azure-local]&quot;</span>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Azure requires that <a href="https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html" target="_blank">LightGBM</a> be installed.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ brew install lightgbm
 </pre></div>
 </div>
-<p>For Google Cloud:</p>
+</div>
+<p>To run Azure AutoML models locally.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will install scikit-learn and several additional dependencies.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[azure]&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="google-cloud-provider">
+<h3>Google Cloud Provider<a class="headerlink" href="#google-cloud-provider" title="Permalink to this headline">¶</a></h3>
+<p>To include the Google Cloud AutoML provider.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[google]&quot;</span>
 </pre></div>
 </div>
-<p>For everything:</p>
+</div>
+</div>
+<div class="section" id="server-installion">
+<h2>Server Installion<a class="headerlink" href="#server-installion" title="Permalink to this headline">¶</a></h2>
+<p>To install server dependencies.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[server]&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-everything">
+<h2>Install Everything<a class="headerlink" href="#install-everything" title="Permalink to this headline">¶</a></h2>
+<p>To install all providers and server dependencies.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s2">&quot;a2ml[all]&quot;</span>
 </pre></div>
+</div>
 </div>
 </div>
 
@@ -192,7 +231,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="authentication.html" class="btn btn-neutral float-right" title="Authentication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../index.html" class="btn btn-neutral float-left" title="A2ML - Automation of AutoML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

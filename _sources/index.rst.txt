@@ -7,6 +7,7 @@
    :hidden:
 
    dev/install
+   dev/configuration
    dev/authentication
    dev/quickstart
    dev/api
