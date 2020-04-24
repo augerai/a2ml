@@ -22,7 +22,7 @@ Dataset
 
   <a href="https://towardsdatascience.com/moneyball-linear-regression-76034259af5e" target="_blank">detail</a>
 
-|moneyball| is a baseball dataset from kaggle. The moneyball dataset can be used to build many differnt models as described in more |detail|.
+|moneyball| is a baseball dataset from kaggle. The moneyball dataset can be used to build many different models as described in more |detail|.
 The goal of this exercise is to find a highly accurate model to predict the number of runs scored\ **(RS)** a MLB team will have.
 
 The dataset will be imported to Microsoft Azure and Auger AutoML providers without any data wrangling. 

@@ -10,7 +10,7 @@ class A2ML(BaseA2ML):
 
         Args:
             context (object): An instance of the a2ml Context.
-            provider (str): The automl provider/s you wish to run. For example 'auger,azure,google'.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
         
         Returns:
             A2ML object
@@ -140,7 +140,7 @@ class A2ML(BaseA2ML):
 
     @show_result
     def deploy(self, model_id, locally=False):
-        """Deploy a model locally or to specified provider/s.
+        """Deploy a model locally or to specified provider(s).
 
         Note:
             See evaluate function to get model_id

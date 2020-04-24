@@ -30,7 +30,7 @@ Direct Provider Connection
   :align: center
   :alt: A2ML client direct providers
 
-Directly configure the provider/s and connect to them from the a2ml client.
+Directly configure the provider(s) and connect to them from the a2ml client.
 
 Server Provider Connection
 --------------------------
