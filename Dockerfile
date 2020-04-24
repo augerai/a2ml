@@ -5,7 +5,6 @@ RUN apt-get update \
     gcc \
     g++ \
     libgomp1 \
-    wait-for-it \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -17,7 +16,7 @@ WORKDIR $WORKDIR
 COPY LICENSE README.md $WORKDIR/
 COPY setup.py $WORKDIR/
 
-RUN pip install ".[all]"
+RUN pip install ".[testing,server,azure,google]"
 RUN find /usr/local/lib/python3.7 \
   -name '*.pxd' -o \
   -name '*.pyd' -o \
@@ -42,9 +41,9 @@ COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
 COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
 COPY LICENSE README.md setup.py tox.ini $WORKDIR/
-COPY a2ml/ $WORKDIR/a2ml
+COPY a2ml $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
-RUN pip install -e ".[all]"
+RUN python setup.py bdist_wheel && \
+  pip install -U --no-deps dist/*
 
-#ENTRYPOINT /usr/local/bin/a2ml
 CMD /usr/local/bin/a2ml

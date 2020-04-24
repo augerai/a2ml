@@ -1,8 +1,9 @@
 **/*.pyc
 **/__pycache__
 *.egg
-*.egg-info
+*.egg-info/
 .circleci/
+*.coverage*
 .env/
 .git/
 .pytest_cache/
@@ -10,5 +11,7 @@
 .venv/
 .vscode/
 build/
+deploy/
 dist/
 mnt/
+tmp/

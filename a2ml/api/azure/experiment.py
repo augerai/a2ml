@@ -35,8 +35,6 @@ class AzureExperiment(object):
 
     @error_handler    
     def start(self):
-        ws = AzureProject(self.ctx)._get_ws()
-
         dataset_name = self.ctx.config.get('dataset', None)
         if dataset_name is None:
             raise AzureException('Please specify Dataset name...')
@@ -46,8 +44,18 @@ class AzureExperiment(object):
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
+        exclude_columns = None
+        if self.ctx.config.get('exclude'):
+            if isinstance(self.ctx.config.get('exclude'), str):
+                exclude_columns = self.ctx.config.get('exclude').split(",")
+                exclude_columns = [item.strip() for item in exclude_columns]
+            else:
+                exclude_columns = list(self.ctx.config.get('exclude'))
+
+        ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
-        #TODO dataset = dataset.drop_columns(columns)
+        if exclude_columns:
+            dataset = dataset.drop_columns(exclude_columns)
 
         compute_target = self._get_compute_target(ws, cluster_name)
 
@@ -93,10 +101,10 @@ class AzureExperiment(object):
         if self.ctx.config.get('experiment/max_total_time'):
             automl_settings["experiment_timeout_hours"] = float(self.ctx.config.get('experiment/max_total_time'))/60.0
 
-        if self.ctx.config.get('exclude'):
-            fc = FeaturizationConfig()
-            fc.drop_columns = self.ctx.config.get('exclude').split(",")
-            automl_settings["featurization"] = fc
+        # if self.ctx.config.get('exclude'):
+        #     fc = FeaturizationConfig()
+        #     fc.drop_columns = self.ctx.config.get('exclude').split(",")
+        #     automl_settings["featurization"] = fc
 
         automl_config = AutoMLConfig(
             task = model_type,
@@ -118,12 +126,13 @@ class AzureExperiment(object):
         return {'experiment_name': experiment_name, 'run_id': run.run_id}
 
     @error_handler    
-    def stop(self):
+    def stop(self, run_id = None):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
         if experiment_name is None:
             raise AzureException('Please specify Experiment name...')
-        run_id = self.ctx.config.get('experiment/run_id', None)
+        if run_id is None:
+            run_id = self.ctx.config.get('experiment/run_id', None)
         if run_id is None:
             raise AzureException(
                 'Pleae provide Run ID (experiment/run_id)...')

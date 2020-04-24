@@ -20,6 +20,7 @@ coverage/*
 /.tox
 /.env
 /.venv
+/.vscode
 
 # Development artifacts
 /*.csv
@@ -32,7 +33,7 @@ Session.vim
 tags
 
 # Setuptools distribution and build folders
-/dist/
+dist/
 build/
 
 develop.env

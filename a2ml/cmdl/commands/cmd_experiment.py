@@ -31,12 +31,13 @@ def start(ctx, provider):
 
 
 @click.command(short_help='Stop Experiment')
+@click.argument('run-id', required=False, type=click.STRING)
 @click.option('--provider', '-p', type=click.STRING, required=False,
     help='Cloud AutoML Provider.')
 @pass_context
-def stop(ctx, provider):
+def stop(ctx, provider, run_id):
     """Stop Experiment"""
-    A2MLExperiment(ctx, provider).stop()
+    A2MLExperiment(ctx, provider).stop(run_id)
 
 
 @click.command(short_help='Show Experiment leaderboard')

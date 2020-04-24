@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.2.2'
+VERSION = '0.3.0.dev0'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -30,6 +30,7 @@ class VerifyVersionCommand(install):
 install_requires = [
     'numpy<=1.16.2,>=1.16.0',
     'auger-hub-api-client>=0.6.1',
+    'celery<4.5.0,>=4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
@@ -37,7 +38,7 @@ install_requires = [
     'requests',
     'pandas==0.23.4',
     'smart_open==1.9.0',
-    'jsonpickle'    
+    'jsonpickle'
 ]
 
 extras = {
@@ -65,7 +66,7 @@ extras = {
         'redis',
         'uvicorn',
         's3fs',
-        'boto3'        
+        'boto3'
     ],
     'azure': [
         'shap==0.32.1',
@@ -87,7 +88,8 @@ for group_name in extras:
     all_deps += extras[group_name]
 extras['all'] = all_deps
 
-description='A2ML ("Automate AutoML") is a set of scripts to automate Automated Machine Learning workflows from multiple vendors.'
+description = """A2ML ("Automate AutoML") is a set of scripts to automate
+ Automated Machine Learning workflows from multiple vendors."""
 
 setup(
     name='a2ml',
@@ -100,20 +102,19 @@ setup(
     author='Auger AI',
     author_email='hello@auger.ai',
     url='https://github.com/augerai/a2ml',
-    license='MIT',
     zip_safe=False,
     platforms='any',
     test_suite='tests',
     python_requires='>=3',
-    keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai machine learning automl deeplearn api sdk',
+    keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai '
+        'machine learning automl deeplearn api sdk',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         "Intended Audience :: System Administrators",
         'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         "Programming Language :: Python :: 3 :: Only"
     ],
