@@ -76,8 +76,8 @@ extras = {
         'scikit-learn<=0.20.3,>=0.19.0',
         'pyarrow',
         'fusepy',
-        'azureml-train-automl-client',
-        'azureml-train-automl-runtime'
+        'azureml-train-automl-client==1.3.0',
+        'azureml-train-automl-runtime==1.3.0'
     ],
     'google': [
         'google-cloud-automl'
