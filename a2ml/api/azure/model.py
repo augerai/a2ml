@@ -85,6 +85,9 @@ class AzureModel(object):
 
         target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target)
+        exclude_columns = self.ctx.config.get_list('exclude')
+        if exclude_columns:
+            predict_data.drop(columns=exclude_columns, inplace=True)
 
         y_pred = []
         if locally:

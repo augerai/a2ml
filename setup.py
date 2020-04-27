@@ -29,6 +29,7 @@ class VerifyVersionCommand(install):
 
 install_requires = [
     'numpy<=1.16.2,>=1.16.0',
+    'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
     'celery<4.5.0,>=4.4.0',
     'click',
@@ -38,7 +39,8 @@ install_requires = [
     'requests',
     'pandas==0.23.4',
     'smart_open==1.9.0',
-    'jsonpickle'
+    'jsonpickle',
+    'feather-format'
 ]
 
 extras = {

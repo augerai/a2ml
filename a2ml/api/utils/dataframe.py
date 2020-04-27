@@ -1,5 +1,7 @@
 import pandas
 
+from  a2ml.api.utils import fsclient
+
 
 class DataFrame(object):
     """Warpper around Pandas DataFrame."""
@@ -9,10 +11,21 @@ class DataFrame(object):
 
     @staticmethod
     def load(filename, target, features=None, nrows=None):
-        try:
-            df = DataFrame._read_csv(filename, ',', features, nrows)
-        except Exception as e:
-            df = DataFrame._read_csv(filename, '|', features, nrows)
+        df = None
+        if filename.endswith('.json') or filename.endswith('.json.gz'):
+            df = pandas.read_json(filename)
+        elif filename.endswith('.xlsx') or filename.endswith('.xls'):
+            df = pandas.read_excel(filename)
+        elif filename.endswith('.feather') or filename.endswith('.feather.gz'):
+            import feather
+            with fsclient.open_file(filename, 'rb', encoding=None) as local_file:
+                df = feather.read_dataframe(local_file, columns=features, use_threads=bool(True))
+
+        if df is None:        
+            try:
+                df = DataFrame._read_csv(filename, ',', features, nrows)
+            except Exception as e:
+                df = DataFrame._read_csv(filename, '|', features, nrows)
 
         features = df.columns.tolist()
         if target in features:

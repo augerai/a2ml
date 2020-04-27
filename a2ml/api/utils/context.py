@@ -115,9 +115,10 @@ class Context(object):
         log.info('%s%s' %(self.name, msg), *args, **kwargs)
         self.publish_log('info', '%s%s' %(self.name, msg), *args, **kwargs)
 
-    def debug(self, msg, *args, **kwargs):
-        log.debug('%s%s' %(self.name, msg), *args, **kwargs)
-        self.publish_log('debug', '%s%s' %(self.name, msg), *args, **kwargs)
+    def log_debug(self, msg, *args, **kwargs):
+        if self.debug:
+            log.debug('%s%s' %(self.name, msg), *args, **kwargs)
+            self.publish_log('debug', '%s%s' %(self.name, msg), *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)

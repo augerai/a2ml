@@ -75,6 +75,19 @@ class Config(object):
             default = self.parts.part('config').get(path, default)
         return self.parts.part(self.name).get(path, default)
 
+    def get_list(self, path, default=None):
+        data = self.get(path, default)
+        res = None
+
+        if data:
+            if isinstance(data, str):
+                res = data.split(",")
+                res = [item.strip() for item in res]
+            else:
+                res = list(data)
+
+        return res
+                
     def set(self, part_name, path, value):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').set(path, value)

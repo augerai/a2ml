@@ -2,6 +2,8 @@ import os
 import logging
 import pandas as pd
 import datetime as dt
+import shortuuid
+
 from azureml.core import Run
 from azureml.core import Dataset
 from azureml.core import Experiment
@@ -15,6 +17,8 @@ from .exceptions import AzureException
 from .decorators import error_handler
 from a2ml.api.utils.formatter import print_table
 from a2ml.api.azure.dataset import AzureDataset
+from a2ml.api.utils import fsclient
+
 
 class AzureExperiment(object):
 
@@ -44,13 +48,7 @@ class AzureExperiment(object):
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
-        exclude_columns = None
-        if self.ctx.config.get('exclude'):
-            if isinstance(self.ctx.config.get('exclude'), str):
-                exclude_columns = self.ctx.config.get('exclude').split(",")
-                exclude_columns = [item.strip() for item in exclude_columns]
-            else:
-                exclude_columns = list(self.ctx.config.get('exclude'))
+        exclude_columns = self.ctx.config.get_list('exclude')
 
         ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
@@ -116,8 +114,10 @@ class AzureExperiment(object):
             label_column_name = target,
             **automl_settings)
 
-        experiment = Experiment(ws, experiment_name)
-        run = experiment.submit(automl_config, show_output = False)
+        with fsclient.with_cur_dir(".azure_temp"):
+            experiment = Experiment(ws, experiment_name)
+            run = experiment.submit(automl_config, show_output = False)
+
         self.ctx.log("Started Experiment %s search..." % experiment_name)
         self.ctx.config.set('azure', 'experiment/name', experiment_name)
         self.ctx.config.set('azure', 'experiment/run_id', run.run_id)
@@ -158,7 +158,14 @@ class AzureExperiment(object):
         self.ctx.log('Leaderboard for Run %s' % run_id)
         print_table(self.ctx.log,leaderboard)
         status = run.get_status()
-        self.ctx.log('Status: %s' % status)
+        if status == 'Failed':
+            self.ctx.log('Status: %s, Error: %s, Details: %s' % (
+                status, run.properties.get('errors'), run.get_details().get('error', {}).get('error', {}).get('message')
+            ))
+            self.ctx.log_debug(run.get_details().get('error'))
+        else:    
+            self.ctx.log('Status: %s' % status)
+
         return {
             'run_id': run_id,
             'leaderboard': leaderboard,
@@ -198,26 +205,47 @@ class AzureExperiment(object):
         # It must start with a letter, end with a letter or digit,
         # and be between 2 and 16 characters in length.
         #TODO check for all conditions
-        return name.replace('_','-').replace('.','-')
+        return name.replace('_','-').replace('.','-')[:16]
 
     def _get_compute_target(self, ws, cluster_name):
-        compute_min_nodes = self.ctx.config.get('cluster/min_nodes',1)
-        compute_max_nodes = self.ctx.config.get('cluster/max_nodes',4)
+        compute_min_nodes = int(self.ctx.config.get('cluster/min_nodes',1))
+        compute_max_nodes = int(self.ctx.config.get('cluster/max_nodes',4))
         compute_sku = self.ctx.config.get('cluster/type','STANDARD_D2_V2')
 
         if cluster_name in ws.compute_targets:
             compute_target = ws.compute_targets[cluster_name]
             if compute_target and type(compute_target) is AmlCompute:
-                self.ctx.log(
-                    'Found compute target %s ...' % cluster_name)
-        else:
-            self.ctx.log('Creating new AML compute context...')
-            provisioning_config = AmlCompute.provisioning_configuration(
-                vm_size=compute_sku, min_nodes=compute_min_nodes,
-                max_nodes=compute_max_nodes)
-            compute_target = ComputeTarget.create(
-                ws, cluster_name, provisioning_config)
-            compute_target.wait_for_completion(show_output = True)
+                ct_status = compute_target.get_status()
+                if ct_status:
+                    ct_def = ct_status.serialize()
+                    if ct_def.get('vmSize') == compute_sku and \
+                       ct_def.get('scaleSettings', {}).get('minNodeCount') == compute_min_nodes and \
+                       ct_def.get('scaleSettings', {}).get('maxNodeCount') == compute_max_nodes:
+                        self.ctx.log(
+                            'Found compute target %s ...' % cluster_name)
+
+                        return compute_target
+                    else:    
+                        self.ctx.log('Delete existing AML compute context, since parameters has been modified.')
+                        compute_target.delete()
+
+                # It works versy slow, so just change name        
+                # cluster_name = self._fix_name(shortuuid.uuid())
+                # self.ctx.config.set('azure', 'cluster/name', cluster_name)
+                # self.ctx.config.write('azure')
+                try:
+                    compute_target.wait_for_completion(show_output = True)
+                except Exception as e:
+                    self.ctx.log_debug(str(e))    
+
+        self.ctx.log('Creating new AML compute context %s...'%cluster_name)
+        provisioning_config = AmlCompute.provisioning_configuration(
+            vm_size=compute_sku, min_nodes=compute_min_nodes,
+            max_nodes=compute_max_nodes)
+        compute_target = ComputeTarget.create(
+            ws, cluster_name, provisioning_config)
+        compute_target.wait_for_completion(show_output = True)
+
         return compute_target
 
     def _get_leaderboard(self, run):
