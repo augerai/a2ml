@@ -44,6 +44,10 @@ clean:
 develop:
 	pip install -e ".[all]"
 
+develop-docs:
+	pip install -r docs/requirements.txt
+	pip install .
+
 init:
 	virtualenv .venv
 

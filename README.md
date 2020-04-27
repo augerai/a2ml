@@ -671,6 +671,12 @@ Running tests and getting test coverage:
 $ make test
 ```
 
+Running tests using docker:
+
+```sh
+$ make config docker-test
+```
+
 ## Authentication with A2ML
 Authentication with A2ML involves two parts. First, there is authentication between your client (whether it's the `a2ml` cli or the `a2ml` python API) and the service endpoint (either self-hosted or with Auger.AI). Second, there is authentication between the service endpoint and each provider. Note that in the case where you run A2ML locally, endpoint authentication is handled automatically. The table at the end of this section shows this in more detail.
 
@@ -678,7 +684,7 @@ Authentication with A2ML involves two parts. First, there is authentication betw
 You can login to the Auger.AI endpoint and provider with the `a2ml auth login` command.
 
 ```sh
-a2ml auth login
+$ a2ml auth login
 ```
 You will be prompted for your Auger service user and password. You can also download your Auger credentials as a auger.json file and put it to application folder.
 You can also put the path to auger.json in an environment variable called AUGER_CREDENTIALS_PATH OR a key inside AUGER.YAML.  
@@ -776,9 +782,15 @@ There are currently two top level directories with documentation.
 You can edit the files in here directly using <a href='https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html' target='_blank'>restructured text</a> syntax or you can add files for new sections.  Any new sections will need to have the path added in index.rst file.
 
 ### Building Documentation
-From inside the /docs directory run:
+First, install documentation-related dependencies:
 
+```sh
+make develop-docs
 ```
+
+Then, from inside the /docs directory run:
+
+```sh
 make html
 ```
 
@@ -786,7 +798,7 @@ This will create new files inside of the /build directory.  If you notice that y
 
 ### Viewing Documentation in the Browser
 
-```
+```sh
 open ./build/html/index.html
 ```
 
@@ -796,14 +808,14 @@ To release a new version the flow should be:
 
 2. Commit and push the changes above.
 
-```
+```sh
 git tag v<the-version> (for example: git tag v0.3.0)
 git push --tags
 ```
 
 3. verify circleci build passed and docker image tag exists:
 
-```
+```sh
 pip install -U a2ml==0.3.0
 docker pull augerai/a2ml:v0.3.0
 ```
