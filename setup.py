@@ -56,8 +56,7 @@ extras = {
         'wheel>=0.30.0,<0.31.0'
     ],
     'docs': [
-        'sphinx',
-        'sphinx_rtd_theme @ git+https://github.com/augerai/sphinx_rtd_theme.git@bump-version#2ab38df0d303163e0e6c2bac80d907e9915000cb'
+        'sphinx'
     ],
     'server': [
         'celery==4.4.0',
