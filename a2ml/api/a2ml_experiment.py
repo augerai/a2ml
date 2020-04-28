@@ -8,7 +8,7 @@ class A2MLExperiment(BaseA2ML):
 
         Args:
             context (object): An instance of the a2ml Context.
-            provider (str): The automl provider/s you wish to run. For example 'auger,azure,google'.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
         
         Returns:
             A2MLExperiment object
@@ -83,8 +83,11 @@ class A2MLExperiment(BaseA2ML):
         return self.runner.execute('start')
 
     @show_result
-    def stop(self):
+    def stop(self, run_id):
         """Stops runninng experiment/s.
+
+        Args:
+            run_id (str): The run id for a training session. A unique run id is created for every train. If set to None default is last experiment train.
 
         Returns:
             Results for each provider. ::
@@ -105,7 +108,7 @@ class A2MLExperiment(BaseA2ML):
                 experiment = A2MLExperiment(ctx, providers).stop()
 
         """
-        return self.runner.execute('stop')
+        return self.runner.execute('stop', run_id)
 
     @show_result
     def leaderboard(self, run_id):

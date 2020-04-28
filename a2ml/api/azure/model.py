@@ -11,7 +11,7 @@ from .project import AzureProject
 from .exceptions import AzureException
 from .decorators import error_handler
 from a2ml.api.utils.dataframe import DataFrame
-
+from a2ml.api.utils import fsclient
 
 class AzureModel(object):
 
@@ -21,18 +21,19 @@ class AzureModel(object):
 
     @error_handler
     def deploy(self, model_id, locally):
-        if locally:
-            self.ctx.log('Local deployment step is not required for Azure..')
-            return {'model_id': model_id}
-
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
         if experiment_name is None:
             raise AzureException('Please specify Experiment name...')
 
         iteration, run_id = self._get_iteration(model_id)
-
         experiment = Experiment(ws, experiment_name)
+
+        if locally:
+            model_path = self._deploy_locally(experiment, model_id)
+            # self.ctx.log('Local deployment step is not required for Azure..')
+            return {'model_id': model_id}
+
         experiment_run = AutoMLRun(experiment = experiment, run_id = run_id)
         model_run = AutoMLRun(experiment = experiment, run_id = model_id)
         model_name = model_run.properties['model_name']
@@ -85,6 +86,9 @@ class AzureModel(object):
 
         target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target)
+        exclude_columns = self.ctx.config.get_list('exclude')
+        if exclude_columns:
+            predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
 
         y_pred = []
         if locally:
@@ -155,16 +159,31 @@ class AzureModel(object):
 
         return json.loads(response)['result'], results_proba, proba_classes
 
-    def _predict_locally(self, experiment, predict_data, model_id, threshold):
-        run_id = model_id
-        iteration = None
-        parts = model_id.split('_')
-        if len(parts) > 2:
-            run_id = parts[0]+"_"+parts[1]
-            iteration = parts[2]
+    def verify_local_model(self, model_id):
+        model_path = os.path.join(self.ctx.config.get_path(), 'models',
+            'azure-model-%s.pkl.gz'%model_id)
+        return fsclient.is_file_exists(model_path), model_path
+            
+    def _deploy_locally(self, experiment,  model_id):
+        is_loaded, model_path = self.verify_local_model(model_id)
 
-        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
-        best_run, fitted_model = remote_run.get_output(iteration=iteration)
+        if not is_loaded:
+            self.ctx.log('Downloading model %s' % model_id)
+
+            iteration, run_id = self._get_iteration(model_id)
+            remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+            best_run, fitted_model = remote_run.get_output(iteration=iteration)
+            fsclient.save_object_to_file(fitted_model, model_path)
+
+            self.ctx.log('Downloaded model to %s' % model_path)
+        else:
+            self.ctx.log('Downloaded model is %s' % model_path)
+
+        return model_path
+                
+    def _predict_locally(self, experiment, predict_data, model_id, threshold):
+        model_path = self._deploy_locally(experiment, model_id)
+        fitted_model = fsclient.load_object_from_file(model_path)    
 
         results_proba = None
         proba_classes = None

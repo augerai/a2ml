@@ -50,8 +50,10 @@ class Experiment(AugerExperimentApi):
 
         return self.name, experiment_session_id
 
-    def stop(self):
-        run_id = self._get_latest_run()
+    def stop(self, run_id=None):
+        if run_id is None:
+            run_id = self._get_latest_run()
+            
         session_api = AugerExperimentSessionApi(
             self.ctx, None, None, run_id)
         return session_api.interrupt()

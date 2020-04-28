@@ -309,6 +309,15 @@ def save_local(path, move_file=True):
         yield path
 
 
+@contextlib.contextmanager
+def with_cur_dir(dir_path):
+    create_folder(dir_path)
+
+    old_path = os.getcwd()
+    os.chdir(dir_path)
+    yield
+    os.chdir(old_path)
+
 def move_file(path_src, path_dst):
     #print(path_src, path_dst)
 

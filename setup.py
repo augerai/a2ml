@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.2.5'
+VERSION = '0.4.0.dev0'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -29,8 +29,8 @@ class VerifyVersionCommand(install):
 
 install_requires = [
     'numpy<=1.16.2,>=1.16.0',
+    'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
-    'celery<4.5.0,>=4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
@@ -38,7 +38,8 @@ install_requires = [
     'requests',
     'pandas==0.23.4',
     'smart_open==1.9.0',
-    'jsonpickle'
+    'jsonpickle',
+    'feather-format'
 ]
 
 extras = {
@@ -55,8 +56,7 @@ extras = {
         'wheel>=0.30.0,<0.31.0'
     ],
     'docs': [
-        'sphinx',
-        'sphinx-rtd-theme'
+        'sphinx'
     ],
     'server': [
         'aioredis',
@@ -72,13 +72,7 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'shap==0.32.1',
-        'scipy<=1.1.0,>=1.0.0',
-        'scikit-learn<=0.20.3,>=0.19.0',
-        'pyarrow',
-        'fusepy',
-        'azureml-train-automl-client',
-        'azureml-train-automl-runtime'
+        'azureml-sdk[automl]==1.3.0'
     ],
     'google': [
         'google-cloud-automl'

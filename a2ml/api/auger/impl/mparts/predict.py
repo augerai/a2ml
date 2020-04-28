@@ -46,8 +46,9 @@ class ModelPredict():
         return predicted
 
     def _predict_locally(self, filename, model_id, threshold):
+        model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
-            ModelDeploy.verify_local_model(model_id)
+            model_deploy.verify_local_model(model_id)
 
         if not is_model_loaded:
             raise AugerException('Model isn\'t loaded locally. '
