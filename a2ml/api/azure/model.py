@@ -166,7 +166,7 @@ class AzureModel(object):
             run_id = parts[0]+"_"+parts[1]
             iteration = parts[2]
 
-        model_path = os.path.join(self.ctx.config.path, ".a2ml_models", "model_%s.pkl.gz"%model_id)
+        model_path = os.path.join(self.ctx.config.get_path(), ".a2ml_models", "model_%s.pkl.gz"%model_id)
         if fsclient.is_file_exists(model_path):
             self.ctx.log('Use locally cached model: %s'%model_path)
             fitted_model = fsclient.load_object_from_file(model_path)    

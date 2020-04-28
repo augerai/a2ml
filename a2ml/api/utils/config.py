@@ -31,6 +31,8 @@ class ConfigParts(object):
         self.is_loaded = False
 
     def load(self, path=None):
+        if path is None:
+            path = os.getcwd()
         for pname in self.part_names:
             filename = os.path.join(path, '%s.yaml' % pname)
 
@@ -62,10 +64,7 @@ class Config(object):
         super(Config, self).__init__()
         self.runs_on_server = False
         self.name = name
-        if path is None:
-            path = os.getcwd()
-
-        self.path = path        
+        self.path = path
         self.parts = ConfigParts()
         self.load(path)
 
@@ -89,6 +88,13 @@ class Config(object):
 
         return res
                
+    def get_path(self):
+        path = self.path
+        if path is None:
+            path = os.getcwd()
+
+        return path
+                   
     def set(self, part_name, path, value):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').set(path, value)
