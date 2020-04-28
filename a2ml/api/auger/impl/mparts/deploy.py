@@ -5,7 +5,7 @@ from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
-
+from a2ml.api.utils import fsclient
 
 class ModelDeploy(object):
     """Deploy Model on locally or on Auger Cloud."""
@@ -49,20 +49,18 @@ class ModelDeploy(object):
                 model_path, model_id)
 
             self.ctx.log('Downloaded model to %s' % downloaded_model_file)
+
+            self.ctx.log('Pulling docker image required to predict')
+            self._docker_pull_image()            
         else:
             self.ctx.log('Downloaded model is %s' % model_name)
 
-        self.ctx.log('Pulling docker image required to predict')
-        self._docker_pull_image()
-
         return model_id
 
-    @staticmethod
-    def verify_local_model(model_id):
-        model_path = os.path.abspath(
-            os.path.join(os.getcwd(), 'models'))
-        model_name = '%s/model-%s.zip' % (model_path, model_id)
-        return os.path.isfile(model_name), model_path, model_name
+    def verify_local_model(self, model_id):
+        model_path = os.path.join(self.ctx.config.get_path(), 'models')
+        model_name = os.path.join(model_path, 'model-%s.zip' % model_id)
+        return fsclient.is_file_exists(model_name), model_path, model_name
 
     def _start_project(self):
         if not self.project.is_running():
