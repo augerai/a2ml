@@ -11,7 +11,7 @@ from .project import AzureProject
 from .exceptions import AzureException
 from .decorators import error_handler
 from a2ml.api.utils.dataframe import DataFrame
-
+from a2ml.api.utils import fsclient
 
 class AzureModel(object):
 
@@ -87,7 +87,7 @@ class AzureModel(object):
         predict_data = DataFrame.load(filename, target)
         exclude_columns = self.ctx.config.get_list('exclude')
         if exclude_columns:
-            predict_data.drop(columns=exclude_columns, inplace=True)
+            predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
 
         y_pred = []
         if locally:
@@ -166,8 +166,15 @@ class AzureModel(object):
             run_id = parts[0]+"_"+parts[1]
             iteration = parts[2]
 
-        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
-        best_run, fitted_model = remote_run.get_output(iteration=iteration)
+        model_path = os.path.join(self.ctx.config.path, ".a2ml_models", "model_%s.pkl.gz"%model_id)
+        if fsclient.is_file_exists(model_path):
+            self.ctx.log('Use locally cached model: %s'%model_path)
+            fitted_model = fsclient.load_object_from_file(model_path)    
+        else:
+            self.ctx.log('Local model not found. Download it ...')
+            remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+            best_run, fitted_model = remote_run.get_output(iteration=iteration)
+            fsclient.save_object_to_file(fitted_model, model_path)
 
         results_proba = None
         proba_classes = None
