@@ -1,7 +1,4 @@
 ---
-# Azure subscription id
-subscription_id:
-
 # Name of the DataSet on Azure Cloud
 dataset:
 

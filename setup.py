@@ -31,7 +31,6 @@ install_requires = [
     'numpy<=1.16.2,>=1.16.0',
     'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
-    'celery<4.5.0,>=4.4.0',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
@@ -70,13 +69,7 @@ extras = {
         'boto3'
     ],
     'azure': [
-        'shap==0.32.1',
-        'scipy<=1.1.0,>=1.0.0',
-        'scikit-learn<=0.20.3,>=0.19.0',
-        'pyarrow',
-        'fusepy',
-        'azureml-train-automl-client==1.3.0',
-        'azureml-train-automl-runtime==1.3.0'
+        'azureml-sdk[automl]==1.3.0'
     ],
     'google': [
         'google-cloud-automl'

@@ -87,7 +87,14 @@ class Config(object):
                 res = list(data)
 
         return res
-                
+               
+    def get_path(self):
+        path = self.path
+        if path is None:
+            path = os.getcwd()
+
+        return path
+                   
     def set(self, part_name, path, value):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').set(path, value)
