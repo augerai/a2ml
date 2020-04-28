@@ -14,9 +14,12 @@ from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, del
     actual_model_task, deploy_model_task, predict_model_task, \
     deploy_task, evaluate_task, import_data_task, predict_task, train_task, review_task
 
+
+from a2ml.server.config import Config
 from a2ml.server.notification import AsyncReceiver
 
 app = FastAPI()
+config = Config()
 
 API_SCHEMA = {
     '/api/v1/datasets': {
@@ -84,6 +87,24 @@ async def say_hello():
     await asyncio.sleep(1)
     return {'Hello': 'World'}
 
+@app.post('/api/v1/upload_credentials')
+def upload_credentials():
+    # TODO: replace with Vault generated credentials
+
+    # To use locally replace endpoint with localhost because CLI client can't access interfaces inside docker componse
+    if config.s3_endpoint_url.startswith('http://minio:9000'):
+        endpoint_url = 'http://localhost:9000'
+    else:
+        endpoint_url = config.s3_endpoint_url
+
+    return __render_json_response({
+        'bucket': config.upload_bucket,
+        'endpoint_url': endpoint_url,
+        'access_key': config.aws_access_key_id,
+        'secret_key': config.aws_secret_access_key,
+        'session_token': None
+    })
+
 def define_endpoints(schema):
     for path in schema.keys():
         endpoints = schema[path]
@@ -110,7 +131,7 @@ async def __run_task(task, request):
     params = await __get_body_and_query_params(request)
     params['_request_id'] = request_id
     task.delay(params)
-    return __render_response(request_id)
+    return __render_request_response(request_id)
 
 async def __get_body_and_query_params(request):
     params = dict(request.query_params)
@@ -119,10 +140,13 @@ async def __get_body_and_query_params(request):
 
     return params
 
-def __render_response(request_id):
+def __render_request_response(request_id):
+    return __render_json_response({ 'request_id': request_id })
+
+def __render_json_response(data):
     res = {
         'meta': { 'status': 200 },
-        'data': { 'request_id': request_id },
+        'data': data,
     }
 
     content = jsonable_encoder(res)

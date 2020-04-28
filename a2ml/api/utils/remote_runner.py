@@ -3,9 +3,11 @@ import json
 import jsonpickle
 import requests
 import sys
+import time
 import os
 
 from a2ml.api.a2ml_credentials import A2MLCredentials
+from a2ml.api.utils.file_uploader import FileUploader
 
 
 def show_output(data):
@@ -92,11 +94,12 @@ class RemoteRunner(object):
 
     def execute(self, operation_name, *args, **kwargs):
         http_verb, path = self.get_http_verb_and_path(operation_name)
+        new_args = self.upload_local_files(operation_name, *args, **kwargs)
 
-        res = self.make_requst(http_verb, path, self._params(*args, **kwargs))
+        res = self.make_requst(http_verb, path, self._params(*new_args['args'], **new_args['kwargs']))
         asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
 
-    def make_requst(self, http_verb, path, params):
+    def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
         return self.handle_respone(method(f"{self.server_endpoint}{path}", json=params))
 
@@ -112,10 +115,68 @@ class RemoteRunner(object):
 
         if data_type == 'result' and isinstance(data['result'], dict):
             config = jsonpickle.decode(data['result']['config'])
-            data['result'] = data['result']['response']
+
+            original_source = config.get('original_source')
+            if original_source:
+                config.set('config', 'source', original_source)
+                config.remove('config', 'original_source')
+
             config.write_all()
 
+            data['result'] = data['result']['response']
+
         show_output(data)
+
+    def get_upload_credentials(self):
+        res = self.make_requst('post', '/api/v1/upload_credentials')
+        return res['data']
+
+    def local_path(self, path):
+        path = path.lower()
+        return not(path.startswith('s3://') or path.startswith('http://') or path.startswith('https://'))
+
+    def upload_local_files(self, operation_name, *args, **kwargs):
+        file_to_upload = None
+        inject_uploaded_file_to_request_func = None
+
+        if operation_name == 'import_data':
+            file_to_upload = self.ctx.config.get('source')
+            self.ctx.config.set('config', 'original_source', file_to_upload)
+
+            def replacer_func(remote_path):
+                self.ctx.config.set('config', 'source', remote_path)
+                return {'args': tuple(args), 'kwargs': kwargs}
+
+            inject_uploaded_file_to_request_func = replacer_func
+        elif operation_name == 'predict' or (self.obj_name == 'dataset' and operation_name == 'create'):
+            file_to_upload = args[0]
+
+            if operation_name != 'predict':
+                self.ctx.config.set('config', 'original_source', file_to_upload)
+
+            def replacer_func(remote_path):
+                new_args = list(args)
+                new_args[0] = remote_path
+                return {'args': tuple(new_args), 'kwargs': kwargs}
+
+            inject_uploaded_file_to_request_func = replacer_func
+
+        if file_to_upload and self.local_path(file_to_upload):
+            creds = self.get_upload_credentials()
+
+            uploader = FileUploader(
+                bucket=creds['bucket'],
+                endpoint_url=creds['endpoint_url'],
+                access_key=creds['access_key'],
+                secret_key=creds['secret_key'],
+                session_token=creds['session_token'],
+            )
+
+            url = uploader.multi_part_upload(file_to_upload)
+
+            return inject_uploaded_file_to_request_func(url)
+        else:
+            return {'args': args, 'kwargs': kwargs}
 
     async def spinning_cursor(self):
         while True:

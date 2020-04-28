@@ -42,11 +42,18 @@ class ConfigYaml(object):
             options = options[opt]
         options[path[-1]] = value
 
+    def remove(self, path):
+        options = self.yaml
+        path = path.split('/')
+        for opt in path[0:-1]:
+            options = options[opt]
+        options.pop(path[-1], None)
+
     def write(self, filename=None):
         filename = filename if filename else self.filename
         fsclient.write_text_file(filename, ruamel.yaml.dump(self.yaml,
                 Dumper=ruamel.yaml.RoundTripDumper))
-        
+
         # with open(self.filename, 'w') as out:
         #     out.write(ruamel.yaml.dump(self.yaml,
         #         Dumper=ruamel.yaml.RoundTripDumper))
