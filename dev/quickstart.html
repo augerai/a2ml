@@ -325,14 +325,13 @@ Could not load the run context. Logging offline
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>R2</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#azure-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">subscription_id</span><span class="p">:</span>
-<span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
 <span class="nt">experiment</span><span class="p">:</span>
   <span class="nt">name</span><span class="p">:</span>
   <span class="nt">run_id</span><span class="p">:</span>
-<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
-</span><span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
+<span class="hll"><span class="nt">cluster</span><span class="p">:</span>
+</span>  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
   <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
   <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
