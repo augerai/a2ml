@@ -69,7 +69,6 @@ extras = {
         'boto3'
     ],
     'azure': [
-        'shap==0.32.1',
         'azureml-sdk[automl]==1.3.0'
         # 'scipy<=1.1.0,>=1.0.0',
         # 'scikit-learn<=0.20.3,>=0.19.0',
