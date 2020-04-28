@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.3.2'
+VERSION = '0.4.0.dev0'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -70,12 +70,6 @@ extras = {
     ],
     'azure': [
         'azureml-sdk[automl]==1.3.0'
-        # 'scipy<=1.1.0,>=1.0.0',
-        # 'scikit-learn<=0.20.3,>=0.19.0',
-        # 'pyarrow',
-        # 'fusepy',
-        # 'azureml-train-automl-client==1.3.0',
-        # 'azureml-train-automl-runtime==1.3.0'
     ],
     'google': [
         'google-cloud-automl'
