@@ -48,7 +48,7 @@ class AzureExperiment(object):
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
-        exclude_columns = self.ctx.config.get_list('exclude')
+        exclude_columns = self.ctx.config.get_list('exclude', [])
 
         ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)

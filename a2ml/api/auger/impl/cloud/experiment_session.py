@@ -48,11 +48,12 @@ class AugerExperimentSessionApi(AugerBaseApi):
         return False
 
     def create(self):
-        evaluation_options, model_type = \
+        evaluation_options, model_type, dataset_statistics = \
             self.parent_api.get_experiment_settings()
         return self._call_create({
             'experiment_id': self.parent_api.object_id,
             'model_settings': evaluation_options,
+            'dataset_statistics': dataset_statistics,
             'model_type': model_type})
 
     def get_leaderboard(self):
