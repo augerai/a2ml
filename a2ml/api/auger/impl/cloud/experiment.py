@@ -47,17 +47,8 @@ class AugerExperimentApi(AugerBaseApi):
         if not model_type in MODEL_TYPES:
             raise AugerException('Model type should be %s' % \
                 '|'.join(MODEL_TYPES))
-        target = config.get('target', '')
-        exclude = config.get('exclude', [])
 
         options = {
-            'targetFeature': None,
-            'featureColumns': [],
-            'categoricalFeatures': [],
-            'timeSeriesFeatures': [],
-            'binaryClassification': False,
-            'labelEncodingFeatures':
-                config.get('experiment/label_encoded', []),
             'crossValidationFolds':
                 config.get('experiment/cross_validation_folds', 5),
             'max_total_time_mins':
@@ -81,38 +72,38 @@ class AugerExperimentApi(AugerBaseApi):
         data_set_properties = data_set_api.properties()
         stats = data_set_properties['statistics']
 
-        self._fill_data_options(options, stats, target, exclude)
+        self._fill_data_options(model_type, stats)
 
-        if options['targetFeature'] is None:
+        return {'evaluation_options': options}, model_type, stats
+
+    def _fill_data_options(self, model_type, stats):
+        config = self.ctx.config
+        target = config.get('target')
+        if not target:
             raise AugerException('Please set target to build model.')
 
-        if model_type is not 'timeseries':
-            options['timeSeriesFeatures'] = []
-        else:
+        exclude = config.get_list('exclude', [])
+        label_encoded = config.get_list('experiment/label_encoded', [])
+        categoricals = config.get_list('experiment/categoricals', [])
+        date_time = config.get_list('experiment/date_time', [])
+        time_series = None
+        if model_type is 'timeseries':
             time_series = config.get('experiment/time_series', None)
-            if time_series:
-                options['timeSeriesFeatures'] = [time_series]
-            if len(options['timeSeriesFeatures']) != 1:
+            if not time_series:
                 raise AugerException('Please select time series feature'
                     ' to build time series model'
                     ' (experiment/time_series option).')
 
-        return {'evaluation_options': options}, model_type
-
-    def _fill_data_options(self, options, stats, target, exclude):
         for item in stats.get('stat_data'):
             column_name = item['column_name']
-            if column_name in exclude:
-                continue
-            if column_name != target:
-                options['featureColumns'].append(column_name)
-            else:
-                options['targetFeature'] = target
-            if item['datatype'] == 'categorical':
-                options['categoricalFeatures'].append(column_name)
-                if column_name == target:
-                    options['binaryClassification'] = \
-                        True if item['unique_values'] == 2 else False
-            if item['datatype'] == 'date':
-                options['timeSeriesFeatures'].append(column_name)
-                options['datetime_features'].append(column_name)
+            item['use'] = not column_name in exclude
+            item['isTarget'] = target == column_name
+
+            if column_name in label_encoded:
+                item['datatype'] = 'hashing'
+            elif column_name in categoricals:
+                item['datatype'] = 'categorical'
+            elif column_name in date_time:
+                item['datatype'] = 'datetime'
+            elif column_name == time_series:
+                item['datatype'] = 'timeseries'

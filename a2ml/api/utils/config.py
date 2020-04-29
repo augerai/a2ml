@@ -77,7 +77,7 @@ class Config(object):
 
     def get_list(self, path, default=None):
         data = self.get(path, default)
-        res = None
+        res = data
 
         if data:
             if isinstance(data, str):
@@ -94,7 +94,7 @@ class Config(object):
             path = os.getcwd()
 
         return path
-                   
+
     def set(self, part_name, path, value):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').set(path, value)
