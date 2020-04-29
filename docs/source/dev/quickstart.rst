@@ -179,7 +179,6 @@ Before training, update ``azure.yaml`` and ``auger.yaml`` to select a metric to 
   :emphasize-lines: 6
   
 
-  subscription_id:
   dataset: baseball.csv
   experiment:
     name:

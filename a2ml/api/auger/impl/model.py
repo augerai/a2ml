@@ -15,6 +15,9 @@ class Model(object):
         return ModelDeploy(self.ctx, self.project).execute(model_id, locally)
 
     def predict(self, filename, model_id, threshold=None, locally=False):
+        if locally:
+            self.deploy(model_id, locally)
+            
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally)
 
     def actual(self, filename, model_id):
