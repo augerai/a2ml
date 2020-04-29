@@ -7,6 +7,7 @@ from .deploy import ModelDeploy
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
+from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
 
@@ -19,7 +20,8 @@ class ModelPredict():
 
     def execute(self, filename, model_id, threshold=None, locally=False):
         self.ctx.log('Predicting on data in %s' % filename)
-        filename = os.path.abspath(filename)
+        if not fsclient.is_s3_path(filename):
+            filename = os.path.abspath(filename)
 
         if locally:
             predicted = self._predict_locally(filename, model_id, threshold)

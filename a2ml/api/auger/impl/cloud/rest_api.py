@@ -37,7 +37,7 @@ class RestApi(object):
         if 'data' in result:
             return result['data']
 
-        raise AugerException("Call of Auger API method %s failed." % keys)
+        raise AugerException("Call of Auger API method %s failed." % method)
 
     def request_list(self, record_type, params):
         offset = params.get('offset', 0)

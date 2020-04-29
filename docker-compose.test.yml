@@ -22,7 +22,10 @@ services:
     env_file: develop.env
 
   createbucket:
-    image: minio/mc
+    build:
+      context: .
+      dockerfile: tests/minio_bootstrapper/Dockerfile
+    image: minio-bootstrapper
     env_file: develop.env
     entrypoint: >
       /bin/sh -c "
@@ -31,9 +34,8 @@ services:
       /usr/bin/mc rm -r --force myminio/sample-bucket;
       /usr/bin/mc mb myminio/sample-bucket;
       /usr/bin/mc policy set upload myminio/sample-bucket;
-      mkdir -p /data;
-      echo 'hello,world' > /data/iris.csv;
       /usr/bin/mc cp /data/iris.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
+      /usr/bin/mc cp /data/iris_for_predict.csv myminio/sample-bucket/workspace/projects/a2ml-app/files/;
       "
     depends_on:
       - minio

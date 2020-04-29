@@ -12,6 +12,7 @@ from a2ml.api.a2ml_experiment import A2MLExperiment
 from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
+from a2ml.tasks_queue.review import store_predictions
 
 notificator = SyncSender()
 
@@ -174,10 +175,11 @@ def deploy_model_task(params):
 
 @celeryApp.task(after_return=__handle_task_result)
 def predict_model_task(params):
-    return with_context(
-        params,
-        lambda ctx: A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
-    )
+    def _predict(ctx):
+        res = A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
+        return store_predictions(res, model_id=params['args'][1])
+
+    return with_context(params, _predict)
 
 # Complex tasks
 @celeryApp.task(after_return=__handle_task_result)

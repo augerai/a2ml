@@ -1,6 +1,5 @@
 import pandas
-
-from  a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient
 
 
 class DataFrame(object):
@@ -11,21 +10,21 @@ class DataFrame(object):
 
     @staticmethod
     def load(filename, target, features=None, nrows=None):
+        file = fsclient.s3fs_open(filename)
         df = None
         if filename.endswith('.json') or filename.endswith('.json.gz'):
-            df = pandas.read_json(filename)
+            df = pandas.read_json(file)
         elif filename.endswith('.xlsx') or filename.endswith('.xls'):
-            df = pandas.read_excel(filename)
+            df = pandas.read_excel(file)
         elif filename.endswith('.feather') or filename.endswith('.feather.gz'):
             import feather
-            with fsclient.open_file(filename, 'rb', encoding=None) as local_file:
-                df = feather.read_dataframe(local_file, columns=features, use_threads=bool(True))
+            df = feather.read_dataframe(file, columns=features, use_threads=bool(True))
 
-        if df is None:        
+        if df is None:
             try:
-                df = DataFrame._read_csv(filename, ',', features, nrows)
+                df = DataFrame._read_csv(file, ',', features, nrows)
             except Exception as e:
-                df = DataFrame._read_csv(filename, '|', features, nrows)
+                df = DataFrame._read_csv(file, '|', features, nrows)
 
         features = df.columns.tolist()
         if target in features:
@@ -46,7 +45,8 @@ class DataFrame(object):
     @staticmethod
     def save(filename, data):
         df = pandas.DataFrame.from_records(data['data'], columns=data['columns'])
-        df.to_csv(filename, index=False, encoding='utf-8')
+        str_data = df.to_csv(None, index=False, encoding='utf-8')
+        fsclient.write_text_file(filename, str_data)
 
     @staticmethod
     def _read_csv(filename, sep, features=None, nrows=None):

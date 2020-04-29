@@ -61,7 +61,7 @@ API_SCHEMA = {
         'post': predict_model_task,
     },
     '/api/v1/predict': {
-        'patch': predict_task,
+        'post': predict_task,
     },
     '/api/v1/projects': {
         'get': list_projects_task,
