@@ -7,7 +7,7 @@ import time
 import os
 
 from a2ml.api.a2ml_credentials import A2MLCredentials
-from a2ml.api.utils.file_uploader import FileUploader
+from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 
 
 def show_output(data):
@@ -172,7 +172,7 @@ class RemoteRunner(object):
                 session_token=creds['session_token'],
             )
 
-            url = uploader.multi_part_upload(file_to_upload)
+            url = uploader.multi_part_upload(file_to_upload, callback=OnelineProgressPercentage(file_to_upload))
 
             return inject_uploaded_file_to_request_func(url)
         else:

@@ -50,7 +50,7 @@ def get_smart_open_transport_params(path):
     return None
 
 
-def open_file(path, mode, num_tries=20, encoding='utf-8'):
+def open_file(path, mode, num_tries=20, encoding='utf-8', auto_decompression=True):
     import warnings
 
     if is_s3_path(path) and 'r' in mode:
@@ -65,8 +65,13 @@ def open_file(path, mode, num_tries=20, encoding='utf-8'):
         while nTry <= num_tries:
             try:
                 # TODO: support append mode for s3
-                return smart_open.open(path, mode,
-                                       encoding=encoding, transport_params=get_smart_open_transport_params(path))
+                return smart_open.open(
+                    path,
+                    mode,
+                    encoding=encoding,
+                    ignore_ext=not auto_decompression,
+                    transport_params=get_smart_open_transport_params(path)
+                )
             except Exception as e:
                 if nTry >= num_tries:
                     raise
