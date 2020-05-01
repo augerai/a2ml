@@ -104,19 +104,21 @@ class AzureExperiment(object):
         #     fc.drop_columns = self.ctx.config.get('exclude').split(",")
         #     automl_settings["featurization"] = fc
 
+        # It should be empty folder
+        snapshot_path = os.path.join(os.getcwd(), ".azureml")
+        #fsclient.create_folder()
         automl_config = AutoMLConfig(
             task = model_type,
             debug_log = 'automl_errors.log',
-            path = os.getcwd(),
+            path = snapshot_path,
             compute_target = compute_target,
             training_data = dataset,
             validation_data = validation_data,
             label_column_name = target,
             **automl_settings)
 
-        with fsclient.with_cur_dir(".azure_temp"):
-            experiment = Experiment(ws, experiment_name)
-            run = experiment.submit(automl_config, show_output = False)
+        experiment = Experiment(ws, experiment_name)
+        run = experiment.submit(automl_config, show_output = False)
 
         self.ctx.log("Started Experiment %s search..." % experiment_name)
         self.ctx.config.set('azure', 'experiment/name', experiment_name)

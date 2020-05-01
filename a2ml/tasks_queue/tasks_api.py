@@ -38,15 +38,6 @@ def create_context(params, new_project=False):
             if params.get('source_path'):
                 ctx.config.set('config', 'source', params.get('source_path'))
 
-
-    tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-
-    if not os.path.exists(tmp_dir):
-        os.makedirs(tmp_dir)
-
-    # For Azure, since it package current directory
-    os.chdir(tmp_dir)
-
     return ctx
 
 def __handle_task_result(self, status, retval, task_id, args, kwargs, einfo):
