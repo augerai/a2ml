@@ -13,6 +13,7 @@ from .cluster_task import AugerClusterTaskApi
 from ..exceptions import AugerException
 
 from  a2ml.api.utils import fsclient
+from  a2ml.api.utils.file_uploader import FileUploader, NewlineProgressPercentage
 
 SUPPORTED_FORMATS = ['.csv', '.arff', '.gz', '.bz2', '.zip', '.xz', '.json', '.xls', '.xlsx', '.feather', '.h5', '.hdf5']
 
@@ -148,29 +149,51 @@ class AugerDataSetApi(AugerProjectFileApi):
 
         res = self.rest_api.call('create_project_file_url', {
             'project_id': self.parent_api.object_id,
-            'file_path': file_path})
+            'file_path': file_path,
+            'file_size': fsclient.get_file_size(file_to_upload)
+        })
+
         if res is None:
             raise AugerException(
                 'Error while uploading file to Auger Cloud...')
 
-        url = res['url']
-        file_path = res['fields']['key']
-        with fsclient.open_file(file_to_upload, 'rb') as f:
-            files = {'file': (file_path, f)}
-            res = requests.post(url, data=res['fields'], files=files)
+        if 'multipart' in res:
+            upload_details = res['multipart']
+            config = upload_details['config']
 
-        if res.status_code == 201 or res.status_code == 200:
-            bucket = urllib.parse.urlparse(url).netloc.split('.')[0]
-            return 's3://%s/%s' % (bucket, file_path)
+            uploader = FileUploader(
+                upload_details['bucket'],
+                config['endpoint'],
+                config['access_key'],
+                config['secret_key'],
+                config['security_token']
+            )
+
+            with fsclient.open_file(file_to_upload, 'rb', encoding=None, auto_decompression=False) as f:
+                return uploader.multipart_upload_obj(
+                    f,
+                    upload_details['key'],
+                    callback=NewlineProgressPercentage(file_to_upload)
+                )
         else:
-            if res.status_code == 400 and b'EntityTooLarge' in res.content:
-                max_size = ElementTree.fromstring(res.content).find('MaxSizeAllowed').text
-                max_size_mb = int(max_size) / 1024 / 1024
-                raise AugerException('Data set size is limited to %.1f MB' % max_size_mb)
+            url = res['url']
+            file_path = res['fields']['key']
+            with fsclient.open_file(file_to_upload, 'rb', auto_decompression=False) as f:
+                files = {'file': (file_path, f)}
+                res = requests.post(url, data=res['fields'], files=files)
+
+            if res.status_code == 201 or res.status_code == 200:
+                bucket = urllib.parse.urlparse(url).netloc.split('.')[0]
+                return 's3://%s/%s' % (bucket, file_path)
             else:
-                raise AugerException(
-                    'HTTP error [%s] "%s" while uploading file'
-                        ' to Auger Cloud...' % (res.status_code, res.content))
+                if res.status_code == 400 and b'EntityTooLarge' in res.content:
+                    max_size = ElementTree.fromstring(res.content).find('MaxSizeAllowed').text
+                    max_size_mb = int(max_size) / 1024 / 1024
+                    raise AugerException('Data set size is limited to %.1f MB' % max_size_mb)
+                else:
+                    raise AugerException(
+                        'HTTP error [%s] "%s" while uploading file'
+                            ' to Auger Cloud...' % (res.status_code, res.content))
 
     def _get_data_set_name(self, file_name):
         fname, fext = os.path.splitext(file_name)
