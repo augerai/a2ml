@@ -94,9 +94,14 @@ class RemoteRunner(object):
 
     def execute(self, operation_name, *args, **kwargs):
         http_verb, path = self.get_http_verb_and_path(operation_name)
-        new_args = self.upload_local_files(operation_name, *args, **kwargs)
+        new_args, uploaded_file = self.upload_local_files(operation_name, *args, **kwargs)
 
-        res = self.make_requst(http_verb, path, self._params(*new_args['args'], **new_args['kwargs']))
+        params = self._params(*new_args['args'], **new_args['kwargs'])
+
+        if uploaded_file:
+            params['tmp_file_to_remove'] = uploaded_file
+
+        res = self.make_requst(http_verb, path, params)
         asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
 
     def make_requst(self, http_verb, path, params={}):
@@ -174,9 +179,9 @@ class RemoteRunner(object):
 
             url = uploader.multi_part_upload(file_to_upload, callback=OnelineProgressPercentage(file_to_upload))
 
-            return inject_uploaded_file_to_request_func(url)
+            return inject_uploaded_file_to_request_func(url), url
         else:
-            return {'args': args, 'kwargs': kwargs}
+            return {'args': args, 'kwargs': kwargs}, None
 
     async def spinning_cursor(self):
         while True:

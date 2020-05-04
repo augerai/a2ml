@@ -5,6 +5,7 @@ import os
 import json
 import jsonpickle
 
+from a2ml.api.utils import fsclient
 from a2ml.api.utils.context import Context
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
@@ -223,6 +224,10 @@ def demo_task(params):
 
     notificator.publish_result(request_id, 'SUCCESS', 'done')
 
+@celeryApp.task
+def remove_tmp_file(path):
+    fsclient.remove_file(path)
+
 def with_context(params, proc):
     ctx = create_context(params)
 
@@ -233,6 +238,9 @@ def with_context(params, proc):
         params['kwargs'] = {}
 
     res = proc(ctx)
+
+    if 'tmp_file_to_remove' in params:
+        remove_tmp_file.delay(params['tmp_file_to_remove'])
 
     ctx.set_runs_on_server(False)
     ctx.config.set('config', 'use_server', True)
