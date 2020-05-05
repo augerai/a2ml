@@ -1,5 +1,7 @@
 import os
+
 from azureml.core import Dataset
+from a2ml.api.utils import fsclient
 from .project import AzureProject
 from .exceptions import AzureException
 from .decorators import error_handler
@@ -33,17 +35,18 @@ class AzureDataset(object):
         if source.startswith("http:") or source.startswith("https:"):
             dataset = Dataset.Tabular.from_delimited_files(path=source)
             dataset_name = os.path.basename(source)
-        else:    
-            ds = self.ws.get_default_datastore()
+        else:
+            with fsclient.with_s3_downloaded_or_local_file(source) as local_path:
+                ds = self.ws.get_default_datastore()
 
-            if self.ctx.config.path and not source.startswith("/"):
-                source = os.path.join(self.ctx.config.path, source)
+                if self.ctx.config.path and not local_path.startswith("/"):
+                    local_path = os.path.join(self.ctx.config.path, local_path)
 
-            ds.upload_files(files=[source], relative_root=None,
-                target_path=None, overwrite=True, show_progress=True)
-            dataset_name = os.path.basename(source)
-            dataset = Dataset.Tabular.from_delimited_files(
-                path=ds.path(dataset_name))
+                ds.upload_files(files=[local_path], relative_root=None,
+                    target_path=None, overwrite=True, show_progress=True)
+                dataset_name = os.path.basename(local_path)
+                dataset = Dataset.Tabular.from_delimited_files(
+                    path=ds.path(dataset_name))
 
         dataset.register(workspace = ws, name = dataset_name,
             create_new_version = True)
@@ -64,7 +67,7 @@ class AzureDataset(object):
         self.ctx.log('Deleted dataset %s' % name)
         return {'deleted': name}
 
-    @error_handler        
+    @error_handler
     def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected dataset %s' % name)

@@ -56,7 +56,7 @@ class Credentials(BaseCredentials):
             'client_secret': self.client_secret
         }
 
-    def get_serviceprincipal_auth(self):        
+    def get_serviceprincipal_auth(self):
         svc_pr = None
         if self.client_secret:
             svc_pr = ServicePrincipalAuthentication(

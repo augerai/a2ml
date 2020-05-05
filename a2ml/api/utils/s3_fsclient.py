@@ -375,7 +375,6 @@ class S3FSClient:
 
     def download_file(self, path, local_path):
         from .local_fsclient import LocalFSClient
-        from .fsclient import FSClient
         import boto3
         try:
             from urllib.parse import urlparse
