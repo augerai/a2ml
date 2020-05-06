@@ -5,7 +5,7 @@ import os
 import json
 import jsonpickle
 
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, to_list
 from a2ml.api.utils.context import Context
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_dataset import A2MLDataset
@@ -20,6 +20,11 @@ notificator = SyncSender()
 def create_context(params, new_project=False):
     if params.get('context'):
         ctx = jsonpickle.decode(params['context'])
+
+        # Server mode supports only one provider in request
+        provider = params.get('provider') or to_list(ctx.config.get('providers'))[0]
+        ctx.name = provider
+        ctx.config.name = provider
 
         ctx.set_runs_on_server(True)
         ctx.config.set('config', 'use_server', False)
@@ -264,5 +269,11 @@ def __map_collection_to_name(res, collection_name):
     for provder in res.keys():
         if collection_name in res[provder]['data']:
             res[provder]['data'][collection_name] = list(
-                map(lambda x: x.get('name'), res[provder]['data'][collection_name])
+                map(lambda x: __map_to_name(x), res[provder]['data'][collection_name])
             )
+
+def __map_to_name(obj):
+    if isinstance(obj, str):
+        return obj
+    else:
+        return obj.get('name')
