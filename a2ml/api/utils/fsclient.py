@@ -1,6 +1,8 @@
+import contextlib
 import logging
 import os
-import contextlib
+import shutil
+import tempfile
 import time
 
 from .local_fsclient import LocalFSClient
@@ -340,6 +342,19 @@ def download_file(path, local_path):
     else:
         copy_file(path, local_path)
 
+@contextlib.contextmanager
+def with_s3_downloaded_or_local_file(source_path):
+    if source_path.startswith("s3:"):
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            tmp_file = os.path.join(tmp_dir, os.path.basename(source_path))
+            download_file(source_path, tmp_file)
+            yield tmp_file
+        finally:
+            shutil.rmtree(tmp_dir)
+    else:
+        yield source_path
+
 
 def load_object_from_file(path, use_local_cache=False):
     import joblib
@@ -383,7 +398,6 @@ def load_object_from_file(path, use_local_cache=False):
         path_to_load = path
 
     return joblib.load(path_to_load)
-
 
 def load_npobject_from_file(path):
     import numpy as np
