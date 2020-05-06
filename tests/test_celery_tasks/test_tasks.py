@@ -74,15 +74,22 @@ class TestTasks(object):
         assert res == []
 
     @pytest.mark.skip(reason='run it locally')
-    def test_train(self):
-        params = {
-            'provider': 'auger',
-            'debug_log': True,
-            'project_name': 'cli-integration-test',
-            # 'source_path': 's3://auger-demo-datasets/a2ml_app/adult.data.csv'
-        }
+    def test_train_server(self):
+        from a2ml.api.a2ml import A2ML
 
-        train_task.s(params).apply()
+        ctx = Context(
+            path=os.path.join(
+                os.environ.get('A2ML_PROJECT_PATH', ''),
+                'cli-integration-test'
+            ),
+            debug=True
+        )
+
+        provider = "azure"
+        ctx.config.set('config', 'providers', [provider])
+        ctx.config.set('config', 'use_server', True)
+
+        A2ML(ctx, provider).train()
 
     @pytest.mark.skip(reason='run it locally')
     def test_train_s3(self):
