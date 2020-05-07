@@ -34,7 +34,7 @@ class A2MLModel(BaseA2ML):
             locally(bool): Deploys using a local model if True, on the Provider Cloud if False.
         
         Returns:
-            Results for each provider. ::
+            Results for provider. ::
 
                 {
                     'auger': {
@@ -54,7 +54,7 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = Model(ctx, 'auger,azure').deploy(model_id='D881079E1ED14FB', locally=True)
+                model = Model(ctx, 'auger').deploy(model_id='D881079E1ED14FB', locally=True)
         """
         return self.__get_runner(locally).execute('deploy', model_id, locally)
 
@@ -69,7 +69,7 @@ class A2MLModel(BaseA2ML):
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
         
         Returns:
-            Results for each provider. ::
+            Results for provider. ::
 
                 {
                     'auger': {
@@ -83,7 +83,7 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx, 'auger, azure').predict(filename=<path_to_file>/dataset.csv,model_id='D881079E1ED14FB',threshold=None,locally=False)
+                model = A2MLModel(ctx, 'auger').predict(filename=<path_to_file>/dataset.csv,model_id='D881079E1ED14FB',threshold=None,locally=False)
         """
         return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally)
 
