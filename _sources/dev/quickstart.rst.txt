@@ -4,8 +4,8 @@ Quickstart
 
 Please see :doc:`install` and :doc:`authentication` before starting.
 
-Microsoft Azure and the Moneyball Dataset
-=========================================
+Microsoft Azure CLI
+===================
 
 .. |moneyball| raw:: html
 
@@ -103,8 +103,8 @@ To configure Microsoft Azure and Auger providers, open ``config.yaml``.
 
 *The highlighted lines are where manual changes have been made.*
 
-Import Dataset
---------------
+Import
+------
 
 To import the local |moneyball| baseball dataset.
 
@@ -176,9 +176,8 @@ Before training, update ``azure.yaml`` and ``auger.yaml`` to select a metric to 
 .. code-block:: yaml
   :caption: azure.yaml
   :name: azure.yaml
-  :emphasize-lines: 6
+  :emphasize-lines: 5
   
-
   dataset: baseball.csv
   experiment:
     name:
@@ -227,7 +226,7 @@ To start training run
 
 Evaluate
 --------
-To view the realtime model results of a train, run.
+To view the realtime model results of a train.
 
 .. code-block:: bash
 
@@ -259,7 +258,7 @@ To view the realtime model results of a train, run.
 Deploy
 ------
 
-To deploy a specific model simply copy the **model id** from the leaderboard output and run.
+To deploy a specific model copy the **model id** from the leaderboard output and run.
 
 .. code-block:: bash
   :emphasize-lines: 8,15
@@ -333,7 +332,7 @@ To use the deployed model(s), pass a file of new observations with the target om
 
 *Notice RS is not included in the file*
 
-To initate predictions run.
+To request predictions.
 
 .. code-block:: bash
   :emphasize-lines: 2
@@ -358,4 +357,311 @@ Displaying **baseball_predict_predicted.csv** shows that predictions for the tar
   :alt: baseball predicted dataset
 
 
+Microsoft Azure API
+===================
+
+.. |digits| raw:: html
+
+  <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a>
+
+
+The following code shows how a2ml can be used with **Microsoft Azure** and **Auger** AutoML providers to perform a classification task against the |digits| dataset.
+
+
+Dataset
+-------
+
+.. |scikitdetail| raw:: html
+
+  <a href="https://scikit-learn.org/stable/datasets/index.html#optical-recognition-of-handwritten-digits-dataset" target="_blank">scikit-learn</a>
+
+The |digits| dataset contains images of hand-written digits: 10 classes where each class refers to a digit. The goal of this exercise is to find a highly accurate model to predict the digit based on its pixel attributes. 
+
+The data will be loaded from |scikitdetail| and saved as a csv to import into Microsoft Azure and Auger AutoML providers.
+
+.. code-block:: python
+
+  from sklearn.datasets import load_digits
+  import pandas as pd
+
+  digits = load_digits()
+  feature_names = ["pixel_{}".format(i) for i in range(64)]
+
+  df = pd.DataFrame(data = digits['data'], columns = feature_names)
+  df['class'] = digits['target']
+  df.to_csv('digits.csv', sep = ',', index = False)
+
+.. note::
+
+  feature names were added to represent each pixel 1-64
+
+A quick look at the data.
+
+.. code-block:: python
+
+  import pandas as pd
+
+  df = pd.read_csv('digits.csv')
+  df.head()
+
+.. image:: https://d2uakhpezbykml.cloudfront.net/images/digits_ds.png
+  :width: 100%
+  :align: center
+  :alt: digits dataset
+
+
+Project Setup
+-------------
+
+Inside of a terminal create a new a2ml project.
+
+.. code-block:: bash
+
+  $ a2ml new digits_proj
+  [config] Created project folder digits_proj
+  [config] To build your model, please do: cd digits_proj && a2ml import && a2ml train
+
+  $ cd digits_proj
+  $ ls 
+  auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
+
+To configure Microsoft Azure and Auger providers, open ``config.yaml``. 
+
+.. code-block:: yaml
+  :caption: config.yaml
+  :name: digits_proj/config.yaml
+  :emphasize-lines: 2,3,5,6
+
+  name: digits_proj
+  providers: auger,azure
+  source: digits.csv
+  exclude:
+  target: class
+  model_type: classifiction
+  experiment:
+    cross_validation_folds: 5
+    max_total_time: 60
+    max_eval_time: 5
+    max_n_trials: 10
+    use_ensemble: true
+
+*The highlighted lines are where manual changes have been made.*
+
+
+Import
+------
+
+To import the local |digits| dataset.
+
+.. code-block:: python
+
+  from a2ml.api.a2ml import A2ML
+  from a2ml.api.utils.context import Context
+
+  ctx = Context()
+  a2ml = A2ML(ctx, 'auger, azure')
+  res = a2ml.import_data()
+
+  print(res)
+  {
+    'auger': {
+      'result': True, 'data': {'created': 'digits.csv'}
+    },
+    'azure': {
+      'result': True, 'data': {'dataset': 'digits.csv'}
+    }
+  }
+
+Results for each provider are returned.
+
+Train
+-----
+
+Before training, update ``azure.yaml`` and ``auger.yaml`` to select a metric to evaluate models with.  **accuracy** will be used in this example.
+
+
+.. code-block:: yaml
+  :caption: azure.yaml
+  :name: digits_proj/azure.yaml
+  :emphasize-lines: 5
+  
+
+  dataset: digits.csv
+  experiment:
+    name:
+    run_id:
+    metric: accuracy
+  cluster:
+    region: eastus2
+    min_nodes: 0
+    max_nodes: 2
+    type: STANDARD_D2_V2
+    name: a2ml-azure
+
+
+.. code-block:: yaml
+  :caption: auger.yaml
+  :name: digits_proj/auger.yaml
+  :emphasize-lines: 7
+
+  dataset: digits.csv
+  experiment:
+    name:
+    experiment_session_id:
+    time_series:
+    label_encoded: []
+    metric: accuracy
+  cluster:
+    type: standard
+    min_nodes: 2
+    max_nodes: 2
+    stack_version: stable
+
+
+To start training run
+
+.. code-block:: python
+
+  res = a2ml.train()
+
+  print(res)
+  {'auger': {'result': True,
+  'data': {'experiment_name': 'digits-2.csv-1-experiment',
+   'session_id': 'd259e5729d7b2910'}},
+ 'azure': {'result': True,
+  'data': {'experiment_name': 'digits-csv',
+   'run_id': 'AutoML_61ee39e9-973d-4554-9490-af6186470007'}}}
+  
+
+
+Evaluate
+--------
+To view the realtime model results of a train.
+
+.. code-block:: python
+  :emphasize-lines: 16,28
+
+  res = a2ml evaluate()
+  
+  print(res)
+  {'auger': {'result': True,
+  'data': {'run_id': 'c864de72715ecd71',
+   'leaderboard': [
+    {'model id': 'C2193878F2204FC',
+     'accuracy': '0.9694',
+     'algorithm': 'VotingAlgorithm'},
+    {'model id': 'F1CA221E8D25435',
+     'accuracy': '0.9694',
+     'algorithm': 'AveragingAlgorithmClassifier'},
+    {'model id': 'B20B1E53687048D',
+     'accuracy': '0.9699',
+     'algorithm': 'SuperLearnerAlgorithmClassifier'}],
+   'status': 'completed'}},
+  'azure': {'result': True,
+  'data': {'run_id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb',
+   'leaderboard': [{'model id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_0',
+     'algorithm': 'MaxAbsScaler,LightGBM',
+     'accuracy': 0.9738563912101517},
+    {'model id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_1',
+     'algorithm': 'MinMaxScaler,SGD',
+     'accuracy': 0.9627174249458372},
+    {'model id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_2',
+     'algorithm': 'StandardScalerWrapper,ExtremeRandomTrees',
+     'accuracy': 0.7211946765707212}],
+   'status': 'Completed'}}}
+
+*Notice the status will indicate when training is completed*
+   
+
+Deploy
+------
+
+To deploy a specific model copy the **model id** from the leaderboard.
+
+.. code-block:: python
+  :caption: azure model
+  :emphasize-lines: 2
+  
+    a2ml = A2ML(ctx, 'azure')
+    model_id = 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_1'
+    res = a2ml.deploy(model_id=model_id)
+
+    print(res)
+    {'azure': {'result': True,
+    'data': {'model_id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_4',
+    'aci_service_name': 'automleda39aa8a4-service'}}}
+    
+
+.. code-block:: python
+  :caption: auger model
+  :emphasize-lines: 2
+  
+    a2ml = A2ML(ctx, 'auger')
+    model_id = 'B20B1E53687048D-454554'
+    res = a2ml.deploy(model_id=model_id)
+
+    print(res)
+    {'auger': {'result': True, 'data': {'model_id': '701413E8E5694AE'}}}
+
+
+Predict
+-------
+
+To use the deployed model(s), pass a file of new observations with the target omitted.
+
+.. code-block:: python
+
+  import pandas as pd
+
+  df = pd.read_csv('digits_predict.csv')
+  df.head()
+
+.. image:: https://d2uakhpezbykml.cloudfront.net/images/digits_predict.png
+  :width: 100%
+  :align: center
+  :alt: digits predict dataset
+
+*Notice class is not included in the file*
+
+To request predictions for the Azure model.
+
+.. code-block:: python
+  :emphasize-lines: 8
+
+  ctx = Context()
+  a2ml = A2ML(ctx, 'azure')
+  model_id = 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_4'
+  res = a2ml.predict(filename='digits_predict.csv',model_id=model_id)
+
+  print(res)
+  {'azure': {'result': True,
+  'data': {'predicted': '<path_to_project>/digits_proj/digits_predict_predicted.csv'}}}
+
+To request predictions for Auger model.
+
+.. code-block:: python
+  :emphasize-lines: 8
+
+  ctx = Context()
+  a2ml = A2ML(ctx, 'auger')
+  model_id = 'B20B1E53687048D-454554'
+  res = a2ml.predict(filename='digits_predict.csv',model_id=model_id)
+
+  print(res)
+  {'auger': {'result': True,
+  'data': {'predicted': '<path_to_project>/digits_proj/digits_predict_predicted.csv'}}}
+
+Displaying **digits_predict_predicted.csv** shows that predictions for the target **RS** have been appended.
+ 
+.. code-block:: python
+
+  import pandas as pd
+
+  df = pd.read_csv('digits_predict_predicted.csv')
+  df.head()
+
+.. image:: https://d2uakhpezbykml.cloudfront.net/images/digits_predicted.png
+  :width: 100%
+  :align: center
+  :alt: digits predicted dataset
   

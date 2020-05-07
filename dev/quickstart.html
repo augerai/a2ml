@@ -88,14 +88,24 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#microsoft-azure-and-the-moneyball-dataset">Microsoft Azure and the Moneyball Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#microsoft-azure-cli">Microsoft Azure CLI</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dataset">Dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#project-setup">Project Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#import-dataset">Import Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import">Import</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#train">Train</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#evaluate">Evaluate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#deploy">Deploy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#predict">Predict</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#microsoft-azure-api">Microsoft Azure API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Project Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Evaluate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Predict</a></li>
 </ul>
 </li>
 </ul>
@@ -178,8 +188,8 @@
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
 <p>Please see <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> and <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> before starting.</p>
-<div class="section" id="microsoft-azure-and-the-moneyball-dataset">
-<h2>Microsoft Azure and the Moneyball Dataset<a class="headerlink" href="#microsoft-azure-and-the-moneyball-dataset" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="microsoft-azure-cli">
+<h2>Microsoft Azure CLI<a class="headerlink" href="#microsoft-azure-cli" title="Permalink to this headline">¶</a></h2>
 <p>The following code shows how a2ml can be used with <strong>Microsoft Azure</strong> and <strong>Auger</strong> AutoML providers to perform a regression task against the <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> dataset.</p>
 <div class="section" id="dataset">
 <h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
@@ -195,8 +205,8 @@ The goal of this exercise is to find a highly accurate model to predict the numb
 </div>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_dataset.png"><img alt="baseball dataset kaggle" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_dataset.png" style="width: 100%;" /></a>
 <p>The main features that will be used.</p>
-<table class="colwidths-given docutils align-default" id="id1">
-<caption><span class="caption-text">baseball.csv</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id8">
+<caption><span class="caption-text">baseball.csv</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -266,8 +276,8 @@ auger.yaml  azure.yaml config.yaml  google.yaml
 </div>
 <p><em>The highlighted lines are where manual changes have been made.</em></p>
 </div>
-<div class="section" id="import-dataset">
-<h3>Import Dataset<a class="headerlink" href="#import-dataset" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="import">
+<h3>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
 <p>To import the local <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> baseball dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ a2ml import
 [azure] Creating moneyball_proj
@@ -329,9 +339,9 @@ Could not load the run context. Logging offline
 <span class="nt">experiment</span><span class="p">:</span>
   <span class="nt">name</span><span class="p">:</span>
   <span class="nt">run_id</span><span class="p">:</span>
-  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
-<span class="hll"><span class="nt">cluster</span><span class="p">:</span>
-</span>  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
   <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
   <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
@@ -370,7 +380,7 @@ Created a worker pool <span class="k">for</span> first use
 </div>
 <div class="section" id="evaluate">
 <h3>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this headline">¶</a></h3>
-<p>To view the realtime model results of a train, run.</p>
+<p>To view the realtime model results of a train.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml evaluate
 
 <span class="o">[</span>auger<span class="o">]</span>  Leaderboard <span class="k">for</span> Run 0d8b32fedd073b8e
@@ -400,7 +410,7 @@ Created a worker pool <span class="k">for</span> first use
 </div>
 <div class="section" id="deploy">
 <h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">¶</a></h3>
-<p>To deploy a specific model simply copy the <strong>model id</strong> from the leaderboard output and run.</p>
+<p>To deploy a specific model copy the <strong>model id</strong> from the leaderboard output and run.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
 
   6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - CacheDriver:Cached token is expired at <span class="m">2020</span>-04-22 <span class="m">16</span>:13:41.536177.  Refreshing
@@ -457,7 +467,7 @@ Options:
 </div>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png"><img alt="baseball predict dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png" style="width: 100%;" /></a>
 <p><em>Notice RS is not included in the file</em></p>
-<p>To initate predictions run.</p>
+<p>To request predictions.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml predict -m AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9 -p azure baseball_predict.csv
 <span class="hll"><span class="o">[</span>azure<span class="o">]</span>  Predictions are saved to &lt;path_to&gt;/moneyball_proj/baseball_predict_predicted.csv
 </span></pre></div>
@@ -471,6 +481,247 @@ Options:
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_predicted.png"><img alt="baseball predicted dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_predicted.png" style="width: 100%;" /></a>
+</div>
+</div>
+<div class="section" id="microsoft-azure-api">
+<h2>Microsoft Azure API<a class="headerlink" href="#microsoft-azure-api" title="Permalink to this headline">¶</a></h2>
+<p>The following code shows how a2ml can be used with <strong>Microsoft Azure</strong> and <strong>Auger</strong> AutoML providers to perform a classification task against the <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset.</p>
+<div class="section" id="id1">
+<h3>Dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset contains images of hand-written digits: 10 classes where each class refers to a digit. The goal of this exercise is to find a highly accurate model to predict the digit based on its pixel attributes.</p>
+<p>The data will be loaded from <a href="https://scikit-learn.org/stable/datasets/index.html#optical-recognition-of-handwritten-digits-dataset" target="_blank">scikit-learn</a> and saved as a csv to import into Microsoft Azure and Auger AutoML providers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_digits</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">()</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pixel_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">)]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">digits</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">feature_names</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">digits</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;digits.csv&#39;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>feature names were added to represent each pixel 1-64</p>
+</div>
+<p>A quick look at the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;digits.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/digits_ds.png"><img alt="digits dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/digits_ds.png" style="width: 100%;" /></a>
+</div>
+<div class="section" id="id2">
+<h3>Project Setup<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Inside of a terminal create a new a2ml project.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml new digits_proj
+<span class="o">[</span>config<span class="o">]</span> Created project folder digits_proj
+<span class="o">[</span>config<span class="o">]</span> To build your model, please <span class="k">do</span>: <span class="nb">cd</span> digits_proj <span class="o">&amp;&amp;</span> a2ml import <span class="o">&amp;&amp;</span> a2ml train
+
+$ <span class="nb">cd</span> digits_proj
+$ ls
+auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
+</pre></div>
+</div>
+<p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="digits-proj-config-yaml">
+<div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#digits-proj-config-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits_proj</span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+</span><span class="nt">exclude</span><span class="p">:</span>
+<span class="hll"><span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">class</span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">classifiction</span>
+</span><span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
+  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</div>
+<p><em>The highlighted lines are where manual changes have been made.</em></p>
+</div>
+<div class="section" id="id3">
+<h3>Import<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>To import the local <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">a2ml.api.a2ml</span> <span class="kn">import</span> <span class="n">A2ML</span>
+<span class="kn">from</span> <span class="nn">a2ml.api.utils.context</span> <span class="kn">import</span> <span class="n">Context</span>
+
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">import_data</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;digits.csv&#39;</span><span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="s1">&#39;digits.csv&#39;</span><span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Results for each provider are returned.</p>
+</div>
+<div class="section" id="id4">
+<h3>Train<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>accuracy</strong> will be used in this example.</p>
+<div class="literal-block-wrapper docutils container" id="digits-proj-azure-yaml">
+<div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#digits-proj-azure-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">run_id</span><span class="p">:</span>
+<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="digits-proj-auger-yaml">
+<div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#digits-proj-auger-yaml" title="Permalink to this code">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">experiment_session_id</span><span class="p">:</span>
+  <span class="nt">time_series</span><span class="p">:</span>
+  <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard</span>
+  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">stack_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stable</span>
+</pre></div>
+</div>
+</div>
+<p>To start training run</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+ <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+ <span class="p">{</span><span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+ <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;experiment_name&#39;</span><span class="p">:</span> <span class="s1">&#39;digits-2.csv-1-experiment&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;session_id&#39;</span><span class="p">:</span> <span class="s1">&#39;d259e5729d7b2910&#39;</span><span class="p">}},</span>
+<span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+ <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;experiment_name&#39;</span><span class="p">:</span> <span class="s1">&#39;digits-csv&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_61ee39e9-973d-4554-9490-af6186470007&#39;</span><span class="p">}}}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Evaluate<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>To view the realtime model results of a train.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span> <span class="n">evaluate</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;c864de72715ecd71&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;C2193878F2204FC&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;0.9694&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;VotingAlgorithm&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;F1CA221E8D25435&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;0.9694&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;AveragingAlgorithmClassifier&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;B20B1E53687048D&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;0.9699&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;SuperLearnerAlgorithmClassifier&#39;</span><span class="p">}],</span>
+<span class="hll"> <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">}},</span>
+</span><span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_0&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;MaxAbsScaler,LightGBM&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.9738563912101517</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_1&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;MinMaxScaler,SGD&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.9627174249458372</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_2&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;StandardScalerWrapper,ExtremeRandomTrees&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.7211946765707212</span><span class="p">}],</span>
+<span class="hll"> <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;Completed&#39;</span><span class="p">}}}</span>
+</span></pre></div>
+</div>
+<p><em>Notice the status will indicate when training is completed</em></p>
+</div>
+<div class="section" id="id6">
+<h3>Deploy<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>To deploy a specific model copy the <strong>model id</strong> from the leaderboard.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">azure model</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">)</span>
+<span class="hll">  <span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_1&#39;</span>
+</span>  <span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+  <span class="p">{</span><span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+  <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_4&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;aci_service_name&#39;</span><span class="p">:</span> <span class="s1">&#39;automleda39aa8a4-service&#39;</span><span class="p">}}}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">auger model</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger&#39;</span><span class="p">)</span>
+<span class="hll">  <span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;B20B1E53687048D-454554&#39;</span>
+</span>  <span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+  <span class="p">{</span><span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model_id&#39;</span><span class="p">:</span> <span class="s1">&#39;701413E8E5694AE&#39;</span><span class="p">}}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>Predict<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>To use the deployed model(s), pass a file of new observations with the target omitted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;digits_predict.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/digits_predict.png"><img alt="digits predict dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/digits_predict.png" style="width: 100%;" /></a>
+<p><em>Notice class is not included in the file</em></p>
+<p>To request predictions for the Azure model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;azure&#39;</span><span class="p">)</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_4&#39;</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;digits_predict.csv&#39;</span><span class="p">,</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="hll"><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;path_to_project&gt;/digits_proj/digits_predict_predicted.csv&#39;</span><span class="p">}}}</span>
+</span></pre></div>
+</div>
+<p>To request predictions for Auger model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger&#39;</span><span class="p">)</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;B20B1E53687048D-454554&#39;</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;digits_predict.csv&#39;</span><span class="p">,</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="hll"><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;path_to_project&gt;/digits_proj/digits_predict_predicted.csv&#39;</span><span class="p">}}}</span>
+</span></pre></div>
+</div>
+<p>Displaying <strong>digits_predict_predicted.csv</strong> shows that predictions for the target <strong>RS</strong> have been appended.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;digits_predict_predicted.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/digits_predicted.png"><img alt="digits predicted dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/digits_predicted.png" style="width: 100%;" /></a>
 </div>
 </div>
 </div>
