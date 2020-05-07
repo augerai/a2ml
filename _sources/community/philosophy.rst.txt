@@ -17,11 +17,10 @@ finding optimal algorithms and hyperparameters, due to their unsophisticated gri
 approach.  AutoML needs innovation and disruption.  An open, common API makes this much
 easier to happen.
 
-We do think that an open, common API for AutoML makes it easy for developers to try
-multiple AutoML providers and use the best one.  This should drive sales of Auger.AI's
-AutoML service.  But for some problems some other AutoML service may produce
-better models.  Either way, A2ML should help to drive research and innovation
-in AutoML techniques.
+We are also offering a paid hosted service that manages the connections to AutoML services
+from various vendors.   Just like you pay for hosted instances of other technologies 
+(Spark from DataBricks, Docker, Redis) we offer a hosted A2ML service that manages
+your connections and instances of AutoML providers from various vendors.  
 
 Review and Monitoring
 ---------------------
