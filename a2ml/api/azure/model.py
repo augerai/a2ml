@@ -37,7 +37,7 @@ class AzureModel(object):
         experiment_run = AutoMLRun(experiment = experiment, run_id = run_id)
         model_run = AutoMLRun(experiment = experiment, run_id = model_id)
         model_name = model_run.properties['model_name']
-        self.ctx.log('Regestiring model: %s' % model_name)
+        self.ctx.log('Registering model: %s' % model_id)
 
         description = '%s-%s' % (model_name, iteration)
         model = experiment_run.register_model(
