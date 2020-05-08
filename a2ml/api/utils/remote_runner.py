@@ -6,6 +6,7 @@ import sys
 import time
 import os
 
+from a2ml.api.utils import fsclient, dict_dig
 from a2ml.api.a2ml_credentials import A2MLCredentials
 from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 
@@ -94,7 +95,7 @@ class RemoteRunner(object):
 
     def execute(self, operation_name, *args, **kwargs):
         http_verb, path = self.get_http_verb_and_path(operation_name)
-        new_args, uploaded_file = self.upload_local_files(operation_name, *args, **kwargs)
+        new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
 
         params = self._params(*new_args['args'], **new_args['kwargs'])
 
@@ -102,7 +103,7 @@ class RemoteRunner(object):
             params['tmp_file_to_remove'] = uploaded_file
 
         res = self.make_requst(http_verb, path, params)
-        asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id']))
+        asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
 
     def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
@@ -115,7 +116,7 @@ class RemoteRunner(object):
             show_output(f"Request error: {response.status_code} {response.text}")
             raise Exception(f"Request error: {response.status_code} {response.text}")
 
-    def handle_weboscket_respone(self, data):
+    def handle_weboscket_respone(self, data, local_file):
         data_type = data.get('type', None)
 
         if data_type == 'result' and isinstance(data['result'], dict):
@@ -129,8 +130,20 @@ class RemoteRunner(object):
             config.write_all()
 
             data['result'] = data['result']['response']
+            self.download_prediction_result(data['result'], local_file)
 
         show_output(data)
+
+    def download_prediction_result(self, results, local_file):
+        for provider in results.keys():
+            result = results[provider]
+            predicted = dict_dig(result, 'data', 'predicted')
+
+            if predicted and fsclient.is_s3_path(predicted):
+                file_path = os.path.splitext(local_file)[0] + '_predicted.csv'
+                client = self.create_uploader()
+                client.download(predicted, file_path)
+                result['data']['predicted'] = file_path
 
     def get_upload_credentials(self):
         res = self.make_requst('post', '/api/v1/upload_credentials')
@@ -167,21 +180,23 @@ class RemoteRunner(object):
             inject_uploaded_file_to_request_func = replacer_func
 
         if file_to_upload and self.local_path(file_to_upload):
-            creds = self.get_upload_credentials()
-
-            uploader = FileUploader(
-                bucket=creds['bucket'],
-                endpoint_url=creds['endpoint_url'],
-                access_key=creds['access_key'],
-                secret_key=creds['secret_key'],
-                session_token=creds['session_token'],
-            )
-
+            uploader = self.create_uploader()
             url = uploader.multi_part_upload(file_to_upload, callback=OnelineProgressPercentage(file_to_upload))
 
-            return inject_uploaded_file_to_request_func(url), url
+            return inject_uploaded_file_to_request_func(url), url, file_to_upload
         else:
-            return {'args': args, 'kwargs': kwargs}, None
+            return {'args': args, 'kwargs': kwargs}, None, None
+
+    def create_uploader(self):
+        creds = self.get_upload_credentials()
+
+        return FileUploader(
+            bucket=creds['bucket'],
+            endpoint_url=creds['endpoint_url'],
+            access_key=creds['access_key'],
+            secret_key=creds['secret_key'],
+            session_token=creds['session_token'],
+        )
 
     async def spinning_cursor(self):
         while True:
@@ -191,10 +206,11 @@ class RemoteRunner(object):
                 await asyncio.sleep(0.2)
                 sys.stdout.write('\b')
 
-    async def wait_result(self, request_id):
+    async def wait_result(self, request_id, local_file):
         import websockets
 
         done = False
+        data = {}
         last_msg_id = '0'
         while not done:
             try:
@@ -209,7 +225,7 @@ class RemoteRunner(object):
                         if '_msg_id' in data:
                             last_msg_id = data['_msg_id']
 
-                        self.handle_weboscket_respone(data)
+                        self.handle_weboscket_respone(data, local_file)
 
                         if data.get('type', None) == 'result':
                             done = True
@@ -217,4 +233,7 @@ class RemoteRunner(object):
             except Exception as e:
                 show_output(e)
                 await asyncio.sleep(2)
-
+            finally:
+                if data.get('type', None) == 'result':
+                    done = True
+                    break
