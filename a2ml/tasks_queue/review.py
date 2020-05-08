@@ -1,6 +1,7 @@
 import datetime
 import os
 
+from a2ml.api.utils import dict_dig
 from a2ml.tasks_queue.data_source_api_pandas import DataSourceAPIPandas
 from a2ml.tasks_queue.utils import get_uid4
 from a2ml.tasks_queue.config import Config
@@ -15,12 +16,13 @@ def get_model_path(provider, model_id):
 def store_predictions(result, model_id):
     for provider in result.keys():
         if result[provider]['result']:
-            data_path = result[provider]['data']['predicted']
+            data_path = dict_dig(result, provider, 'data', 'predicted')
 
-            result[provider]['data']['predicted'] = store_predictions_for_review(
-                data_path,
-                get_model_path(provider, model_id),
-            )
+            if data_path:
+                result[provider]['data']['predicted'] = store_predictions_for_review(
+                    data_path,
+                    get_model_path(provider, model_id),
+                )
 
     return result
 
