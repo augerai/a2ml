@@ -108,7 +108,8 @@ class AzureModel(object):
         if filename:        
             predicted = self._save_predictions(predict_data, filename)
         elif columns:
-            predicted = predict_data.to_dict('split').get('data', [])
+            predicted = predict_data.to_dict('split')
+            predicted = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
         else:
             predicted = predict_data.to_dict('records')
 
