@@ -17,33 +17,37 @@ class ModelPredict():
         super(ModelPredict, self).__init__()
         self.ctx = ctx
 
-    def execute(self, filename, model_id, threshold=None, locally=False):
-        self.ctx.log('Predicting on data in %s' % filename)
-        filename = os.path.abspath(filename)
-
+    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
         if locally:
-            predicted = self._predict_locally(filename, model_id, threshold)
+            predicted = self._predict_locally(filename, model_id, threshold, data, columns)
         else:
-            predicted = self._predict_on_cloud(filename, model_id, threshold)
+            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns)
 
-        self.ctx.log('Predictions stored in %s' % predicted)
+        if filename:
+            self.ctx.log('Predictions stored in %s' % predicted)
 
         return predicted
 
-    def _predict_on_cloud(self, filename, model_id, threshold=None):
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns):
         target = self.ctx.config.get('target', None)
-        records, features = DataFrame.load_records(filename, target)
+        records, features = DataFrame.load_records(filename, target, features=columns, data=data)
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
         predictions = pipeline_api.predict(
             records, features, threshold)
 
-        predicted = os.path.splitext(filename)[0] + "_predicted.csv"
-        DataFrame.save(predicted, predictions)
+        if filename:
+            predicted = os.path.splitext(filename)[0] + "_predicted.csv"
+            DataFrame.save(predicted, predictions)
+        elif columns:
+            predicted = predictions.get('data', [])
+        else:
+            predicted = DataFrame.convert_records_to_dict(predictions)
 
         return predicted
 
-    def _predict_locally(self, filename, model_id, threshold):
+
+    def _predict_locally(self, filename, model_id, threshold, data, columns):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
             model_deploy.verify_local_model(model_id)
@@ -53,6 +57,12 @@ class ModelPredict():
                 'Please use a2ml deploy command to download model.')
 
         model_path, model_existed = self._extract_model(model_name)
+
+        if not filename:
+            filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
+            target = self.ctx.config.get('target', None)            
+            predict_data = DataFrame.load(filename, target, features=columns, data=data)
+            DataFrame.save_df(filename, predict_data)
 
         try:
             predicted = \

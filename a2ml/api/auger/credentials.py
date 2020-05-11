@@ -28,6 +28,7 @@ class Credentials(BaseCredentials):
         self.api_url = content.get('api_url', 'https://app.auger.ai')
         self.token = content.get('token')
 
+        self.verify()
         return self
 
     def serialize(self):

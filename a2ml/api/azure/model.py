@@ -77,7 +77,7 @@ class AzureModel(object):
         return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
     @error_handler
-    def predict(self, filename, model_id, threshold, locally):
+    def predict(self, filename, model_id, threshold, locally, data, columns):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
         if experiment_name is None:
@@ -85,7 +85,8 @@ class AzureModel(object):
         experiment = Experiment(ws, experiment_name)
 
         target = self.ctx.config.get('target', None)
-        predict_data = DataFrame.load(filename, target)
+        predict_data = DataFrame.load(filename, target, features=columns, data=data)
+
         exclude_columns = self.ctx.config.get_list('exclude')
         if exclude_columns:
             predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
@@ -104,7 +105,12 @@ class AzureModel(object):
             for idx, name in enumerate(proba_classes):
                 predict_data['proba_'+str(name)] = list(y_proba[:,idx])
 
-        predicted = self._save_predictions(predict_data, filename)
+        if filename:        
+            predicted = self._save_predictions(predict_data, filename)
+        elif columns:
+            predicted = predict_data.to_dict('split').get('data', [])
+        else:
+            predicted = predict_data.to_dict('records')
 
         return {'predicted': predicted}
 
@@ -149,7 +155,6 @@ class AzureModel(object):
         input_payload = json.dumps(input_payload)
         try:
             response = aci_service.run(input_data = input_payload)
-            # print(response)
         except Exception as e:
             # print('err log', aci_service.get_logs())
             raise e
