@@ -9,8 +9,8 @@ def error_handler(decorated):
                 import traceback
                 traceback.print_exc()
             self.ctx.log(str(exc))
-            # if not hasattr(self.ctx, 'not_reraise_exceptions')\
-            #    or not self.ctx.not_reraise_exceptions:
-            #     raise exc
+            if not hasattr(self.ctx, 'not_reraise_exceptions')\
+               or not self.ctx.not_reraise_exceptions:
+                raise exc
 
     return wrapper
