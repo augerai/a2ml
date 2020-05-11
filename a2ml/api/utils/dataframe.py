@@ -70,6 +70,8 @@ class DataFrame(object):
 
     @staticmethod
     def save_df(filename, df):
+        fsclient.create_parent_folder(filename)
+        
         df.to_csv(filename, index=False, encoding='utf-8')
 
     @staticmethod
