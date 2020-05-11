@@ -18,6 +18,10 @@ class ModelPredict():
         self.ctx = ctx
 
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+        if filename:
+            self.ctx.log('Predicting on data in %s' % filename)
+            filename = os.path.abspath(filename)
+        
         if locally:
             predicted = self._predict_locally(filename, model_id, threshold, data, columns)
         else:
