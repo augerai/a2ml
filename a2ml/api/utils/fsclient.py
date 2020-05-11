@@ -9,11 +9,11 @@ from .local_fsclient import LocalFSClient
 
 
 def is_s3_path(path):
-    return path.startswith("s3")
+    return path.startswith("s3:/")
 
 
 def _get_fsclient_bypath(path):
-    if path.startswith("s3"):
+    if is_s3_path(path):
         from .s3_fsclient import S3FSClient
         return S3FSClient()
     else:

@@ -8,3 +8,13 @@ def to_list(obj):
             return [obj]
     else:
         return []
+
+def dict_dig(obj, *path):
+    curr = obj
+    i = 0
+
+    while curr and i < len(path):
+        curr = curr.get(path[i], None)
+        i += 1
+
+    return curr
