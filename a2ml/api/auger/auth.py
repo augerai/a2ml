@@ -9,9 +9,10 @@ class AugerAuth(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        self.credentials = Credentials(ctx).load()
 
     def login(self, username, password, organization, url=None):
+        self.credentials = Credentials(self.ctx).load(verify=False)
+
         try:
             self.credentials.token = None
             self.credentials.save()
@@ -38,6 +39,8 @@ class AugerAuth(object):
             self.ctx.log(exc_text)
 
     def logout(self):
+        self.credentials = Credentials(self.ctx).load(verify=False)
+
         if self.credentials.token is None:
             self.ctx.log('You are not logged in Auger.')
         else:
@@ -48,6 +51,8 @@ class AugerAuth(object):
             self.ctx.log('You are logged out of Auger.')
 
     def whoami(self):
+        self.credentials = Credentials(self.ctx).load(verify=False)
+
         if self.credentials.token is None:
             self.ctx.log('Please login to Auger...')
         else:
