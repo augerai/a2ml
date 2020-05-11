@@ -33,14 +33,14 @@ class TestModel():
             'get_projects': PROJECTS,
         }
         interceptor(PAYLOAD, monkeypatch)
-        monkeypatch.setattr('subprocess.check_output', lambda *a, **kw: 0)
-        monkeypatch.setattr('subprocess.check_call', lambda *a, **kw: 0)
+        monkeypatch.setattr('subprocess.check_output', lambda *a, **kw: b'iris_predicted.csv')
+        monkeypatch.setattr('subprocess.check_call', lambda *a, **kw: b'iris_predicted.csv')
 
         result = AugerModel(ctx).predict(filename='iris.csv', model_id='87C81FE615DE46D', 
             threshold=None, locally=True, data=None, columns=None)
 
         assert result.get('predicted')
-        assert 'test_project/iris_predicted.csv' in result.get('predicted')
+        assert 'test_project/predictions/iris_predicted.csv' in result.get('predicted')
 
 
     @pytest.mark.skip(reason="not implemented on server-side currently")
