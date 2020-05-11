@@ -19,8 +19,8 @@ class ModelPredict():
         self.ctx = ctx
 
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
-        self.ctx.log('Predicting on data in %s' % filename)
         if filename and not fsclient.is_s3_path(filename):
+            self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
         if locally:
