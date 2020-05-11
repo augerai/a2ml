@@ -184,16 +184,26 @@ class AzureModel(object):
     def _predict_locally(self, experiment, predict_data, model_id, threshold):
         model_path = self._deploy_locally(experiment, model_id)
         fitted_model = fsclient.load_object_from_file(model_path)    
+        try:
+            model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
+            predict_data = predict_data[model_features]
+            predict_data.to_csv("test_options.csv", index=False, compression=None, encoding='utf-8')
+        except:
+            self.ctx.log('Cannot get columns from model.Use original columns from predicted data.')
 
         results_proba = None
         proba_classes = None
         if threshold is not None:
             results_proba = fitted_model.predict_proba(predict_data)
-
             proba_classes = list(fitted_model.classes_)
-
+            minority_target_class = self.ctx.config.get('minority_target_class', None)
+            if minority_target_class is None:
+                for item in proba_classes:
+                    if item == 1 or item == True or item == "1" or item == "True":
+                        minority_target_class = item
+                            
             result = self._calculate_proba_target(results_proba,
-                proba_classes, None, threshold, None)
+                proba_classes, None, threshold, minority_target_class)
         else:
             result = fitted_model.predict(predict_data)
 
