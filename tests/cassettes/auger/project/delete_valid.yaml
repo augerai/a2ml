@@ -1,0 +1,156 @@
+interactions:
+- request:
+    body: '{"limit": 100, "offset": 0, "name": "mt-org", "token": "secret"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '239'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: https://app-staging.auger.ai/api/v1/organizations
+  response:
+    body:
+      string: '{"data":[{"object":"organization","deleted":false,"id":97,"name":"mt-org","subdomain":"mt-org","main_bucket":"auger-mt-org-cinpns","status":"ready","cluster_mode":"multi_tenant","error_message":null,"created_at":"2019-05-09T23:16:04.971Z","updated_at":"2020-05-11T18:48:27.604Z","subscriptions":[{"object":"subscription","deleted":false,"id":31,"organization_id":97,"stripe_subscription_id":"sub_GneSyphbhHzYt9","msg":null,"status":"active","canceled_at":null,"current_period_end":"2020-05-25T13:09:14.000Z","created_at":"2020-02-25T13:09:16.279Z","updated_at":"2020-04-25T17:16:16.176Z","plans":[{"object":"plan","deleted":false,"id":16,"name":"Custom-Monthly-10000001","interval":"month","amount":19900.0,"currency":"USD","price":{"object":"money","amount":199.0,"currency":"USD"},"platform":"cloud","level":"custom","stripe_plan_id":"plan_Fphl9Xey5zvwqC","public":false,"active":true,"archived":false,"version":10000001,"max_team_users":null,"created_at":"2019-09-18T12:38:54.460Z","updated_at":"2019-09-18T12:38:54.467Z"},{"object":"plan","deleted":false,"id":20,"name":"Custom-Trial
+        Worker-10000001","interval":"month","amount":10.0,"currency":"USD","price":{"object":"money","amount":0.1,"currency":"USD"},"platform":"all","level":"custom","stripe_plan_id":"plan_FpiIqHxUbdJiOq","public":false,"active":true,"archived":false,"version":10000001,"max_team_users":null,"created_at":"2019-09-18T13:26:05.094Z","updated_at":"2019-09-18T13:26:05.099Z"}],"payment_status":"succeeded","payment_id":""}],"existing_customer":true,"included_trial_worker_minutes":0,"monthly_trial_worker_minutes_used":1063,"real_time_usage_minutes":0}],"meta":{"status":200,"pagination":{"limit":100,"offset":0,"count":1,"total":1}}}'
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 12 May 2020 12:55:51 GMT
+      Etag:
+      - W/"6c2f17daf56d2ff3783e6b6f0cb9ad6e"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      Via:
+      - 1.1 vegur
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 72d15f2d-0fad-45dc-a8ee-3bf37c92377c
+      X-Runtime:
+      - '0.069526'
+      X-Xss-Protection:
+      - 1; mode=block
+      content-length:
+      - '1711'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"limit": 100, "offset": 0, "organization_id": 97, "name": "new-project-name",
+      "token": "secret"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '272'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: https://app-staging.auger.ai/api/v1/projects
+  response:
+    body:
+      string: '{"data":[{"object":"project","deleted":false,"id":832,"name":"new-project-name","status":"undeployed","starter_user_id":null,"deleting":false,"deploy_progress":{"undeployed":0,"undeploying":0,"deploying":0,"deployed":0},"kube_service_port":null,"organization_id":97,"created_at":"2020-05-12T12:15:19.401Z","updated_at":"2020-05-12T12:15:19.644Z","components":[],"default_kubernetes_stack":"stable","default_workers_count":2,"default_worker_type_id":1,"workers_count":2,"worker_type_id":1,"will_be_autoterminated_at":null,"search_space":null,"search_space_status":"not_requested"}],"meta":{"status":200,"pagination":{"limit":100,"offset":0,"count":1,"total":1}}}'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 12 May 2020 12:55:52 GMT
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      Via:
+      - 1.1 vegur
+      X-Request-Id:
+      - 0c1eee5d-53a7-4a38-95d2-5c19b1c226c3
+      X-Runtime:
+      - '0.049484'
+      content-length:
+      - '661'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"token": "secret"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '194'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.23.0
+    method: DELETE
+    uri: https://app-staging.auger.ai/api/v1/projects/832
+  response:
+    body:
+      string: '{"data":{"object":"project","deleted":false,"id":832,"name":"new-project-name","status":"undeployed","starter_user_id":null,"deleting":false,"deploy_progress":{"undeployed":0,"undeploying":0,"deploying":0,"deployed":0},"kube_service_port":null,"organization_id":97,"created_at":"2020-05-12T12:15:19.401Z","updated_at":"2020-05-12T12:15:19.644Z","components":[],"default_kubernetes_stack":"stable","default_workers_count":2,"default_worker_type_id":1,"workers_count":2,"worker_type_id":1,"will_be_autoterminated_at":null,"search_space":null,"search_space_status":"not_requested"},"meta":{"status":200}}'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 12 May 2020 12:55:53 GMT
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      Via:
+      - 1.1 vegur
+      X-Request-Id:
+      - bd15252f-0689-4ed7-82a0-003b0076faff
+      X-Runtime:
+      - '0.078392'
+      content-length:
+      - '601'
+    status:
+      code: 200
+      message: OK
+version: 1
