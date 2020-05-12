@@ -8,9 +8,9 @@ from .config import AugerConfig
 class AugerDataset(object):
     def __init__(self, ctx):
         self.ctx = ctx
-        self.ctx.credentials = Credentials(ctx).load()
+        credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            self.ctx.credentials.api_url, self.ctx.credentials.token)
+            credentials.api_url, credentials.token)
 
     @error_handler
     @authenticated

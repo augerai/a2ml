@@ -21,9 +21,9 @@ class AzureA2ML(object):
     def deploy(self, model_id, locally=False):
         return AzureModel(self.ctx).deploy(model_id, locally)
 
-    def predict(self, filename, model_id, threshold=None, locally=False):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
         return AzureModel(self.ctx).predict(
-            filename, model_id, threshold, locally)
+            filename, model_id, threshold, locally, data, columns)
 
     def review(self):
         pass

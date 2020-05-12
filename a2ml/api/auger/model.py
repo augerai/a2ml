@@ -7,9 +7,9 @@ class AugerModel(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        self.ctx.credentials = Credentials(ctx).load()
+        credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            self.ctx.credentials.api_url, self.ctx.credentials.token)
+            credentials.api_url, credentials.token)
 
     @error_handler
     @authenticated
@@ -21,9 +21,9 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def predict(self, project, filename, model_id, threshold, locally):
+    def predict(self, project, filename, model_id, threshold, locally, data, columns):
         predicted = Model(self.ctx, project).predict(
-            filename, model_id, threshold, locally)
+            filename, model_id, threshold, locally, data, columns)
         return {'predicted': predicted}
 
     @error_handler

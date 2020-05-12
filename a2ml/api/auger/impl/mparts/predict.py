@@ -10,7 +10,6 @@ from ..exceptions import AugerException
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
-
 class ModelPredict():
     """Predict using deployed Auger Model."""
 
@@ -18,34 +17,41 @@ class ModelPredict():
         super(ModelPredict, self).__init__()
         self.ctx = ctx
 
-    def execute(self, filename, model_id, threshold=None, locally=False):
-        self.ctx.log('Predicting on data in %s' % filename)
-        if not fsclient.is_s3_path(filename):
+    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+        if filename and not fsclient.is_s3_path(filename):
+            self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
         if locally:
-            predicted = self._predict_locally(filename, model_id, threshold)
+            predicted = self._predict_locally(filename, model_id, threshold, data, columns)
         else:
-            predicted = self._predict_on_cloud(filename, model_id, threshold)
+            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns)
 
-        self.ctx.log('Predictions stored in %s' % predicted)
+        if filename:
+            self.ctx.log('Predictions stored in %s' % predicted)
 
         return predicted
 
-    def _predict_on_cloud(self, filename, model_id, threshold=None):
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns):
         target = self.ctx.config.get('target', None)
-        records, features = DataFrame.load_records(filename, target)
+        records, features = DataFrame.load_records(filename, target, features=columns, data=data)
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
         predictions = pipeline_api.predict(
             records, features, threshold)
 
-        predicted = os.path.splitext(filename)[0] + "_predicted.csv"
-        DataFrame.save(predicted, predictions)
+        if filename:
+            predicted = os.path.splitext(filename)[0] + "_predicted.csv"
+            DataFrame.save(predicted, predictions)
+        elif columns:
+            predicted = predictions.get('data', [])
+        else:
+            predicted = DataFrame.convert_records_to_dict(predictions)
 
         return predicted
 
-    def _predict_locally(self, filename, model_id, threshold):
+
+    def _predict_locally(self, filename_arg, model_id, threshold, data, columns):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
             model_deploy.verify_local_model(model_id)
@@ -56,6 +62,14 @@ class ModelPredict():
 
         model_path, model_existed = self._extract_model(model_name)
 
+        filename = filename_arg
+        if not filename:
+            target = self.ctx.config.get('target', None)            
+            predict_data = DataFrame.load(filename, target, features=columns, data=data)
+
+            filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
+            DataFrame.save_df(filename, predict_data)
+
         try:
             predicted = \
                 self._docker_run_predict(filename, threshold, model_path)
@@ -64,6 +78,14 @@ class ModelPredict():
             # if it wasn't unzipped before
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
+
+        if not filename_arg:
+            records, features = DataFrame.load_records(predicted, target)
+
+            if columns:
+                predicted = {'data': records, 'columns': features}
+            else:
+                predicted = DataFrame.convert_records_to_dict({'data': records, 'columns': features})
 
         return predicted
 
@@ -80,11 +102,12 @@ class ModelPredict():
     def _docker_run_predict(self, filename, threshold, model_path):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)
         docker_tag = cluster_settings.get('kubernetes_stack')
-        result_file = os.path.basename(filename)
-        data_path = os.path.dirname(filename)
+        predict_file = os.path.basename(filename)
+        data_path = os.path.abspath(os.path.dirname(filename))
+        model_path = os.path.abspath(model_path)
 
         call_args = "--path_to_predict=./model_data/%s %s" % \
-            (result_file, "--threshold=%s" % str(threshold) if threshold else '')
+            (predict_file, "--threshold=%s" % str(threshold) if threshold else '')
 
         command = (r"docker run "
             "-v {model_path}:/var/src/auger-ml-worker/exported_model "
@@ -98,11 +121,13 @@ class ModelPredict():
             self.ctx.log(
                 'Running model in deeplearninc/'
                 'auger-ml-worker:%s' % docker_tag)
-            getattr(subprocess,
-                'check_call' if self.ctx.debug else 'check_output')(
-                command, stderr=subprocess.STDOUT, shell=True)
+            result_file = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+            result_file = result_file.decode("utf-8").strip()
+            result_file = os.path.basename(result_file)
+            # getattr(subprocess,
+            #     'check_call' if self.ctx.debug else 'check_output')(
+            #     command, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             raise AugerException('Error running Docker container...')
 
-        return os.path.join(data_path,
-            os.path.splitext(result_file)[0] + "_predicted.csv")
+        return os.path.join(data_path, "predictions", result_file)

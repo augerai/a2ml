@@ -77,7 +77,7 @@ class AzureModel(object):
         return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
     @error_handler
-    def predict(self, filename, model_id, threshold, locally):
+    def predict(self, filename, model_id, threshold, locally, data, columns):
         ws = AzureProject(self.ctx)._get_ws()
         experiment_name = self.ctx.config.get('experiment/name', None)
         if experiment_name is None:
@@ -85,7 +85,8 @@ class AzureModel(object):
         experiment = Experiment(ws, experiment_name)
 
         target = self.ctx.config.get('target', None)
-        predict_data = DataFrame.load(filename, target)
+        predict_data = DataFrame.load(filename, target, features=columns, data=data)
+
         exclude_columns = self.ctx.config.get_list('exclude')
         if exclude_columns:
             predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
@@ -104,11 +105,17 @@ class AzureModel(object):
             for idx, name in enumerate(proba_classes):
                 predict_data['proba_'+str(name)] = list(y_proba[:,idx])
 
-        predicted = self._save_predictions(predict_data, filename)
+        if filename:        
+            predicted = self._save_predictions(predict_data, filename)
+        elif columns:
+            predicted = predict_data.to_dict('split')
+            predicted = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
+        else:
+            predicted = predict_data.to_dict('records')
 
         return {'predicted': predicted}
 
-    @error_handler        
+    @error_handler
     def actual(self, filename, model_id):
         pass
 
@@ -138,7 +145,7 @@ class AzureModel(object):
         aci_service = AciWebservice(ws, aci_service_name)
 
         input_payload = json.loads(input_payload)
-        # If you have a classification model, you can get probabilities by changing this to 'predict_proba'.        
+        # If you have a classification model, you can get probabilities by changing this to 'predict_proba'.
         method = 'predict'
         if threshold is not None:
             method = 'predict_proba'
@@ -149,7 +156,6 @@ class AzureModel(object):
         input_payload = json.dumps(input_payload)
         try:
             response = aci_service.run(input_data = input_payload)
-            # print(response)
         except Exception as e:
             # print('err log', aci_service.get_logs())
             raise e
@@ -163,7 +169,7 @@ class AzureModel(object):
         model_path = os.path.join(self.ctx.config.get_path(), 'models',
             'azure-model-%s.pkl.gz'%model_id)
         return fsclient.is_file_exists(model_path), model_path
-            
+
     def _deploy_locally(self, experiment,  model_id):
         is_loaded, model_path = self.verify_local_model(model_id)
 
@@ -180,10 +186,11 @@ class AzureModel(object):
             self.ctx.log('Downloaded model is %s' % model_path)
 
         return model_path
-                
+
     def _predict_locally(self, experiment, predict_data, model_id, threshold):
         model_path = self._deploy_locally(experiment, model_id)
-        fitted_model = fsclient.load_object_from_file(model_path)    
+
+        fitted_model = fsclient.load_object_from_file(model_path)
         try:
             model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
             predict_data = predict_data[model_features]
@@ -201,7 +208,7 @@ class AzureModel(object):
                 for item in proba_classes:
                     if item == 1 or item == True or item == "1" or item == "True":
                         minority_target_class = item
-                            
+
             result = self._calculate_proba_target(results_proba,
                 proba_classes, None, threshold, minority_target_class)
         else:
@@ -276,10 +283,15 @@ class AzureModel(object):
                 results.append(proba_classes[max_proba_idx])
 
         return results
-             
+
     def _save_predictions(self, df_predictions, filename):
-        predicted_path = os.path.abspath(
-            os.path.splitext(filename)[0] + "_predicted.csv")
-        df_predictions.to_csv(predicted_path, index=False, encoding='utf-8')
+        predicted_path = os.path.splitext(filename)[0] + "_predicted.csv"
+
+        if not fsclient.is_s3_path(filename):
+            predicted_path = os.path.abspath(predicted_path)
+
+        str_data = df_predictions.to_csv(None, index=False, encoding='utf-8')
+        fsclient.write_text_file(predicted_path, str_data)
+
         self.ctx.log('Predictions are saved to %s' % predicted_path)
         return predicted_path

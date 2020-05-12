@@ -97,7 +97,16 @@ source: gs://moneyball/baseball.csv
 exclude: Team,League,Year
 target: 'RS'
 model_type: regression
-budget: 3600
+
+experiment:
+  cross_validation_folds: 5
+  max_total_time: 60
+  max_eval_time: 1
+  max_n_trials: 10
+  use_ensemble: true
+  # NOTE: validation_data is supported only for Azure provider
+  validation_data: path_to_validation_file
+
 ```
 
 #### GOOGLE.YAML Configuration
@@ -110,21 +119,32 @@ dataset_id: TBL1889796605356277760
 operation_id: TBL2145477039279308800
 operation_name: projects/291533092938/locations/us-central1/operations/TBL4473943599746121728
 model_name: projects/291533092938/locations/us-central1/models/TBL1517370026795991040
+budget: 3600
+```
+
+#### AZURE.YAML
+Here's an example configuration file for Azure ML
+
+```yaml
+dataset: some_test_data
+
+experiment:
+  metric: AUC_weighted
+
+cluster:
+  region: eastus2
+  min_nodes: 0
+  max_nodes: 2
+  type: STANDARD_D2_V2
 ```
 
 #### AUGER.YAML
 Here's an example configuration file for Auger.AI
 
 ```yaml
-project: test_app
 dataset: some_test_data
 
 experiment:
-  cross_validation_folds: 5
-  max_total_time: 60
-  max_eval_time: 1
-  max_n_trials: 10
-  use_ensemble: true
   metric: f1_macro
 
 cluster:
@@ -184,14 +204,14 @@ From that client object you will execute the various PREDIT pipeline methods
 
 ## Base Classes
 
-### a2ml.api.utils.Context
+### a2ml.api.utils.context.Context
 Context provides environment to run A2ML Experiments and Models:
 - loads Credentials;
 - loads app settings from .yaml files and provides access to these settings
 to A2ML classes and business objects;
 - provides logging interface to all A2ML classes and business objects.
 
-### a2ml.api.A2ML - A2ML PREDIT API
+### a2ml.api.a2ml.A2ML - A2ML PREDIT API
 
 - **A2ML(context, providers = None)** - constructs A2ML PREDIT instance.
   - context - instance of a2ml Context
@@ -265,17 +285,18 @@ more for deployment
     }
   ```
 
-- **predict(filename, model_id, threshold=None, locally=False)** - Predict
-results with new data against deployed model.
-Predictions stored next to the file with data to be
-predicted on; file name will be appended with suffix `_predicted`.
+- **predict(filename, model_id, threshold=None, locally=False, data=None, columns=None)** - predicts using deployed
+  model. Predictions stored next to the file with data to be
+  predicted on; file name will be appended with suffix `_predicted`.
   - filename - file with data to be predicted
   - model_id - id of the deployed model
   - threshold - prediction threshold
   - locally - if True predict using locally deployed model, predict using model
     deployed on Provider Cloud
-
-  Returns:
+  - data - dict or array of records
+  - columns - list of column names is data is array of records
+    
+  Returns if filename is not None:
   ```
     {
       provider_name:
@@ -284,6 +305,55 @@ predicted on; file name will be appended with suffix `_predicted`.
           data: {'predicted': dataset_predicted.csv}|error
         }
     }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  rv = Model(ctx, project).predict('../irises.csv', model_id, None, True)
+  # if rv[provider].result is True
+  # predictions are stored in ../irises_predicted.csv
+  ```
+
+  Returns if filename is None and data is not None and columns is None:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
+  rv = Model(ctx, project).predict(None, model_id, threshold=None, locally=True, data=data)
+  # if rv[provider].result is True
+  # predictions are returned as rv[provider]['data']['predicted']
+  ```
+
+  Returns if filename is None and data is not None and columns is not None:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': {columns: [col1, col2], data: [[value1, value2], [value3, value4]]}}|error
+        }
+    }
+  ```
+
+Example:
+  ```
+  ctx = Context()
+  data = [[value1, value2], [value3, value4]]
+  columns: [col1, col2]
+  rv = Model(ctx, project).predict(None, model_id, threshold=None, locally=True, data=data, columns=columns)
+  # if rv[provider].result is True
+  # predictions are returned as rv[provider]['data']['predicted']
   ```
 - **review** - Review performance of deployed model(s)
   TBD
@@ -581,7 +651,7 @@ Experiment will be run.
 
 - **delete()** - TBD
 
-### a2ml.api.A2MLModel
+### a2ml.api.a2ml_model.A2MLModel
 Deploys or predicts using one of the Models from the Project Experiment(s)
 leaderboards.
 
@@ -615,7 +685,7 @@ leaderboards.
   rv = Model(ctx, providers).deploy(model_id, True)
   ```
 
-- **predict(filename, model_id, threshold, locally)** - predicts using deployed
+- **predict(filename, model_id, threshold=None, locally=False, data=None, columns=None)** - predicts using deployed
   model. Predictions stored next to the file with data to be
   predicted on; file name will be appended with suffix `_predicted`.
   - filename - file with data to be predicted
@@ -623,8 +693,10 @@ leaderboards.
   - threshold - prediction threshold
   - locally - if True predict using locally deployed model, predict using model
     deployed on Provider Cloud
-
-  Returns:
+  - data - dict or array of records
+  - columns - list of column names is data is array of records
+    
+  Returns if filename is not None:
   ```
     {
       provider_name:
@@ -641,6 +713,47 @@ leaderboards.
   rv = Model(ctx, project).predict('../irises.csv', model_id, None, True)
   # if rv[provider].result is True
   # predictions are stored in ../irises_predicted.csv
+  ```
+
+  Returns if filename is None and data is not None and columns is None:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}|error
+        }
+    }
+  ```
+
+  Example:
+  ```
+  ctx = Context()
+  data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
+  rv = Model(ctx, project).predict(None, model_id, threshold=None, locally=True, data=data)
+  # if rv[provider].result is True
+  # predictions are returned as rv[provider]['data']['predicted']
+  ```
+
+  Returns if filename is None and data is not None and columns is not None:
+  ```
+    {
+      provider_name:
+        {
+          result: True|False,
+          data: {'predicted': {columns: [col1, col2], data: [[value1, value2], [value3, value4]]}}|error
+        }
+    }
+  ```
+
+Example:
+  ```
+  ctx = Context()
+  data = [[value1, value2], [value3, value4]]
+  columns: [col1, col2]
+  rv = Model(ctx, project).predict(None, model_id, threshold=None, locally=True, data=data, columns=columns)
+  # if rv[provider].result is True
+  # predictions are returned as rv[provider]['data']['predicted']
   ```
 
 - **actual(filename, model_id)** - submit actuals

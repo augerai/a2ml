@@ -5,6 +5,7 @@ import sys
 import threading
 
 from boto3.s3.transfer import TransferConfig
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from  a2ml.api.utils import fsclient
@@ -55,6 +56,10 @@ class FileUploader(object):
         )
 
         return 's3://%s/%s' % (self.bucket, key)
+
+    def download(self, s3_path, local_path):
+        url = urlparse(s3_path)
+        self.client.download_file(self.bucket, url.path, local_path)
 
 class OnelineProgressPercentage(object):
     def __init__(self, filename):
