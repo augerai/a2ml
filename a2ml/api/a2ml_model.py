@@ -59,7 +59,7 @@ class A2MLModel(BaseA2ML):
         return self.__get_runner(locally).execute('deploy', model_id, locally)
 
     @show_result
-    def predict(self, filename, model_id, threshold, locally):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Args:
@@ -85,7 +85,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx, 'auger, azure').predict(filename=<path_to_file>/dataset.csv,model_id='D881079E1ED14FB',threshold=None,locally=False)
         """
-        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally)
+        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns)
 
     @show_result
     def actual(self, filename, model_id):
