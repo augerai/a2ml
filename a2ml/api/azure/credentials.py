@@ -40,6 +40,7 @@ class Credentials(BaseCredentials):
                         if self.ctx.debug:
                             import traceback
                             traceback.print_exc()
+        
 
         self.subscription_id = content.get('subscription_id')
         self.directory_tenant_id = content.get('directory_tenant_id')
@@ -47,6 +48,41 @@ class Credentials(BaseCredentials):
         self.client_secret = content.get('client_secret')
 
         return self
+
+    def login(self, username, password, organization, url=None):
+        self.load()
+        try:
+            self.save()
+
+            self.ctx.log(
+                'You are now logged in with subscription: %s.' % (credentials.subscription_id))
+        except Exception as exc:
+            exc_text = str(exc)
+            self.ctx.log(exc_text)
+
+    def logout(self):
+        self.load()
+        if self.subscription_id is None:
+            self.ctx.log('You are not logged in Azure.')
+        else:
+            self.subscription_id = None
+            self.directory_tenant_id = None
+            self.application_client_id = None
+            self.client_secret = None
+            self.save()
+            self.ctx.log('You are logged out of Azure.')
+
+    def whoami(self):
+        self.load()
+        if self.subscription_id is None:
+            self.ctx.log('Please login to Azure...')
+        else:
+            self.ctx.log(
+                '%s %s %s %s' % (
+                    self.subscription_id,
+                    self.directory_tenant_id,
+                    self.application_client_id,
+                    self.client_secret))
 
     def serialize(self):
         return {
