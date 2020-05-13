@@ -95,11 +95,15 @@
 <p class="caption"><span class="caption-text">Community</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-documentation">Building Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#viewing-documentation-in-the-browser">Viewing Documentation in the Browser</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#implementing-a2ml-for-another-automl-provider">Implementing A2ML for Another AutoML Provider</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="philosophy.html">Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="todo.html">TODO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
 </ul>
 
@@ -168,6 +172,38 @@
             
   <div class="section" id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>Learn how to get involved in the <a href="https://github.com/augerai/a2ml/blob/master/CONTRIBUTING.md" target="_blank">A2ML project</a>.</p>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>Documents are generated using <a href="https://www.sphinx-doc.org/en/master/usage/quickstart.html" target="_blank">sphinx</a>. To generate new docs locally you will want to navigate to the /docs directory located in the root of this project.</p>
+<p>There is currently an index.rst file which is the entry point. This file loads all other document files.</p>
+<p>There are currently two top level directories with documentation.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>/dev</p></li>
+<li><p>/community</p></li>
+</ul>
+</div></blockquote>
+<p>To edit the files in there directly using <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html" target="_blank">restructured text</a> syntax or you can add files for new sections.  Any new sections will need to have the path added in index.rst file.</p>
+<div class="section" id="building-documentation">
+<h3>Building Documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h3>
+<p>First, install documentation-related dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make develop-docs
+</pre></div>
+</div>
+<p>Then, from inside the /docs directory run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make html
+</pre></div>
+</div>
+<p>This will create new files inside of the /build directory.  If you notice that your changes aren't showing up try deleting all the contents inside build/ and running make html to force rebuild.</p>
+</div>
+<div class="section" id="viewing-documentation-in-the-browser">
+<h3>Viewing Documentation in the Browser<a class="headerlink" href="#viewing-documentation-in-the-browser" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>open ./build/html/index.html
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="implementing-a2ml-for-another-automl-provider">
 <h2>Implementing A2ML for Another AutoML Provider<a class="headerlink" href="#implementing-a2ml-for-another-automl-provider" title="Permalink to this headline">¶</a></h2>
 <p>The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.</p>

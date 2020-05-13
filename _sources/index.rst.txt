@@ -22,5 +22,4 @@
 
    community/contributing
    community/philosophy
-   community/todo
    community/authors

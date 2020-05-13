@@ -118,7 +118,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community/philosophy.html">Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/todo.html">TODO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
 </ul>
 
@@ -714,7 +713,7 @@ auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
 <span class="hll"><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;path_to_project&gt;/digits_proj/digits_predict_predicted.csv&#39;</span><span class="p">}}}</span>
 </span></pre></div>
 </div>
-<p>Displaying <strong>digits_predict_predicted.csv</strong> shows that predictions for the target <strong>RS</strong> have been appended.</p>
+<p>Displaying <strong>digits_predict_predicted.csv</strong> shows that predictions for the target <strong>class</strong> have been appended.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;digits_predict_predicted.csv&#39;</span><span class="p">)</span>

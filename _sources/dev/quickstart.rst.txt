@@ -651,7 +651,7 @@ To request predictions for Auger model.
   {'auger': {'result': True,
   'data': {'predicted': '<path_to_project>/digits_proj/digits_predict_predicted.csv'}}}
 
-Displaying **digits_predict_predicted.csv** shows that predictions for the target **RS** have been appended.
+Displaying **digits_predict_predicted.csv** shows that predictions for the target **class** have been appended.
  
 .. code-block:: python
 

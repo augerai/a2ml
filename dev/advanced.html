@@ -90,13 +90,15 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#provider-dataset-support">Provider Dataset Support</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Community</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community/philosophy.html">Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/todo.html">TODO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
 </ul>
 
@@ -165,6 +167,38 @@
             
   <div class="section" id="advanced">
 <h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="provider-dataset-support">
+<h2>Provider Dataset Support<a class="headerlink" href="#provider-dataset-support" title="Permalink to this headline">¶</a></h2>
+<p id="dataset-matrix">The following shows which dataset file extensions are supported.</p>
+<table class="docutils align-default" id="id1" style="width: 10px">
+<caption><span class="caption-text">File Extensions</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Auger.AI Provider</p></th>
+<th class="head"><p>Azure Provider</p></th>
+<th class="head"><p>Google Cloud Provider</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Extensions</strong></p></td>
+<td><p>.arff .csv .feather .h5 .hdf5 .json .xls .xlsx</p></td>
+<td><p>.csv</p></td>
+<td><p>.csv</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Compressed</strong></p></td>
+<td><p>.bz2 .gz .xz .zip</p></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
