@@ -5,8 +5,9 @@ import os
 
 
 class BaseTest(object):
-    def params(self, *args, **kwargs):
+    def params(self, provider='auger', *args, **kwargs):
         return [{
+            'provider': provider,
             'project_name': 'my_app',
             'args': args,
             'kwargs': kwargs,
@@ -44,7 +45,7 @@ class BaseTest(object):
             "py/state": {
                 "filename": "/Users/alex/soft/a2ml/tmp/my_app/auger.yaml",
                 "yaml": '''
-                    dataset:
+                    dataset: iris-13.csv
                     experiment:
                         name:
                         experiment_session_id:
@@ -93,7 +94,7 @@ class BaseTest(object):
 
                     name: my_app
                     providers: auger
-                    source: /Users/alex/data-sets/iris.csv
+                    source: tests/fixtures/iris.csv
                     exclude:
                     target: species
                     model_type: classification
@@ -106,7 +107,7 @@ class BaseTest(object):
                         max_n_trials: 10
                         use_ensemble: true
 
-                        name: iris-3.csv-experiment
+                        name: a87e-loans-603-b-4-be-4-a-1-ab-4-e-71-a-8-f-2-8-babd-1946-f-53-csv-gz
                         experiment_session_id: 609ece51c7e31f7b
                         dataset: iris-3.csv
                     '''
