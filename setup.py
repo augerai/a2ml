@@ -38,7 +38,7 @@ install_requires = [
     'docutils<0.16,>=0.10',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
-    'pandas==0.23.4',
+    # 'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
     'feather-format',
@@ -73,7 +73,8 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]==1.3.0'
+        'onnxruntime==1.1.1',
+        'azureml-sdk[automl]==1.5.0'
     ],
     'google': [
         'google-cloud-automl'
