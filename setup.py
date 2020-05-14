@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.3.6'
+VERSION = '0.3.7'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -28,15 +28,15 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy<=1.16.2,>=1.16.0',
-    'pyarrow==0.16.0',
+    # 'numpy<=1.16.2,>=1.16.0',
+    # 'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
-    'pandas==0.23.4',
+    # 'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
     'feather-format'
@@ -69,7 +69,8 @@ extras = {
         'boto3'
     ],
     'azure': [
-        'azureml-sdk[automl]==1.3.0'
+        'onnxruntime==1.1.1',
+        'azureml-sdk[automl]==1.5.0'
     ],
     'google': [
         'google-cloud-automl'
