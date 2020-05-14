@@ -38,7 +38,6 @@ install_requires = [
     'docutils<0.16,>=0.10',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
-    # 'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
     'feather-format',
