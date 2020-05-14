@@ -28,15 +28,12 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    # 'numpy<=1.16.2,>=1.16.0',
-    # 'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
     'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
-    # 'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
     'feather-format'
