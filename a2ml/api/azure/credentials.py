@@ -1,6 +1,5 @@
 import os
 import json
-from azureml.core.authentication import ServicePrincipalAuthentication
 
 from a2ml.api.utils.base_credentials import BaseCredentials
 from .exceptions import AzureException
@@ -57,6 +56,8 @@ class Credentials(BaseCredentials):
         }
 
     def get_serviceprincipal_auth(self):
+        from azureml.core.authentication import ServicePrincipalAuthentication
+
         svc_pr = None
         if self.client_secret:
             svc_pr = ServicePrincipalAuthentication(

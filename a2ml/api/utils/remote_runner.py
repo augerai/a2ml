@@ -5,6 +5,7 @@ import requests
 import sys
 import time
 import os
+import websockets
 
 from a2ml.api.utils import fsclient, dict_dig
 from a2ml.api.a2ml_credentials import A2MLCredentials
@@ -117,7 +118,7 @@ class RemoteRunner(object):
             raise Exception(f"Request error: {response.status_code} {response.text}")
 
     def handle_weboscket_respone(self, data, local_file):
-        data_type = data.get('type', None)
+        data_type = self.get_response_data_type(data)
 
         if data_type == 'result' and isinstance(data['result'], dict):
             config = jsonpickle.decode(data['result']['config'])
@@ -198,6 +199,10 @@ class RemoteRunner(object):
             session_token=creds['session_token'],
         )
 
+    def get_response_data_type(self, data):
+        if isinstance(data, dict):
+            return data.get('type', None)
+
     async def spinning_cursor(self):
         while True:
             for cursor in '|/-\\':
@@ -207,8 +212,6 @@ class RemoteRunner(object):
                 sys.stdout.write('\b')
 
     async def wait_result(self, request_id, local_file):
-        import websockets
-
         done = False
         data = {}
         last_msg_id = '0'
@@ -227,13 +230,13 @@ class RemoteRunner(object):
 
                         self.handle_weboscket_respone(data, local_file)
 
-                        if data.get('type', None) == 'result':
+                        if self.get_response_data_type(data) == 'result':
                             done = True
                             break
             except Exception as e:
                 show_output(e)
                 await asyncio.sleep(2)
             finally:
-                if data.get('type', None) == 'result':
+                if self.get_response_data_type(data) == 'result':
                     done = True
                     break
