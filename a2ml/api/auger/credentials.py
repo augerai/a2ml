@@ -14,7 +14,7 @@ class Credentials(BaseCredentials):
         self.api_url = None
         self.token = None
 
-    def load(self, verify=True):
+    def load(self):
         if hasattr(self.ctx, 'credentials'):
             content = self.ctx.credentials
         elif 'AUGER_CREDENTIALS' in os.environ:
@@ -29,9 +29,6 @@ class Credentials(BaseCredentials):
         self.organization = content.get('organization')
         self.api_url = content.get('api_url', 'https://app.auger.ai')
         self.token = content.get('token')
-
-        if verify:
-            self.verify()
             
         return self
 

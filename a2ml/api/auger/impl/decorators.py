@@ -1,36 +1,7 @@
 from functools import wraps
 import sys
 
-from .exceptions import (AugerException, NotAuthenticatedException)
-
-
-def error_handler(decorated):
-    def wrapper(self, *args, **kwargs):
-        try:
-            return decorated(self, *args, **kwargs)
-        except Exception as exc:
-            if self.ctx.debug:
-                import traceback
-                traceback.print_exc()
-            self.ctx.log(str(exc))
-            if not hasattr(self.ctx, 'not_reraise_exceptions')\
-               or not self.ctx.not_reraise_exceptions:
-                raise exc
-                
-    return wrapper
-
-
-# Deprecated: verify calls in object constructor
-# TODO: remove it 
-def authenticated(decorated):
-    def wrapper(self, *args, **kwargs):
-        # verify avalability of auger credentials
-        # try:
-        #     self.ctx.credentials.verify()
-        # except NotAuthenticatedException as e:
-        #     raise e
-        return decorated(self, *args, **kwargs)
-    return wrapper
+from .exceptions import (AugerException)
 
 def _get_project(self, autocreate):
     from .project import Project

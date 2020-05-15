@@ -1,5 +1,3 @@
-
-
 def error_handler(decorated):
     def wrapper(self, *args, **kwargs):
         try:
@@ -12,5 +10,12 @@ def error_handler(decorated):
             if not hasattr(self.ctx, 'not_reraise_exceptions')\
                or not self.ctx.not_reraise_exceptions:
                 raise exc
+                
+    return wrapper
 
+
+def authenticated(decorated):
+    def wrapper(self, *args, **kwargs):
+        self.credentials.verify()
+        return decorated(self, *args, **kwargs)
     return wrapper

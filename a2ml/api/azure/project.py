@@ -1,8 +1,10 @@
 from azureml.core import Workspace
 from azureml.exceptions import WorkspaceException
+
 from .exceptions import AzureException
-from .decorators import error_handler
+from a2ml.api.utils.decorators import error_handler, authenticated
 from .credentials import Credentials
+
 
 class AzureProject(object):
 
@@ -10,9 +12,9 @@ class AzureProject(object):
         super(AzureProject, self).__init__()
         self.ctx = ctx
         self.credentials = Credentials(self.ctx).load()
-        self.credentials.verify()
 
-    @error_handler    
+    @error_handler
+    @authenticated
     def list(self):
         workspaces = Workspace.list(
             self.credentials.subscription_id,
@@ -21,7 +23,8 @@ class AzureProject(object):
             self.ctx.log(project)
         return {'projects': workspaces.keys()}
 
-    @error_handler    
+    @error_handler
+    @authenticated    
     def create(self, name):
         name = self._get_name(name)
         region = self.ctx.config.get('cluster/region', 'eastus2')
@@ -40,7 +43,8 @@ class AzureProject(object):
         self.ctx.log('%s created' % name)
         return {'created': name}
 
-    @error_handler    
+    @error_handler
+    @authenticated    
     def delete(self, name):
         name = self._get_name(name)
         ws = Workspace.get(
@@ -53,7 +57,8 @@ class AzureProject(object):
         self.ctx.log('%s deleted' % name)
         return {'deleted': name}
 
-    @error_handler    
+    @error_handler
+    @authenticated    
     def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected project %s' % name)

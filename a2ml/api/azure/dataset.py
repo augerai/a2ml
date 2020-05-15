@@ -4,7 +4,9 @@ from azureml.core import Dataset
 from a2ml.api.utils import fsclient
 from .project import AzureProject
 from .exceptions import AzureException
-from .decorators import error_handler
+from a2ml.api.utils.decorators import error_handler, authenticated
+from .credentials import Credentials
+
 
 class AzureDataset(object):
 
@@ -12,8 +14,10 @@ class AzureDataset(object):
         super(AzureDataset, self).__init__()
         self.ctx = ctx
         self.ws = None
+        self.credentials = Credentials(self.ctx).load()
 
     @error_handler
+    @authenticated
     def list(self):
         selected = self.ctx.config.get('dataset', None)
         datasets = Dataset.get_all(self._get_ws())
@@ -25,6 +29,7 @@ class AzureDataset(object):
         return {'datasets': [name for name in datasets.keys()]}
 
     @error_handler
+    @authenticated
     def create(self, source = None, validation=False):
         ws = self._get_ws(True)
         if source is None:
@@ -55,6 +60,7 @@ class AzureDataset(object):
         return {'dataset': dataset_name}
 
     @error_handler
+    @authenticated
     def delete(self, name = None):
         ws = self._get_ws()
         if name is None:
@@ -68,6 +74,7 @@ class AzureDataset(object):
         return {'deleted': name}
 
     @error_handler
+    @authenticated
     def select(self, name = None):
         self._select(name)
         self.ctx.log('Selected dataset %s' % name)

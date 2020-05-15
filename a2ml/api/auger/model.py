@@ -1,5 +1,6 @@
 from .impl.cloud.rest_api import RestApi
-from .impl.decorators import error_handler, authenticated, with_project
+from .impl.decorators import with_project
+from a2ml.api.utils.decorators import error_handler, authenticated
 from .impl.model import Model
 from .credentials import Credentials
 
@@ -7,9 +8,9 @@ class AugerModel(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        credentials = Credentials(ctx).load()
+        self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            credentials.api_url, credentials.token)
+            self.credentials.api_url, self.credentials.token)
 
     @error_handler
     @authenticated
