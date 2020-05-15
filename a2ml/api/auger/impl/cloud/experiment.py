@@ -18,10 +18,10 @@ class AugerExperimentApi(AugerBaseApi):
     def run(self):
         experiment_session_api = \
             AugerExperimentSessionApi(self.ctx, self)
-        experimeny_session_properties = \
+        experiment_session_properties = \
             experiment_session_api.create()
         experiment_session_api.run()
-        return experimeny_session_properties.get('id')
+        return experiment_session_properties.get('id')
 
     def create(self, data_set_name):
         assert data_set_name is not None, \
