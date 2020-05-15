@@ -67,7 +67,6 @@ extras = {
         'boto3'
     ],
     'azure': [
-        'onnxruntime==1.1.1',
         'azureml-sdk[automl]==1.5.0'
     ],
     'google': [
