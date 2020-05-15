@@ -28,6 +28,8 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
+    'asyncio',
+    'boto3',
     'numpy<=1.16.2,>=1.16.0',
     'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
@@ -39,7 +41,8 @@ install_requires = [
     'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
-    'feather-format'
+    'feather-format',
+    'websockets'
 ]
 
 extras = {
@@ -60,8 +63,6 @@ extras = {
     ],
     'server': [
         'aioredis',
-        'asyncio',
-        'boto3',
         'celery==4.4.0',
         'fastapi',
         'gevent',

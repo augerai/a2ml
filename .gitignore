@@ -20,6 +20,7 @@ coverage/*
 /.tox
 /.env
 /.venv
+.venv_client
 /.vscode
 
 # Development artifacts

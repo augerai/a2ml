@@ -9,6 +9,7 @@
 .pytest_cache/
 .tox/
 .venv/
+.venv_client/
 .vscode/
 build/
 deploy/
