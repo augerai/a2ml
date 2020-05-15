@@ -99,13 +99,19 @@ class Config(object):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').set(path, value)
         else:
-            self.parts.part(self.name).set(path, value)
+            self.parts.part(part_name).set(path, value)
+
+    def remove(self, part_name, path):
+        if (part_name == 'config' and self.ismultipart()):
+            self.parts.part('config').remove(path)
+        else:
+            self.parts.part(part_name).remove(path)
 
     def write(self, part_name):
         if (part_name == 'config' and self.ismultipart()):
             self.parts.part('config').write(client_side=not self.runs_on_server)
         else:
-            self.parts.part(self.name).write(client_side=not self.runs_on_server)
+            self.parts.part(part_name).write(client_side=not self.runs_on_server)
 
     def write_all(self):
         for part_name in self.parts.parts.keys():

@@ -101,12 +101,12 @@ class Context(object):
                 new_ctx = ctx.copy()
         """
         new = Context(name, self.config.path, self.debug)
-        new._runs_on_server = self._runs_on_server
+        new.set_runs_on_server(self._runs_on_server)
         new.notificator = self.notificator
         new.request_id = self.request_id
+        new.config.parts = self.config.parts
 
         if self._runs_on_server:
-            new.config = self.config
             new.credentials = self.credentials
 
         return new
@@ -146,3 +146,4 @@ class Context(object):
 
 
 pass_context = click.make_pass_decorator(Context, ensure=True)
+
