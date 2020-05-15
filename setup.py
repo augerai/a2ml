@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.3.6'
+VERSION = '0.3.7'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
