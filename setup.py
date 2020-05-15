@@ -28,15 +28,15 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
+    'numpy<=1.16.2,>=1.16.0', #version for azure
+    'ruamel.yaml>0.16.7', #version for azure
     'asyncio',
     'boto3',
-    'numpy<=1.16.2,>=1.16.0',
     'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
     'smart_open==1.9.0',
     'jsonpickle',
