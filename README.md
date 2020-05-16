@@ -210,6 +210,31 @@ Context provides environment to run A2ML Experiments and Models:
 - loads app settings from .yaml files and provides access to these settings
 to A2ML classes and business objects;
 - provides logging interface to all A2ML classes and business objects.
+- allow to set/get config parameters:
+
+  ```python
+  import os
+  from a2ml import A2ML, Context
+
+  ctx = Context()
+  a2ml = A2ML(ctx, 'auger, azure')
+  
+  ctx.config.set('experiment/metric', 'f1', config_name='auger')
+  ctx.config.get('experiment/metric', config_name='auger')
+
+  ctx.config.set('experiment/metric', 'accuracy', config_name='azure')
+  ctx.config.get('experiment/metric', config_name='azure')
+
+  ctx.config.set('experiment/cross_validation_folds', 5) #set parameters for default config
+  ctx.config.get('experiment/cross_validation_folds')
+
+  #To save config to auger.yml file:
+  ctx.config.write('auger')
+
+  #To save all configs to .yml files:
+  ctx.config.write_all()
+  ```
+
 
 ### a2ml.api.a2ml.A2ML - A2ML PREDIT API
 
