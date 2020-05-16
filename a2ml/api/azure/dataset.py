@@ -75,11 +75,11 @@ class AzureDataset(object):
 
     def _select(self, name, validation):
         if validation:
-            self.ctx.config.set('azure', 'validation_dataset', name)
+            self.ctx.config.set('validation_dataset', name)
         else:
-            self.ctx.config.set('azure', 'dataset', name)
+            self.ctx.config.set('dataset', name)
 
-        self.ctx.config.write('azure')
+        self.ctx.config.write()
 
     def _get_ws(self, create_if_not_exist = False):
         if self.ws is None:

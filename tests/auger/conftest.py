@@ -48,9 +48,9 @@ def project(isolated):
 @pytest.fixture
 def ctx(project):
     ctx = Context(debug = False)
-    ctx.config.set('config', 'providers', ["auger"])
-    ctx.config.set('config', 'experiment/name', 'iris-1.csv-experiment')
-    ctx.config.set('config', 'dataset', 'iris.csv')
+    ctx.config.set('providers', ["auger"])
+    ctx.config.set('experiment/name', 'iris-1.csv-experiment')
+    ctx.config.set('dataset', 'iris.csv')
 
     return ctx
 
@@ -58,7 +58,7 @@ def ctx(project):
 def ctx_api():
     # load config(s) from the test app
     ctx = Context(debug = True)
-    ctx.config.set('config', 'providers', ["auger"])
+    ctx.config.set('providers', ["auger"])
     ctx.rest_api = RestApi('api_url', 'token')
     return ctx
 

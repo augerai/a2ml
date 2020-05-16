@@ -68,15 +68,18 @@ class Config(object):
         self.parts = ConfigParts()
         self.load(path)
 
-    def get(self, path, default=None):
+    def get(self, path, default=None, config_name=None):
         if len(self.parts.keys()) == 0:
             return default
         if 'config' in self.parts.keys():
             default = self.parts.part('config').get(path, default)
-        return self.parts.part(self.name).get(path, default)
+        if not config_name:
+            config_name = self.name
 
-    def get_list(self, path, default=None):
-        data = self.get(path, default)
+        return self.parts.part(config_name).get(path, default)
+
+    def get_list(self, path, default=None, config_name=None):
+        data = self.get(path, default, config_name)
         res = data
 
         if data:
@@ -95,30 +98,23 @@ class Config(object):
 
         return path
 
-    def set(self, part_name, path, value):
-        if (part_name == 'config' and self.ismultipart()):
-            self.parts.part('config').set(path, value)
-        else:
-            self.parts.part(part_name).set(path, value)
+    def set(self, path, value, config_name=None):
+        if not config_name:
+            config_name = self.name
 
-    def remove(self, part_name, path):
-        if (part_name == 'config' and self.ismultipart()):
-            self.parts.part('config').remove(path)
-        else:
-            self.parts.part(part_name).remove(path)
+        self.parts.part(config_name).set(path, value)
 
-    def remove(self, part_name, path):
-        if (part_name == 'config' and self.ismultipart()):
-            self.parts.part('config').remove(path)
-        else:
-            self.parts.part(self.name).remove(path)
+    def remove(self, path, config_name=None):
+        if not config_name:
+            config_name = self.name
 
-    def write(self, part_name):
-        if (part_name == 'config' and self.ismultipart()):
-            self.parts.part('config').write(client_side=not self.runs_on_server)
-        else:
-            self.parts.part(part_name).write(client_side=not self.runs_on_server)
+        self.parts.part(config_name).remove(path)
 
+    def write(self, config_name=None):
+        if not config_name:
+            config_name = self.name
+
+        self.parts.part(config_name).write(client_side=not self.runs_on_server)
 
     def write_all(self):
         for part_name in self.parts.parts.keys():
