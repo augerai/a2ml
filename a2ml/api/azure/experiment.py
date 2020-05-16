@@ -121,9 +121,9 @@ class AzureExperiment(object):
         run = experiment.submit(automl_config, show_output = False)
 
         self.ctx.log("Started Experiment %s search..." % experiment_name)
-        self.ctx.config.set('azure', 'experiment/name', experiment_name)
-        self.ctx.config.set('azure', 'experiment/run_id', run.run_id)
-        self.ctx.config.write('azure')
+        self.ctx.config.set('experiment/name', experiment_name)
+        self.ctx.config.set('experiment/run_id', run.run_id)
+        self.ctx.config.write()
 
         return {'experiment_name': experiment_name, 'run_id': run.run_id}
 
@@ -233,8 +233,8 @@ class AzureExperiment(object):
 
                 # It works versy slow, so just change name        
                 # cluster_name = self._fix_name(shortuuid.uuid())
-                # self.ctx.config.set('azure', 'cluster/name', cluster_name)
-                # self.ctx.config.write('azure')
+                # self.ctx.config.set('cluster/name', cluster_name)
+                # self.ctx.config.write()
                 try:
                     compute_target.wait_for_completion(show_output = True)
                 except Exception as e:

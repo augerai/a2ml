@@ -13,12 +13,12 @@ class TestConfigs(object):
                 
     def test_experiment_settings(self, project, ctx_api, monkeypatch):
         config = ctx_api.config
-        config.set('config','target', 'species')
-        config.set('config','experiment/cross_validation_folds', 55)
-        config.set('config','experiment/max_total_time', 606)
-        config.set('config','experiment/max_eval_time', 55)
-        config.set('config','experiment/max_n_trials', 101)
-        config.set('config','experiment/use_ensemble', False)
+        config.set('target', 'species')
+        config.set('experiment/cross_validation_folds', 55)
+        config.set('experiment/max_total_time', 606)
+        config.set('experiment/max_eval_time', 55)
+        config.set('experiment/max_n_trials', 101)
+        config.set('experiment/use_ensemble', False)
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,
@@ -47,8 +47,8 @@ class TestConfigs(object):
 
     def test_exclude_setting(self, project, ctx_api, monkeypatch):
         config = ctx_api.config
-        config.set('config','target', 'species')
-        config.set('config','exclude',['sepal_length'])
+        config.set('target', 'species')
+        config.set('exclude',['sepal_length'])
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,
@@ -68,9 +68,9 @@ class TestConfigs(object):
             {'datatype': 'integer', 'column_name': 'petal_width', 'use': True, 'isTarget': False}]
 
     def test_model_type_setting(self, project, ctx_api, monkeypatch):
-        ctx_api.config.set('config','target', 'species')
-        ctx_api.config.set('config','model_type','regression')
-        ctx_api.config.set('auger','experiment/metric', None)
+        ctx_api.config.set('target', 'species')
+        ctx_api.config.set('model_type','regression')
+        ctx_api.config.set('experiment/metric', None)
 
         PAYLOAD = {
             'get_experiment': EXPERIMENT,

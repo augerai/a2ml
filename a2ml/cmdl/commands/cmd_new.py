@@ -52,18 +52,18 @@ class NewCmd(object):
 
             config = self.ctx.config
             config.load(project_path, True)
-            config.set('config', 'providers',
-                PROVIDERS if self.providers == 'all' else self.providers)
-            config.set('config', 'name', self.project_name)
-            config.set('config', 'target', self.target)
-            config.set('config', 'source', self.source)
-            config.set('config', 'model_type', self.model_type)
+            config.set('providers',
+                PROVIDERS if self.providers == 'all' else self.providers, config_name='config')
+            config.set('name', self.project_name, config_name='config')
+            config.set('target', self.target, config_name='config')
+            config.set('source', self.source, config_name='config')
+            config.set('model_type', self.model_type, config_name='config')
             config.write('config')
 
             if self.model_type != 'classification':
-                self.ctx.config.set('azure', 'experiment/metric', 'spearman_correlation')
+                self.ctx.config.set('experiment/metric', 'spearman_correlation', config_name='azure')
                 self.ctx.config.write('azure')
-                self.ctx.config.set('auger', 'experiment/metric', 'r2')
+                self.ctx.config.set('experiment/metric', 'r2', config_name='auger')
                 self.ctx.config.write('auger')
 
         except Exception as e:

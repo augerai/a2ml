@@ -20,7 +20,7 @@ def create_context(params, new_project=False):
         ctx = jsonpickle.decode(params['context'])
 
         ctx.set_runs_on_server(True)
-        ctx.config.set('config', 'use_server', False)
+        ctx.config.set('use_server', False, config_name='config')
         ctx.notificator = notificator
         ctx.request_id = params['_request_id']
         ctx.setup_logger(format='')
@@ -32,10 +32,10 @@ def create_context(params, new_project=False):
 
         if not new_project:
             if params.get('provider'):
-                ctx.config.set('config', 'providers', [params.get('provider')])
+                ctx.config.set('providers', [params.get('provider')], config_name='config')
 
             if params.get('source_path'):
-                ctx.config.set('config', 'source', params.get('source_path'))
+                ctx.config.set('source', params.get('source_path'), config_name='config')
 
     return ctx
 
@@ -233,7 +233,7 @@ def with_context(params, proc):
     res = proc(ctx)
 
     ctx.set_runs_on_server(False)
-    ctx.config.set('config', 'use_server', True)
+    ctx.config.set('use_server', True, config_name='config')
     return {'response': res, 'config': jsonpickle.encode(ctx.config)}
 
 def __exception_message_with_all_causes(e):
