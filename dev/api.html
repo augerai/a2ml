@@ -288,7 +288,7 @@ a2ml.evaluate()</p>
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.import_data">
-<code class="sig-name descname">import_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.import_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">import_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.import_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Imports data defined in context. Uploading the same file name will result in versions being appended to the file name.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -299,8 +299,11 @@ a2ml.evaluate()</p>
 </div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p>Results for each provider.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;created&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset.csv&#39;</span><span class="p">}},</span>
 
