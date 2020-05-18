@@ -2,17 +2,20 @@ import os
 import json
 
 from .exceptions import AzureException
-from .decorators import error_handler
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
+from a2ml.api.utils.decorators import error_handler, authenticated
+from .credentials import Credentials
 
 class AzureModel(object):
 
     def __init__(self, ctx):
         super(AzureModel, self).__init__()
         self.ctx = ctx
+        self.credentials = Credentials(self.ctx).load()
 
     @error_handler
+    @authenticated
     def deploy(self, model_id, locally):
         if locally:
             model_path = self._deploy_locally(model_id)
@@ -75,6 +78,7 @@ class AzureModel(object):
         return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
     @error_handler
+    @authenticated
     def predict(self, filename, model_id, threshold, locally, data, columns):
         target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target, features=columns, data=data)
@@ -104,6 +108,7 @@ class AzureModel(object):
         return {'predicted': predicted}
 
     @error_handler
+    @authenticated
     def actual(self, filename, model_id):
         pass
 

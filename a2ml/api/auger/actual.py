@@ -2,17 +2,17 @@ import os
 import csv
 
 from .impl.cloud.pipeline import AugerPipelineApi
-from .impl.decorators import error_handler, authenticated, with_project
-
+from .impl.decorators import with_project
+from a2ml.api.utils.decorators import error_handler, authenticated
 
 class AugerActual(object):
     """Actual value for deployed Auger Pipeline."""
 
     def __init__(self, ctx):
         super(AugerActual, self).__init__(ctx)
-        credentials = Credentials(ctx).load()
+        self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            credentials.api_url, credentials.token)
+            self.credentials.api_url, self.credentials.token)
         
     @error_handler
     @authenticated

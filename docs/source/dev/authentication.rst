@@ -59,6 +59,12 @@ CLI Login
 ^^^^^^^^^
 The Azure AutoML service allows browser login. Run any ``a2ml`` command and a login URL will open in the default browser.
 
+To explicitly login to azure run.
+
+.. code-block:: bash
+
+  $ a2ml auth login -p azure
+
 JSON File
 ^^^^^^^^^
 .. |spc| raw:: html
