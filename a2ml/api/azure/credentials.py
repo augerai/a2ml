@@ -96,6 +96,8 @@ class Credentials(BaseCredentials):
         }
 
     def get_serviceprincipal_auth(self):
+        from azureml.core.authentication import ServicePrincipalAuthentication
+
         svc_pr = None
         if self.client_secret:
             svc_pr = ServicePrincipalAuthentication(

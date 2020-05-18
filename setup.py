@@ -28,18 +28,22 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy<=1.16.2,>=1.16.0',
+    'numpy<=1.16.2,>=1.16.0', #version for azure
+    'pandas<=0.23.4,>=0.21.0', #version for azure
+    'joblib==0.14.1', #version for azure
+    'ruamel.yaml>0.16.7', #version for azure
+    'asyncio',
+    'boto3',
     'pyarrow==0.16.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'ruamel.yaml<=0.15.89,>=0.15.35',
     'requests',
-    'pandas==0.23.4',
     'smart_open==1.9.0',
     'jsonpickle',
-    'feather-format'
+    'feather-format',
+    'websockets'
 ]
 
 extras = {
@@ -60,8 +64,6 @@ extras = {
     ],
     'server': [
         'aioredis',
-        'asyncio',
-        'boto3',
         'celery==4.4.0',
         'fastapi',
         'gevent',
@@ -72,7 +74,20 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]==1.3.0'
+        'azureml-sdk[automl]~=1.5.0'
+    ],
+    'azure-predict-local': [
+        'sklearn-pandas<=1.7.0,>=1.4.0',
+        'azureml-automl-runtime~=1.5.0'
+    ],
+    'azure-predict-remote': [
+        'azureml-core~=1.5.0'
+    ],
+    'azure-deploy-predict': [
+        'sklearn-pandas<=1.7.0,>=1.4.0',
+        'azureml-automl-runtime~=1.5.0',
+        'azureml-train-automl-client~=1.5.0',
+        'azureml-train-automl-runtime~=1.5.0'
     ],
     'google': [
         'google-cloud-automl'
@@ -82,7 +97,8 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if group_name != 'azure-predict-local' and group_name != 'azure-predict-remote' and group_name != 'azure-deploy-predict':
+        all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description = """A2ML ("Automate AutoML") is a set of scripts to automate

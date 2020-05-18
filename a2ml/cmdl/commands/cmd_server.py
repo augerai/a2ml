@@ -1,5 +1,4 @@
 import click
-import uvicorn
 
 from a2ml.api.utils.context import pass_context
 
@@ -14,6 +13,8 @@ from a2ml.api.utils.context import pass_context
     show_default=True, help='workers count')
 @pass_context
 def cmdl(ctx, host, port, reload, workers):
+    import uvicorn
+
     uvicorn.run(
         "a2ml.server.server:app",
         host=host, port=port, log_level="info", reload=reload, workers=workers

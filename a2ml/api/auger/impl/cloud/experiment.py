@@ -1,5 +1,6 @@
 from .base import AugerBaseApi
 from .dataset import AugerDataSetApi
+from a2ml.api.auger.dataset import AugerDataset
 from .experiment_session import AugerExperimentSessionApi
 from ..exceptions import AugerException
 
@@ -18,10 +19,10 @@ class AugerExperimentApi(AugerBaseApi):
     def run(self):
         experiment_session_api = \
             AugerExperimentSessionApi(self.ctx, self)
-        experimeny_session_properties = \
+        experiment_session_properties = \
             experiment_session_api.create()
         experiment_session_api.run()
-        return experimeny_session_properties.get('id')
+        return experiment_session_properties.get('id')
 
     def create(self, data_set_name):
         assert data_set_name is not None, \
@@ -48,6 +49,25 @@ class AugerExperimentApi(AugerBaseApi):
             raise AugerException('Model type should be %s' % \
                 '|'.join(MODEL_TYPES))
 
+        test_data_path = None
+        if config.get('experiment/validation_source'):
+            data_set_api = None
+            if self.ctx.config.get('experiment/validation_dataset'):
+                data_set_api = AugerDataSetApi(self.ctx, self.parent_api, config.get('experiment/validation_dataset'))
+                data_set_properties = data_set_api.properties()
+                test_data_path = data_set_properties.get('url')
+
+            if not test_data_path:
+                data_set_api = AugerDataset(self.ctx)._create( self.parent_api,
+                    source = self.ctx.config.get('experiment/validation_source'),
+                    validation = True
+                )
+                data_set_properties = data_set_api.properties()
+                test_data_path = data_set_properties.get('url')
+        else:
+            self.ctx.config.remove('experiment/validation_dataset')
+            self.ctx.config.write()
+
         options = {
             'crossValidationFolds':
                 config.get('experiment/cross_validation_folds', 5),
@@ -63,7 +83,8 @@ class AugerExperimentApi(AugerBaseApi):
                 True if model_type == 'classification' else False,
             'scoring':
                 config.get('experiment/metric',
-                    'f1_macro' if model_type == 'classification' else 'r2')
+                    'f1_macro' if model_type == 'classification' else 'r2'),
+            'test_data_path': test_data_path
         }
 
         data_set_id = self.properties()['project_file_id']

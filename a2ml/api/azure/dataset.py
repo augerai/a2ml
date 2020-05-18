@@ -10,10 +10,10 @@ from .credentials import Credentials
 
 class AzureDataset(object):
 
-    def __init__(self, ctx):
+    def __init__(self, ctx, ws = None):
         super(AzureDataset, self).__init__()
         self.ctx = ctx
-        self.ws = None
+        self.ws = ws
         self.credentials = Credentials(self.ctx).load()
 
     @error_handler
@@ -82,14 +82,27 @@ class AzureDataset(object):
 
     def _select(self, name, validation):
         if validation:
-            self.ctx.config.set('azure', 'validation_dataset', name)
+            self.ctx.config.set('experiment/validation_dataset', name)
         else:
-            self.ctx.config.set('azure', 'dataset', name)
+            self.ctx.config.set('dataset', name)
 
-        self.ctx.config.write('azure')
+        self.ctx.config.write()
 
     def _get_ws(self, create_if_not_exist = False):
         if self.ws is None:
             self.ws = AzureProject(self.ctx)._get_ws(
                 create_if_not_exist=create_if_not_exist)
         return self.ws
+
+    def _columns(self, dataset = None, name = None):
+        if not dataset:
+            ws = self._get_ws()
+            if name is None:
+                name = self.ctx.config.get('dataset', None)
+            if name is None:
+                raise AzureException('Please specify dataset name...')
+            dataset = Dataset.get_by_name(ws, name)
+
+        df = dataset.take(1).to_pandas_dataframe()
+        return df.columns.tolist()
+

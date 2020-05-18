@@ -75,6 +75,14 @@ class DataFrame(object):
         df.to_csv(filename, index=False, encoding='utf-8')
 
     @staticmethod
+    def columns(df):
+        return df.columns.tolist()
+
+    @staticmethod    
+    def select_columns(df, columns):
+        return df[columns]
+
+    @staticmethod
     def _read_csv(filename, sep, features=None, nrows=None):
         return pandas.read_csv(filename,
             encoding='utf-8', escapechar="\\", usecols=features,

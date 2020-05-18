@@ -44,8 +44,8 @@ class GoogleA2ML(object):
             {'display_name': self.name,
             'tables_dataset_metadata': {}})
         self.dataset_id = create_dataset_response.name.split('/')[-1]
-        self.ctx.config.set('google', 'dataset_id', self.dataset_id)
-        self.ctx.config.write('google')
+        self.ctx.config.set('dataset_id', self.dataset_id)
+        self.ctx.config.write()
 
         print ("Dataset ID: {}".format(self.dataset_id))
         self.dataset_name = self.client.dataset_path(self.project_id, self.compute_region, self.dataset_id)
@@ -119,7 +119,7 @@ class GoogleA2ML(object):
 
         self.operation_name = response.operation.name
         self.ctx.log("Training operation name: {}".format(self.operation_name))
-        self.ctx.config.set('google', 'operation_name', self.operation_name)
+        self.ctx.config.set('operation_name', self.operation_name)
 
         if synchronous:
             model_response=response.result()
@@ -128,7 +128,7 @@ class GoogleA2ML(object):
             model_name = model_response.name()
             self.ctx.log("Model name: {}".format(model_name))
 
-        self.ctx.config.write('google')
+        self.ctx.config.write()
 
     def evaluate(self):
         credentials, project = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
@@ -143,8 +143,8 @@ class GoogleA2ML(object):
             self.ctx.log("Model training complete.")
             self.model_name = result["response"]["name"]
             self.ctx.log("Model full name: {}".format(self.model_name))
-            self.ctx.config.set('google', 'model_name', self.model_name)
-            self.ctx.config.write('google')
+            self.ctx.config.set('model_name', self.model_name)
+            self.ctx.config.write()
             response = self.client.list_model_evaluations(self.model_name)
             self.ctx.log("List of model evaluations:")
             for evaluation in response:

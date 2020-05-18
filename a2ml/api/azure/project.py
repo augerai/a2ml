@@ -1,5 +1,4 @@
 from azureml.core import Workspace
-from azureml.exceptions import WorkspaceException
 
 from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
@@ -65,8 +64,8 @@ class AzureProject(object):
         return {'selected': name}
 
     def _select(self, name):
-        self.ctx.config.set('config', 'name', name)
-        self.ctx.config.write('config')
+        self.ctx.config.set('name', name)
+        self.ctx.config.write()
 
     def _get_name(self, name = None):
         if name is None:

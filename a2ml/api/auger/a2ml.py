@@ -9,8 +9,8 @@ class AugerA2ML(object):
         super(AugerA2ML, self).__init__()
         self.ctx = ctx
 
-    def import_data(self):
-        return AugerDataset(self.ctx).create()
+    def import_data(self, source=None):
+        return AugerDataset(self.ctx).create(source=source)
 
     def train(self):
         return AugerExperiment(self.ctx).start()

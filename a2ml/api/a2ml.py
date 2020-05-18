@@ -27,7 +27,7 @@ class A2ML(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def import_data(self):
+    def import_data(self, source=None):
         """Imports data defined in context. Uploading the same file name will result in versions being appended to the file name.
 
         Note:
@@ -38,6 +38,9 @@ class A2ML(BaseA2ML):
                 # Local file name or remote url to the data source file
                 source: './dataset.csv'
         
+        Args:
+            source (str, optional): Local file name or remote url to the data source file
+
         Returns:
             Results for each provider. ::
 
@@ -62,7 +65,7 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.import_data()
         """
-        return self.runner.execute('import_data')
+        return self.runner.execute('import_data', source=source)
 
     @show_result
     def train(self):

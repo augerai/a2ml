@@ -1,14 +1,6 @@
 import os
 import json
-from azureml.core import Experiment
-from azureml.core.model import Model
-from azureml.core.model import InferenceConfig
-from azureml.core.webservice import Webservice
-from azureml.core.webservice import AciWebservice
-from azureml.exceptions import WebserviceException
-from azureml.train.automl.run import AutoMLRun
 
-from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
@@ -25,18 +17,23 @@ class AzureModel(object):
     @error_handler
     @authenticated
     def deploy(self, model_id, locally):
-        ws = AzureProject(self.ctx)._get_ws()
-        experiment_name = self.ctx.config.get('experiment/name', None)
-        if experiment_name is None:
-            raise AzureException('Please specify Experiment name...')
-
-        iteration, run_id = self._get_iteration(model_id)
-        experiment = Experiment(ws, experiment_name)
-
         if locally:
-            model_path = self._deploy_locally(experiment, model_id)
+            model_path = self._deploy_locally(model_id)
             # self.ctx.log('Local deployment step is not required for Azure..')
             return {'model_id': model_id}
+        else:
+            return self._deploy_remotly(model_id)
+
+    def _deploy_remotly(self, model_id):
+        from azureml.core.model import Model
+        from azureml.core.model import InferenceConfig
+        from azureml.core.webservice import Webservice
+        from azureml.core.webservice import AciWebservice
+        from azureml.exceptions import WebserviceException
+        from azureml.train.automl.run import AutoMLRun
+
+        ws, experiment = self._get_experiment()
+        iteration, run_id = self._get_iteration(model_id)
 
         experiment_run = AutoMLRun(experiment = experiment, run_id = run_id)
         model_run = AutoMLRun(experiment = experiment, run_id = model_id)
@@ -83,26 +80,16 @@ class AzureModel(object):
     @error_handler
     @authenticated
     def predict(self, filename, model_id, threshold, locally, data, columns):
-        ws = AzureProject(self.ctx)._get_ws()
-        experiment_name = self.ctx.config.get('experiment/name', None)
-        if experiment_name is None:
-            raise AzureException('Please specify Experiment name...')
-        experiment = Experiment(ws, experiment_name)
-
         target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target, features=columns, data=data)
-
-        exclude_columns = self.ctx.config.get_list('exclude')
-        if exclude_columns:
-            predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
 
         y_pred = []
         if locally:
             y_pred, y_proba, proba_classes = self._predict_locally(
-                experiment, predict_data, model_id, threshold)
+                predict_data, model_id, threshold)
         else:
             y_pred, y_proba, proba_classes = self._predict_remotely(
-                ws, experiment, predict_data, model_id, threshold)
+                predict_data, model_id, threshold)
 
         predict_data[target] = y_pred
 
@@ -139,14 +126,70 @@ class AzureModel(object):
         # with a letter, end with a letter or number, and be between 3 and 32
         # characters long.
         #TODO - service_name + suffix must satisfy requiremets
+        if model_name.endswith('-service'):
+            return model_name
+
         return (model_name+'-service').lower()
 
-    def _predict_remotely(
-        self, ws, experiment, predict_data, model_id, threshold):
-        input_payload = predict_data.to_json(orient='split', index = False)
+    def _get_experiment(self):
+        from azureml.core import Experiment
+        from .project import AzureProject
 
-        remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
-        model_name = remote_run.properties['model_name']
+        ws = AzureProject(self.ctx)._get_ws()
+        experiment_name = self.ctx.config.get('experiment/name', None)
+        if experiment_name is None:
+            raise AzureException('Please specify Experiment name...')
+        experiment = Experiment(ws, experiment_name)
+
+        return ws, experiment
+
+    def _get_remote_model_features(self, remote_run):
+        from  a2ml.api.utils import fsclient, local_fsclient
+        import pandas as pd
+
+        model_features = None
+
+        temp_dir = local_fsclient.LocalFSClient().get_temp_folder()
+        try:
+            file_name = 'scoring_file_v_1_0_0.py'
+            remote_run.download_file('outputs/%s'%file_name, os.path.join(temp_dir, file_name))
+            text = fsclient.read_text_file(os.path.join(temp_dir, file_name))
+            to_find = "input_sample ="
+            start = text.find(to_find)
+            if start > 0:
+                end = text.find("\n", start)
+                if end > start:
+                    code_to_run = text[start+len(to_find):end]
+
+                    input_sample = eval(code_to_run)
+                    model_features = input_sample.columns.tolist()
+        except Exception as e:
+            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)            
+        finally:
+            fsclient.remove_folder(temp_dir)
+
+        return model_features
+            
+    def _predict_remotely(self, predict_data, model_id, threshold):
+        from azureml.core.webservice import AciWebservice
+
+        ws, experiment = self._get_experiment()
+
+        model_features = None
+        if model_id.startswith("AutoML_"):
+            from azureml.train.automl.run import AutoMLRun
+
+            remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_features = self._get_remote_model_features(remote_run)
+            model_name = remote_run.properties['model_name']
+        else:
+            model_name = model_id
+
+        if model_features:
+            predict_data = predict_data[model_features]
+
+        input_payload = predict_data.to_json(orient='split', index = False)
+            
         aci_service_name = self._aci_service_name(model_name)
         aci_service = AciWebservice(ws, aci_service_name)
 
@@ -176,12 +219,15 @@ class AzureModel(object):
             'azure-model-%s.pkl.gz'%model_id)
         return fsclient.is_file_exists(model_path), model_path
 
-    def _deploy_locally(self, experiment,  model_id):
+    def _deploy_locally(self, model_id):
         is_loaded, model_path = self.verify_local_model(model_id)
 
         if not is_loaded:
+            from azureml.train.automl.run import AutoMLRun
+
             self.ctx.log('Downloading model %s' % model_id)
 
+            ws, experiment = self._get_experiment()
             iteration, run_id = self._get_iteration(model_id)
             remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
             best_run, fitted_model = remote_run.get_output(iteration=iteration)
@@ -193,16 +239,16 @@ class AzureModel(object):
 
         return model_path
 
-    def _predict_locally(self, experiment, predict_data, model_id, threshold):
-        model_path = self._deploy_locally(experiment, model_id)
-
+    def _predict_locally(self, predict_data, model_id, threshold):
+        model_path = self._deploy_locally(model_id)
+        
         fitted_model = fsclient.load_object_from_file(model_path)
         try:
             model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
             predict_data = predict_data[model_features]
             predict_data.to_csv("test_options.csv", index=False, compression=None, encoding='utf-8')
-        except:
-            self.ctx.log('Cannot get columns from model.Use original columns from predicted data.')
+        except Exception as e:
+            self.ctx.log('Cannot get columns from model.Use original columns from predicted data: %s'%e)
 
         results_proba = None
         proba_classes = None
@@ -224,6 +270,7 @@ class AzureModel(object):
 
     def _calculate_proba_target(self, results_proba, proba_classes, proba_classes_orig, threshold, minority_target_class=None):
         import json
+
         results = []
 
         if type(threshold) == str:
