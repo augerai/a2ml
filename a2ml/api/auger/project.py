@@ -1,17 +1,18 @@
 from .impl.project import Project
 from .impl.exceptions import AugerException
-from .impl.decorators import error_handler, authenticated
+from a2ml.api.utils.decorators import error_handler, authenticated
 from .impl.cloud.rest_api import RestApi
 from .credentials import Credentials
 from .config import AugerConfig
+
 
 class AugerProject(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
-        credentials = Credentials(ctx).load()
+        self.credentials = Credentials(ctx).load()
         self.ctx.rest_api = RestApi(
-            credentials.api_url, credentials.token)
+            self.credentials.api_url, self.credentials.token)
 
     @error_handler
     @authenticated
