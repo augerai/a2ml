@@ -33,8 +33,7 @@ class Credentials(BaseCredentials):
         return self
 
     def login(self, username, password, organization, url=None):
-        self.load(verify=False)
-
+        self.load()
         try:
             self.token = None
             self.save()
@@ -61,7 +60,7 @@ class Credentials(BaseCredentials):
             self.ctx.log(exc_text)
 
     def logout(self):
-        self.load(verify=False)
+        self.load()
 
         if self.token is None:
             self.ctx.log('You are not logged in Auger.')
@@ -73,7 +72,7 @@ class Credentials(BaseCredentials):
             self.ctx.log('You are logged out of Auger.')
 
     def whoami(self):
-        self.load(verify=False)
+        self.load()
 
         if self.token is None:
             self.ctx.log('Please login to Auger...')

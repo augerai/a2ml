@@ -1,6 +1,7 @@
 import os
 import json
-from azureml.core.authentication import ServicePrincipalAuthentication
+import shutil
+from azureml.core.authentication import ServicePrincipalAuthentication, InteractiveLoginAuthentication
 
 from a2ml.api.utils.base_credentials import BaseCredentials
 from .exceptions import AzureException
@@ -16,13 +17,13 @@ class Credentials(BaseCredentials):
 
     def load(self):
         content = {}
-
         if hasattr(self.ctx, 'credentials'):
             content = self.ctx.credentials
         elif 'AZURE_CREDENTIALS' in os.environ:
             content = os.environ.get('AZURE_CREDENTIALS', None)
             content = json.loads(content) if content else {}
         else:
+            #look for service principal credentials
             if self._credentials_file_exist():
                 with open(self.creds_file, 'r') as file:
                     content = json.loads(file.read())
@@ -40,8 +41,11 @@ class Credentials(BaseCredentials):
                         if self.ctx.debug:
                             import traceback
                             traceback.print_exc()
+                else: 
+                    #fallback to force browser login for token
+                    interactive_auth = InteractiveLoginAuthentication(force=True)
+                    interactive_auth.get_authentication_header()
         
-
         self.subscription_id = content.get('subscription_id')
         self.directory_tenant_id = content.get('directory_tenant_id')
         self.application_client_id = content.get('application_client_id')
@@ -53,24 +57,23 @@ class Credentials(BaseCredentials):
         self.load()
         try:
             self.save()
-
             self.ctx.log(
-                'You are now logged in with subscription: %s.' % (credentials.subscription_id))
+                'You are now logged in to Azure')
         except Exception as exc:
             exc_text = str(exc)
             self.ctx.log(exc_text)
 
     def logout(self):
         self.load()
-        if self.subscription_id is None:
-            self.ctx.log('You are not logged in Azure.')
-        else:
-            self.subscription_id = None
-            self.directory_tenant_id = None
-            self.application_client_id = None
-            self.client_secret = None
-            self.save()
-            self.ctx.log('You are logged out of Azure.')
+        azure_root_dir = os.path.abspath('%s/.azureml' % os.environ.get('HOME', ''))
+        if os.path.exists(azure_root_dir):
+            shutil.rmtree(azure_root_dir, ignore_errors=True)
+        self.subscription_id = None
+        self.directory_tenant_id = None
+        self.application_client_id = None
+        self.client_secret = None
+        self.save()
+        self.ctx.log('You are logged out of Azure.')
 
     def whoami(self):
         self.load()
@@ -78,7 +81,7 @@ class Credentials(BaseCredentials):
             self.ctx.log('Please login to Azure...')
         else:
             self.ctx.log(
-                '%s %s %s %s' % (
+                'subscription_id: %s directory_tenant_id:%s application_client_id:%s client_secret:%s' % (
                     self.subscription_id,
                     self.directory_tenant_id,
                     self.application_client_id,
@@ -100,7 +103,6 @@ class Credentials(BaseCredentials):
                 service_principal_id=self.application_client_id,
                 service_principal_password=self.client_secret
             )
-
         return svc_pr
 
     def save(self):
