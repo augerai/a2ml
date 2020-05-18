@@ -6,10 +6,10 @@ class AzureA2ML(object):
         super(AzureA2ML, self).__init__()
         self.ctx = ctx
 
-    def import_data(self):
+    def import_data(self, source=None):
         from a2ml.api.azure.dataset import AzureDataset
 
-        return AzureDataset(self.ctx).create()
+        return AzureDataset(self.ctx).create(source=source)
 
     def train(self):
         from a2ml.api.azure.experiment import AzureExperiment
@@ -28,7 +28,7 @@ class AzureA2ML(object):
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
         from a2ml.api.azure.model import AzureModel
-        
+
         return AzureModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns)
 

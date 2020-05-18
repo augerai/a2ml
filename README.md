@@ -104,8 +104,7 @@ experiment:
   max_eval_time: 1
   max_n_trials: 10
   use_ensemble: true
-  # NOTE: validation_data is supported only for Azure provider
-  validation_data: path_to_validation_file
+  validation_source: path_to_validation_file
 
 ```
 
@@ -242,9 +241,8 @@ to A2ML classes and business objects;
   - context - instance of a2ml Context
   - providers - list of providers (auger, azure, etc.)
 
-- **import_data()** - Importing data for training
-
-  Source should be set in config (TBD - pass source as parameter)
+- **import_data(source=None)** - Importing data for training
+  source - Local file name or remote url to the data source file, if None then read from config
 
   Returns:
   ```

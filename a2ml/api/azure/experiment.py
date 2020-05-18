@@ -39,6 +39,18 @@ class AzureExperiment(object):
 
     @error_handler    
     def start(self):
+        model_type = self.ctx.config.get('model_type')
+        if not model_type:
+            raise AzureException('Please specify model type...')
+        primary_metric = self.ctx.config.get(
+            'experiment/metric','spearman_correlation')
+        if not primary_metric:
+            raise AzureException('Please specify primary metric...')
+        #TODO: check if primary_metric is constent with model_type
+        target = self.ctx.config.get('target')
+        if not target:
+            raise AzureException('Please specify target column...')
+
         dataset_name = self.ctx.config.get('dataset', None)
         if dataset_name is None:
             raise AzureException('Please specify Dataset name...')
@@ -55,19 +67,10 @@ class AzureExperiment(object):
         if exclude_columns:
             dataset = dataset.drop_columns(exclude_columns)
 
-        compute_target = self._get_compute_target(ws, cluster_name)
+        training_data_columns = AzureDataset(self.ctx, ws)._columns(dataset)
+        training_data_columns.remove(target)
 
-        model_type = self.ctx.config.get('model_type')
-        if not model_type:
-            raise AzureException('Please specify model type...')
-        primary_metric = self.ctx.config.get(
-            'experiment/metric','spearman_correlation')
-        if not primary_metric:
-            raise AzureException('Please specify primary metric...')
-        #TODO: check if primary_metric is constent with model_type
-        target = self.ctx.config.get('target')
-        if not target:
-            raise AzureException('Please specify target column...')
+        compute_target = self._get_compute_target(ws, cluster_name)
 
         automl_settings = {
             "iteration_timeout_minutes" : self.ctx.config.get(
@@ -81,16 +84,19 @@ class AzureExperiment(object):
         }
 
         validation_data = None
-        if self.ctx.config.get('experiment/validation_data'):
-            if self.ctx.config.get('validation_dataset'):
-                validation_data = Dataset.get_by_name(ws, self.ctx.config.get('validation_dataset'))
+        if self.ctx.config.get('experiment/validation_source'):
+            if self.ctx.config.get('experiment/validation_dataset'):
+                validation_data = Dataset.get_by_name(ws, self.ctx.config.get('experiment/validation_dataset'))
             if not validation_data:
                 res = AzureDataset(self.ctx).create(
-                    source = self.ctx.config.get('experiment/validation_data'),
+                    source = self.ctx.config.get('experiment/validation_source'),
                     validation = True
                 )
-                validation_data = Dataset.get_by_name(ws, res['dataset'])
-        else:    
+                validation_data = Dataset.get_by_name(ws, res['dataset']).keep_columns(training_data_columns)
+        else:
+            self.ctx.config.remove('experiment/validation_dataset')
+            self.ctx.config.write()
+
             automl_settings["n_cross_validations"] = self.ctx.config.get(
                 'experiment/cross_validation_folds', 5)
             if self.ctx.config.get('experiment/validation_size'):

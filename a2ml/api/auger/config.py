@@ -5,7 +5,7 @@ class AugerConfig(object):
 
     def set_data_set(self, name, source=None, validation=False):
         if validation:
-            self.ctx.config.set('validation_dataset', name)
+            self.ctx.config.set('experiment/validation_dataset', name)
         else:
             self.ctx.config.set('dataset', name)
 

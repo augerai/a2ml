@@ -1,5 +1,4 @@
 from azureml.core import Workspace
-from azureml.exceptions import WorkspaceException
 from .exceptions import AzureException
 from .decorators import error_handler
 from .credentials import Credentials

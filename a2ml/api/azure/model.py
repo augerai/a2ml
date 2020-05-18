@@ -79,10 +79,6 @@ class AzureModel(object):
         target = self.ctx.config.get('target', None)
         predict_data = DataFrame.load(filename, target, features=columns, data=data)
 
-        exclude_columns = self.ctx.config.get_list('exclude')
-        if exclude_columns:
-            predict_data.drop(columns=exclude_columns, inplace=True, errors='ignore')
-
         y_pred = []
         if locally:
             y_pred, y_proba, proba_classes = self._predict_locally(
@@ -127,7 +123,7 @@ class AzureModel(object):
         #TODO - service_name + suffix must satisfy requiremets
         if model_name.endswith('-service'):
             return model_name
-            
+
         return (model_name+'-service').lower()
 
     def _get_experiment(self):
@@ -142,21 +138,53 @@ class AzureModel(object):
 
         return ws, experiment
 
+    def _get_remote_model_features(self, remote_run):
+        from  a2ml.api.utils import fsclient, local_fsclient
+        import pandas as pd
+
+        model_features = None
+
+        temp_dir = local_fsclient.LocalFSClient().get_temp_folder()
+        try:
+            file_name = 'scoring_file_v_1_0_0.py'
+            remote_run.download_file('outputs/%s'%file_name, os.path.join(temp_dir, file_name))
+            text = fsclient.read_text_file(os.path.join(temp_dir, file_name))
+            to_find = "input_sample ="
+            start = text.find(to_find)
+            if start > 0:
+                end = text.find("\n", start)
+                if end > start:
+                    code_to_run = text[start+len(to_find):end]
+
+                    input_sample = eval(code_to_run)
+                    model_features = input_sample.columns.tolist()
+        except Exception as e:
+            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)            
+        finally:
+            fsclient.remove_folder(temp_dir)
+
+        return model_features
+            
     def _predict_remotely(self, predict_data, model_id, threshold):
         from azureml.core.webservice import AciWebservice
 
         ws, experiment = self._get_experiment()
 
-        input_payload = predict_data.to_json(orient='split', index = False)
-
+        model_features = None
         if model_id.startswith("AutoML_"):
             from azureml.train.automl.run import AutoMLRun
 
             remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_features = self._get_remote_model_features(remote_run)
             model_name = remote_run.properties['model_name']
         else:
             model_name = model_id
 
+        if model_features:
+            predict_data = predict_data[model_features]
+
+        input_payload = predict_data.to_json(orient='split', index = False)
+            
         aci_service_name = self._aci_service_name(model_name)
         aci_service = AciWebservice(ws, aci_service_name)
 
