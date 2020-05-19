@@ -13,17 +13,20 @@ class DataFrame(object):
         df = None
 
         if filename:
-            file = fsclient.s3fs_open(filename)
-
             if filename.endswith('.json') or filename.endswith('.json.gz'):
+                file = fsclient.s3fs_open(filename)
                 df = pandas.read_json(file)
             elif filename.endswith('.xlsx') or filename.endswith('.xls'):
+                file = fsclient.s3fs_open(filename)
                 df = pandas.read_excel(file)
             elif filename.endswith('.feather') or filename.endswith('.feather.gz'):
-                import feather
-                df = feather.read_dataframe(file, columns=features, use_threads=bool(True))
+                from pyarrow import feather
+
+                with fsclient.open_file(filename, 'rb', encoding=None) as local_file:
+                    df = feather.read_feather(local_file, columns=features, use_threads=bool(True))
 
             if df is None:
+                file = fsclient.s3fs_open(filename)
                 try:
                     df = DataFrame._read_csv(file, ',', features, nrows)
                 except Exception as e:

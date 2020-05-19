@@ -269,8 +269,18 @@ def copy_folder(path_src, path_dst):
         client.copy_folder(path_src, path_dst)
 
 
-def save_object_to_file(obj, path):
+def _save_to_pickle(obj, path, compress):
     import joblib
+
+    joblib.dump(obj, path, compress=compress, protocol=4)
+
+def _save_to_feather(obj, path, compress):
+    from pyarrow import feather
+
+    feather.write_feather(obj, path, compression=compress)
+
+def save_object_to_file(obj, path, fmt="pickle"):
+    
     remove_file(path)
     create_parent_folder(path)
 
@@ -278,16 +288,27 @@ def save_object_to_file(obj, path):
         compress = 0
         if path.endswith('.gz'):
             compress = ('gzip', 3)
+        elif path.endswith('.zstd'):
+            compress = "zstd"
+        elif path.endswith('.lz4'):
+            compress = "lz4"
 
-        if is_s3_path(path):
-            with save_atomic(path) as local_path:
-                joblib.dump(obj, local_path, compress=compress, protocol=4)
+        if self.is_s3_path(path):
+            with self.save_atomic(path) as local_path:
+                if fmt == "pickle":
+                    _save_to_pickle(obj, local_path, compress=compress)
+                elif fmt == "feather":
+                    _save_to_feather(obj, local_path, compress=compress)
         else:
-            joblib.dump(obj, path, compress=compress, protocol=4)
+            if fmt == "pickle":
+                _save_to_pickle(obj, path, compress=compress)
+            elif fmt == "feather":
+                _save_to_feather(obj, path, compress=compress)
+
     except:
         remove_file(path)
         raise
-
+        
 
 @contextlib.contextmanager
 def save_atomic(path, move_file=True):

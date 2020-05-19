@@ -95,11 +95,8 @@ class DataSourceAPIPandas(object):
         elif extension.endswith('.xlsx') or extension.endswith('.xls'):
             path = fsclient.s3fs_open(path)
             return pd.read_excel(path)
-        elif extension.endswith('.feather') or extension.endswith('.feather.gz'):
-            import feather
-
-            with fsclient.open(path, 'rb', encoding=None) as local_file:
-                return feather.read_dataframe(local_file, columns=features, use_threads=bool(True))
+        elif extension.endswith('.feather') or extension.endswith('.feather.gz') or extension.endswith('.feather.zstd') or extension.endswith('.feather.lz4'):
+            return self.loadFromFeatherFile(path)
 
         csv_with_header = self.options.get('csv_with_header', True)
         header = 0 if csv_with_header else None
@@ -215,6 +212,15 @@ class DataSourceAPIPandas(object):
             self.df =  self.df[features]
 
         return self.df
+
+    def saveToFeatherFile(self, path):
+        fsclient.save_object_to_file(self.df, path, fmt="feather")
+
+    def loadFromFeatherFile(self, path, features=None):
+        from pyarrow import feather
+
+        with fsclient.open_file(path, 'rb', encoding=None) as local_file:
+            return feather.read_feather(local_file, columns=features, use_threads=bool(True))
 
     def count(self):
         if self.df is not None:
@@ -341,3 +347,4 @@ class DataSourceAPIPandas(object):
             [row[i] for row in arff_data_data] if c in fset else None
             for i, c in enumerate(columns)
         ]
+

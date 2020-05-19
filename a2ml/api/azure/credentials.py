@@ -28,30 +28,40 @@ class Credentials(BaseCredentials):
                 with open(self.creds_file, 'r') as file:
                     content = json.loads(file.read())
             else:
-                azure_creds_file = os.path.abspath('%s/.azureml/auth/azureProfile.json' % os.environ.get('HOME', ''))
-                if os.path.exists(azure_creds_file):
-                    from a2ml.api.utils import fsclient
-                    try:
-                        with fsclient.open_file(azure_creds_file, "r", encoding='utf-8-sig', num_tries=0) as file:
-                            res = json.load(file)
-                            content = {
-                                'subscription_id': res['subscriptions'][0]['id']
-                            }
-                    except Exception as e:
-                        if self.ctx.debug:
-                            import traceback
-                            traceback.print_exc()
-                else: 
+                content = self._load_azure_cred_file()
+
+                if not content.get('subscription_id'):
                     #fallback to force browser login for token
                     interactive_auth = InteractiveLoginAuthentication(force=True)
                     interactive_auth.get_authentication_header()
-        
+
+                    content = self._load_azure_cred_file()
+                                
         self.subscription_id = content.get('subscription_id')
         self.directory_tenant_id = content.get('directory_tenant_id')
         self.application_client_id = content.get('application_client_id')
         self.client_secret = content.get('client_secret')
 
         return self
+
+    def _load_azure_cred_file(self):
+        content = {}
+
+        azure_creds_file = os.path.abspath('%s/.azureml/auth/azureProfile.json' % os.environ.get('HOME', ''))
+        if os.path.exists(azure_creds_file):
+            from a2ml.api.utils import fsclient
+            try:
+                with fsclient.open_file(azure_creds_file, "r", encoding='utf-8-sig', num_tries=0) as file:
+                    res = json.load(file)
+                    content = {
+                        'subscription_id': res['subscriptions'][0]['id']
+                    }
+            except Exception as e:
+                if self.ctx.debug:
+                    import traceback
+                    traceback.print_exc()
+        
+        return content
 
     def login(self, username, password, organization, url=None):
         self.load()
@@ -116,6 +126,6 @@ class Credentials(BaseCredentials):
 
     def verify(self):
         if self.subscription_id is None:
-            raise AzureException('Please provide Azure subscription id...')
+            raise AzureException('Please provide your credentials to Azure...')
 
         return True
