@@ -220,8 +220,10 @@ class DataSourceAPIPandas(object):
         from pyarrow import feather
 
         with fsclient.open_file(path, 'rb', encoding=None) as local_file:
-            return feather.read_feather(local_file, columns=features, use_threads=bool(True))
+            self.df = feather.read_feather(local_file, columns=features, use_threads=bool(True))
 
+        return self.df
+            
     def count(self):
         if self.df is not None:
             return len(self.df)
