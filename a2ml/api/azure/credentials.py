@@ -1,8 +1,6 @@
 import os
 import json
 import shutil
-from azureml.core.authentication import ServicePrincipalAuthentication, InteractiveLoginAuthentication
-
 from a2ml.api.utils.base_credentials import BaseCredentials
 from .exceptions import AzureException
 
@@ -31,6 +29,7 @@ class Credentials(BaseCredentials):
                 content = self._load_azure_cred_file()
 
                 if not content.get('subscription_id'):
+                    from azureml.core.authentication import InteractiveLoginAuthentication
                     #fallback to force browser login for token
                     interactive_auth = InteractiveLoginAuthentication(force=True)
                     interactive_auth.get_authentication_header()
