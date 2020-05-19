@@ -293,8 +293,8 @@ def save_object_to_file(obj, path, fmt="pickle"):
         elif path.endswith('.lz4'):
             compress = "lz4"
 
-        if self.is_s3_path(path):
-            with self.save_atomic(path) as local_path:
+        if is_s3_path(path):
+            with save_atomic(path) as local_path:
                 if fmt == "pickle":
                     _save_to_pickle(obj, local_path, compress=compress)
                 elif fmt == "feather":
@@ -308,7 +308,7 @@ def save_object_to_file(obj, path, fmt="pickle"):
     except:
         remove_file(path)
         raise
-        
+
 
 @contextlib.contextmanager
 def save_atomic(path, move_file=True):
