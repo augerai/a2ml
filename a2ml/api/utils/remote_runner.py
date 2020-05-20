@@ -12,23 +12,6 @@ from a2ml.api.a2ml_credentials import A2MLCredentials
 from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 
 
-def show_output(data):
-    if isinstance(data, dict):
-        data_type = data.get('type', None)
-
-        if  data_type == 'log':
-            sys.stdout.write('\b')
-            print(data['msg'])
-        elif  data_type == 'result':
-            sys.stdout.write('\b')
-            print(data['status'] + ':', data['result'])
-    elif isinstance(data, Exception):
-        sys.stdout.write('\b')
-        print('Error:', data)
-    else:
-        sys.stdout.write('\b')
-        print(data)
-
 class RemoteRunner(object):
     CRUD_TO_METHOD = {
         'create': 'post',
@@ -114,7 +97,7 @@ class RemoteRunner(object):
         if response.status_code == 200:
             return response.json()
         else:
-            show_output(f"Request error: {response.status_code} {response.text}")
+            self.show_output(f"Request error: {response.status_code} {response.text}")
             raise Exception(f"Request error: {response.status_code} {response.text}")
 
     def handle_weboscket_respone(self, data, local_file):
@@ -133,13 +116,13 @@ class RemoteRunner(object):
             data['result'] = data['result']['response']
             self.download_prediction_result(data['result'], local_file)
 
-        show_output(data)
+        self.show_output(data)
 
     def download_prediction_result(self, results, local_file):
         for provider in results.keys():
             result = results[provider]
             predicted = dict_dig(result, 'data', 'predicted')
-
+            print(predicted)
             if predicted and fsclient.is_s3_path(predicted):
                 file_path = os.path.splitext(local_file)[0] + '_predicted.csv'
                 client = self.create_uploader()
@@ -203,6 +186,27 @@ class RemoteRunner(object):
         if isinstance(data, dict):
             return data.get('type', None)
 
+    def show_output(self, data):
+        if isinstance(data, dict):
+            data_type = data.get('type', None)
+
+            if  data_type == 'log':
+                sys.stdout.write('\b')
+                print(data['msg'])
+            elif  data_type == 'result':
+                sys.stdout.write('\b')
+                print(data['status'] + ':', data['result'])
+        elif isinstance(data, Exception):
+            if self.ctx.debug:
+                import traceback; 
+                traceback.print_exc()
+
+            sys.stdout.write('\b')
+            print('Error:', data)
+        else:
+            sys.stdout.write('\b')
+            print(data)
+
     async def spinning_cursor(self):
         while True:
             for cursor in '|/-\\':
@@ -234,7 +238,7 @@ class RemoteRunner(object):
                             done = True
                             break
             except Exception as e:
-                show_output(e)
+                self.show_output(e)
                 await asyncio.sleep(2)
             finally:
                 if self.get_response_data_type(data) == 'result':
