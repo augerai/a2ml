@@ -47,6 +47,7 @@ class RemoteRunner(object):
         self.ctx.credentials = A2MLCredentials(ctx, provider).load()
         self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
+        self.provider = provider
 
     def _params(self, *args, **kwargs):
         return {
@@ -87,7 +88,7 @@ class RemoteRunner(object):
             params['tmp_file_to_remove'] = uploaded_file
 
         res = self.make_requst(http_verb, path, params)
-        asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+        return asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
 
     def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
@@ -193,8 +194,9 @@ class RemoteRunner(object):
                 sys.stdout.write('\b')
                 print(data['msg'])
             elif  data_type == 'result':
-                sys.stdout.write('\b')
-                print(data['status'] + ':', data['result'])
+                if self.ctx.debug:
+                    sys.stdout.write('\b')
+                    print(data['status'] + ':', data['result'])
         elif isinstance(data, Exception):
             if self.ctx.debug:
                 import traceback; 
@@ -243,3 +245,10 @@ class RemoteRunner(object):
                 if self.get_response_data_type(data) == 'result':
                     done = True
                     break
+
+        if  data.get('result'):           
+            return data.get('result')
+
+        return {self.provider: {
+            'result': False,
+            'data': "Server error. Please try again..." }}
