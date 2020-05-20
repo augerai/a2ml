@@ -28,7 +28,7 @@ class Credentials(BaseCredentials):
             else:
                 content = self._load_azure_cred_file()
 
-                if not content.get('subscription_id'):
+                if not content.get('subscription_id') and not self.ctx.config.get('use_server'):
                     from azureml.core.authentication import InteractiveLoginAuthentication
                     #fallback to force browser login for token
                     interactive_auth = InteractiveLoginAuthentication(force=True)
@@ -124,7 +124,14 @@ class Credentials(BaseCredentials):
             file.write(json.dumps(content))
 
     def verify(self):
-        if self.subscription_id is None:
+        if self.ctx.config.get('use_server'):
+            if not self.subscription_id or \
+               not self.directory_tenant_id or \
+               not self.application_client_id or \
+               not self.client_secret:
+               raise AzureException('Please provide azure.json file with Azure AD application and service principal.')
+
+        elif self.subscription_id is None:
             raise AzureException('Please provide your credentials to Azure...')
 
         return True
