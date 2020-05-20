@@ -10,7 +10,13 @@ class A2MLCredentials(object):
         self.provider = self._load_provider(provider)
 
     def load(self):
-        return self.provider.load().serialize()
+        return self.provider.load()
+
+    def verify(self):
+        return self.provider.verify()
+
+    def serialize(self):
+        return self.provider.serialize()
 
     def login(self,username=None, password=None, organization=None, url=None):
         return self.provider.login(username, password, organization, url)

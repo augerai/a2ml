@@ -44,7 +44,6 @@ class RemoteRunner(object):
 
         self.ctx = ctx
         self.obj_name = obj_name
-        self.ctx.credentials = A2MLCredentials(ctx, provider).load()
         self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
         self.provider = provider
@@ -79,16 +78,32 @@ class RemoteRunner(object):
         return (http_verb, path)
 
     def execute(self, operation_name, *args, **kwargs):
-        http_verb, path = self.get_http_verb_and_path(operation_name)
-        new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
+        try:
+            creds = A2MLCredentials(self.ctx, self.provider)
+            creds.load()
+            creds.verify()
+            self.ctx.credentials = creds.serialize()
 
-        params = self._params(*new_args['args'], **new_args['kwargs'])
+            http_verb, path = self.get_http_verb_and_path(operation_name)
+            new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
 
-        if uploaded_file:
-            params['tmp_file_to_remove'] = uploaded_file
+            params = self._params(*new_args['args'], **new_args['kwargs'])
 
-        res = self.make_requst(http_verb, path, params)
-        return asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+            if uploaded_file:
+                params['tmp_file_to_remove'] = uploaded_file
+
+            res = self.make_requst(http_verb, path, params)
+            return asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+        except Exception as exc:
+            if self.ctx.debug:
+                import traceback
+                traceback.print_exc()
+            
+            self.ctx.log(str(exc))
+
+            return {self.provider: {
+                'result': False,
+                'data': str(exc) }}
 
     def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
