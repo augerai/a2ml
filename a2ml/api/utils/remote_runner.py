@@ -125,7 +125,7 @@ class RemoteRunner(object):
 
             original_source = config.get('original_source')
             if original_source:
-                config.set('config', 'source', original_source)
+                config.set('source', original_source, config_name="config")
                 config.remove('config', 'original_source')
 
             config.write_all()
@@ -160,10 +160,10 @@ class RemoteRunner(object):
 
         if operation_name == 'import_data':
             file_to_upload = self.ctx.config.get('source')
-            self.ctx.config.set('config', 'original_source', file_to_upload)
+            self.ctx.config.set('original_source', file_to_upload, config_name="config")
 
             def replacer_func(remote_path):
-                self.ctx.config.set('config', 'source', remote_path)
+                self.ctx.config.set('source', remote_path, config_name="config")
                 return {'args': tuple(args), 'kwargs': kwargs}
 
             inject_uploaded_file_to_request_func = replacer_func
@@ -171,7 +171,7 @@ class RemoteRunner(object):
             file_to_upload = args[0]
 
             if operation_name != 'predict':
-                self.ctx.config.set('config', 'original_source', file_to_upload)
+                self.ctx.config.set('original_source', file_to_upload, config_name="config")
 
             def replacer_func(remote_path):
                 new_args = list(args)
