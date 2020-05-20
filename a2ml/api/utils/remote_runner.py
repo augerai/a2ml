@@ -122,8 +122,7 @@ class RemoteRunner(object):
         for provider in results.keys():
             result = results[provider]
             predicted = dict_dig(result, 'data', 'predicted')
-            print(predicted)
-            if predicted and fsclient.is_s3_path(predicted):
+            if predicted and type(predicted)==str and fsclient.is_s3_path(predicted):
                 file_path = os.path.splitext(local_file)[0] + '_predicted.csv'
                 client = self.create_uploader()
                 client.download(predicted, file_path)
