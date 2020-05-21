@@ -21,45 +21,48 @@ class ProviderRunner(object):
         # if there is single operation requested
         # no need to run it on the thread
         if len(self.providers) == 1:
-            p = list(self.providers.keys())[0]
-            try:
-                result = getattr(self.providers[p], operation_name)(*args, **kwargs)
-                return {p: {
-                    'result': True,
-                    'data': result}}
-            except Exception as e:
-                if self.ctx.debug:
-                    import traceback
-                    traceback.print_exc()
-                
-                return {p: {
-                    'result': False,
-                    'data': str(e) }}
+            provider_name = list(self.providers.keys())[0]
+            return self.execute_provider(provider_name, operation_name, *args, **kwargs)
 
         with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
             futures = {
-                executor.submit(getattr(
-                    self.providers[p], operation_name), *args, **kwargs): p
-                for p in self.providers.keys()}
+                executor.submit(
+                    self.execute_provider, provider_name, operation_name, *args, **kwargs): provider_name
+                for provider_name in self.providers.keys()
+            }
 
             try:
                 results = {}
                 for future in as_completed(futures):
-                    try:
-                        result = future.result()
-                        results[futures[future]] = {
-                            'result': True,
-                            'data': result }
-                    except Exception as e:
-                        results[futures[future]] = {
-                            'result': False,
-                            'data': str(e) }
+                    results.update(future.result())
                 return results
             except KeyboardInterrupt:
                 # not a graceful termination
                 executor._threads.clear()
                 thread._threads_queues.clear()
                 raise
+
+    def execute_provider(self, provider_name, operation_name, *args, **kwargs):
+        try:
+            provider = self.providers[provider_name]
+            result = getattr(provider, operation_name)(*args, **kwargs)
+            return {
+                provider_name: {
+                    'result': True,
+                    'data': result
+                }
+            }
+        except Exception as e:
+            if self.ctx.debug:
+                import traceback
+                traceback.print_exc()
+
+            return {
+                provider_name: {
+                    'result': False,
+                    'data': str(e)
+                }
+            }
 
     def _load_providers(self, provider = None):
         def get_instance(p):
