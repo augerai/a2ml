@@ -125,19 +125,22 @@ class A2ML(BaseA2ML):
                     }
                 }
 
-            Status:
+            **Status**
 
-                preprocess: Search is preprocessing data for traing
-                started: Search is in progress
-                completed: Search is completed
-                interrupted: Search was interrupted
+                * **preprocess** - search is preprocessing data for traing
+                * **started** - search is in progress
+                * **completed** - search is completed
+                * **interrupted** - search was interrupted
 
             Examples:
-            .. code-block:: python
+                .. code-block:: python
 
-                ctx = Context()
-                a2ml = A2ML(ctx, 'auger, azure')
-                a2ml.evaluate()
+                    ctx = Context()
+                    a2ml = A2ML(ctx, 'auger, azure')
+                    while True:
+                        res = a2ml.evaluate()
+                        if status['auger']['status'] not in ['preprocess','started']:
+                            break
         """
         return self.runner.execute('evaluate', run_id = run_id)
 
