@@ -259,7 +259,6 @@ def get_df(data):
         try:
             response = aci_service.run(input_data = input_payload)
         except Exception as e:
-            # print('err log', aci_service.get_logs())
             raise e
 
         response = json.loads(response)
@@ -273,17 +272,11 @@ def get_df(data):
             results_proba = result
             proba_classes = response['proba_classes']
             minority_target_class = self.ctx.config.get('minority_target_class', None)
-            # if minority_target_class is None:
-            #     for item in proba_classes:
-            #         if item == 1 or item == True or item == "1" or item == "True":
-            #             minority_target_class = item
 
             result = self._calculate_proba_target(results_proba,
                 proba_classes, None, threshold, minority_target_class)
 
             results_proba = np.array(results_proba)
-            # for idx, item in enumerate(results_proba):
-            #     results_proba[idx] = np.array(item)
 
         return result, results_proba, proba_classes
 
@@ -329,10 +322,6 @@ def get_df(data):
             results_proba = fitted_model.predict_proba(predict_data)
             proba_classes = list(fitted_model.classes_)
             minority_target_class = self.ctx.config.get('minority_target_class', None)
-            # if minority_target_class is None:
-            #     for item in proba_classes:
-            #         if item == 1 or item == True or item == "1" or item == "True":
-            #             minority_target_class = item
 
             result = self._calculate_proba_target(results_proba,
                 proba_classes, None, threshold, minority_target_class)
@@ -364,8 +353,6 @@ def get_df(data):
 
             threshold = {minority_target_class:threshold}
 
-        # print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
-        #print(results_proba)
         if type(threshold) == dict:
             mapped_threshold = {}
 
