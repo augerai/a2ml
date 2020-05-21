@@ -39,7 +39,7 @@ class TestConfigs(object):
 
         stats = dataset_statistics['stat_data']
         assert stats == [
-            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': True, 'isTarget': True}, 
+            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': False, 'isTarget': True}, 
             {'datatype': 'integer', 'column_name': 'sepal_length', 'use': True, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'sepal_width', 'use': True, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'petal_length', 'use': True, 'isTarget': False}, 
@@ -61,7 +61,7 @@ class TestConfigs(object):
 
         stats = dataset_statistics['stat_data']    
         assert stats == [
-            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': True, 'isTarget': True}, 
+            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': False, 'isTarget': True}, 
             {'datatype': 'integer', 'column_name': 'sepal_length', 'use': False, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'sepal_width', 'use': True, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'petal_length', 'use': True, 'isTarget': False}, 
@@ -86,7 +86,7 @@ class TestConfigs(object):
 
         stats = dataset_statistics['stat_data']
         assert stats == [
-            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': True, 'isTarget': True}, 
+            {'datatype': 'categorical', 'column_name': 'species', 'unique_values': 3, 'use': False, 'isTarget': True}, 
             {'datatype': 'integer', 'column_name': 'sepal_length', 'use': True, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'sepal_width', 'use': True, 'isTarget': False}, 
             {'datatype': 'integer', 'column_name': 'petal_length', 'use': True, 'isTarget': False}, 

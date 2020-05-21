@@ -12,23 +12,6 @@ from a2ml.api.a2ml_credentials import A2MLCredentials
 from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 
 
-def show_output(data):
-    if isinstance(data, dict):
-        data_type = data.get('type', None)
-
-        if  data_type == 'log':
-            sys.stdout.write('\b')
-            print(data['msg'])
-        elif  data_type == 'result':
-            sys.stdout.write('\b')
-            print(data['status'] + ':', data['result'])
-    elif isinstance(data, Exception):
-        sys.stdout.write('\b')
-        print('Error:', data)
-    else:
-        sys.stdout.write('\b')
-        print(data)
-
 class RemoteRunner(object):
     CRUD_TO_METHOD = {
         'create': 'post',
@@ -61,9 +44,9 @@ class RemoteRunner(object):
 
         self.ctx = ctx
         self.obj_name = obj_name
-        self.ctx.credentials = A2MLCredentials(ctx, provider).load()
         self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
+        self.provider = provider
 
     def _params(self, *args, **kwargs):
         return {
@@ -95,16 +78,41 @@ class RemoteRunner(object):
         return (http_verb, path)
 
     def execute(self, operation_name, *args, **kwargs):
-        http_verb, path = self.get_http_verb_and_path(operation_name)
-        new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
+        try:
+            creds = A2MLCredentials(self.ctx, self.provider)
+            creds.load()
+            creds.verify()
+            self.ctx.credentials = creds.serialize()
 
-        params = self._params(*new_args['args'], **new_args['kwargs'])
+            http_verb, path = self.get_http_verb_and_path(operation_name)
+            new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
 
-        if uploaded_file:
-            params['tmp_file_to_remove'] = uploaded_file
+            params = self._params(*new_args['args'], **new_args['kwargs'])
 
-        res = self.make_requst(http_verb, path, params)
-        asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+            if uploaded_file:
+                params['tmp_file_to_remove'] = uploaded_file
+
+            res = self.make_requst(http_verb, path, params)
+            return self.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+        except Exception as exc:
+            if self.ctx.debug:
+                import traceback
+                traceback.print_exc()
+
+            self.ctx.log(str(exc))
+
+            return {
+                self.provider: {
+                    'result': False,
+                    'data': str(exc)
+                }
+            }
+
+    def get_event_loop(self):
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            return asyncio.new_event_loop()
 
     def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
@@ -114,7 +122,7 @@ class RemoteRunner(object):
         if response.status_code == 200:
             return response.json()
         else:
-            show_output(f"Request error: {response.status_code} {response.text}")
+            self.show_output(f"Request error: {response.status_code} {response.text}")
             raise Exception(f"Request error: {response.status_code} {response.text}")
 
     def handle_weboscket_respone(self, data, local_file):
@@ -125,7 +133,7 @@ class RemoteRunner(object):
 
             original_source = config.get('original_source')
             if original_source:
-                config.set('config', 'source', original_source)
+                config.set('source', original_source, config_name="config")
                 config.remove('config', 'original_source')
 
             config.write_all()
@@ -133,14 +141,13 @@ class RemoteRunner(object):
             data['result'] = data['result']['response']
             self.download_prediction_result(data['result'], local_file)
 
-        show_output(data)
+        self.show_output(data)
 
     def download_prediction_result(self, results, local_file):
         for provider in results.keys():
             result = results[provider]
             predicted = dict_dig(result, 'data', 'predicted')
-
-            if predicted and fsclient.is_s3_path(predicted):
+            if predicted and type(predicted)==str and fsclient.is_s3_path(predicted):
                 file_path = os.path.splitext(local_file)[0] + '_predicted.csv'
                 client = self.create_uploader()
                 client.download(predicted, file_path)
@@ -160,10 +167,10 @@ class RemoteRunner(object):
 
         if operation_name == 'import_data':
             file_to_upload = self.ctx.config.get('source')
-            self.ctx.config.set('config', 'original_source', file_to_upload)
+            self.ctx.config.set('original_source', file_to_upload, config_name="config")
 
             def replacer_func(remote_path):
-                self.ctx.config.set('config', 'source', remote_path)
+                self.ctx.config.set('source', remote_path, config_name="config")
                 return {'args': tuple(args), 'kwargs': kwargs}
 
             inject_uploaded_file_to_request_func = replacer_func
@@ -171,7 +178,7 @@ class RemoteRunner(object):
             file_to_upload = args[0]
 
             if operation_name != 'predict':
-                self.ctx.config.set('config', 'original_source', file_to_upload)
+                self.ctx.config.set('original_source', file_to_upload, config_name="config")
 
             def replacer_func(remote_path):
                 new_args = list(args)
@@ -202,6 +209,28 @@ class RemoteRunner(object):
     def get_response_data_type(self, data):
         if isinstance(data, dict):
             return data.get('type', None)
+
+    def show_output(self, data):
+        if isinstance(data, dict):
+            data_type = data.get('type', None)
+
+            if  data_type == 'log':
+                sys.stdout.write('\b')
+                print(data['msg'])
+            elif  data_type == 'result':
+                if self.ctx.debug:
+                    sys.stdout.write('\b')
+                    print(data['status'] + ':', data['result'])
+        elif isinstance(data, Exception):
+            if self.ctx.debug:
+                import traceback;
+                traceback.print_exc()
+
+            sys.stdout.write('\b')
+            print('Error:', data)
+        else:
+            sys.stdout.write('\b')
+            print(data)
 
     async def spinning_cursor(self):
         while True:
@@ -234,9 +263,19 @@ class RemoteRunner(object):
                             done = True
                             break
             except Exception as e:
-                show_output(e)
+                self.show_output(e)
                 await asyncio.sleep(2)
             finally:
                 if self.get_response_data_type(data) == 'result':
                     done = True
                     break
+
+        if data.get('result'):
+            return data.get('result')
+
+        return {
+            self.provider: {
+                'result': False,
+                'data': "Server error. Please try again..."
+            }
+        }

@@ -117,7 +117,7 @@ class AugerExperimentApi(AugerBaseApi):
 
         for item in stats.get('stat_data'):
             column_name = item['column_name']
-            item['use'] = not column_name in exclude
+            item['use'] = not column_name in exclude and column_name != target
             item['isTarget'] = target == column_name
 
             if column_name in label_encoded:
