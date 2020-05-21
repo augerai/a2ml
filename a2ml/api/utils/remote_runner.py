@@ -93,17 +93,26 @@ class RemoteRunner(object):
                 params['tmp_file_to_remove'] = uploaded_file
 
             res = self.make_requst(http_verb, path, params)
-            return asyncio.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
+            return self.get_event_loop().run_until_complete(self.wait_result(res['data']['request_id'], local_file))
         except Exception as exc:
             if self.ctx.debug:
                 import traceback
                 traceback.print_exc()
-            
+
             self.ctx.log(str(exc))
 
-            return {self.provider: {
-                'result': False,
-                'data': str(exc) }}
+            return {
+                self.provider: {
+                    'result': False,
+                    'data': str(exc)
+                }
+            }
+
+    def get_event_loop(self):
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            return asyncio.new_event_loop()
 
     def make_requst(self, http_verb, path, params={}):
         method = getattr(requests, http_verb)
@@ -214,7 +223,7 @@ class RemoteRunner(object):
                     print(data['status'] + ':', data['result'])
         elif isinstance(data, Exception):
             if self.ctx.debug:
-                import traceback; 
+                import traceback;
                 traceback.print_exc()
 
             sys.stdout.write('\b')
@@ -261,9 +270,12 @@ class RemoteRunner(object):
                     done = True
                     break
 
-        if  data.get('result'):           
+        if data.get('result'):
             return data.get('result')
 
-        return {self.provider: {
-            'result': False,
-            'data': "Server error. Please try again..." }}
+        return {
+            self.provider: {
+                'result': False,
+                'data': "Server error. Please try again..."
+            }
+        }
