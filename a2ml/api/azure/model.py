@@ -282,7 +282,13 @@ class AzureModel(object):
                 except Exception as e:
                     raise Exception("Threshold '%s' should be float or hash with target classes. Error: %s"%(threshold, str(e)))
 
-        if type(threshold) != dict and minority_target_class is not None:
+        if not proba_classes_orig:
+            proba_classes_orig = proba_classes
+
+        if type(threshold) != dict:
+            if minority_target_class is None:
+                minority_target_class = proba_classes_orig[-1]
+
             threshold = {minority_target_class:threshold}
 
         # print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
