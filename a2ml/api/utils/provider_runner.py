@@ -1,8 +1,31 @@
+import contextlib
 import importlib
+import threading
+import time
+import sys
+
 from concurrent.futures import ThreadPoolExecutor, as_completed, thread
 
 class ProviderRunner(object):
     """Runner executes provider jobs on threads."""
+    class SpinningCursorThread(threading.Thread):
+        def __init__(self,  *args, **kwargs):
+            super(self.__class__, self).__init__(*args, **kwargs)
+            self._stop_event = threading.Event()
+
+        def stop(self):
+            self._stop_event.set()
+
+        def stopped(self):
+            return self._stop_event.is_set()
+
+        def run(self):
+            while not self.stopped():
+                for cursor in '|/-\\':
+                    sys.stdout.write(cursor)
+                    sys.stdout.flush()
+                    time.sleep(0.2)
+                    sys.stdout.write('\b')
 
     def __init__(self, ctx, provider = None):
         super(ProviderRunner, self).__init__()
@@ -20,27 +43,37 @@ class ProviderRunner(object):
                 'at config.yaml/providers')
         # if there is single operation requested
         # no need to run it on the thread
-        if len(self.providers) == 1:
-            provider_name = list(self.providers.keys())[0]
-            return self.execute_provider(provider_name, operation_name, *args, **kwargs)
+        with self.with_spinning_cursor():
+            if len(self.providers) == 1:
+                provider_name = list(self.providers.keys())[0]
+                return self.execute_provider(provider_name, operation_name, *args, **kwargs)
 
-        with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
-            futures = {
-                executor.submit(
-                    self.execute_provider, provider_name, operation_name, *args, **kwargs): provider_name
-                for provider_name in self.providers.keys()
-            }
+            with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
+                futures = {
+                    executor.submit(
+                        self.execute_provider, provider_name, operation_name, *args, **kwargs): provider_name
+                    for provider_name in self.providers.keys()
+                }
 
-            try:
-                results = {}
-                for future in as_completed(futures):
-                    results.update(future.result())
-                return results
-            except KeyboardInterrupt:
-                # not a graceful termination
-                executor._threads.clear()
-                thread._threads_queues.clear()
-                raise
+                try:
+                    results = {}
+                    for future in as_completed(futures):
+                        results.update(future.result())
+                    return results
+                except KeyboardInterrupt:
+                    # not a graceful termination
+                    executor._threads.clear()
+                    thread._threads_queues.clear()
+                    raise
+
+    @contextlib.contextmanager
+    def with_spinning_cursor(self):
+        try:
+            spinning_cursor = self.SpinningCursorThread()
+            spinning_cursor.start()
+            yield
+        finally:
+            spinning_cursor.stop()
 
     def execute_provider(self, provider_name, operation_name, *args, **kwargs):
         try:
