@@ -61,7 +61,9 @@ exclude_patterns = []
 html_context = {
     "display_github_url": 'https://github.com/augerai/a2ml',
 }
-html_favicon = './_static/favicon.ico'
+
+html_favicon = 'favicon-194x194.png'
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -75,3 +77,4 @@ html_show_sphinx = False
 html_static_path = ['_static']
 
 html_baseurl = 'https://a2ml.org'
+
