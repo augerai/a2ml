@@ -86,8 +86,8 @@ class TestTasks(object):
         )
 
         provider = "azure"
-        ctx.config.set('config', 'providers', [provider])
-        ctx.config.set('config', 'use_server', True)
+        ctx.config.set('providers', [provider])
+        ctx.config.set('use_server', True)
 
         A2ML(ctx, provider).train()
 

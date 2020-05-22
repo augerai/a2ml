@@ -82,6 +82,15 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+      - build-docs
+      - publish-docs:
+          requires:
+            - build-and-test
+            - build-docs
+          filters:
+            branches:
+              only:
+                - master
       - docker/publish:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
@@ -118,14 +127,3 @@ workflows:
             branches:
               ignore: /.*/
           context: pypi
-
-  build-and-publish-docs:
-    jobs:
-      - build-docs
-      - publish-docs:
-          requires:
-            - build-docs
-          filters:
-            branches:
-              only:
-                - master
