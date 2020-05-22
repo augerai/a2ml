@@ -93,7 +93,7 @@ def s3fs_open(path, mode='rb'):
     return path
 
 
-def list_folder(path, wild=False, remove_folderName=False, meta_info=False):
+def list_folder(path, wild=False, remove_folder_name=False, meta_info=False):
     client = _get_fsclient_bypath(path)
 
     if wild:
@@ -103,7 +103,7 @@ def list_folder(path, wild=False, remove_folderName=False, meta_info=False):
         if not client.is_folder_exists(path):
             return []
 
-    return client.list_folder(path, wild=wild, remove_folderName=remove_folderName, meta_info=meta_info)
+    return client.list_folder(path, wild=wild, remove_folder_name=remove_folder_name, meta_info=meta_info)
 
 
 def get_mtime(path):
@@ -136,9 +136,9 @@ def read_text_file(path):
     return client.read_text_file(path)
 
 
-def write_text_file(path, data, atomic=False):
+def write_text_file(path, data, atomic=False, mode="w"):
     client = _get_fsclient_bypath(path)
-    client.write_text_file(path, data, atomic=atomic)
+    client.write_text_file(path, data, atomic=atomic, mode=mode)
 
 
 def write_json_file(path, data, atomic=False, allow_nan=False):
@@ -155,13 +155,13 @@ def update_json_file(path, data, atomic=False, allow_nan=False):
         fileData, allow_nan=allow_nan), atomic=atomic)
 
 
-def read_json_file(path, check_if_exist=True, wait_for_file=False):
+def read_json_file(path, check_if_exist=True, if_wait_for_file=False):
     import json
 
     if not is_s3_path(path):
         list_folder(get_parent_folder(path))
 
-    wait_for_file(path, wait_for_file=wait_for_file)
+    wait_for_file(path, if_wait_for_file=if_wait_for_file)
 
     if check_if_exist and not is_file_exists(path):
         return {}
@@ -180,8 +180,8 @@ def read_json_file(path, check_if_exist=True, wait_for_file=False):
     return {}
 
 
-def wait_for_file(path, wait_for_file, num_tries=30, interval_sec=1):
-    if wait_for_file:
+def wait_for_file(path, if_wait_for_file, num_tries=30, interval_sec=1):
+    if if_wait_for_file:
         nTry = 0
         while nTry <= num_tries:
             if is_file_exists(path):
@@ -206,7 +206,7 @@ def wait_for_file(path, wait_for_file, num_tries=30, interval_sec=1):
 
 def wait_for_fs_ready():
     if not os.environ.get('S3_DATA_PATH') and os.environ.get('AUGER_ROOT_DIR', '').startswith('/mnt'):
-        return wait_for_file("/mnt/ready.txt", wait_for_file=True, num_tries=30, interval_sec=10)
+        return wait_for_file("/mnt/ready.txt", if_wait_for_file=True, num_tries=30, interval_sec=10)
 
     return True
 
