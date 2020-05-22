@@ -14,20 +14,93 @@ from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 from a2ml.api.utils.provider_runner import ProviderRunner
 
 
-class RemoteRunner(ProviderRunner):
+class RequestMixin(object):
+    def make_requst(self, http_verb, path, params={}):
+        method = getattr(requests, http_verb)
+        return self.handle_respone(method(f"{self.server_endpoint}{path}", json=params))
+
+    def handle_respone(self, response):
+        if response.status_code == 200:
+            return response.json()
+        else:
+            self.show_output(f"Request error: {response.status_code} {response.text}")
+            raise Exception(f"Request error: {response.status_code} {response.text}")
+
+    def create_uploader(self):
+        creds = self.get_upload_credentials()
+
+        return FileUploader(
+            bucket=creds['bucket'],
+            endpoint_url=creds['endpoint_url'],
+            access_key=creds['access_key'],
+            secret_key=creds['secret_key'],
+            session_token=creds['session_token'],
+        )
+
+    def get_upload_credentials(self):
+        res = self.make_requst('post', '/api/v1/upload_credentials')
+        return res['data']
+
+
+class RemoteRunner(RequestMixin, ProviderRunner):
     def __init__(self, ctx, provider, obj_name = None):
-        super(RemoteRunner, self).__init__(ctx, provider)
+        super().__init__(ctx, provider)
 
         self.obj_name = obj_name
         self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
 
-    def execute_provider(self, provider_name, operation_name, *args, **kwargs):
-        ctx = self.ctx.copy('config')
-        provider_runner = RemoteProviderRunner(ctx, provider_name, self.obj_name)
-        return provider_runner.execute(operation_name, *args, **kwargs)
+    def execute(self, operation_name, *args, **kwargs):
+        new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
+        self.uploaded_file = uploaded_file
+        self.local_file = local_file
 
-class RemoteProviderRunner(object):
+        return super().execute(operation_name, *new_args['args'], **new_args['kwargs'])
+
+    def execute_provider(self, provider_name, operation_name, *args, **kwargs):
+        ctx = self.ctx.copy(provider_name)
+        provider_runner = RemoteProviderRunner(ctx, provider_name, self.obj_name)
+        return provider_runner.execute(operation_name, self.uploaded_file, self.local_file, *args, **kwargs)
+
+    def upload_local_files(self, operation_name, *args, **kwargs):
+        file_to_upload = None
+        inject_uploaded_file_to_request_func = None
+
+        if operation_name == 'import_data':
+            file_to_upload = self.ctx.config.get('source')
+            self.ctx.config.set('original_source', file_to_upload, config_name="config")
+
+            def replacer_func(remote_path):
+                self.ctx.config.set('source', remote_path, config_name="config")
+                return {'args': tuple(args), 'kwargs': kwargs}
+
+            inject_uploaded_file_to_request_func = replacer_func
+        elif operation_name == 'predict' or (self.obj_name == 'dataset' and operation_name == 'create'):
+            file_to_upload = args[0]
+
+            if operation_name != 'predict':
+                self.ctx.config.set('original_source', file_to_upload, config_name="config")
+
+            def replacer_func(remote_path):
+                new_args = list(args)
+                new_args[0] = remote_path
+                return {'args': tuple(new_args), 'kwargs': kwargs}
+
+            inject_uploaded_file_to_request_func = replacer_func
+
+        if file_to_upload and self.local_path(file_to_upload):
+            uploader = self.create_uploader()
+            url = uploader.multi_part_upload(file_to_upload, callback=OnelineProgressPercentage(file_to_upload))
+
+            return inject_uploaded_file_to_request_func(url), url, file_to_upload
+        else:
+            return {'args': args, 'kwargs': kwargs}, None, None
+
+    def local_path(self, path):
+        path = path.lower()
+        return not(path.startswith('s3://') or path.startswith('http://') or path.startswith('https://'))
+
+class RemoteProviderRunner(RequestMixin, object):
     CRUD_TO_METHOD = {
         'create': 'post',
         'delete': 'delete',
@@ -50,7 +123,7 @@ class RemoteProviderRunner(object):
     }
 
     def __init__(self, ctx, provider, obj_name):
-        super(RemoteProviderRunner, self).__init__()
+        super().__init__()
 
         self.ctx = ctx
         self.provider = provider
@@ -58,7 +131,7 @@ class RemoteProviderRunner(object):
         self.server_endpoint = ctx.config.get('server_endpoint', os.environ.get('A2ML_SERVER_ENDPOINT'))
         self.ws_endpoint = 'ws' + self.server_endpoint[4:]
 
-    def execute(self, operation_name, *args, **kwargs):
+    def execute(self, operation_name, uploaded_file, local_file, *args, **kwargs):
         try:
             creds = A2MLCredentials(self.ctx, self.provider)
             creds.load()
@@ -66,9 +139,10 @@ class RemoteProviderRunner(object):
             self.ctx.credentials = creds.serialize()
 
             http_verb, path = self.get_http_verb_and_path(operation_name)
-            new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
+            # new_args, uploaded_file, local_file = self.upload_local_files(operation_name, *args, **kwargs)
+            # params = self._params(*new_args['args'], **new_args['kwargs'])
 
-            params = self._params(*new_args['args'], **new_args['kwargs'])
+            params = self._params(*args, **kwargs)
 
             if uploaded_file:
                 params['tmp_file_to_remove'] = uploaded_file
@@ -131,17 +205,6 @@ class RemoteProviderRunner(object):
             finally:
                 loop.close()
 
-    def make_requst(self, http_verb, path, params={}):
-        method = getattr(requests, http_verb)
-        return self.handle_respone(method(f"{self.server_endpoint}{path}", json=params))
-
-    def handle_respone(self, response):
-        if response.status_code == 200:
-            return response.json()
-        else:
-            self.show_output(f"Request error: {response.status_code} {response.text}")
-            raise Exception(f"Request error: {response.status_code} {response.text}")
-
     def handle_weboscket_respone(self, data, local_file):
         data_type = self.get_response_data_type(data)
 
@@ -169,59 +232,7 @@ class RemoteProviderRunner(object):
                 client = self.create_uploader()
                 client.download(predicted, file_path)
                 result['data']['predicted'] = file_path
-
-    def get_upload_credentials(self):
-        res = self.make_requst('post', '/api/v1/upload_credentials')
-        return res['data']
-
-    def local_path(self, path):
-        path = path.lower()
-        return not(path.startswith('s3://') or path.startswith('http://') or path.startswith('https://'))
-
-    def upload_local_files(self, operation_name, *args, **kwargs):
-        file_to_upload = None
-        inject_uploaded_file_to_request_func = None
-
-        if operation_name == 'import_data':
-            file_to_upload = self.ctx.config.get('source')
-            self.ctx.config.set('original_source', file_to_upload, config_name="config")
-
-            def replacer_func(remote_path):
-                self.ctx.config.set('source', remote_path, config_name="config")
-                return {'args': tuple(args), 'kwargs': kwargs}
-
-            inject_uploaded_file_to_request_func = replacer_func
-        elif operation_name == 'predict' or (self.obj_name == 'dataset' and operation_name == 'create'):
-            file_to_upload = args[0]
-
-            if operation_name != 'predict':
-                self.ctx.config.set('original_source', file_to_upload, config_name="config")
-
-            def replacer_func(remote_path):
-                new_args = list(args)
-                new_args[0] = remote_path
-                return {'args': tuple(new_args), 'kwargs': kwargs}
-
-            inject_uploaded_file_to_request_func = replacer_func
-
-        if file_to_upload and self.local_path(file_to_upload):
-            uploader = self.create_uploader()
-            url = uploader.multi_part_upload(file_to_upload, callback=OnelineProgressPercentage(file_to_upload))
-
-            return inject_uploaded_file_to_request_func(url), url, file_to_upload
-        else:
-            return {'args': args, 'kwargs': kwargs}, None, None
-
-    def create_uploader(self):
-        creds = self.get_upload_credentials()
-
-        return FileUploader(
-            bucket=creds['bucket'],
-            endpoint_url=creds['endpoint_url'],
-            access_key=creds['access_key'],
-            secret_key=creds['secret_key'],
-            session_token=creds['session_token'],
-        )
+                self.ctx.log(f'{predicted} downloaded to {file_path}')
 
     def get_response_data_type(self, data):
         if isinstance(data, dict):
