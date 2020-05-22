@@ -179,7 +179,8 @@ class A2ML(BaseA2ML):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Args:
-            filename(str): The file with data to request predictions for.
+            filename(str, optional): The file with data to request predictions for. Data param is not passed in this case.
+            data(list, optional): The list of records to get predictions for. Filename param is not passed in this case.
             model_id(str): The deployed model id you want to use.
             threshold(float, optional): For classification models only. This will return class probabilities with response.
             locally(bool, optional): Predicts using a local model if True, on the Provider Cloud if False. The default is False.
@@ -201,6 +202,22 @@ class A2ML(BaseA2ML):
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.predict(model_id='D881079E1ED14FB',filename=<path_to_file>/dataset.csv)
+
+            .. code-block:: python
+
+                ctx = Context()
+                a2ml = A2ML(ctx, 'auger, azure')
+                data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
+                a2ml.predict(model_id='D881079E1ED14FB',data=data)
+
+            .. code-block:: python
+
+                ctx = Context()
+                a2ml = A2ML(ctx, 'auger, azure')
+                data = [[value1, value2], [value3, value4]]
+                columns = [col1, col2]
+                a2ml.predict(model_id='D881079E1ED14FB',data=data,columns=columns)
+                
            
         """
         return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns)
