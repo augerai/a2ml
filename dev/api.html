@@ -16,7 +16,7 @@
 
   
   
-    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="shortcut icon" href="../_static/favicon-194x194.png"/>
   
   
   
@@ -269,20 +269,24 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Status:</p>
+<p><strong>Status</strong></p>
 <blockquote>
-<div><p>preprocess: Search is preprocessing data for traing
-started: Search is in progress
-completed: Search is completed
-interrupted: Search was interrupted</p>
+<div><ul class="simple">
+<li><p><strong>preprocess</strong> - search is preprocessing data for traing</p></li>
+<li><p><strong>started</strong> - search is in progress</p></li>
+<li><p><strong>completed</strong> - search is completed</p></li>
+<li><p><strong>interrupted</strong> - search was interrupted</p></li>
+</ul>
 </div></blockquote>
-<p>Examples:
-.. code-block:: python</p>
-<blockquote>
-<div><p>ctx = Context()
-a2ml = A2ML(ctx, 'auger, azure')
-a2ml.evaluate()</p>
-</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s1">&#39;auger&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;preprocess&#39;</span><span class="p">,</span><span class="s1">&#39;started&#39;</span><span class="p">]:</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
 </p>
 </dd>
 </dl>
@@ -339,7 +343,8 @@ a2ml.evaluate()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) -- The file with data to request predictions for. Data param is not passed in this case.</p></li>
+<li><p><strong>data</strong> (<em>list</em><em>, </em><em>optional</em>) -- The list of records to get predictions for. Filename param is not passed in this case.</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) -- For classification models only. This will return class probabilities with response.</p></li>
 <li><p><strong>locally</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Predicts using a local model if True, on the Provider Cloud if False. The default is False.</p></li>
@@ -363,6 +368,19 @@ a2ml.evaluate()</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
 <span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">dataset</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value2&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value4&#39;</span><span class="p">}]</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">value1</span><span class="p">,</span> <span class="n">value2</span><span class="p">],</span> <span class="p">[</span><span class="n">value3</span><span class="p">,</span> <span class="n">value4</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">]</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
