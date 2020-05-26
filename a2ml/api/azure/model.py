@@ -201,6 +201,7 @@ def get_df(data):
         import pandas as pd
 
         model_features = None
+        proba_classes_orig = None
 
         temp_dir = local_fsclient.LocalFSClient().get_temp_folder()
         try:
@@ -217,24 +218,41 @@ def get_df(data):
                     input_sample = eval(code_to_run)
                     model_features = input_sample.columns.tolist()
         except Exception as e:
-            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)            
-        finally:
-            fsclient.remove_folder(temp_dir)
+            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)
 
-        return model_features
+        if self.ctx.config.get("model_type") == "classification":
+            try:
+                file_name = 'confusion_matrix'
+                remote_run.download_file('%s'%file_name, os.path.join(temp_dir, file_name))
+                cm_data = fsclient.read_json_file(os.path.join(temp_dir, file_name))
+                proba_classes_orig = cm_data.get('data', {}).get('class_labels')
+            except Exception as e:
+                self.ctx.log('Cannot get categorical target class labels from remote model.Use class codes: %s'%e)
+
+        fsclient.remove_folder(temp_dir)
+
+        return model_features, proba_classes_orig
             
+    @staticmethod
+    def _revertCategories(results, categories):
+        return list(map(lambda x: categories[int(x)], results))
+
     def _predict_remotely(self, predict_data, model_id, threshold):
         from azureml.core.webservice import AciWebservice
+        #from azureml.train.automl.run import AutoMLRun
+        from azureml.core.run import Run
+
         import numpy as np
 
         ws, experiment = self._get_experiment()
 
         model_features = None
-        if model_id.startswith("AutoML_"):
-            from azureml.train.automl.run import AutoMLRun
+        proba_classes_orig = None
 
-            remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
-            model_features = self._get_remote_model_features(remote_run)
+        remote_run = Run(experiment = experiment, run_id = model_id)
+        model_features, proba_classes_orig = self._get_remote_model_features(remote_run)
+
+        if model_id.startswith("AutoML_"):
             model_name = remote_run.properties['model_name']
         else:
             model_name = model_id
@@ -259,7 +277,9 @@ def get_df(data):
         try:
             response = aci_service.run(input_data = input_payload)
         except Exception as e:
-            raise e
+            log_file = 'automl_errors.log'
+            fsclient.write_text_file(log_file, aci_service.get_logs(), mode="a")
+            raise AzureException("Prediction service error. Please redeploy the model. Log saved to file '%s'. Details: %s"%(log_file, str(e)))
 
         response = json.loads(response)
         if "error" in response or not 'result' in response:
@@ -272,11 +292,14 @@ def get_df(data):
             results_proba = result
             proba_classes = response['proba_classes']
             minority_target_class = self.ctx.config.get('minority_target_class', None)
-
             result = self._calculate_proba_target(results_proba,
-                proba_classes, None, threshold, minority_target_class)
+                proba_classes, proba_classes_orig, threshold, minority_target_class)
 
             results_proba = np.array(results_proba)
+
+            if proba_classes_orig is not None:
+                result = self._revertCategories(result, proba_classes_orig)
+                proba_classes = proba_classes_orig
 
         return result, results_proba, proba_classes
 
@@ -353,6 +376,8 @@ def get_df(data):
 
             threshold = {minority_target_class:threshold}
 
+        #print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
+        #print(results_proba)
         if type(threshold) == dict:
             mapped_threshold = {}
 
@@ -368,6 +393,7 @@ def get_df(data):
 
                 mapped_threshold[idx_class] = value
 
+            print(mapped_threshold)    
             for item in results_proba:
                 proba_idx = None
                 for idx, value in mapped_threshold.items():
@@ -376,11 +402,18 @@ def get_df(data):
                         break
 
                 if proba_idx is None:
+                    threshold_num = list(mapped_threshold.values())[-1]
+                    for idx, value in enumerate(item):
+                        if value>=threshold_num:
+                            proba_idx = idx
+                            #break
+
+                #find max value            
+                if proba_idx is None:
                     proba_idx = 0
                     for idx, value in enumerate(item):
-                        if idx not in mapped_threshold:
-                            proba_idx = idx
-                            break
+                        if value >= item[proba_idx]:
+                            proba_idx = idx       
 
                 results.append(proba_classes[proba_idx])
         else:

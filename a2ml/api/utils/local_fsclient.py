@@ -44,7 +44,8 @@ class LocalFSClient:
 
     def create_parent_folder(self, path):
         parent = os.path.dirname(path)
-        self.create_folder(parent)
+        if parent:
+            self.create_folder(parent)
 
     def get_parent_folder(self, path):
         return os.path.dirname(path)
@@ -56,17 +57,17 @@ class LocalFSClient:
         with codecs.open(path, "r", encoding='utf-8') as file:
             return file.read()
 
-    def write_text_file(self, path, data, atomic=False):
+    def write_text_file(self, path, data, atomic=False, mode="w"):
         self.create_parent_folder(path)
 
         if atomic:
-            with self.open_atomic(path, "w") as file:
+            with self.open_atomic(path, mode) as file:
                 file.write(data)
         else:
             from a2ml.api.utils import fsclient
             self.remove_file(path)
 
-            with fsclient.open_file(path, "w") as file:
+            with fsclient.open_file(path, mode) as file:
                 try:
                     file.write(data)
                 finally:
@@ -75,12 +76,12 @@ class LocalFSClient:
 
         self.read_text_file(path)
 
-    def list_folder(self, path, wild=False, removeFolderName=False, meta_info=False):
+    def list_folder(self, path, wild=False, remove_folder_name=False, meta_info=False):
         res = []
         try:
             if wild:
                 glob_res = glob.glob(path)
-                if removeFolderName:
+                if remove_folder_name:
                     len_parent = len(os.path.dirname(path))+1
                     for file in glob_res:
                         res.append(file[len_parent:])
