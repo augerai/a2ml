@@ -68,12 +68,15 @@ class ProviderRunner(object):
 
     @contextlib.contextmanager
     def with_spinning_cursor(self):
-        try:
-            spinning_cursor = self.SpinningCursorThread()
-            spinning_cursor.start()
+        if self.ctx.config.get('use_server'):
+            try:
+                spinning_cursor = self.SpinningCursorThread()
+                spinning_cursor.start()
+                yield
+            finally:
+                spinning_cursor.stop()
+        else:
             yield
-        finally:
-            spinning_cursor.stop()
 
     def execute_provider(self, provider_name, operation_name, *args, **kwargs):
         try:

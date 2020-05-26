@@ -67,19 +67,16 @@ class RemoteRunner(RequestMixin, ProviderRunner):
         inject_uploaded_file_to_request_func = None
 
         if operation_name == 'import_data':
-            file_to_upload = self.ctx.config.get('source')
-            self.ctx.config.set('original_source', file_to_upload, config_name="config")
+            file_to_upload = kwargs.get('source') or self.ctx.config.get('source')
 
             def replacer_func(remote_path):
-                self.ctx.config.set('source', remote_path, config_name="config")
-                return {'args': tuple(args), 'kwargs': kwargs}
+                new_kwargs = dict(kwargs)
+                new_kwargs['source'] = remote_path
+                return {'args': args, 'kwargs': new_kwargs}
 
             inject_uploaded_file_to_request_func = replacer_func
         elif operation_name == 'predict' or (self.obj_name == 'dataset' and operation_name == 'create'):
             file_to_upload = args[0]
-
-            if operation_name != 'predict':
-                self.ctx.config.set('original_source', file_to_upload, config_name="config")
 
             def replacer_func(remote_path):
                 new_args = list(args)
@@ -210,12 +207,6 @@ class RemoteProviderRunner(RequestMixin, object):
 
         if data_type == 'result' and isinstance(data['result'], dict):
             config = jsonpickle.decode(data['result']['config'])
-
-            original_source = config.get('original_source')
-            if original_source:
-                config.set('source', original_source, config_name="config")
-                config.remove('config', 'original_source')
-
             config.write_all()
 
             data['result'] = data['result']['response']
