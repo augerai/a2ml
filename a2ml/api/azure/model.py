@@ -24,6 +24,57 @@ class AzureModel(object):
         else:
             return self._deploy_remotly(model_id)
 
+    def _edit_score_script(self, script_file_name):
+        text = fsclient.read_text_file(script_file_name)
+
+        text = text.replace("@input_schema('data', PandasParameterType(input_sample))", 
+        """
+def convert_simple_numpy_type(obj):
+    if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+        np.int16, np.int32, np.int64, np.uint8,
+        np.uint16, np.uint32, np.uint64)):
+        return int(obj)
+    elif isinstance(obj, (np.float_, np.float16, np.float32,
+        np.float64)):
+        return float(obj)
+
+    return None
+
+class NumpyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        res = convert_simple_numpy_type(obj)
+        if res is not None:
+            return res
+
+        return json.JSONEncoder.default(self, obj)
+
+def json_dumps_np(data, allow_nan=True):
+    return json.dumps(data, cls=NumpyJSONEncoder, allow_nan=allow_nan)
+
+@input_schema('data', PandasParameterType(input_sample))
+def get_df(data):
+    return data
+
+        """
+        )
+
+        text = text.replace("result = model.predict(data)", 
+        """
+        df = get_df(data['data'])
+        proba_classes = []
+        if data['method'] == "predict_proba":
+            result = model.predict_proba(df)
+            proba_classes = list(model.classes_)
+        else:    
+            result = model.predict(df)
+
+        """
+        )
+
+        text = text.replace("return json.dumps({\"result\": result.tolist()})", 
+            "return json_dumps_np({\"result\": result.tolist(), \"proba_classes\": proba_classes})")
+        fsclient.write_text_file(script_file_name, text)
+
     def _deploy_remotly(self, model_id):
         from azureml.core.model import Model
         from azureml.core.model import InferenceConfig
@@ -48,6 +99,8 @@ class AzureModel(object):
         script_file_name = '.azureml/score_script.py'
         model_run.download_file(
             'outputs/scoring_file_v_1_0_0.py', script_file_name)
+
+        self._edit_score_script(script_file_name)
 
         # Deploying ACI Service
         aci_service_name = self._aci_service_name(model_name)
@@ -148,6 +201,7 @@ class AzureModel(object):
         import pandas as pd
 
         model_features = None
+        proba_classes_orig = None
 
         temp_dir = local_fsclient.LocalFSClient().get_temp_folder()
         try:
@@ -164,23 +218,41 @@ class AzureModel(object):
                     input_sample = eval(code_to_run)
                     model_features = input_sample.columns.tolist()
         except Exception as e:
-            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)            
-        finally:
-            fsclient.remove_folder(temp_dir)
+            self.ctx.log('Cannot get columns from remote model.Use original columns from predicted data: %s'%e)
 
-        return model_features
+        if self.ctx.config.get("model_type") == "classification":
+            try:
+                file_name = 'confusion_matrix'
+                remote_run.download_file('%s'%file_name, os.path.join(temp_dir, file_name))
+                cm_data = fsclient.read_json_file(os.path.join(temp_dir, file_name))
+                proba_classes_orig = cm_data.get('data', {}).get('class_labels')
+            except Exception as e:
+                self.ctx.log('Cannot get categorical target class labels from remote model.Use class codes: %s'%e)
+
+        fsclient.remove_folder(temp_dir)
+
+        return model_features, proba_classes_orig
             
+    @staticmethod
+    def _revertCategories(results, categories):
+        return list(map(lambda x: categories[int(x)], results))
+
     def _predict_remotely(self, predict_data, model_id, threshold):
         from azureml.core.webservice import AciWebservice
+        #from azureml.train.automl.run import AutoMLRun
+        from azureml.core.run import Run
+
+        import numpy as np
 
         ws, experiment = self._get_experiment()
 
         model_features = None
-        if model_id.startswith("AutoML_"):
-            from azureml.train.automl.run import AutoMLRun
+        proba_classes_orig = None
 
-            remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
-            model_features = self._get_remote_model_features(remote_run)
+        remote_run = Run(experiment = experiment, run_id = model_id)
+        model_features, proba_classes_orig = self._get_remote_model_features(remote_run)
+
+        if model_id.startswith("AutoML_"):
             model_name = remote_run.properties['model_name']
         else:
             model_name = model_id
@@ -199,20 +271,37 @@ class AzureModel(object):
         if threshold is not None:
             method = 'predict_proba'
         input_payload = {
-            'method': method,
-            'data': input_payload['data']
+            'data': {'data': input_payload['data'], 'method': method}
         }
         input_payload = json.dumps(input_payload)
         try:
             response = aci_service.run(input_data = input_payload)
         except Exception as e:
-            # print('err log', aci_service.get_logs())
-            raise e
+            log_file = 'automl_errors.log'
+            fsclient.write_text_file(log_file, aci_service.get_logs(), mode="a")
+            raise AzureException("Prediction service error. Please redeploy the model. Log saved to file '%s'. Details: %s"%(log_file, str(e)))
+
+        response = json.loads(response)
+        if "error" in response or not 'result' in response:
+            raise AzureException('Prediction service return error: %s'%response.get('error'))
 
         results_proba = None
         proba_classes = None
+        result = response['result']
+        if threshold is not None:
+            results_proba = result
+            proba_classes = response['proba_classes']
+            minority_target_class = self.ctx.config.get('minority_target_class', None)
+            result = self._calculate_proba_target(results_proba,
+                proba_classes, proba_classes_orig, threshold, minority_target_class)
 
-        return json.loads(response)['result'], results_proba, proba_classes
+            results_proba = np.array(results_proba)
+
+            if proba_classes_orig is not None:
+                result = self._revertCategories(result, proba_classes_orig)
+                proba_classes = proba_classes_orig
+
+        return result, results_proba, proba_classes
 
     def verify_local_model(self, model_id):
         model_path = os.path.join(self.ctx.config.get_path(), 'models',
@@ -256,10 +345,6 @@ class AzureModel(object):
             results_proba = fitted_model.predict_proba(predict_data)
             proba_classes = list(fitted_model.classes_)
             minority_target_class = self.ctx.config.get('minority_target_class', None)
-            if minority_target_class is None:
-                for item in proba_classes:
-                    if item == 1 or item == True or item == "1" or item == "True":
-                        minority_target_class = item
 
             result = self._calculate_proba_target(results_proba,
                 proba_classes, None, threshold, minority_target_class)
@@ -291,12 +376,10 @@ class AzureModel(object):
 
             threshold = {minority_target_class:threshold}
 
-        # print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
+        #print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
         #print(results_proba)
         if type(threshold) == dict:
             mapped_threshold = {}
-            if not proba_classes_orig:
-                proba_classes_orig = proba_classes
 
             for name, value in threshold.items():
                 idx_class = None
@@ -310,6 +393,7 @@ class AzureModel(object):
 
                 mapped_threshold[idx_class] = value
 
+            print(mapped_threshold)    
             for item in results_proba:
                 proba_idx = None
                 for idx, value in mapped_threshold.items():
@@ -318,11 +402,18 @@ class AzureModel(object):
                         break
 
                 if proba_idx is None:
+                    threshold_num = list(mapped_threshold.values())[-1]
+                    for idx, value in enumerate(item):
+                        if value>=threshold_num:
+                            proba_idx = idx
+                            #break
+
+                #find max value            
+                if proba_idx is None:
                     proba_idx = 0
                     for idx, value in enumerate(item):
-                        if idx not in mapped_threshold:
-                            proba_idx = idx
-                            break
+                        if value >= item[proba_idx]:
+                            proba_idx = idx       
 
                 results.append(proba_classes[proba_idx])
         else:

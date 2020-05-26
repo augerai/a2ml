@@ -31,7 +31,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
 
     logging.info("download_file: %s, %s, %s, %s"%(remote_path, local_dir, file_name, force_download))
     if file_name:
-        all_local_files = fsclient.listFolder(os.path.join(local_dir, file_name+".*"), wild=True, removeFolderName=True)
+        all_local_files = fsclient.listFolder(os.path.join(local_dir, file_name+".*"), wild=True, remove_folder_name=True)
         #print(all_local_files)
         if all_local_files:
             local_file_path = os.path.join( local_dir, all_local_files[0])

@@ -87,7 +87,7 @@ class S3FSClient:
                           client_kwargs=client_kwargs)
         return s3.open(path, mode=mode)
 
-    def list_folder(self, path, wild=False, removeFolderName=False, meta_info=False):
+    def list_folder(self, path, wild=False, remove_folder_name=False, meta_info=False):
         import fnmatch
         from urllib.parse import unquote
 
@@ -164,7 +164,8 @@ class S3FSClient:
 
     def create_parent_folder(self, path):
         parent = os.path.dirname(path)
-        self.create_folder(parent)
+        if parent:
+            self.create_folder(parent)
 
     def ensure_bucket_created(self, Bucket):
         try:
@@ -313,7 +314,8 @@ class S3FSClient:
         # obj = self.client.get_object(Bucket=self.s3BucketName, Key=path)
         # return obj['Body'].read()
 
-    def write_text_file(self, path, data, atomic=False):
+    def write_text_file(self, path, data, atomic=False, mode="w"):
+        #TODO: support mode="a"
         path = self._get_relative_path(path)
         mimetype, _ = mimetypes.guess_type(path)
         if mimetype is None:
@@ -390,7 +392,7 @@ class S3FSClient:
                 LocalFSClient().downloadFile(path, temp_file)
                 self._s3_upload_file(temp_file, s3_path)
 
-                #FSClient().waitForFile(local_path, wait_for_file=True, num_tries=3000, interval_sec=20)
+                #FSClient().waitForFile(local_path, if_wait_for_file=True, num_tries=3000, interval_sec=20)
             # with FSClient().open(path, "rb", encoding=None) as fd:
             #     self.client.upload_fileobj(fd, Bucket=self.s3BucketName, Key=s3_path)
         else:
