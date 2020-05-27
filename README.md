@@ -7,7 +7,7 @@
 [![PyPI - A2ML Versions](https://img.shields.io/pypi/v/a2ml.svg)](https://pypi.org/project/a2ml/)
 
 <div style='display:block;width:50%;margin-left:auto;margin-right:auto;margin-bottom:20px'>
-  <image src='./docs/source/favicon-194x194.png' width='auto'/>
+  <image src='./docs/source/logo-1024x1024-solid-bg.png' width='50%'/>
 </div>
 
 The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.  Full documentation for A2ML is available at [a2ml.org](http://a2ml.org)
