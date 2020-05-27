@@ -44,7 +44,7 @@ Individual Providers
 
 .. |a2mlcloud| raw:: html
 
-   <a href="https://app.auger/signup" target="_blank">A2ML Cloud</a>
+   <a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a>
 
 
 |a2mlcloud| can manage the usage of Google Cloud AutoML or Azure AutoML for you. If set up on your own you must configure the underlying AutoML service corrrectly to be accessed from the server you are running.
