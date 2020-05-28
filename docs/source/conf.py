@@ -59,10 +59,47 @@ language = 'python3'
 exclude_patterns = []
 
 html_context = {
-    "display_github_url": 'https://github.com/augerai/a2ml',
+  "display_github_url": 'https://github.com/augerai/a2ml',
 }
 
-html_favicon = 'favicon-194x194.png'
+html_logo = 'logo.png'
+
+html_extra_path = [
+  'android-chrome-144x144.png',
+  'android-chrome-192x192.png',
+  'android-chrome-256x256.png',
+  'android-chrome-36x36.png',
+  'android-chrome-384x384.png',
+  'android-chrome-48x48.png',
+  'android-chrome-512x512.png',
+  'android-chrome-72x72.png',
+  'android-chrome-96x96.png',
+  'apple-touch-icon-114x114.png',
+  'apple-touch-icon-120x120.png',
+  'apple-touch-icon-144x144.png',
+  'apple-touch-icon-152x152.png',
+  'apple-touch-icon-167x167.png',
+  'apple-touch-icon-180x180.png',
+  'apple-touch-icon-57x57.png',
+  'apple-touch-icon-60x60.png',
+  'apple-touch-icon-72x72.png',
+  'apple-touch-icon-76x76.png',
+  'apple-touch-icon.png',
+  'browserconfig.xml',
+  'favicon-16x16.png',
+  'favicon-194x194.png',
+  'favicon-96x96.png',
+  'favicon.ico',
+  'favicon.png',
+  'mstile-144x144.png',
+  'mstile-150x150.png',
+  'mstile-310x150.png',
+  'mstile-310x310.png',
+  'mstile-70x70.png',
+  'og-image.png',
+  'safari-pinned-tab.svg',
+  'site.webmanifest'
+]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -70,6 +107,9 @@ html_favicon = 'favicon-194x194.png'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+  'logo_only': True
+}
 html_show_sphinx = False
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -77,4 +117,3 @@ html_show_sphinx = False
 html_static_path = ['_static']
 
 html_baseurl = 'https://a2ml.org'
-
