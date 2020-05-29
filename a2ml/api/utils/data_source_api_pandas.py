@@ -10,7 +10,7 @@ from functools import wraps
 
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.local_fsclient import LocalFSClient
-from a2ml.tasks_queue.utils import get_uid, get_uid4, remove_dups_from_list, process_arff_line
+from .utils import get_uid, get_uid4, remove_dups_from_list, process_arff_line
 
 # To avoid warnings for inplace operation on datasets
 pd.options.mode.chained_assignment = None
@@ -25,6 +25,7 @@ class DataSourceAPIPandas(object):
         self.transforms_log = [[],[],[],[]]
         self.df = None
         self.dataset_name = None
+        self.loaded_columns = None
 
     def _get_compression(self, extension):
         compression = self.options.get('data_compression', 'infer')
@@ -39,11 +40,22 @@ class DataSourceAPIPandas(object):
 
         return compression
 
+    @staticmethod
+    def create_dataframe(data_path=None, records=None, features=None):
+        if data_path:
+            ds = DataSourceAPIPandas({'data_path': data_path})
+            ds.load(features = features)
+        else:
+            ds = DataSourceAPIPandas({})
+            ds.load_records(records, features=features)
+
+        return ds
+
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
 
         extension = path
-        if self.options.get('data_extension'):
+        if self.options.get('data_extension', 'infer') != 'infer':
             extension = self.options['data_extension']
 
         if self.options.get('content_type') == 'multipart':
@@ -201,6 +213,28 @@ class DataSourceAPIPandas(object):
             self.options['data_path'] = local_file_path
 
         return self.options['data_path'], remote_path
+
+    def load_records(self, records, features=None):
+        self.categoricals = {}
+        self.transforms_log = [[],[],[],[]]
+
+        if features:
+            self.df = pd.DataFrame.from_records(records, columns=features)
+            self.loaded_columns = features
+        else:
+            self.df = pd.DataFrame(records) #dict
+
+        return self
+
+    def get_records(self):
+        return self.df.values.tolist()
+
+    def saveToCsvFile(self, path, compression="gzip"):
+        fsclient.remove_file(path)
+        fsclient.create_parent_folder(path)
+
+        with fsclient.save_local(path) as local_path:
+            self.df.to_csv(local_path, index=False, compression=compression, encoding='utf-8')
 
     def saveToBinFile(self, path):
         fsclient.save_object_to_file(self.df, path)

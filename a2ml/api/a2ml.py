@@ -145,7 +145,7 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False):
+    def deploy(self, model_id, locally=False, review=True):
         """Deploy a model locally or to specified provider(s).
 
         Note:
@@ -154,6 +154,7 @@ class A2ML(BaseA2ML):
         Args:
             model_id (str): The model id from any experiment you will deploy
             locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
+            review(bool): Should model support review based on actual data. The default is True.
         
         Returns:
             Results for each provider. ::
@@ -172,10 +173,10 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.deploy(model_id='A017AC8EAD094FD')
         """
-        return self.__get_runner(locally).execute('deploy', model_id, locally)
+        return self.__get_runner(locally).execute('deploy', model_id, locally, review)
 
     @show_result
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Args:
@@ -184,7 +185,8 @@ class A2ML(BaseA2ML):
             model_id(str): The deployed model id you want to use.
             threshold(float, optional): For classification models only. This will return class probabilities with response.
             locally(bool, optional): Predicts using a local model if True, on the Provider Cloud if False. The default is False.
-        
+            output(str): Output csv file path.
+
         Results:
             Results for each provider. ::
 
@@ -220,7 +222,7 @@ class A2ML(BaseA2ML):
                 
            
         """
-        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns)
+        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
     def review(self):

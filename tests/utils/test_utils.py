@@ -1,4 +1,4 @@
-from a2ml.api.utils import dict_dig
+from a2ml.api.utils.utils import dict_dig
 
 
 class TestUtils(object):

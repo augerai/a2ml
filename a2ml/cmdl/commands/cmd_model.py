@@ -13,12 +13,14 @@ def cmdl(ctx):
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
+@click.option('--review', is_flag=True, default=True,
+    help='Should model support review based on actual data.')
 @click.option('--provider', '-p', type=click.STRING, required=False,
     help='Cloud AutoML Provider.')
 @pass_context
-def deploy(ctx, provider, model_id, locally):
+def deploy(ctx, provider, model_id, locally, review):
     """Deploy trained model."""
-    A2MLModel(ctx, provider).deploy(model_id, locally)
+    A2MLModel(ctx, provider).deploy(model_id, locally, review)
 
 @click.command('predict', short_help='Predict with deployed model.')
 @click.argument('filename', required=True, type=click.STRING)
@@ -30,10 +32,12 @@ def deploy(ctx, provider, model_id, locally):
     help='Predict locally using Docker image to run model.')
 @click.option('--provider', '-p', type=click.STRING, required=False,
     help='Cloud AutoML Provider.')
+@click.option('--output', '-o', type=click.STRING, required=False,
+    help='Output csv file path.')
 @pass_context
-def predict(ctx, provider, filename, model_id, threshold, locally):
+def predict(ctx, provider, filename, model_id, threshold = threshold, locally = locally, output = output):
     """Predict with deployed model."""
-    A2MLModel(ctx, provider).predict(filename, model_id, threshold, locally)
+    A2MLModel(ctx, provider).predict(filename, model_id, threshold=threshold, locally=locally, output=output)
 
 @click.command('actual', short_help='Send actual values for deployed model. Needed for review and monitoring.')
 @click.argument('filename', required=True, type=click.STRING)

@@ -8,7 +8,8 @@ import time
 import os
 import websockets
 
-from a2ml.api.utils import fsclient, dict_dig
+from a2ml.api.utils import fsclient
+from a2ml.api.utils.utils import dict_dig
 from a2ml.api.a2ml_credentials import A2MLCredentials
 from a2ml.api.utils.file_uploader import FileUploader, OnelineProgressPercentage
 from a2ml.api.utils.provider_runner import ProviderRunner

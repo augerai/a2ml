@@ -15,16 +15,20 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def deploy(self, project, model_id, locally):
-        model_id = Model(self.ctx, project).deploy(model_id, locally)
+    def deploy(self, project, model_id, locally, review):
+        model_id = Model(self.ctx, project).deploy(model_id, locally, review)
         return {'model_id': model_id}
 
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def predict(self, project, filename, model_id, threshold, locally, data, columns):
+    def predict(self, project, filename, model_id, threshold, locally, data, columns, output):
         predicted = Model(self.ctx, project).predict(
-            filename, model_id, threshold, locally, data, columns)
+            filename, model_id, threshold, locally, data, columns, output)
+
+        if filename:
+            self.ctx.log('Predictions stored in %s' % predicted)
+        
         return {'predicted': predicted}
 
     @error_handler

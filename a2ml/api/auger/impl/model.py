@@ -11,14 +11,14 @@ class Model(object):
         self.project = project
         self.ctx = ctx
 
-    def deploy(self, model_id, locally=False):
-        return ModelDeploy(self.ctx, self.project).execute(model_id, locally)
+    def deploy(self, model_id, locally=False, review=True):
+        return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
         if locally:
             self.deploy(model_id, locally)
             
-        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns)
+        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, output)
 
     def actual(self, filename, model_id):
         return ModelActual(self.ctx).execute(filename, model_id)

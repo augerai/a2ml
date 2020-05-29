@@ -8,7 +8,9 @@ from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
 from a2ml.api.utils import fsclient
-from a2ml.api.utils.dataframe import DataFrame
+#from a2ml.api.utils.dataframe import DataFrame
+from a2ml.api.utils.data_source_api_pandas import DataSourceAPIPandas
+from a2ml.api.review_model.model_helper import ModelHelper
 
 class ModelPredict():
     """Predict using deployed Auger Model."""
@@ -17,41 +19,48 @@ class ModelPredict():
         super(ModelPredict, self).__init__()
         self.ctx = ctx
 
-    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
         if filename and not fsclient.is_s3_path(filename):
             self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
         if locally:
-            predicted = self._predict_locally(filename, model_id, threshold, data, columns)
+            predicted = self._predict_locally(filename, model_id, threshold, data, columns, output)
         else:
-            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns)
-
-        if filename:
-            self.ctx.log('Predictions stored in %s' % predicted)
+            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, output)
 
         return predicted
 
-    def _predict_on_cloud(self, filename, model_id, threshold, data, columns):
-        target = self.ctx.config.get('target', None)
-        records, features = DataFrame.load_records(filename, target, features=columns, data=data)
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, output):
+        ds = DataSourceAPIPandas.create_dataframe(filename, data, columns)
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-        predictions = pipeline_api.predict(
-            records, features, threshold)
+        predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold)
 
-        if filename:
-            predicted = os.path.splitext(filename)[0] + "_predicted.csv"
-            DataFrame.save(predicted, predictions)
-        elif columns:
-            predicted = predictions.get('data', [])
-        else:
-            predicted = DataFrame.convert_records_to_dict(predictions)
+        ds_result = DataSourceAPIPandas.create_dataframe(None, records=predictions['data'], features=predictions['columns'])
+        ds_result.options['data_path'] = filename
+        return ModelHelper.save_prediction_result(ds_result, 
+            prediction_id = None, support_review_model = False, 
+            json_result=False, count_in_result=False, prediction_date=None, 
+            model_path=None, model_id=model_id, output=output)
 
-        return predicted
+        # target = self.ctx.config.get('target', None)
+        # records, features = DataFrame.load_records(filename, target, features=columns, data=data)
 
+        # pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
+        # predictions = pipeline_api.predict(records, features, threshold)
 
-    def _predict_locally(self, filename_arg, model_id, threshold, data, columns):
+        # if filename:
+        #     predicted = os.path.splitext(filename)[0] + "_predicted.csv"
+        #     DataFrame.save(predicted, predictions)
+        # elif columns:
+        #     predicted = predictions.get('data', [])
+        # else:
+        #     predicted = DataFrame.convert_records_to_dict(predictions)
+
+        # return predicted
+
+    def _predict_locally(self, filename_arg, model_id, threshold, data, columns, output):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
             model_deploy.verify_local_model(model_id)
@@ -64,11 +73,9 @@ class ModelPredict():
 
         filename = filename_arg
         if not filename:
-            target = self.ctx.config.get('target', None)            
-            predict_data = DataFrame.load(filename, target, features=columns, data=data)
-
+            ds = DataSourceAPIPandas.create_dataframe(filename, data, columns)            
             filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
-            DataFrame.save_df(filename, predict_data)
+            ds.saveToCsvFile(filename, compression=None)
 
         try:
             predicted = \
@@ -79,15 +86,15 @@ class ModelPredict():
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
 
+        ds_result = DataSourceAPIPandas.create_dataframe(predicted)
         if not filename_arg:
-            records, features = DataFrame.load_records(predicted, target)
+            ds_result.options['data_path'] = None
+            ds_result.loaded_columns = columns
 
-            if columns:
-                predicted = {'data': records, 'columns': features}
-            else:
-                predicted = DataFrame.convert_records_to_dict({'data': records, 'columns': features})
-
-        return predicted
+        return ModelHelper.save_prediction_result(ds_result, 
+            prediction_id = None, support_review_model = False, 
+            json_result=False, count_in_result=False, prediction_date=None, 
+            model_path=None, model_id=model_id, output=output)
 
     def _extract_model(self, model_name):
         model_path = os.path.splitext(model_name)[0]

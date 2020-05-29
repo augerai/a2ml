@@ -15,28 +15,28 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False):
+    def execute(self, model_id, locally=False, review=True):
         if locally:
-            return self.deploy_model_locally(model_id)
+            return self.deploy_model_locally(model_id, review)
         else:
-            return self.deploy_model_in_cloud(model_id)
+            return self.deploy_model_in_cloud(model_id, review)
 
-    def deploy_model_in_cloud(self, model_id):
+    def deploy_model_in_cloud(self, model_id, review):
         self.ctx.log('Deploying model %s' % model_id)
 
         self._start_project()
 
         pipeline_properties = AugerPipelineApi(
-            self.ctx, None).create(model_id)
+            self.ctx, None).create(model_id, review)
 
         self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
             pipeline_properties.get('id'))
 
         return pipeline_properties.get('id')
 
-    def deploy_model_locally(self, model_id):
+    def deploy_model_locally(self, model_id, review):
         is_loaded, model_path, model_name = self.verify_local_model(model_id)
-
+        #TODO: support review flag
         if not is_loaded:
             self.ctx.log('Downloading model %s' % model_id)
 

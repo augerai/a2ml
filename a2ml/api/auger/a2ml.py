@@ -18,12 +18,12 @@ class AugerA2ML(object):
     def evaluate(self, run_id = None):
         return AugerExperiment(self.ctx).leaderboard(run_id)
 
-    def deploy(self, model_id, locally=False):
-        return AugerModel(self.ctx).deploy(model_id, locally)
+    def deploy(self, model_id, locally=False, review=True):
+        return AugerModel(self.ctx).deploy(model_id, locally, review)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
         return AugerModel(self.ctx).predict(
-            filename, model_id, threshold, locally, data, columns)
+            filename, model_id, threshold, locally, data, columns, output)
 
     def review(self):
         pass
