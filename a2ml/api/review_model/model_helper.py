@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from a2ml.api.utils.utils import get_uid, get_uid4
+from a2ml.api.utils import get_uid, get_uid4
 
 
 class ModelHelper(object):

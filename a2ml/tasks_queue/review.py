@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from a2ml.api.utils.utils import dict_dig, get_uid4
+from a2ml.api.utils import dict_dig, get_uid4
 from a2ml.api.utils.data_source_api_pandas import DataSourceAPIPandas
 from a2ml.tasks_queue.config import Config
 from a2ml.tasks_queue.log import logger
