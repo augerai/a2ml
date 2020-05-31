@@ -8,9 +8,8 @@ import warnings
 
 from functools import wraps
 
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line
 from a2ml.api.utils.local_fsclient import LocalFSClient
-from .utils import get_uid, get_uid4, remove_dups_from_list, process_arff_line
 
 # To avoid warnings for inplace operation on datasets
 pd.options.mode.chained_assignment = None
