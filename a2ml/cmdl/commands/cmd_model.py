@@ -35,7 +35,7 @@ def deploy(ctx, provider, model_id, locally, review):
 @click.option('--output', '-o', type=click.STRING, required=False,
     help='Output csv file path.')
 @pass_context
-def predict(ctx, provider, filename, model_id, threshold = threshold, locally = locally, output = output):
+def predict(ctx, provider, filename, model_id, threshold, locally, output):
     """Predict with deployed model."""
     A2MLModel(ctx, provider).predict(filename, model_id, threshold=threshold, locally=locally, output=output)
 

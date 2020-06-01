@@ -2,8 +2,7 @@ import os
 import json
 
 from .exceptions import AzureException
-#from a2ml.api.utils.dataframe import DataFrame
-from a2ml.api.utils.data_source_api_pandas import DataSourceAPIPandas
+from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.review_model.model_helper import ModelHelper
@@ -149,7 +148,7 @@ def get_df(data):
     def predict(self, filename, model_id, 
         threshold=None, locally=False, data=None, columns=None, output = None,
         json_result=False, count_in_result=False, prediction_date=None, prediction_id=None):
-        ds = DataSourceAPIPandas.create_dataframe(filename, data, columns)
+        ds = DataFrame.create_dataframe(filename, data, columns)
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
@@ -171,33 +170,6 @@ def get_df(data):
             self.ctx.log('Predictions stored in %s' % predicted)
 
         return {'predicted': predicted}
-
-        # target = self.ctx.config.get('target', None)
-        # predict_data = DataFrame.load(filename, target, features=columns, data=data)
-
-        # y_pred = []
-        # if locally:
-        #     y_pred, y_proba, proba_classes = self._predict_locally(
-        #         predict_data, model_id, threshold)
-        # else:
-        #     y_pred, y_proba, proba_classes = self._predict_remotely(
-        #         predict_data, model_id, threshold)
-
-        # predict_data[target] = y_pred
-
-        # if y_proba is not None:
-        #     for idx, name in enumerate(proba_classes):
-        #         predict_data['proba_'+str(name)] = list(y_proba[:,idx])
-
-        # if filename:        
-        #     predicted = self._save_predictions(predict_data, filename)
-        # elif columns:
-        #     predicted = predict_data.to_dict('split')
-        #     predicted = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
-        # else:
-        #     predicted = predict_data.to_dict('records')
-
-        # return {'predicted': predicted}
 
     @error_handler
     @authenticated
