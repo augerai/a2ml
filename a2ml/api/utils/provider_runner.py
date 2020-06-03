@@ -1,8 +1,11 @@
 import contextlib
 import importlib
+import os
+import psutil
+import sys
 import threading
 import time
-import sys
+
 
 from concurrent.futures import ThreadPoolExecutor, as_completed, thread
 
@@ -68,7 +71,12 @@ class ProviderRunner(object):
 
     @contextlib.contextmanager
     def with_spinning_cursor(self):
-        if self.ctx.config.get('use_server'):
+        current_process = psutil.Process(os.getpid())
+        config = self.ctx.config
+
+        # Do not show spinner on server side, on client side if it's running inside Celery process
+        # or if it's explicitly disabled in the config
+        if config.get('use_server') and current_process.name() != 'celery' and not config.get('no_spinner'):
             try:
                 spinning_cursor = self.SpinningCursorThread()
                 spinning_cursor.start()

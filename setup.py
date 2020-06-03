@@ -39,6 +39,7 @@ install_requires = [
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
+    'psutil',
     'requests',
     'smart_open==1.9.0',
     'jsonpickle',
