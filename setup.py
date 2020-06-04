@@ -43,7 +43,8 @@ install_requires = [
     'requests',
     'smart_open==1.9.0',
     'jsonpickle',
-    'websockets'
+    'websockets',
+    'HLL'
 ]
 
 extras = {

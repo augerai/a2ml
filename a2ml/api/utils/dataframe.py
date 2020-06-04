@@ -50,6 +50,13 @@ class DataFrame(object):
 
         return ds
 
+    @staticmethod
+    def load_from_files(files, features=None):
+        for file in files:
+            path = file if type(file) == str else file['path']
+            df = DataFrame.create_dataframe(path, None, features)
+            yield (file, df)
+
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
 
@@ -331,6 +338,39 @@ class DataFrame(object):
                         value[list(value.keys())[0]] = float(list(value.values())[0])
 
         self.df.fillna(value, inplace=True)
+        return self
+
+    def convertToCategorical(self, col_names, is_target = False, categories = None):
+        #print("convertToCategorical:%s"%col_names)
+        if not isinstance(col_names, list):
+            col_names = [col_names]
+
+        if is_target:
+            for col in col_names:
+                if col in self.columns and self.categoricals.get(col, None) is None:
+                    self.df[col] = pd.Categorical(self.df[col], categories=categories)
+                    self.categoricals[col] = {'categories': list(self.df[col].cat.categories)}
+                    self.df[col] = self.df[col].cat.codes
+        else:
+            cols_to_process = []
+            cols = self.columns
+            for col in col_names:
+                if col in cols:
+                    cols_to_process.append(col)
+
+            #print(cols_to_process)
+            if cols_to_process:
+                self.df = pd.get_dummies(self.df, columns=cols_to_process)
+                new_cols = self.columns
+
+                for col in cols_to_process:
+                    generated_cols = []
+                    for new_col in new_cols:
+                        if new_col.startswith(col+'_'):
+                            generated_cols.append(new_col)
+
+                    self.categoricals[col] = {'columns': generated_cols}
+
         return self
 
     @staticmethod

@@ -9,7 +9,7 @@ from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
-from a2ml.api.review_model.model_helper import ModelHelper
+from a2ml.api.model_review.model_helper import ModelHelper
 
 class ModelPredict():
     """Predict using deployed Auger Model."""
@@ -115,7 +115,6 @@ class ModelPredict():
                 'Running model in deeplearninc/'
                 'auger-ml-worker:%s' % docker_tag)
             result_file = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-            print(result_file)
             result_file = result_file.decode("utf-8").strip()
             result_file = os.path.basename(result_file)
             # getattr(subprocess,

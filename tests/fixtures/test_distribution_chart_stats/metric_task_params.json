@@ -1,0 +1,146 @@
+{
+  "augerInfo": {
+    "pipeline_id": null,
+    "experiment_id": "38061ff992d40511",
+    "prediction_id": null,
+    "cluster_task_id": 19868,
+    "project_file_id": 2622,
+    "dataset_manifest_id": "4df49bc52eb28955",
+    "experiment_session_id": "1f94ad51ef883af6"
+  },
+  "data_path": "s3://auger-mt-org-cinpns/workspace/projects/evgeny-exp-new/files/adult2.data.csv.gz",
+  "trial_data": {
+    "uid": "A5B70FA77F32497",
+    "error": null,
+    "ratio": 1.0,
+    "score": 0.8742053376739044,
+    "budget": null,
+    "scoring": "accuracy",
+    "ensemble": true,
+    "task_type": "classification",
+    "all_scores": {
+      "f1": 0.7143255684195843,
+      "gini": 0.8742053376739044,
+      "recall": 0.6531054712409131,
+      "roc_auc": 0.9293275477336992,
+      "accuracy": 0.8742053376739044,
+      "f1_macro": 0.8168351219539636,
+      "f1_micro": 0.8742053376739044,
+      "precision": 0.7882099430506387,
+      "f1_weighted": 0.8699741150471358,
+      "neg_log_loss": -0.2769592435559612,
+      "recall_macro": 0.7987210204101005,
+      "recall_micro": 0.8742053376739044,
+      "precision_macro": 0.8419257204510406,
+      "precision_micro": 0.8742053376739044,
+      "recall_weighted": 0.8742053376739044,
+      "average_precision": 0.5983197442437835,
+      "cohen_kappa_score": 0.8742053376739044,
+      "matthews_corrcoef": 0.6391882355537957,
+      "precision_weighted": 0.8697709526841227
+    },
+    "fold_times": [
+      26.31349539756775
+    ],
+    "score_name": "accuracy",
+    "trialClass": "auger_ml.core.AugerMLTrial.AugerMLTrialEnsemble",
+    "fold_scores": [
+      0.8742053376739044
+    ],
+    "metrics_time": 0,
+    "dataset_ncols": 0,
+    "dataset_nrows": 0,
+    "algorithm_name": "auger_ml.ensembles.algorithms.SuperLearnerAlgorithmClassifier",
+    "estimated_time": 0,
+    "optimizer_name": "auger_ml.ensembles.algorithms.EnsembleOptimizer",
+    "evaluation_time": 26.31753015518188,
+    "algorithm_params": {
+      "method": "slsqp",
+      "opt_trials": 3,
+      "_steps_params": {
+        "weights": [
+          0.3108461561907356,
+          0.3296877827336842,
+          0.3590811184498908,
+          0.0003849426256893224
+        ],
+        "pipelines": [
+          {
+            "name": "lightgbm.LGBMClassifier",
+            "params": {
+              "n_jobs": 1,
+              "silent": -1,
+              "verbose": -1,
+              "max_depth": 6,
+              "reg_alpha": 1.29908121172776,
+              "subsample": 0.7628131756274505,
+              "num_leaves": 60,
+              "reg_lambda": 1.56489423829176,
+              "n_estimators": 408,
+              "learning_rate": 0.07123270344247057,
+              "colsample_bytree": 0.6
+            }
+          },
+          {
+            "name": "lightgbm.LGBMClassifier",
+            "params": {
+              "n_jobs": 1,
+              "silent": -1,
+              "verbose": -1,
+              "max_depth": 3,
+              "reg_alpha": 0.00102235501995355,
+              "subsample": 0.9770104755453179,
+              "num_leaves": 22,
+              "reg_lambda": 0.01710681648061343,
+              "n_estimators": 300,
+              "learning_rate": 0.1353955091571496,
+              "colsample_bytree": 0.6164930063498855
+            }
+          },
+          {
+            "name": "auger_ml.algorithms.cat_boost.CatBoostClassifier",
+            "params": {
+              "rsm": 0.7636101531805457,
+              "depth": 5,
+              "n_jobs": 1,
+              "l2_leaf_reg": 1.665237055821524,
+              "border_count": 86,
+              "n_estimators": 600,
+              "learning_rate": 0.07054046174797216,
+              "loss_function": "Logloss",
+              "model_size_reg": 0.4198272395437638,
+              "allow_writing_files": false,
+              "feature_border_type": "MinEntropy"
+            }
+          },
+          {
+            "name": "sklearn.ensemble.GradientBoostingClassifier",
+            "params": {
+              "max_depth": 8,
+              "subsample": 0.9068135282933406,
+              "max_features": 0.3625866660856855,
+              "n_estimators": 136,
+              "learning_rate": 0.04730922499436504,
+              "min_samples_leaf": 11,
+              "min_samples_split": 12
+            }
+          }
+        ],
+        "classification": true
+      }
+    },
+    "create_trial_time": "2020-01-23 05:21:00.173427",
+    "estimated_timeout": false,
+    "dataset_manifest_id": "4df49bc52eb28955",
+    "algorithm_params_hash": "",
+    "experiment_session_id": "1f94ad51ef883af6"
+  },
+  "content_type": "application/x-gzip",
+  "metric_names": [
+    "feature_importance"
+  ],
+  "data_extension": ".csv",
+  "data_compression": "gzip",
+  "metric_time_limit": 14400,
+  "metrics_build_async": false
+}

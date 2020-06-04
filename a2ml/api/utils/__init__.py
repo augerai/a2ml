@@ -1,9 +1,11 @@
 import uuid
-
+import dateutil
 from collections import OrderedDict
+from collections.abc import Iterable
+import time
+
 from a2ml.api.utils import fsclient
 
-from collections.abc import Iterable
 
 def to_list(obj):
     if obj:
@@ -52,7 +54,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
 
     logging.info("download_file: %s, %s, %s, %s"%(remote_path, local_dir, file_name, force_download))
     if file_name:
-        all_local_files = fsclient.listFolder(os.path.join(local_dir, file_name+".*"), wild=True, remove_folder_name=True)
+        all_local_files = fsclient.list_folder(os.path.join(local_dir, file_name+".*"), wild=True, remove_folder_name=True)
         #print(all_local_files)
         if all_local_files:
             local_file_path = os.path.join( local_dir, all_local_files[0])
@@ -77,12 +79,37 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
             logging.info("Force download file again.")
 
         if force_download or etag_changed or file_size_changed:
-            fsclient.removeFile(local_file_path)
+            fsclient.remove_file(local_file_path)
         else:
             download_file = False
 
     if download_file:
         logging.info("Download to local file path: %s"%local_file_path)
-        fsclient.downloadFile(remote_path, local_file_path)
+        fsclient.download_file(remote_path, local_file_path)
 
     return local_file_path
+
+# by default value from other dict overwrites value in d
+def merge_dicts(d, other, concat_func=lambda v, ov: ov):
+    from collections import Mapping
+
+    for k, v in other.items():
+        d_v = d.get(k)
+        if isinstance(v, Mapping) and isinstance(d_v, Mapping):
+            merge_dicts(d_v, v, concat_func)
+        else:
+            if k in d:
+                d[k] = concat_func(d[k], v)
+            else:
+                d[k] = v
+
+    return d
+
+def convert_to_date(date):
+    if type(date) is str:
+        return dateutil.parser.parse(date).date()
+    elif type(date) is time.time:
+        return date.date()
+    else:
+        return date
+

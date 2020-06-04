@@ -5,7 +5,7 @@ from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.decorators import error_handler, authenticated
-from a2ml.api.review_model.model_helper import ModelHelper
+from a2ml.api.model_review.model_helper import ModelHelper
 from .credentials import Credentials
 
 class AzureModel(object):
@@ -30,7 +30,9 @@ class AzureModel(object):
             'uid': model_id, 
             'targetFeature': self.ctx.config.get('target'),
             'support_review_model': review,
-            'provider': self.ctx.config.name
+            'provider': self.ctx.config.name,
+            'scoreNames': [self.ctx.config.get('experiment/metric')],
+            'scoring': self.ctx.config.get('experiment/metric')
         }
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"), 
             options)

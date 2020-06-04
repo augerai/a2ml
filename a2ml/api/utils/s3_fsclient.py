@@ -87,16 +87,19 @@ class S3FSClient:
                           client_kwargs=client_kwargs)
         return s3.open(path, mode=mode)
 
-    def list_folder(self, path, wild=False, remove_folder_name=False, meta_info=False):
+    def list_folder(self, path, wild=False, remove_folder_name=True, meta_info=False):
         import fnmatch
         from urllib.parse import unquote
 
+        path_arg = path
         path = self._get_relative_path(path)
         path_filter = None
         if path and wild:
             parts = path.split('/')
             path = '/'.join(parts[:-1])
             path_filter = parts[-1]
+            parts = path_arg.split('/')
+            path_arg = '/'.join(parts[:-1])
 
         if path:
             path = path + "/" if not path.endswith("/") else path
@@ -149,6 +152,13 @@ class S3FSClient:
                     item['path'], path_filter)]
             else:
                 result = fnmatch.filter(result, path_filter)
+
+        if not remove_folder_name:
+            for idx, item in enumerate(result):
+                if meta_info:
+                    result[idx]['path'] = os.path.join(path_arg, item['path'])
+                else:
+                    result[idx] = os.path.join(path_arg, result[idx])
 
         return result
 
