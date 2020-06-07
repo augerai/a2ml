@@ -93,7 +93,7 @@ def s3fs_open(path, mode='rb'):
     return path
 
 
-def list_folder(path, wild=False, remove_folder_name=False, meta_info=False):
+def list_folder(path, wild=False, remove_folder_name=True, meta_info=False):
     client = _get_fsclient_bypath(path)
 
     if wild:

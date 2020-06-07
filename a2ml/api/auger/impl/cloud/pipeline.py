@@ -11,8 +11,8 @@ class AugerPipelineApi(AugerBaseApi):
         super(AugerPipelineApi, self).__init__(
             ctx, experiment_api, None, pipeline_id)
 
-    def create(self, trial_id):
-        return self._call_create({'trial_id': trial_id},
+    def create(self, trial_id, review=True):
+        return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review},
             ['creating_files', 'packaging', 'deploying'])
 
     def predict(self, records, features, threshold=None):

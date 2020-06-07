@@ -76,7 +76,7 @@ class LocalFSClient:
 
         self.read_text_file(path)
 
-    def list_folder(self, path, wild=False, remove_folder_name=False, meta_info=False):
+    def list_folder(self, path, wild=False, remove_folder_name=True, meta_info=False):
         res = []
         try:
             if wild:
@@ -88,20 +88,29 @@ class LocalFSClient:
                 else:
                     res = glob_res
             else:
-                res = os.listdir(path)
+                dir_res = os.listdir(path)
+                if not remove_folder_name:
+                    for file in dir_res:
+                        res.append(os.path.join(path, file))
+                else:
+                    res = dir_res
+
         except OSError:
             pass
 
         if meta_info:
             result_meta = []
-            parent_folder = path
-            if wild:
-                parent_folder = os.path.dirname(path)
+            parent_folder = ""
+            if remove_folder_name:
+                if wild:
+                    parent_folder = os.path.dirname(path)
+                else:
+                    parent_folder = path
 
             for file_path in res:
                 result_meta.append({'path': file_path,
-                                    'last_modified': self.getMTime(os.path.join(parent_folder, file_path)),
-                                    'size': self.getFileSize(os.path.join(parent_folder, file_path))})
+                                    'last_modified': self.get_mtime(os.path.join(parent_folder, file_path)),
+                                    'size': self.get_file_size(os.path.join(parent_folder, file_path))})
 
             res = result_meta
 

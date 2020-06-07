@@ -1,9 +1,8 @@
 import datetime
 import os
 
-from a2ml.api.utils import dict_dig
-from a2ml.tasks_queue.data_source_api_pandas import DataSourceAPIPandas
-from a2ml.tasks_queue.utils import get_uid4
+from a2ml.api.utils import dict_dig, get_uid4
+from a2ml.api.utils.dataframe import DataFrame
 from a2ml.tasks_queue.config import Config
 from a2ml.tasks_queue.log import logger
 
@@ -28,7 +27,7 @@ def store_predictions(result, model_id):
 
 
 def store_predictions_for_review(data_path, model_path, prediction_group_id=None):
-    ds = DataSourceAPIPandas({'data_path': data_path})
+    ds = DataFrame({'data_path': data_path})
     ds.load()
 
     if not 'prediction_id' in ds.columns:

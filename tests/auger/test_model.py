@@ -19,7 +19,7 @@ class TestModel():
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.create', lambda self, model_id: {'signed_s3_model_path': 'None'})
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.download', lambda *a, **kw: 'models/export-%s.zip' % '87C81FE615DE46D')
 
-        result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True)
+        result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True, review=True)
         assert result['model_id'] == '87C81FE615DE46D'
 
     @pytest.mark.skip(reason="not implemented on server-side currently")
@@ -37,7 +37,7 @@ class TestModel():
         monkeypatch.setattr('subprocess.check_call', lambda *a, **kw: b'iris_predicted.csv')
 
         result = AugerModel(ctx).predict(filename='iris.csv', model_id='87C81FE615DE46D', 
-            threshold=None, locally=True, data=None, columns=None)
+            threshold=None, locally=True, data=None, columns=None, output=None)
 
         assert result.get('predicted')
         assert 'test_project/predictions/iris_predicted.csv' in result.get('predicted')

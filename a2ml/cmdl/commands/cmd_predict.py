@@ -13,8 +13,10 @@ from a2ml.api.utils.context import pass_context
     help='Deployed model id.')
 @click.option('--locally', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
+@click.option('--output', '-o', type=click.STRING, required=False,
+    help='Output csv file path.')
 @pass_context
-def cmdl(ctx, provider, filename, model_id, threshold, locally):
+def cmdl(ctx, provider, filename, model_id, threshold, locally, output):
     """Predict with deployed model."""
     ctx.setup_logger(format='')
-    A2ML(ctx, provider).predict(filename, model_id, threshold, locally)
+    A2ML(ctx, provider).predict(filename, model_id, threshold=threshold, locally=locally, output=output)

@@ -5,6 +5,7 @@ from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.decorators import error_handler, authenticated
+from a2ml.api.model_review.model_helper import ModelHelper
 from .credentials import Credentials
 
 class AzureModel(object):
@@ -16,13 +17,27 @@ class AzureModel(object):
 
     @error_handler
     @authenticated
-    def deploy(self, model_id, locally):
+    def deploy(self, model_id, locally, review):
+        result = {}
         if locally:
             model_path = self._deploy_locally(model_id)
             # self.ctx.log('Local deployment step is not required for Azure..')
-            return {'model_id': model_id}
+            result = {'model_id': model_id}
         else:
-            return self._deploy_remotly(model_id)
+            result = self._deploy_remotly(model_id)
+
+        options = {
+            'uid': model_id, 
+            'targetFeature': self.ctx.config.get('target'),
+            'support_review_model': review,
+            'provider': self.ctx.config.name,
+            'scoreNames': [self.ctx.config.get('experiment/metric')],
+            'scoring': self.ctx.config.get('experiment/metric')
+        }
+        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"), 
+            options)
+
+        return result
 
     def _edit_score_script(self, script_file_name):
         text = fsclient.read_text_file(script_file_name)
@@ -132,31 +147,29 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def predict(self, filename, model_id, threshold, locally, data, columns):
-        target = self.ctx.config.get('target', None)
-        predict_data = DataFrame.load(filename, target, features=columns, data=data)
+    def predict(self, filename, model_id, 
+        threshold=None, locally=False, data=None, columns=None, output = None,
+        json_result=False, count_in_result=False, prediction_date=None, prediction_id=None):
+        ds = DataFrame.create_dataframe(filename, data, columns)
+        model_path = self.ctx.config.get_model_path(model_id)
+        options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
-        y_pred = []
-        if locally:
-            y_pred, y_proba, proba_classes = self._predict_locally(
-                predict_data, model_id, threshold)
-        else:
-            y_pred, y_proba, proba_classes = self._predict_remotely(
-                predict_data, model_id, threshold)
+        results, results_proba, proba_classes, target_categories = \
+            self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
 
-        predict_data[target] = y_pred
+        ModelHelper.process_prediction(ds, 
+            results, results_proba, proba_classes, 
+            threshold, 
+            options.get('minority_target_class', self.ctx.config.get('minority_target_class')), 
+            options.get('targetFeature', self.ctx.config.get('target', None)), 
+            target_categories)    
 
-        if y_proba is not None:
-            for idx, name in enumerate(proba_classes):
-                predict_data['proba_'+str(name)] = list(y_proba[:,idx])
+        predicted = ModelHelper.save_prediction(ds, prediction_id, 
+            options.get('support_review_model', True), json_result, count_in_result, prediction_date, 
+            model_path, model_id, output)
 
-        if filename:        
-            predicted = self._save_predictions(predict_data, filename)
-        elif columns:
-            predicted = predict_data.to_dict('split')
-            predicted = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
-        else:
-            predicted = predict_data.to_dict('records')
+        if filename:
+            self.ctx.log('Predictions stored in %s' % predicted)
 
         return {'predicted': predicted}
 
@@ -201,7 +214,7 @@ def get_df(data):
         import pandas as pd
 
         model_features = None
-        proba_classes_orig = None
+        target_categories = None
 
         temp_dir = local_fsclient.LocalFSClient().get_temp_folder()
         try:
@@ -225,19 +238,19 @@ def get_df(data):
                 file_name = 'confusion_matrix'
                 remote_run.download_file('%s'%file_name, os.path.join(temp_dir, file_name))
                 cm_data = fsclient.read_json_file(os.path.join(temp_dir, file_name))
-                proba_classes_orig = cm_data.get('data', {}).get('class_labels')
+                target_categories = cm_data.get('data', {}).get('class_labels')
             except Exception as e:
                 self.ctx.log('Cannot get categorical target class labels from remote model.Use class codes: %s'%e)
 
         fsclient.remove_folder(temp_dir)
 
-        return model_features, proba_classes_orig
+        return model_features, target_categories
             
     @staticmethod
     def _revertCategories(results, categories):
         return list(map(lambda x: categories[int(x)], results))
 
-    def _predict_remotely(self, predict_data, model_id, threshold):
+    def _predict_remotely(self, predict_data, model_id, predict_proba):
         from azureml.core.webservice import AciWebservice
         #from azureml.train.automl.run import AutoMLRun
         from azureml.core.run import Run
@@ -247,10 +260,10 @@ def get_df(data):
         ws, experiment = self._get_experiment()
 
         model_features = None
-        proba_classes_orig = None
+        target_categories = None
 
         remote_run = Run(experiment = experiment, run_id = model_id)
-        model_features, proba_classes_orig = self._get_remote_model_features(remote_run)
+        model_features, target_categories = self._get_remote_model_features(remote_run)
 
         if model_id.startswith("AutoML_"):
             model_name = remote_run.properties['model_name']
@@ -268,7 +281,7 @@ def get_df(data):
         input_payload = json.loads(input_payload)
         # If you have a classification model, you can get probabilities by changing this to 'predict_proba'.
         method = 'predict'
-        if threshold is not None:
+        if predict_proba:
             method = 'predict_proba'
         input_payload = {
             'data': {'data': input_payload['data'], 'method': method}
@@ -287,25 +300,17 @@ def get_df(data):
 
         results_proba = None
         proba_classes = None
-        result = response['result']
-        if threshold is not None:
-            results_proba = result
+        results = response['result']
+        if predict_proba:
+            results_proba = results
             proba_classes = response['proba_classes']
-            minority_target_class = self.ctx.config.get('minority_target_class', None)
-            result = self._calculate_proba_target(results_proba,
-                proba_classes, proba_classes_orig, threshold, minority_target_class)
-
             results_proba = np.array(results_proba)
 
-            if proba_classes_orig is not None:
-                result = self._revertCategories(result, proba_classes_orig)
-                proba_classes = proba_classes_orig
-
-        return result, results_proba, proba_classes
+        return results, results_proba, proba_classes, target_categories
 
     def verify_local_model(self, model_id):
-        model_path = os.path.join(self.ctx.config.get_path(), 'models',
-            'azure-model-%s.pkl.gz'%model_id)
+        model_path = os.path.join(self.ctx.config.get_model_path(model_id),
+            'model.pkl.gz')
         return fsclient.is_file_exists(model_path), model_path
 
     def _deploy_locally(self, model_id):
@@ -331,6 +336,8 @@ def get_df(data):
     def _predict_locally(self, predict_data, model_id, threshold):
         model_path = self._deploy_locally(model_id)
         
+        # TODO: get target categories from model somehow
+        target_categories = []
         fitted_model = fsclient.load_object_from_file(model_path)
         try:
             model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
@@ -351,7 +358,7 @@ def get_df(data):
         else:
             result = fitted_model.predict(predict_data)
 
-        return result, results_proba, proba_classes
+        return results, results_proba, proba_classes, target_categories
 
     def _calculate_proba_target(self, results_proba, proba_classes, proba_classes_orig, threshold, minority_target_class=None):
         import json

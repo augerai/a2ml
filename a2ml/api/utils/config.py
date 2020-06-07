@@ -98,6 +98,9 @@ class Config(object):
 
         return path
 
+    def get_model_path(self, model_id):
+        return os.path.join(self.get_path(), 'models', model_id)
+
     def set(self, path, value, config_name=None):
         if not config_name:
             config_name = self.name
