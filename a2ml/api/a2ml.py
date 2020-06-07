@@ -11,7 +11,7 @@ class A2ML(BaseA2ML):
         Args:
             context (object): An instance of the a2ml Context.
             provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
-        
+
         Returns:
             A2ML object
 
@@ -37,7 +37,7 @@ class A2ML(BaseA2ML):
 
                 # Local file name or remote url to the data source file
                 source: './dataset.csv'
-        
+
         Args:
             source (str, optional): Local file name or remote url to the data source file
 
@@ -48,7 +48,7 @@ class A2ML(BaseA2ML):
                     'auger': {'result': True, 'data': {'created': 'dataset.csv'}}, \n
                     'azure': {'result': True, 'data': {'created': 'dataset.csv'}}
                 }
-            
+
             Failures will return error messages. ::
 
                 {
@@ -56,8 +56,8 @@ class A2ML(BaseA2ML):
                     'azure': {'result': False, 'data': 'Please specify data source file...'}
                 }
 
-        
-            
+
+
         Examples:
             .. code-block:: python
 
@@ -104,10 +104,10 @@ class A2ML(BaseA2ML):
     @show_result
     def evaluate(self, run_id = None):
         """Evaluate the results of training.
-        
+
         Args:
             run_id (str, optional): The run id for a training session. A unique run id is created for every train. Default is last experiment train.
-            
+        
         Returns:
             Results for each provider. ::
 
@@ -145,7 +145,7 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True):
+    def deploy(self, model_id, locally=False, review=True, provider=None):
         """Deploy a model locally or to specified provider(s).
 
         Note:
@@ -155,7 +155,8 @@ class A2ML(BaseA2ML):
             model_id (str): The model id from any experiment you will deploy
             locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
             review(bool): Should model support review based on actual data. The default is True.
-        
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+
         Returns:
             Results for each provider. ::
 
@@ -173,10 +174,10 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.deploy(model_id='A017AC8EAD094FD')
         """
-        return self.__get_runner(locally).execute('deploy', model_id, locally, review)
+        return self.get_runner(locally, provider).execute('deploy', model_id, locally, review)
 
     @show_result
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Args:
@@ -186,6 +187,7 @@ class A2ML(BaseA2ML):
             threshold(float, optional): For classification models only. This will return class probabilities with response.
             locally(bool, optional): Predicts using a local model if True, on the Provider Cloud if False. The default is False.
             output(str): Output csv file path.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Results:
             Results for each provider. ::
@@ -219,18 +221,12 @@ class A2ML(BaseA2ML):
                 data = [[value1, value2], [value3, value4]]
                 columns = [col1, col2]
                 a2ml.predict(model_id='D881079E1ED14FB',data=data,columns=columns)
-                
-           
+
+
         """
-        return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns, output)
+        return self.get_runner(locally, provider).execute('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
     def review(self):
         """Review the performance of deployed model."""
         return self.runner.execute('review')
-
-    def __get_runner(self, locally):
-        if locally:
-            return self.local_runner()
-        else:
-            return self.runner
