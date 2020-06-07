@@ -305,15 +305,6 @@ def get_df(data):
             results_proba = results
             proba_classes = response['proba_classes']
             results_proba = np.array(results_proba)
-            # minority_target_class = self.ctx.config.get('minority_target_class', None)
-            # result = self._calculate_proba_target(results_proba,
-            #     proba_classes, proba_classes_orig, threshold, minority_target_class)
-
-            # results_proba = np.array(results_proba)
-
-            # if proba_classes_orig is not None:
-            #     result = self._revertCategories(result, proba_classes_orig)
-            #     proba_classes = proba_classes_orig
 
         return results, results_proba, proba_classes, target_categories
 

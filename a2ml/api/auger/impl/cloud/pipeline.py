@@ -37,7 +37,6 @@ class AugerPipelineApi(AugerBaseApi):
         prediction_api = AugerPredictionApi(self.ctx, self)
         prediction_properties = \
             prediction_api.create(records, features, threshold)
-        print(prediction_properties)    
         return prediction_properties.get('result')
 
     def actual(self, records):
