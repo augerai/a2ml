@@ -13,3 +13,12 @@ class BaseA2ML(object):
             from a2ml.api.utils.provider_runner import ProviderRunner
 
             return ProviderRunner(ctx, provider)
+
+    def get_runner(self, locally, provider=None):
+        if provider:
+          return self.build_runner(self.ctx, provider, force_local=locally)
+        else:
+          if locally:
+              return self.local_runner()
+          else:
+              return self.runner
