@@ -69,6 +69,7 @@ class ModelPredict():
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
 
+        print(predicted)        
         if not filename_arg:
             ds_result = DataFrame.create_dataframe(predicted)
 
@@ -100,7 +101,7 @@ class ModelPredict():
         model_path = os.path.abspath(model_path)
 
         call_args = "--path_to_predict=./model_data/%s %s" % \
-            (predict_file, "--threshold=%s" % str(threshold) if threshold else '')
+            (predict_file, "--threshold=%s --verbose=True" % str(threshold) if threshold else '')
 
         command = (r"docker run "
             "-v {model_path}:/var/src/auger-ml-worker/exported_model "
