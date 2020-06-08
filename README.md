@@ -41,7 +41,7 @@ $ brew install libomp
 
 #### For Mac OS High Sierra and below:
 ```sh
-$ pip install azureml-sdk[automl] --ignore-installed onnxruntime
+$ pip install azureml-sdk[automl]==1.5.0 --ignore-installed onnxruntime
 ```
 
 ### Linix:
