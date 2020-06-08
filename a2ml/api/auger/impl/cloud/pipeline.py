@@ -45,3 +45,6 @@ class AugerPipelineApi(AugerBaseApi):
 
         actual_api = AugerActualApi(self.ctx, self)
         actual_api.create(records)
+
+        #TODO: get object actual from cloud
+        return True

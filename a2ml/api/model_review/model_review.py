@@ -32,22 +32,24 @@ class ModelReview(object):
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
             actual_date=None, actuals_id = None):
 
-        # if there are hashes in actual_records or file try to load all columns
-        features = ['prediction_id', self.target_feature, 'actual']
+        # # if there are hashes in actual_records or file try to load all columns
+        # features = ['prediction_id', self.target_feature, 'actual']
 
-        # if there are lists with value couples in actual_records use only two columns
-        if actual_records and type(actual_records[0]) == list and len(actual_records[0]) == 2:
-            features = ['prediction_id', 'actual']
+        # # if there are lists with value couples in actual_records use only two columns
+        # if actual_records and type(actual_records[0]) == list and len(actual_records[0]) == 2:
+        #     features = ['prediction_id', 'actual']
 
-        ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, features)
+        ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
+            features=['prediction_id', 'actual'])
         # print(ds_actuals.df.drop(['prediction_id'], axis=1))
+        ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
 
-        if self.target_feature in ds_actuals.columns and ds_actuals.df[self.target_feature].any():
-            ds_actuals.df.rename(columns={self.target_feature: 'auger_actual'}, inplace=True)
-            ds_actuals.df.drop(columns=['actual'], errors='ignore', inplace=True)
-        elif 'actual' in ds_actuals.columns and ds_actuals.df['actual'].any():
-            ds_actuals.df.rename(columns={'actual': 'auger_actual'}, inplace=True)
-            ds_actuals.df.drop(columns=[self.target_feature], errors='ignore', inplace=True)
+        # if self.target_feature in ds_actuals.columns and ds_actuals.df[self.target_feature].any():
+        #     ds_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
+        #     ds_actuals.df.drop(columns=['actual'], errors='ignore', inplace=True)
+        # elif 'actual' in ds_actuals.columns and ds_actuals.df['actual'].any():
+        #     ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
+        #     ds_actuals.df.drop(columns=[self.target_feature], errors='ignore', inplace=True)
 
         actuals_count = ds_actuals.count()
 
@@ -99,7 +101,7 @@ class ModelReview(object):
                 break
 
         ds_actuals.df.reset_index(inplace=True)
-        ds_actuals.dropna(columns=[self.target_feature, 'auger_actual'])
+        ds_actuals.dropna(columns=[self.target_feature, 'a2ml_actual'])
 
         # combine_first changes orginal non float64 types to float64 when NaN values appear during merging tables
         # Good explanations https://stackoverflow.com/a/15353297/898680
@@ -108,12 +110,12 @@ class ModelReview(object):
             if col != 'prediction_id':
                 ds_actuals.df[col] = ds_actuals.df[col].astype(origin_dtypes[col], copy=False)
 
-        ds_actuals.df['auger_actual'] = ds_actuals.df['auger_actual'].astype(
+        ds_actuals.df['a2ml_actual'] = ds_actuals.df['a2ml_actual'].astype(
             origin_dtypes[self.target_feature], copy=False
         )
 
         ds_true = DataFrame({})
-        ds_true.df = ds_actuals.df[['auger_actual']].rename(columns={'auger_actual':self.target_feature})
+        ds_true.df = ds_actuals.df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
 
         y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
         y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
@@ -122,7 +124,7 @@ class ModelReview(object):
 
         if not actuals_ds:
             ds_actuals.drop(self.target_feature)
-            ds_actuals.df = ds_actuals.df.rename(columns={'auger_actual':self.target_feature})
+            ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 
             if not actuals_id:
                 actuals_id = get_uid()
@@ -208,7 +210,7 @@ class ModelReview(object):
         features = [self.target_feature]
         categoricalFeatures = self.options.get('categoricalFeatures')
         mapper = {}
-        mapper[self.target_feature] = 'auger_actual'
+        mapper[self.target_feature] = 'a2ml_actual'
 
         actuals_stats = self._distribution_stats(
             date_from, date_to, "_*_actuals.feather.zstd", features, categoricalFeatures, mapper

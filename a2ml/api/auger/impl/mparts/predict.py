@@ -53,6 +53,7 @@ class ModelPredict():
                 'Please use a2ml deploy command to download model.')
 
         model_path, model_existed = self._extract_model(model_name)
+        model_options = fsclient.read_json_file(os.path.join(model_path, "model", "options.json"))
 
         filename = filename_arg
         if not filename:
@@ -76,7 +77,7 @@ class ModelPredict():
             ds_result.loaded_columns = columns
 
             return ModelHelper.save_prediction_result(ds_result, 
-                prediction_id = None, support_review_model = False, 
+                prediction_id = None, support_review_model = model_options.get("support_review_model"), 
                 json_result=False, count_in_result=False, prediction_date=None, 
                 model_path=None, model_id=model_id, output=output)
 

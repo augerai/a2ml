@@ -45,10 +45,12 @@ def predict(ctx, provider, filename, model_id, threshold, locally, output):
     help='Deployed model id.')
 @click.option('--provider', '-p', type=click.STRING, required=False,
 help='Cloud AutoML Provider.')
+@click.option('--locally', is_flag=True, default=False,
+    help='Process actuals locally.')
 @pass_context
-def actual(ctx, provider, filename, model_id):
+def actual(ctx, provider, filename, model_id, locally):
     """Predict with deployed model."""
-    A2MLModel(ctx, provider).actual(filename, model_id)
+    A2MLModel(ctx, provider).actual(filename, model_id, locally)
 
 
 @pass_context

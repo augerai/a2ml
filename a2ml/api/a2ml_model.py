@@ -90,7 +90,7 @@ class A2MLModel(BaseA2ML):
         return self.__get_runner(locally).execute('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
-    def actual(self, filename, model_id):
+    def actual(self, filename, model_id, locally):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
@@ -111,7 +111,8 @@ class A2MLModel(BaseA2ML):
         Args:
             filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
-        
+            locally(bool): Process actuals locally.
+
         Returns:
             Results for each provider. ::
 
@@ -129,7 +130,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx, 'auger, azure').actual(filename=<path_to_file>/dataset_actuals.csv,model_id='D881079E1ED14FB')
         """
-        return self.runner.execute('actual', filename, model_id)
+        return self.__get_runner(locally).execute('actual', filename, model_id, locally)
 
     def __get_runner(self, locally):
         if locally:

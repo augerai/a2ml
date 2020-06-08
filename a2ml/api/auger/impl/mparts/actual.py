@@ -12,9 +12,10 @@ class ModelActual():
 
     def execute(self, filename, model_id):
         self.ctx.log('Sending actuals on data in %s' % filename)
-        filename = os.path.abspath(filename)
-        self._actual_to_cloud(filename, model_id)
-        return True
+        if filename and not fsclient.is_s3_path(filename):
+            filename = os.path.abspath(filename)
+
+        return self._actual_to_cloud(filename, model_id)
 
     def _actual_to_cloud(self, filename, model_id):
         with open(filename) as f:
@@ -22,4 +23,4 @@ class ModelActual():
               for row in csv.DictReader(f, skipinitialspace=True)]
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-        pipeline_api.actual(a)
+        return pipeline_api.actual(a)

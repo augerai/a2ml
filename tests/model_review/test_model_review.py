@@ -93,7 +93,7 @@ def test_distribution_chart_stats():
       'hum': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'casual': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'registered': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'auger_actual': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
+      'a2ml_actual': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
     }
 
 def test_distribution_chart_stats_for_categorical_target():
@@ -121,7 +121,7 @@ def test_distribution_chart_stats_for_categorical_target():
       'capital-loss': {'avg': 0.0, 'std_dev': 0, 'imp': 0.257126},
       'hours-per-week': {'avg': 0.0, 'std_dev': 0, 'imp': 0.424639},
       'native-country': {'dist': {0: 1}, 'imp': 0.020726},
-      'auger_actual': {'dist': {' <=50K': 1}, 'imp': 0},
+      'a2ml_actual': {'dist': {' <=50K': 1}, 'imp': 0},
     }
 
 def test_distribution_chart_stats_with_null_booleans():

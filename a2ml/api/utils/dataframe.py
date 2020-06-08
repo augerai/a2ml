@@ -312,6 +312,10 @@ class DataFrame(object):
 
         return types_dict
 
+    def select(self, features):
+        self.df = self.df[features]
+        return self
+
     def drop(self, columns):
         self.df.drop(columns, inplace=True, axis=1)
 
