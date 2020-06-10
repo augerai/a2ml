@@ -11,7 +11,6 @@ COMMANDS = [
   'evaluate',
   'deploy',
   'predict',
-  'review',
   'project',
   'dataset',
   'experiment',

@@ -35,6 +35,19 @@ def test_score_model_performance_daily():
     assert type(res[str(date_from)]) is numpy.float64
     assert res[str(date_from)] > 0
 
+# def test_rename_target():
+#     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
+#     #model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
+#     #model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
+#     #model_path = 'tests/fixtures/test_score_actuals'
+#     #model_path = 'tests/fixtures/test_score_actuals/pr_can/candidate'
+#     files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"), 
+#       wild=True, remove_folder_name=False, meta_info=False)
+
+#     for (file, ds) in DataFrame.load_from_files(files):
+#       ds.df.rename(columns={'species': 'actual'}, inplace=True)
+#       ds.saveToFile(file)
+
 def test_score_model_performance_daily_no_matching_actuals_and_predictions():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
     date_from = datetime.date(2020, 2, 16)
@@ -236,9 +249,9 @@ def test_score_actuals_with_not_full_actuals():
       os.remove(actuals_path)
 
     actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'income': False },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'income': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'income': True },
+      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': False },
+      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': True },
     ]
 
     actual_date = datetime.date.today() - datetime.timedelta(days=1)
@@ -275,6 +288,12 @@ def test_score_actuals_with_not_full_actuals():
     assert stored_actuals[2]['prediction_group_id'] == '03016c26-f69a-416f-817f-4c58cd69d675'
     assert stored_actuals[2]['feature1'] == 1.3
     assert stored_actuals[2]['income'] == True
+
+def test_build_review_data():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class.csv")
+    assert res
 
 def test_score_actuals_lucas_case():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -382,8 +401,8 @@ def test_score_actuals_for_candidate_prediction():
       os.remove(actuals_path)
 
   actuals = [
-    { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'species':'versicolor' },
-    { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'species':'virginica' }
+    { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
+    { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
   ]
 
   res = ModelReview({'model_path': model_path}).score_actuals(

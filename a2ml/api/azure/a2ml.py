@@ -31,6 +31,3 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, output)
-
-    def review(self):
-        pass

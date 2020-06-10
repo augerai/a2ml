@@ -25,7 +25,7 @@ class ModelReview(object):
 
         self.target_feature = self.options.get('targetFeature')
 
-    # prediction_group_id - predction group for these actuals
+    # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
     def score_actuals(self, actuals_path = None, actual_records=None, actuals_ds=None,
@@ -41,7 +41,6 @@ class ModelReview(object):
 
         ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
             features=['prediction_id', 'actual'])
-        # print(ds_actuals.df.drop(['prediction_id'], axis=1))
         ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
 
         # if self.target_feature in ds_actuals.columns and ds_actuals.df[self.target_feature].any():
@@ -134,11 +133,9 @@ class ModelReview(object):
 
         return score
 
-    def build_review_data(self, data_path=None):
+    def build_review_data(self, data_path=None, output=None):
         if not data_path:
             data_path = self.options['data_path']
-
-        review_data_path = os.path.splitext(data_path)[0] + "_review_%s.feather.zstd"%(get_uid())
 
         ds_train = DataFrame.create_dataframe(data_path)
 
@@ -150,14 +147,18 @@ class ModelReview(object):
         )
 
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
-            ds_actuals.drop(['prediction_id', 'prediction_group_id'])
+            if not ds_actuals.df.empty:
+                print(ds_actuals.df)
+                ds_actuals.drop(['prediction_id', 'prediction_group_id'])
 
-            ds_train.df = pd.concat([ds_train.df, ds_actuals.df], ignore_index=True)
-            ds_train.drop_duplicates()
+                ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
+                ds_train.drop_duplicates()
 
-        ds_train.saveToFeatherFile(review_data_path)
+        if not output:
+            output = os.path.splitext(data_path)[0] + "_review_%s.feather.zstd"%(get_uid())    
 
-        return review_data_path
+        ds_train.saveToFile(output)
+        return output
 
     def count_actuals_by_prediction_id(self):
         res = {}

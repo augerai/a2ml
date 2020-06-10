@@ -36,3 +36,15 @@ class AugerModel(object):
     @with_project(autocreate=False)
     def actual(self, project, filename, model_id, locally):
         return Model(self.ctx, project).actual(filename, model_id, locally)
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
+    def build_review_data(self, project, model_id, locally, output):
+        return Model(self.ctx, project).build_review_data(model_id, locally, output)
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
+    def review(self, project, model_id):
+        pass

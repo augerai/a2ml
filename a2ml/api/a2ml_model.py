@@ -135,3 +135,60 @@ class A2MLModel(BaseA2ML):
         """
         return self.get_runner(locally, provider).execute('actual', filename, model_id, locally)
 
+    @show_result
+    def build_review_data(self, model_id, locally=False, output=None, provider=None):
+        """Create data file with predcitions and actuals for the model.
+
+        Args:
+            model_id(str): The deployed model id you want to use.
+            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
+            output(str): Output data file path.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+
+        Returns:
+            Results for provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {'path': 'path_to_file'}
+                    }
+                }
+
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2MLModel(ctx, 'auger').build_review_data(model_id='D881079E1ED14FB',locally=False)
+        """
+        return self.get_runner(locally, provider).execute('build_review_data', model_id, locally, output)
+
+
+    @show_result
+    def review(self, model_id, locally=False, provider=None):
+        """Review the performance of deployed model.
+
+        Args:
+            model_id(str): The deployed model id you want to use.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+
+        Returns:
+            Results for provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {'score': {'accuracy': 0.8}}
+                    }
+                }
+
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2MLModel(ctx, 'auger').review(model_id='D881079E1ED14FB')
+        """
+        return self.get_runner(locally, provider).execute('review', model_id)
+

@@ -178,6 +178,16 @@ def get_df(data):
     def actual(self, filename, model_id):
         pass
 
+    @error_handler
+    @authenticated
+    def build_review_data(self, model_id, locally, output):
+        pass
+
+    @error_handler
+    @authenticated
+    def review(self, model_id):
+        pass
+
     def _get_iteration(self, model_id):
         iteration = None
         run_id = model_id

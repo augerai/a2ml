@@ -24,6 +24,3 @@ class AugerA2ML(object):
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
         return AugerModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, output)
-
-    def review(self):
-        pass

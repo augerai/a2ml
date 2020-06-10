@@ -70,7 +70,6 @@ class ModelPredict():
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
 
-        print(predicted)        
         if not filename_arg:
             ds_result = DataFrame.create_dataframe(predicted)
 
@@ -81,6 +80,9 @@ class ModelPredict():
                 prediction_id = None, support_review_model = model_options.get("support_review_model"), 
                 json_result=False, count_in_result=False, prediction_date=None, 
                 model_path=None, model_id=model_id, output=output)
+        elif output:
+            fsclient.move_file(predicted, output)
+            predicted = output
 
         return predicted
             

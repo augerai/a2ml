@@ -37,3 +37,17 @@ class Model(object):
             )
         else:    
             return ModelActual(self.ctx).execute(filename, model_id, locally)
+
+    def build_review_data(self, model_id, locally, output):
+        if locally:
+            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
+                verify_local_model(model_id)
+
+            if not is_loaded:
+                raise AugerException('Model should be deployed locally.')
+
+            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).build_review_data(
+              data_path=self.ctx.config.get("source"), output=output)
+        else:
+            raise Exception("Not Implemented.")
