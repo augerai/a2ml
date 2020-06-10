@@ -36,17 +36,20 @@ def test_score_model_performance_daily():
     assert res[str(date_from)] > 0
 
 # def test_rename_target():
-#     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
-#     #model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
-#     #model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
-#     #model_path = 'tests/fixtures/test_score_actuals'
-#     #model_path = 'tests/fixtures/test_score_actuals/pr_can/candidate'
-#     files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"), 
-#       wild=True, remove_folder_name=False, meta_info=False)
+#     model_paths = [
+#       # 'tests/fixtures/test_score_model_performance_daily/iris_no_matches',
+#       # 'tests/fixtures/test_score_model_performance_daily/iris',
+#       #'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals', #class
+#       'tests/fixtures/test_score_actuals', #income
+#       # 'tests/fixtures/test_score_actuals/pr_can/candidate'
+#     ]
+#     for model_path in model_paths:
+#       files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"), 
+#         wild=True, remove_folder_name=False, meta_info=False)
 
-#     for (file, ds) in DataFrame.load_from_files(files):
-#       ds.df.rename(columns={'species': 'actual'}, inplace=True)
-#       ds.saveToFile(file)
+#       for (file, ds) in DataFrame.load_from_files(files):
+#         ds.df.rename(columns={'a2ml_actual': 'income'}, inplace=True)
+#         ds.saveToFile(file)
 
 def test_score_model_performance_daily_no_matching_actuals_and_predictions():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
@@ -249,9 +252,9 @@ def test_score_actuals_with_not_full_actuals():
       os.remove(actuals_path)
 
     actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': False },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': True },
+      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'a2ml_actual': False },
+      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'a2ml_actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'a2ml_actual': True },
     ]
 
     actual_date = datetime.date.today() - datetime.timedelta(days=1)
@@ -259,7 +262,6 @@ def test_score_actuals_with_not_full_actuals():
     res = ModelReview({'model_path': model_path}).score_actuals(
       actuals_path=None, actual_records=actuals, actual_date=actual_date
     )
-
     actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
     assert len(actual_files) > 0
     assert str(actual_date) in actual_files[0]
@@ -302,15 +304,15 @@ def test_score_actuals_lucas_case():
         os.remove(actuals_path)
 
     actuals = [
-      { 'actual': 'Iris-setosa', 'prediction_id': 'eaed9cd8-ba49-4c06-86d5-71d453c681d1' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '2be58239-3508-41e3-921d-28be50319bdc' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'bc25e14e-76b0-4082-84a3-9e1684916088' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '55764866-56df-402a-8f8b-f713c2c9fbc2' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'e93b9605-ed74-42cb-86f2-64f619be9139' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '316852e1-a6eb-4740-92b2-69a4b27667d9' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '7e641ffd-bb06-4a18-aad6-db416bf55bfb' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '5ac7274b-d094-43e8-8947-c4705f13eb97' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'f1dd6088-8d70-43e3-bf84-bebf14eaa3b6' }
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': 'eaed9cd8-ba49-4c06-86d5-71d453c681d1' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': '2be58239-3508-41e3-921d-28be50319bdc' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': 'bc25e14e-76b0-4082-84a3-9e1684916088' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': '55764866-56df-402a-8f8b-f713c2c9fbc2' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': 'e93b9605-ed74-42cb-86f2-64f619be9139' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': '316852e1-a6eb-4740-92b2-69a4b27667d9' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': '7e641ffd-bb06-4a18-aad6-db416bf55bfb' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': '5ac7274b-d094-43e8-8947-c4705f13eb97' },
+      { 'a2ml_actual': 'Iris-setosa', 'prediction_id': 'f1dd6088-8d70-43e3-bf84-bebf14eaa3b6' }
     ]
 
     res = ModelReview({'model_path': model_path}).score_actuals(actuals_path=None, actual_records=actuals)
@@ -401,8 +403,8 @@ def test_score_actuals_for_candidate_prediction():
       os.remove(actuals_path)
 
   actuals = [
-    { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
-    { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
+    { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'a2ml_actual':'versicolor' },
+    { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'a2ml_actual':'virginica' }
   ]
 
   res = ModelReview({'model_path': model_path}).score_actuals(
@@ -441,7 +443,7 @@ def test_score_actuals_another_result_first():
     os.remove(actuals_path)
 
   actuals = [
-    { 'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7', 'actual':'good' },
+    { 'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7', 'a2ml_actual':'good' },
   ]
 
   res = ModelReview({'model_path': model_path}).score_actuals(actual_records=actuals)

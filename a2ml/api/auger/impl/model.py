@@ -32,9 +32,8 @@ class Model(object):
                 raise AugerException('Model should be deployed locally.')
 
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).score_actuals(
-              actuals_path=filename, actual_records=None, actual_date=None
-            )
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).process_actuals(
+              actuals_path=filename )
         else:    
             return ModelActual(self.ctx).execute(filename, model_id, locally)
 

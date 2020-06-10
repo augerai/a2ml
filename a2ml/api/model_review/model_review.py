@@ -25,6 +25,24 @@ class ModelReview(object):
 
         self.target_feature = self.options.get('targetFeature')
 
+    def process_actuals(self, actuals_path = None, actual_records=None, actuals_ds=None,
+            prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
+            actual_date=None, actuals_id = None, date_from=None, date_to=None):
+        score = self.score_actuals(actuals_path, actual_records, actuals_ds,
+            prediction_group_id, primary_prediction_group_id, primary_model_path,
+            actual_date, actuals_id)
+
+        count_actuals = self.count_actuals_by_prediction_id()
+        performance_daily = self.score_model_performance_daily(date_from, date_to)
+        distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
+
+        return {
+            'score': score,
+            'count_actuals': count_actuals,
+            'performance_daily': performance_daily,
+            'distribution_chart_stats': distribution_chart_stats
+        }
+
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
@@ -40,8 +58,9 @@ class ModelReview(object):
         #     features = ['prediction_id', 'actual']
 
         ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
-            features=['prediction_id', 'actual'])
-        ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
+            features=['prediction_id', 'a2ml_actual'])
+        # print(ds_actuals.columns)
+        # ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
 
         # if self.target_feature in ds_actuals.columns and ds_actuals.df[self.target_feature].any():
         #     ds_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
@@ -148,7 +167,6 @@ class ModelReview(object):
 
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
-                print(ds_actuals.df)
                 ds_actuals.drop(['prediction_id', 'prediction_group_id'])
 
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
@@ -197,11 +215,11 @@ class ModelReview(object):
         for (curr_date, files) in ModelReview._prediction_files_by_day(
                 self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
             df_actuals = DataFrame({})
-
             for (file, df) in DataFrame.load_from_files(files, features):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
-
+                
             if df_actuals.count() > 0:
+                df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 scores = self.score_actuals(actuals_ds=df_actuals)
                 res[str(curr_date)] = scores[self.options.get('score_name')]
 
@@ -302,9 +320,11 @@ class ModelReview(object):
     def _get_feature_importances(self):
         cache_path = ModelHelper.get_metric_path(self.options)
 
-        importance_data = fsclient.read_json_file(os.path.join(cache_path, "metrics.json")).get('feature_importance_data')
-        if not importance_data:
-            importance_data = fsclient.read_json_file(os.path.join(cache_path, "metric_names_feature_importance.json")).get('feature_importance_data')
+        importance_data = None
+        if cache_path:
+            importance_data = fsclient.read_json_file(os.path.join(cache_path, "metrics.json")).get('feature_importance_data')
+            if not importance_data:
+                importance_data = fsclient.read_json_file(os.path.join(cache_path, "metric_names_feature_importance.json")).get('feature_importance_data')
 
         if importance_data:
             return dict(zip(importance_data['features'], importance_data['scores']))
@@ -335,17 +355,22 @@ class ModelReview(object):
 
     @staticmethod
     def _prediction_files_by_day(model_path, date_from, date_to, path_suffix):
-        date_from = convert_to_date(date_from)
-        date_to = convert_to_date(date_to)
+        if date_from:
+            date_from = convert_to_date(date_from)
+            date_to = convert_to_date(date_to)
 
-        curr_date = date_from
+            curr_date = date_from
 
-        while curr_date <= date_to:
-            path = os.path.join(model_path, "predictions/" + str(curr_date) + path_suffix)
+            while curr_date <= date_to:
+                path = os.path.join(model_path, "predictions/" + str(curr_date) + path_suffix)
+                files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
+                yield (curr_date, files)
+                curr_date += datetime.timedelta(days=1)
+        else:
+            path = os.path.join(model_path, "predictions/" + "*" + path_suffix)
             files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
-            yield (curr_date, files)
-            curr_date += datetime.timedelta(days=1)
-
+            yield ("today", files)
+                    
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'

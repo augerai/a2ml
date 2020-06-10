@@ -49,8 +49,11 @@ class ModelHelper(object):
         if not project_path:
             project_path = ModelHelper.get_project_path()
 
-        return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
-            "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+        if params.get('augerInfo', {}).get('experiment_id') and params.get('augerInfo', {}).get('experiment_session_id'):
+            return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
+                "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+
+        return None
 
     @staticmethod
     def get_metric_path(params, metric_id=None):
@@ -60,7 +63,11 @@ class ModelHelper(object):
         if not metric_id:
             metric_id = params.get('uid')
 
-        return os.path.join(ModelHelper.get_metrics_path(params), metric_id)
+        metrics_path = ModelHelper.get_metrics_path(params)    
+        if metrics_path:
+            return os.path.join(metrics_path, metric_id)
+
+        return None    
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
