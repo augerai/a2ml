@@ -227,7 +227,7 @@ class ModelReview(object):
 
     def distribution_chart_stats(self, date_from, date_to):
         features = [self.target_feature]
-        categoricalFeatures = self.options.get('categoricalFeatures')
+        categoricalFeatures = self.options.get('categoricalFeatures', [])
         mapper = {}
         mapper[self.target_feature] = 'a2ml_actual'
 

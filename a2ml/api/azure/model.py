@@ -6,6 +6,7 @@ from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.model_review.model_helper import ModelHelper
+from a2ml.api.model_review.model_review import ModelReview
 from .credentials import Credentials
 
 class AzureModel(object):
@@ -20,11 +21,13 @@ class AzureModel(object):
     def deploy(self, model_id, locally, review):
         result = {}
         if locally:
-            model_path = self._deploy_locally(model_id)
-            # self.ctx.log('Local deployment step is not required for Azure..')
+            model_path, model_features, target_categories = self._deploy_locally(model_id)
+            if not model_path:
+                return {'model_id': model_id}
+
             result = {'model_id': model_id}
         else:
-            result = self._deploy_remotly(model_id)
+            result, model_features, target_categories = self._deploy_remotly(model_id)
 
         options = {
             'uid': model_id, 
@@ -32,10 +35,14 @@ class AzureModel(object):
             'support_review_model': review,
             'provider': self.ctx.config.name,
             'scoreNames': [self.ctx.config.get('experiment/metric')],
-            'scoring': self.ctx.config.get('experiment/metric')
+            'scoring': self.ctx.config.get('experiment/metric'),
+            "score_name": self.ctx.config.get('experiment/metric'),
+            "originalFeatureColumns": model_features
         }
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"), 
             options)
+        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"), 
+            {self.ctx.config.get('target'): {"categories": target_categories}})
 
         return result
 
@@ -143,7 +150,8 @@ def get_df(data):
         aci_service.wait_for_deployment(True)
         self.ctx.log('%s state %s' % (aci_service_name, str(aci_service.state)))
 
-        return {'model_id': model_id, 'aci_service_name': aci_service_name}
+        model_features, target_categories = self._get_remote_model_features(model_run)
+        return {'model_id': model_id, 'aci_service_name': aci_service_name}, model_features, target_categories
 
     @error_handler
     @authenticated
@@ -175,8 +183,16 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actual(self, filename, model_id):
-        pass
+    def actual(self, filename, model_id, locally):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+
+            return ModelReview({'model_path': model_path}).process_actuals(actuals_path=filename)
+        else:    
+            raise Exception("Not Implemented")
 
     @error_handler
     @authenticated
@@ -256,10 +272,6 @@ def get_df(data):
 
         return model_features, target_categories
             
-    @staticmethod
-    def _revertCategories(results, categories):
-        return list(map(lambda x: categories[int(x)], results))
-
     def _predict_remotely(self, predict_data, model_id, predict_proba):
         from azureml.core.webservice import AciWebservice
         #from azureml.train.automl.run import AutoMLRun
@@ -325,7 +337,8 @@ def get_df(data):
 
     def _deploy_locally(self, model_id):
         is_loaded, model_path = self.verify_local_model(model_id)
-
+        model_features = None
+        target_categories = None
         if not is_loaded:
             from azureml.train.automl.run import AutoMLRun
 
@@ -337,17 +350,20 @@ def get_df(data):
             best_run, fitted_model = remote_run.get_output(iteration=iteration)
             fsclient.save_object_to_file(fitted_model, model_path)
 
+            model_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_features, target_categories = self._get_remote_model_features(model_run)
             self.ctx.log('Downloaded model to %s' % model_path)
         else:
             self.ctx.log('Downloaded model is %s' % model_path)
+            target_categoricals = fsclient.read_json_file(os.path.join(
+                self.ctx.config.get_model_path(model_id), "target_categoricals.json"))
+            target_categories = target_categoricals.get(self.ctx.config.get('target'), {}).get("categories")
 
-        return model_path
+        return model_path, model_features, target_categories
 
     def _predict_locally(self, predict_data, model_id, threshold):
-        model_path = self._deploy_locally(model_id)
-        
-        # TODO: get target categories from model somehow
-        target_categories = []
+        model_path, _, target_categories = self._deploy_locally(model_id)
+        print(model_path)    
         fitted_model = fsclient.load_object_from_file(model_path)
         try:
             model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
@@ -363,10 +379,10 @@ def get_df(data):
             proba_classes = list(fitted_model.classes_)
             minority_target_class = self.ctx.config.get('minority_target_class', None)
 
-            result = self._calculate_proba_target(results_proba,
+            results = self._calculate_proba_target(results_proba,
                 proba_classes, None, threshold, minority_target_class)
         else:
-            result = fitted_model.predict(predict_data)
+            results = fitted_model.predict(predict_data)
 
         return results, results_proba, proba_classes, target_categories
 
@@ -410,7 +426,6 @@ def get_df(data):
 
                 mapped_threshold[idx_class] = value
 
-            print(mapped_threshold)    
             for item in results_proba:
                 proba_idx = None
                 for idx, value in mapped_threshold.items():

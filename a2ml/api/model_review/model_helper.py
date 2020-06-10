@@ -58,7 +58,7 @@ class ModelHelper(object):
     @staticmethod
     def get_metric_path(params, metric_id=None):
         if not metric_id:
-            metric_id = params.get('augerInfo').get('pipeline_id')
+            metric_id = params.get('augerInfo', {}).get('pipeline_id')
 
         if not metric_id:
             metric_id = params.get('uid')
