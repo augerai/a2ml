@@ -39,6 +39,11 @@ To use Azure AutoML:
 $ brew install libomp
 ```
 
+#### For Mac OS High Sierra and below:
+```sh
+$ pip install azureml-sdk[automl]==1.5.0 --ignore-installed onnxruntime
+```
+
 ### Linix:
 ```sh
 $ apt-get update && apt-get -y install gcc g++ libgomp1
