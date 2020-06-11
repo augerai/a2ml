@@ -181,7 +181,7 @@ class ModelHelper(object):
         except Exception as e:
             results = [results]
 
-        if target_categories:
+        if target_categories and results_proba is not None:
             results = ModelHelper.revertCategories(results, target_categories)
 
         # drop target

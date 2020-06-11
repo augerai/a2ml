@@ -45,7 +45,7 @@ class TestModelHelper(unittest.TestCase):
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
         ds.drop([options['targetFeature']])
-        results = [0, 1, 2, 0, 1, 2] 
+        results = ["setosa", "versicolor", "virginica", "setosa", "versicolor", "virginica"] 
         results_proba =  None
         proba_classes = None
 
