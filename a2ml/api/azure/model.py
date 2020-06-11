@@ -197,7 +197,16 @@ def get_df(data):
     @error_handler
     @authenticated
     def build_review_data(self, model_id, locally, output):
-        pass
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+                
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).build_review_data(
+              data_path=self.ctx.config.get("source"), output=output)
+        else:
+            raise Exception("Not Implemented.")
 
     @error_handler
     @authenticated
