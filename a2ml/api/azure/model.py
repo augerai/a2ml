@@ -27,14 +27,14 @@ class AzureModel(object):
             result = self._deploy_remotly(model_id)
 
         options = {
-            'uid': model_id, 
+            'uid': model_id,
             'targetFeature': self.ctx.config.get('target'),
             'support_review_model': review,
             'provider': self.ctx.config.name,
             'scoreNames': [self.ctx.config.get('experiment/metric')],
             'scoring': self.ctx.config.get('experiment/metric')
         }
-        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"), 
+        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
 
         return result
@@ -42,7 +42,7 @@ class AzureModel(object):
     def _edit_score_script(self, script_file_name):
         text = fsclient.read_text_file(script_file_name)
 
-        text = text.replace("@input_schema('data', PandasParameterType(input_sample))", 
+        text = text.replace("@input_schema('data', PandasParameterType(input_sample))",
         """
 def convert_simple_numpy_type(obj):
     if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
@@ -73,20 +73,20 @@ def get_df(data):
         """
         )
 
-        text = text.replace("result = model.predict(data)", 
+        text = text.replace("result = model.predict(data)",
         """
         df = get_df(data['data'])
         proba_classes = []
         if data['method'] == "predict_proba":
             result = model.predict_proba(df)
             proba_classes = list(model.classes_)
-        else:    
+        else:
             result = model.predict(df)
 
         """
         )
 
-        text = text.replace("return json.dumps({\"result\": result.tolist()})", 
+        text = text.replace("return json.dumps({\"result\": result.tolist()})",
             "return json_dumps_np({\"result\": result.tolist(), \"proba_classes\": proba_classes})")
         fsclient.write_text_file(script_file_name, text)
 
@@ -147,7 +147,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def predict(self, filename, model_id, 
+    def predict(self, filename, model_id,
         threshold=None, locally=False, data=None, columns=None, output = None,
         json_result=False, count_in_result=False, prediction_date=None, prediction_id=None):
         ds = DataFrame.create_dataframe(filename, data, columns)
@@ -157,15 +157,15 @@ def get_df(data):
         results, results_proba, proba_classes, target_categories = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
 
-        ModelHelper.process_prediction(ds, 
-            results, results_proba, proba_classes, 
-            threshold, 
-            options.get('minority_target_class', self.ctx.config.get('minority_target_class')), 
-            options.get('targetFeature', self.ctx.config.get('target', None)), 
-            target_categories)    
+        ModelHelper.process_prediction(ds,
+            results, results_proba, proba_classes,
+            threshold,
+            options.get('minority_target_class', self.ctx.config.get('minority_target_class')),
+            options.get('targetFeature', self.ctx.config.get('target', None)),
+            target_categories)
 
-        predicted = ModelHelper.save_prediction(ds, prediction_id, 
-            options.get('support_review_model', True), json_result, count_in_result, prediction_date, 
+        predicted = ModelHelper.save_prediction(ds, prediction_id,
+            options.get('support_review_model', True), json_result, count_in_result, prediction_date,
             model_path, model_id, output)
 
         if filename:
@@ -245,7 +245,7 @@ def get_df(data):
         fsclient.remove_folder(temp_dir)
 
         return model_features, target_categories
-            
+
     @staticmethod
     def _revertCategories(results, categories):
         return list(map(lambda x: categories[int(x)], results))
@@ -274,7 +274,7 @@ def get_df(data):
             predict_data = predict_data[model_features]
 
         input_payload = predict_data.to_json(orient='split', index = False)
-            
+
         aci_service_name = self._aci_service_name(model_name)
         aci_service = AciWebservice(ws, aci_service_name)
 
@@ -335,7 +335,7 @@ def get_df(data):
 
     def _predict_locally(self, predict_data, model_id, threshold):
         model_path = self._deploy_locally(model_id)
-        
+
         # TODO: get target categories from model somehow
         target_categories = []
         fitted_model = fsclient.load_object_from_file(model_path)
@@ -358,7 +358,7 @@ def get_df(data):
         else:
             result = fitted_model.predict(predict_data)
 
-        return results, results_proba, proba_classes, target_categories
+        return result, results_proba, proba_classes, target_categories
 
     def _calculate_proba_target(self, results_proba, proba_classes, proba_classes_orig, threshold, minority_target_class=None):
         import json
@@ -400,7 +400,7 @@ def get_df(data):
 
                 mapped_threshold[idx_class] = value
 
-            print(mapped_threshold)    
+            print(mapped_threshold)
             for item in results_proba:
                 proba_idx = None
                 for idx, value in mapped_threshold.items():
@@ -415,12 +415,12 @@ def get_df(data):
                             proba_idx = idx
                             #break
 
-                #find max value            
+                #find max value
                 if proba_idx is None:
                     proba_idx = 0
                     for idx, value in enumerate(item):
                         if value >= item[proba_idx]:
-                            proba_idx = idx       
+                            proba_idx = idx
 
                 results.append(proba_classes[proba_idx])
         else:
