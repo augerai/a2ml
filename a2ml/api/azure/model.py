@@ -264,7 +264,6 @@ def get_df(data):
 
         remote_run = Run(experiment = experiment, run_id = model_id)
         model_features, target_categories = self._get_remote_model_features(remote_run)
-
         if model_id.startswith("AutoML_"):
             model_name = remote_run.properties['model_name']
         else:
@@ -348,107 +347,12 @@ def get_df(data):
 
         results_proba = None
         proba_classes = None
+        results = None
         if threshold is not None:
             results_proba = fitted_model.predict_proba(predict_data)
             proba_classes = list(fitted_model.classes_)
-            minority_target_class = self.ctx.config.get('minority_target_class', None)
-
-            result = self._calculate_proba_target(results_proba,
-                proba_classes, None, threshold, minority_target_class)
         else:
-            result = fitted_model.predict(predict_data)
+            results = fitted_model.predict(predict_data)
 
-        return result, results_proba, proba_classes, target_categories
+        return results, results_proba, proba_classes, target_categories
 
-    def _calculate_proba_target(self, results_proba, proba_classes, proba_classes_orig, threshold, minority_target_class=None):
-        import json
-
-        results = []
-
-        if type(threshold) == str:
-            try:
-                threshold = float(threshold)
-            except:
-                try:
-                    threshold = json.loads(threshold)
-                except Exception as e:
-                    raise Exception("Threshold '%s' should be float or hash with target classes. Error: %s"%(threshold, str(e)))
-
-        if not proba_classes_orig:
-            proba_classes_orig = proba_classes
-
-        if type(threshold) != dict:
-            if minority_target_class is None:
-                minority_target_class = proba_classes_orig[-1]
-
-            threshold = {minority_target_class:threshold}
-
-        #print("Prediction threshold: %s, %s"%(threshold, proba_classes_orig))
-        #print(results_proba)
-        if type(threshold) == dict:
-            mapped_threshold = {}
-
-            for name, value in threshold.items():
-                idx_class = None
-                for idx, item in enumerate(proba_classes_orig):
-                    if item == name:
-                        idx_class = idx
-                        break
-
-                if idx_class is None:
-                    raise Exception("Unknown target class in threshold: %s, %s"%(name, proba_classes_orig))
-
-                mapped_threshold[idx_class] = value
-
-            print(mapped_threshold)
-            for item in results_proba:
-                proba_idx = None
-                for idx, value in mapped_threshold.items():
-                    if item[idx] >= value:
-                        proba_idx = idx
-                        break
-
-                if proba_idx is None:
-                    threshold_num = list(mapped_threshold.values())[-1]
-                    for idx, value in enumerate(item):
-                        if value>=threshold_num:
-                            proba_idx = idx
-                            #break
-
-                #find max value
-                if proba_idx is None:
-                    proba_idx = 0
-                    for idx, value in enumerate(item):
-                        if value >= item[proba_idx]:
-                            proba_idx = idx
-
-                results.append(proba_classes[proba_idx])
-        else:
-            #TODO: support multiclass classification
-            for item in results_proba:
-                max_proba_idx = 0
-                for idx, prob in enumerate(item):
-                    if prob > item[max_proba_idx]:
-                        max_proba_idx = idx
-
-                if item[max_proba_idx] < threshold:
-                    if max_proba_idx > 0:
-                        max_proba_idx = 0
-                    else:
-                        max_proba_idx = 1
-
-                results.append(proba_classes[max_proba_idx])
-
-        return results
-
-    def _save_predictions(self, df_predictions, filename):
-        predicted_path = os.path.splitext(filename)[0] + "_predicted.csv"
-
-        if not fsclient.is_s3_path(filename):
-            predicted_path = os.path.abspath(predicted_path)
-
-        str_data = df_predictions.to_csv(None, index=False, encoding='utf-8')
-        fsclient.write_text_file(predicted_path, str_data)
-
-        self.ctx.log('Predictions are saved to %s' % predicted_path)
-        return predicted_path
