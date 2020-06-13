@@ -77,8 +77,64 @@ class ModelHelper(object):
             "metric_names_feature_importance.json"))
 
     @staticmethod
-    def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
+    def _get_score_byname(scoring):
         from sklearn.metrics.scorer import get_scorer
+        from sklearn.metrics import SCORERS
+
+        #TODO: below metrics does not directly map to sklearn:
+        # Classification : weighted_accuracy, accuracy_table, balanced_accuracy, matthews_correlation,norm_macro_recall
+        # Regression,  Time Series Forecasting: 
+        #spearman_correlation, normalized_root_mean_squared_error, normalized_mean_absolute_error
+        scorer = None
+        if scoring.startswith("AUC"):
+            scorer = get_scorer("roc_auc")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("log_loss"):
+            scorer = get_scorer("neg_log_loss")
+        # elif scoring.startswith("matthews_correlation"):
+        #     scorer = get_scorer("matthews_corrcoef")
+        elif scoring.startswith("precision_score"):
+            scorer = get_scorer("precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("average_precision_score"):
+            scorer = get_scorer("average_precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("recall_score"):
+            scorer = get_scorer("recall")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("norm_macro_recall"):
+            scorer = get_scorer("recall")
+            scorer._kwargs['average'] = "macro"
+        elif scoring.startswith("f1_score"):
+            scorer = get_scorer("f1")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("precision_score"):
+            scorer = get_scorer("precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("spearman_correlation"):
+            scorer = get_scorer("r2")
+        elif scoring.startswith("r2_score"):
+            scorer = get_scorer("r2")
+        elif "mean_absolute_error" in scoring:
+            scorer = get_scorer("mean_absolute_error")
+        elif "root_mean_squared" in scoring:
+            scorer = get_scorer("mean_squared_error")
+        elif "median_absolute_error" in scoring:
+            scorer = get_scorer("median_absolute_error")
+
+        if scorer is None:    
+            scorer = get_scorer(scoring)
+
+        return scorer    
+
+    @staticmethod
+    def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
         from sklearn.model_selection._validation import _score
         import inspect
 
@@ -109,11 +165,7 @@ class ModelHelper(object):
                         scoring != options.get('scoring'):
                         continue
 
-                #TODO: translate score names to sklearn:
-                # Classification : accuracy, AUC_weighted, average_precision_score_weighted, norm_macro_recall, precision_score_weighted
-                # Regression,  Time Series Forecasting: spearman_correlation, normalized_root_mean_squared_error, r2_score, normalized_mean_absolute_error
-
-                scorer = get_scorer(scoring)
+                scorer = ModelHelper._get_score_byname(scoring)
                 if options.get('minority_target_class_pos') is not None:
                     argSpec = inspect.getfullargspec(scorer._score_func)
                     if 'pos_label' in argSpec.args:
