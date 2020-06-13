@@ -70,6 +70,13 @@ class ModelHelper(object):
         return None    
 
     @staticmethod
+    def save_metric(metric_id, project_path, metric_name, metric_data):
+        metric_path = ModelHelper.get_metric_path({'augerInfo':{'projectPath': projectPath}}, metric_id)
+
+        fsclient.write_json_file(os.path.join(metric_path, 
+            "metric_names_feature_importance.json"))
+
+    @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
         from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score

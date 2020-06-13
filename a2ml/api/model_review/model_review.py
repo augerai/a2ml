@@ -50,24 +50,8 @@ class ModelReview(object):
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
             actual_date=None, actuals_id = None):
 
-        # # if there are hashes in actual_records or file try to load all columns
-        # features = ['prediction_id', self.target_feature, 'actual']
-
-        # # if there are lists with value couples in actual_records use only two columns
-        # if actual_records and type(actual_records[0]) == list and len(actual_records[0]) == 2:
-        #     features = ['prediction_id', 'actual']
-
         ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
             features=['prediction_id', 'a2ml_actual'])
-        # print(ds_actuals.columns)
-        # ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
-
-        # if self.target_feature in ds_actuals.columns and ds_actuals.df[self.target_feature].any():
-        #     ds_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
-        #     ds_actuals.df.drop(columns=['actual'], errors='ignore', inplace=True)
-        # elif 'actual' in ds_actuals.columns and ds_actuals.df['actual'].any():
-        #     ds_actuals.df.rename(columns={'actual': 'a2ml_actual'}, inplace=True)
-        #     ds_actuals.df.drop(columns=[self.target_feature], errors='ignore', inplace=True)
 
         actuals_count = ds_actuals.count()
 
