@@ -44,7 +44,8 @@ install_requires = [
     'smart_open==1.9.0',
     'jsonpickle',
     'websockets',
-    'HLL'
+    'HLL',
+    'liac-arff'    
 ]
 
 extras = {
@@ -68,8 +69,6 @@ extras = {
         'celery==4.4.0',
         'fastapi',
         'gevent',
-        'joblib',
-        'liac-arff',
         'redis',
         's3fs',
         'uvicorn',

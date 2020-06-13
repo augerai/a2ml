@@ -185,6 +185,13 @@ def get_df(data):
         results, results_proba, proba_classes, target_categories = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
 
+        if target_categories and len(target_categories) == 2:
+            for idx, item in enumerate(target_categories):
+                if item == "False":
+                    target_categories[idx] = False
+                if item == "True":
+                    target_categories[idx] = True
+
         ModelHelper.process_prediction(ds,
             results, results_proba, proba_classes,
             threshold,
