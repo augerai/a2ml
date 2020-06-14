@@ -34,7 +34,7 @@ install_requires = [
     'ruamel.yaml>0.16.7', #version for azure
     'asyncio',
     'boto3',
-    'pyarrow==0.17.0',
+    'pyarrow==0.17.1',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',

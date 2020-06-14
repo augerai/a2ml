@@ -126,6 +126,7 @@ class AzureExperiment(object):
             training_data = dataset,
             validation_data = validation_data,
             label_column_name = target,
+            model_explainability = True, #To get feature importance
             **automl_settings)
 
         experiment = Experiment(ws, experiment_name)

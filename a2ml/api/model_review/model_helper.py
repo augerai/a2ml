@@ -49,22 +49,92 @@ class ModelHelper(object):
         if not project_path:
             project_path = ModelHelper.get_project_path()
 
-        return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
-            "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+        if params.get('augerInfo', {}).get('experiment_id') and params.get('augerInfo', {}).get('experiment_session_id'):
+            return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
+                "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+
+        return None
 
     @staticmethod
     def get_metric_path(params, metric_id=None):
         if not metric_id:
-            metric_id = params.get('augerInfo').get('pipeline_id')
+            metric_id = params.get('augerInfo', {}).get('pipeline_id')
 
         if not metric_id:
             metric_id = params.get('uid')
 
-        return os.path.join(ModelHelper.get_metrics_path(params), metric_id)
+        metrics_path = ModelHelper.get_metrics_path(params)    
+        if metrics_path:
+            return os.path.join(metrics_path, metric_id)
+
+        return None    
+
+    @staticmethod
+    def save_metric(metric_id, project_path, metric_name, metric_data):
+        metric_path = ModelHelper.get_metric_path({'augerInfo':{'projectPath': projectPath}}, metric_id)
+
+        fsclient.write_json_file(os.path.join(metric_path, 
+            "metric_names_feature_importance.json"))
+
+    @staticmethod
+    def _get_score_byname(scoring):
+        from sklearn.metrics.scorer import get_scorer
+        from sklearn.metrics import SCORERS
+
+        #TODO: below metrics does not directly map to sklearn:
+        # Classification : weighted_accuracy, accuracy_table, balanced_accuracy, matthews_correlation,norm_macro_recall
+        # Regression,  Time Series Forecasting: 
+        #spearman_correlation, normalized_root_mean_squared_error, normalized_mean_absolute_error
+        scorer = None
+        if scoring.startswith("AUC"):
+            scorer = get_scorer("roc_auc")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("log_loss"):
+            scorer = get_scorer("neg_log_loss")
+        # elif scoring.startswith("matthews_correlation"):
+        #     scorer = get_scorer("matthews_corrcoef")
+        elif scoring.startswith("precision_score"):
+            scorer = get_scorer("precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("average_precision_score"):
+            scorer = get_scorer("average_precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("recall_score"):
+            scorer = get_scorer("recall")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("norm_macro_recall"):
+            scorer = get_scorer("recall")
+            scorer._kwargs['average'] = "macro"
+        elif scoring.startswith("f1_score"):
+            scorer = get_scorer("f1")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("precision_score"):
+            scorer = get_scorer("precision")
+            average = scoring.split("_")[-1]
+            scorer._kwargs['average'] = average
+        elif scoring.startswith("spearman_correlation"):
+            scorer = get_scorer("r2")
+        elif scoring.startswith("r2_score"):
+            scorer = get_scorer("r2")
+        elif "mean_absolute_error" in scoring:
+            scorer = get_scorer("mean_absolute_error")
+        elif "root_mean_squared" in scoring:
+            scorer = get_scorer("mean_squared_error")
+        elif "median_absolute_error" in scoring:
+            scorer = get_scorer("median_absolute_error")
+
+        if scorer is None:    
+            scorer = get_scorer(scoring)
+
+        return scorer    
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
-        from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
         import inspect
 
@@ -95,11 +165,7 @@ class ModelHelper(object):
                         scoring != options.get('scoring'):
                         continue
 
-                #TODO: translate score names to sklearn:
-                # Classification : accuracy, AUC_weighted, average_precision_score_weighted, norm_macro_recall, precision_score_weighted
-                # Regression,  Time Series Forecasting: spearman_correlation, normalized_root_mean_squared_error, r2_score, normalized_mean_absolute_error
-
-                scorer = get_scorer(scoring)
+                scorer = ModelHelper._get_score_byname(scoring)
                 if options.get('minority_target_class_pos') is not None:
                     argSpec = inspect.getfullargspec(scorer._score_func)
                     if 'pos_label' in argSpec.args:

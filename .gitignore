@@ -49,3 +49,4 @@ tests/fixtures/test_score_actuals/another_result_first/predictions/*_actuals.fea
 tests/fixtures/test_score_actuals/lucas-iris/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/pr_can/candidate/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/predictions/*_actuals.feather.zstd
+tests/fixtures/*.feather.zstd

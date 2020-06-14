@@ -15,7 +15,6 @@ class TestCmdl(object):
         assert 'import      Import data for training.' in result.output
         assert 'new         Create new A2ML project.' in result.output
         assert 'predict     Predict with deployed model.' in result.output
-        assert 'review      Review specified model info.' in result.output
         assert 'train       Train the model.' in result.output
 
 

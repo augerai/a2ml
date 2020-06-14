@@ -257,13 +257,19 @@ class DataFrame(object):
         fsclient.save_object_to_file(self.df, path, fmt="feather")
 
     def loadFromFeatherFile(self, path, features=None):
-        from pyarrow import feather
-
-        with fsclient.open_file(path, 'rb', encoding=None) as local_file:
-            self.df = feather.read_feather(local_file, columns=features, use_threads=bool(True))
-
+        self.df = fsclient.load_db_from_feather_file(path, features)    
         return self.df
-            
+
+    def saveToFile(self, path):
+        if path.endswith('.feather') or path.endswith('.feather.gz') or path.endswith('.feather.zstd') or path.endswith('.feather.lz4'):
+            self.saveToFeatherFile(path)
+        else:
+            compression = None
+            if path.endswith('.gz'):
+                compression = 'gzip'
+
+            self.saveToCsvFile(path, compression) 
+
     def count(self):
         if self.df is not None:
             return len(self.df)
@@ -311,6 +317,10 @@ class DataFrame(object):
             types_dict[columns_list[idx]] = self._map_dtypes(dtype.name)
 
         return types_dict
+
+    def select(self, features):
+        self.df = self.df[features]
+        return self
 
     def drop(self, columns):
         self.df.drop(columns, inplace=True, axis=1)

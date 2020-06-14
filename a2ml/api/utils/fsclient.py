@@ -430,6 +430,22 @@ def load_npobject_from_file(path):
 
     return np.load(path, allow_pickle=True)
 
+def _read_feather(path, features=None):
+    from pyarrow import feather
+
+    if path.endswith(".gz") or path.endswith(".zip"):
+        with open_file(path, 'rb', encoding=None) as local_file:
+            return feather.read_feather(local_file, columns=features, use_threads=bool(True))
+
+    return feather.read_feather(path, columns=features, use_threads=bool(True))
+
+def load_db_from_feather_file(path, features=None):
+    if is_s3_path(path):
+        with save_atomic(path, move_file=False) as local_path:
+            download_file(path, local_path)
+            return _read_feather(local_path, features)
+
+    return _read_feather(path, features)
 
 def is_abs_path(path):
     import platform

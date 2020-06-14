@@ -6,6 +6,7 @@ from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.model_review.model_helper import ModelHelper
+from a2ml.api.model_review.model_review import ModelReview
 from .credentials import Credentials
 
 class AzureModel(object):
@@ -18,13 +19,22 @@ class AzureModel(object):
     @error_handler
     @authenticated
     def deploy(self, model_id, locally, review):
-        result = {}
         if locally:
-            model_path = self._deploy_locally(model_id)
-            # self.ctx.log('Local deployment step is not required for Azure..')
-            result = {'model_id': model_id}
-        else:
-            result = self._deploy_remotly(model_id)
+            is_loaded, model_path = self.verify_local_model(model_id)
+            if is_loaded:
+                self.ctx.log('Model already deployed to %s' % model_path)
+                return {'model_id': model_id}
+
+        from azureml.train.automl.run import AutoMLRun
+
+        ws, experiment = self._get_experiment()
+        model_run = AutoMLRun(experiment = experiment, run_id = model_id)        
+
+        result = self._deploy_locally(model_id, model_run, ws, experiment) if locally else \
+            self._deploy_remotly(model_id, model_run, ws, experiment)
+        
+        model_features, target_categories = self._get_remote_model_features(model_run)
+        feature_importance = self._get_feature_importance(model_run)
 
         options = {
             'uid': model_id,
@@ -32,12 +42,85 @@ class AzureModel(object):
             'support_review_model': review,
             'provider': self.ctx.config.name,
             'scoreNames': [self.ctx.config.get('experiment/metric')],
-            'scoring': self.ctx.config.get('experiment/metric')
+            'scoring': self.ctx.config.get('experiment/metric'),
+            "score_name": self.ctx.config.get('experiment/metric'),
+            "originalFeatureColumns": model_features
         }
+        options.update(self._get_a2ml_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
+        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"), 
+            {self.ctx.config.get('target'): {"categories": target_categories}})
+
+        metric_path = ModelHelper.get_metric_path( options, model_id)
+        fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"), 
+            {'feature_importance_data': {
+                'features': list(feature_importance.keys()), 
+                'scores': list(feature_importance.values())
+            }})
 
         return result
+
+    def _get_a2ml_info(self):
+        return {'augerInfo':{
+                'projectPath': self.ctx.config.get_path(),
+                'experiment_id': self.ctx.config.get('experiment/name', None),
+                'experiment_session_id':self.ctx.config.get('experiment/run_id', None),
+            }};
+            
+    def _deploy_remotly(self, model_id, model_run, ws, experiment):
+        from azureml.core.model import Model
+        from azureml.core.model import InferenceConfig
+        from azureml.core.webservice import Webservice
+        from azureml.core.webservice import AciWebservice
+        from azureml.exceptions import WebserviceException
+        from azureml.train.automl.run import AutoMLRun
+
+        # ws, experiment = self._get_experiment()
+        iteration, run_id = self._get_iteration(model_id)
+
+        experiment_run = AutoMLRun(experiment = experiment, run_id = run_id)
+        model_name = model_run.properties['model_name']
+        self.ctx.log('Registering model: %s' % model_id)
+
+        description = '%s-%s' % (model_name, iteration)
+        model = experiment_run.register_model(
+            model_name = model_name, iteration=iteration,
+            description = description, tags = None)
+
+        script_file_name = '.azureml/score_script.py'
+        model_run.download_file(
+            'outputs/scoring_file_v_1_0_0.py', script_file_name)
+
+        self._edit_score_script(script_file_name)
+
+        # Deploying ACI Service
+        aci_service_name = self._aci_service_name(model_name)
+        self.ctx.log('Deploying AciWebservice %s ...' % aci_service_name)
+
+        inference_config = InferenceConfig(
+            environment = model_run.get_environment(),
+            entry_script = script_file_name)
+
+        aciconfig = AciWebservice.deploy_configuration(
+            cpu_cores = 1,
+            memory_gb = 2,
+            tags = {'type': "inference-%s" % aci_service_name},
+            description = "inference-%s" % aci_service_name)
+
+        # Remove any existing service under the same name.
+        try:
+            Webservice(ws, aci_service_name).delete()
+            self.ctx.log('Remove any existing service under the same name...')
+        except WebserviceException:
+            pass
+
+        aci_service = Model.deploy(
+            ws, aci_service_name, [model], inference_config, aciconfig)
+        aci_service.wait_for_deployment(True)
+        self.ctx.log('%s state %s' % (aci_service_name, str(aci_service.state)))
+
+        return {'model_id': model_id, 'aci_service_name': aci_service_name}
 
     def _edit_score_script(self, script_file_name):
         text = fsclient.read_text_file(script_file_name)
@@ -90,61 +173,6 @@ def get_df(data):
             "return json_dumps_np({\"result\": result.tolist(), \"proba_classes\": proba_classes})")
         fsclient.write_text_file(script_file_name, text)
 
-    def _deploy_remotly(self, model_id):
-        from azureml.core.model import Model
-        from azureml.core.model import InferenceConfig
-        from azureml.core.webservice import Webservice
-        from azureml.core.webservice import AciWebservice
-        from azureml.exceptions import WebserviceException
-        from azureml.train.automl.run import AutoMLRun
-
-        ws, experiment = self._get_experiment()
-        iteration, run_id = self._get_iteration(model_id)
-
-        experiment_run = AutoMLRun(experiment = experiment, run_id = run_id)
-        model_run = AutoMLRun(experiment = experiment, run_id = model_id)
-        model_name = model_run.properties['model_name']
-        self.ctx.log('Registering model: %s' % model_id)
-
-        description = '%s-%s' % (model_name, iteration)
-        model = experiment_run.register_model(
-            model_name = model_name, iteration=iteration,
-            description = description, tags = None)
-
-        script_file_name = '.azureml/score_script.py'
-        model_run.download_file(
-            'outputs/scoring_file_v_1_0_0.py', script_file_name)
-
-        self._edit_score_script(script_file_name)
-
-        # Deploying ACI Service
-        aci_service_name = self._aci_service_name(model_name)
-        self.ctx.log('Deploying AciWebservice %s ...' % aci_service_name)
-
-        inference_config = InferenceConfig(
-            environment = model_run.get_environment(),
-            entry_script = script_file_name)
-
-        aciconfig = AciWebservice.deploy_configuration(
-            cpu_cores = 1,
-            memory_gb = 2,
-            tags = {'type': "inference-%s" % aci_service_name},
-            description = "inference-%s" % aci_service_name)
-
-        # Remove any existing service under the same name.
-        try:
-            Webservice(ws, aci_service_name).delete()
-            self.ctx.log('Remove any existing service under the same name...')
-        except WebserviceException:
-            pass
-
-        aci_service = Model.deploy(
-            ws, aci_service_name, [model], inference_config, aciconfig)
-        aci_service.wait_for_deployment(True)
-        self.ctx.log('%s state %s' % (aci_service_name, str(aci_service.state)))
-
-        return {'model_id': model_id, 'aci_service_name': aci_service_name}
-
     @error_handler
     @authenticated
     def predict(self, filename, model_id,
@@ -182,7 +210,34 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actual(self, filename, model_id):
+    def actual(self, filename, model_id, locally):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+
+            return ModelReview({'model_path': model_path}).process_actuals(actuals_path=filename)
+        else:    
+            raise Exception("Not Implemented")
+
+    @error_handler
+    @authenticated
+    def build_review_data(self, model_id, locally, output):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+                
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).build_review_data(
+              data_path=self.ctx.config.get("source"), output=output)
+        else:
+            raise Exception("Not Implemented.")
+
+    @error_handler
+    @authenticated
+    def review(self, model_id):
         pass
 
     def _get_iteration(self, model_id):
@@ -250,16 +305,23 @@ def get_df(data):
                 self.ctx.log('Cannot get categorical target class labels from remote model.Use class codes: %s'%e)
 
         fsclient.remove_folder(temp_dir)
-
         return model_features, target_categories
 
-    @staticmethod
-    def _revertCategories(results, categories):
-        return list(map(lambda x: categories[int(x)], results))
+    def _get_feature_importance(self, model_run):
+        from azureml.explain.model._internal.explanation_client import ExplanationClient
 
+        try:
+            client = ExplanationClient.from_run(model_run)
+            engineered_explanations = client.download_model_explanation(raw=True)
+            return engineered_explanations.get_feature_importance_dict()
+        except Exception as e:
+            self.ctx.log('Cannot get feature_importance from remote model: %s'%e)
+
+        return {}
+            
     def _predict_remotely(self, predict_data, model_id, predict_proba):
         from azureml.core.webservice import AciWebservice
-        #from azureml.train.automl.run import AutoMLRun
+        from azureml.train.automl.run import AutoMLRun
         from azureml.core.run import Run
 
         import numpy as np
@@ -269,7 +331,7 @@ def get_df(data):
         model_features = None
         target_categories = None
 
-        remote_run = Run(experiment = experiment, run_id = model_id)
+        remote_run = AutoMLRun(experiment = experiment, run_id = model_id)
         model_features, target_categories = self._get_remote_model_features(remote_run)
         if model_id.startswith("AutoML_"):
             model_name = remote_run.properties['model_name']
@@ -319,34 +381,31 @@ def get_df(data):
             'model.pkl.gz')
         return fsclient.is_file_exists(model_path), model_path
 
-    def _deploy_locally(self, model_id):
+    def _deploy_locally(self, model_id, model_run, ws, experiment):
+        from azureml.train.automl.run import AutoMLRun
+
+        self.ctx.log('Downloading model %s' % model_id)
+
+        iteration, run_id = self._get_iteration(model_id)
+        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+        best_run, fitted_model = remote_run.get_output(iteration=iteration)
+
         is_loaded, model_path = self.verify_local_model(model_id)
+        fsclient.save_object_to_file(fitted_model, model_path)
 
-        if not is_loaded:
-            from azureml.train.automl.run import AutoMLRun
-
-            self.ctx.log('Downloading model %s' % model_id)
-
-            ws, experiment = self._get_experiment()
-            iteration, run_id = self._get_iteration(model_id)
-            remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
-            best_run, fitted_model = remote_run.get_output(iteration=iteration)
-            fsclient.save_object_to_file(fitted_model, model_path)
-
-            self.ctx.log('Downloaded model to %s' % model_path)
-        else:
-            self.ctx.log('Downloaded model is %s' % model_path)
-
-        return model_path
+        self.ctx.log('Downloaded model to %s' % model_path)
+        return {'model_id': model_id}
 
     def _predict_locally(self, predict_data, model_id, threshold):
-        model_path = self._deploy_locally(model_id)
+        is_loaded, model_path = self.verify_local_model(model_id)
+        if not is_loaded:
+            raise Exception("Model should be deployed before predict.")
 
-        # TODO: get target categories from model somehow
-        target_categories = []
         fitted_model = fsclient.load_object_from_file(model_path)
         try:
-            model_features = list(fitted_model.steps[0][1]._columns_types_mapping.keys())
+            options = fsclient.read_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"))
+
+            model_features = options.get("originalFeatureColumns")
             predict_data = predict_data[model_features]
             predict_data.to_csv("test_options.csv", index=False, compression=None, encoding='utf-8')
         except Exception as e:
@@ -361,5 +420,8 @@ def get_df(data):
         else:
             results = fitted_model.predict(predict_data)
 
-        return results, results_proba, proba_classes, target_categories
+        target_categoricals = fsclient.read_json_file(os.path.join(
+                self.ctx.config.get_model_path(model_id), "target_categoricals.json"))
+        target_categories = target_categoricals.get(self.ctx.config.get('target'), {}).get("categories")
 
+        return results, results_proba, proba_classes, target_categories
