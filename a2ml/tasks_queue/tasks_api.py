@@ -173,8 +173,7 @@ def deploy_model_task(params):
 @celeryApp.task(after_return=__handle_task_result)
 def predict_model_task(params):
     def _predict(ctx):
-        res = A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
-        return store_predictions(res, model_id=params['args'][1])
+        return A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
 
     return with_context(params, _predict)
 

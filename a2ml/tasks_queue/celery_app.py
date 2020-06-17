@@ -18,7 +18,8 @@ warnings.warn = warn
 celeryApp = Celery(
     'a2ml.tasks_queue',
     include=[
-        'a2ml.tasks_queue.tasks_api'
+        'a2ml.tasks_queue.tasks_api',
+        'a2ml.tasks_queue.tasks_hub_api'
     ]
 )
 
