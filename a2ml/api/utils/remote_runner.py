@@ -2,10 +2,11 @@ import asyncio
 import contextlib
 import json
 import jsonpickle
+import os
 import requests
 import sys
 import time
-import os
+import traceback
 import websockets
 
 from a2ml.api.utils import fsclient, dict_dig
@@ -150,7 +151,6 @@ class RemoteProviderRunner(RequestMixin, object):
                 return event_loop.run_until_complete(self.wait_result(res['data']['request_id'], local_file))
         except Exception as exc:
             if self.ctx.debug:
-                import traceback
                 traceback.print_exc()
 
             self.ctx.log(str(exc))
@@ -206,11 +206,14 @@ class RemoteProviderRunner(RequestMixin, object):
         data_type = self.get_response_data_type(data)
 
         if data_type == 'result' and isinstance(data['result'], dict):
-            config = jsonpickle.decode(data['result']['config'])
-            config.write_all()
+            config_json = data['result'].get('config')
+            if config_json:
+                config = jsonpickle.decode(config_json)
+                config.write_all()
 
-            data['result'] = data['result']['response']
-            self.download_prediction_result(data['result'], local_file)
+            response = data['result'].get('response')
+            if response:
+                self.download_prediction_result(response, local_file)
 
         self.show_output(data)
 
@@ -230,61 +233,59 @@ class RemoteProviderRunner(RequestMixin, object):
             return data.get('type', None)
 
     def show_output(self, data):
-        if isinstance(data, dict):
-            data_type = data.get('type', None)
+        data_type = self.get_response_data_type(data)
 
-            if  data_type == 'log':
-                sys.stdout.write('\b')
-                print(data['msg'])
-            elif  data_type == 'result':
-                if self.ctx.debug:
-                    sys.stdout.write('\b')
-                    print(data['status'] + ':', data['result'])
+        if data_type == 'log':
+            self.ctx.log(str(data['msg']))
+        elif data_type == 'result':
+            if self.ctx.debug or data.get('status') == 'FAILURE':
+                self.ctx.log(str(data['status']) + ': ' + str(dict_dig(data, 'result', 'response')))
+        elif data_type == 'ping':
+            pass
+        elif data_type == 'start':
+            pass
         elif isinstance(data, Exception):
             if self.ctx.debug:
-                import traceback;
                 traceback.print_exc()
 
-            sys.stdout.write('\b')
-            print('Error:', data)
+            self.ctx.log('Error: ' + str(data))
         else:
-            sys.stdout.write('\b')
-            print(data)
+            self.ctx.log(str(data))
 
     async def wait_result(self, request_id, local_file):
-        done = False
         data = {}
-        last_msg_id = '0'
-        while not done:
-            try:
-                endpoint = self.ws_endpoint + "/ws?id=" + request_id + '&last_msg_id=' + str(last_msg_id)
-                async with websockets.connect(endpoint) as websocket:
-                    while True:
-                        data = await websocket.recv()
-                        data = json.loads(data)
 
-                        if '_msg_id' in data:
-                            last_msg_id = data['_msg_id']
+        while not self.get_response_data_type(data) == 'result':
+            data = await self.connect_and_get_result(request_id, local_file)
 
-                        self.handle_weboscket_respone(data, local_file)
-
-                        if self.get_response_data_type(data) == 'result':
-                            done = True
-                            break
-            except Exception as e:
-                self.show_output(e)
-                await asyncio.sleep(2)
-            finally:
-                if self.get_response_data_type(data) == 'result':
-                    done = True
-                    break
-
-        if data.get('result'):
-            return data.get('result')
-
-        return {
-            self.provider: {
-                'result': False,
-                'data': "Server error. Please try again..."
+        result = data.get('result', {})
+        if result:
+            return dict_dig(result, 'response') or result
+        else:
+            return {
+                self.provider: {
+                    'result': False,
+                    'data': "Server error. Please try again..."
+                }
             }
-        }
+
+    async def connect_and_get_result(self, request_id, local_file):
+        last_msg_id = '0'
+        try:
+            endpoint = self.ws_endpoint + "/ws?id=" + request_id + '&last_msg_id=' + str(last_msg_id)
+            async with websockets.connect(endpoint) as websocket:
+                while True:
+                    data = await websocket.recv()
+                    data = json.loads(data)
+
+                    if '_msg_id' in data:
+                        last_msg_id = data['_msg_id']
+
+                    self.handle_weboscket_respone(data, local_file)
+
+                    if self.get_response_data_type(data) == 'result':
+                        return data
+        except Exception as e:
+            self.show_output(e)
+            await asyncio.sleep(2)
+            return {}
