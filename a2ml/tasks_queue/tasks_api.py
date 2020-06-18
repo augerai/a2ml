@@ -13,7 +13,6 @@ from a2ml.api.a2ml_experiment import A2MLExperiment
 from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.server.notification import SyncSender
-from a2ml.tasks_queue.review import store_predictions
 
 notificator = SyncSender()
 
