@@ -95,8 +95,8 @@ class TestTasksApiAuger(BaseTest):
 
     @vcr.use_cassette('auger/predict/valid.yaml')
     def test_predict_success(self):
-        review_bucket = self.review_bucket()
-        self.clear_bucket(review_bucket)
+        # review_bucket = self.review_bucket()
+        # self.clear_bucket(review_bucket)
 
         params = self.params(
             'auger',
@@ -109,9 +109,9 @@ class TestTasksApiAuger(BaseTest):
         res = predict_model_task.apply(params).result
         self.assert_result(res, True, {'predicted': ANY})
 
-        files = self.list_s3_files(review_bucket)
-        assert isinstance(files, list)
-        assert len(files) == 1
+        # files = self.list_s3_files(review_bucket)
+        # assert isinstance(files, list)
+        # assert len(files) == 1
 
         assert re.match(
             '\/auger\/models\/555777999\/predictions\/\d{4}-\d{2}-\d{2}_[0-9a-f\-]+_results.pkl.gz',
@@ -120,8 +120,8 @@ class TestTasksApiAuger(BaseTest):
 
     @vcr.use_cassette('auger/predict/invalid_model.yaml')
     def test_predict_failure_model_status(self):
-        review_bucket = self.review_bucket()
-        self.clear_bucket(review_bucket)
+        # review_bucket = self.review_bucket()
+        # self.clear_bucket(review_bucket)
 
         params = self.params(
             'auger',
