@@ -49,7 +49,10 @@ class ConfigParts(object):
     def keys(self):
         return self.parts.keys()
 
-    def part(self, name):
+    def part(self, name, create_if_not_exist=False):
+        if create_if_not_exist and name not in self.parts:
+            self.parts[name] = SerializableConfigYaml()
+
         return self.parts[name]
 
     def _load(self, name):
@@ -104,8 +107,8 @@ class Config(object):
     def set(self, path, value, config_name=None):
         if not config_name:
             config_name = self.name
-
-        self.parts.part(config_name).set(path, value)
+                
+        self.parts.part(config_name, True).set(path, value)
 
     def remove(self, path, config_name=None):
         if not config_name:

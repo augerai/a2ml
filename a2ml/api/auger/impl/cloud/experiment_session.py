@@ -57,6 +57,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
             'model_type': model_type})
 
     def get_leaderboard(self):
+        #TODO: create leaderboard same way as in auger-ml
         trial_api = AugerTrialApi(self.ctx, self)
         leaderboard, score_name = [], None
         for item in iter(trial_api.list()):
