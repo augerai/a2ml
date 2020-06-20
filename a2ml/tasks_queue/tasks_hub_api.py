@@ -40,7 +40,7 @@ def _get_experiment_session(params):
         debug=params.get('debug_log', True)
     )
 
-    ctx.credentials = params.get('provider_info').get('auger').get('credentials')
+    ctx.credentials = params.get('provider_info', {}).get('auger', {}).get('credentials')
     experiment_api = AugerExperiment(ctx)
 
     session_api = AugerExperimentSessionApi(ctx, experiment_api, None, 
@@ -61,7 +61,7 @@ def evaluate_start_task(params):
     ctx.set_runs_on_server(True)
 
     #TODO: support validation_source
-    provider_info = params.get('provider_info').get(params.get('provider'))
+    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
     ctx.config.set('providers', [params.get('provider')])
     ctx.credentials = provider_info.get('credentials')
 
@@ -93,7 +93,11 @@ def evaluate_start_task(params):
     ctx.config.set('experiment/metric', 'accuracy')
         #evaluation_options.get('scoring', 6), params.get('provider'))
 
-    return A2ML(ctx).train()
+    ctx.config.clean_changes()    
+    res = A2ML(ctx).train()
+
+    print(ctx.config.parts_changes.keys())
+    return res
         # options = {
         #     'crossValidationFolds':
         #         config.get('experiment/cross_validation_folds', 5),

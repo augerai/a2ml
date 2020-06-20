@@ -3,6 +3,7 @@ import pytest
 
 from a2ml.tasks_queue.tasks_hub_api import *
 
+pytestmark = pytest.mark.usefixtures('config_context')
 
 class TestTasksHubApiAuger(object):
 
@@ -14,20 +15,7 @@ class TestTasksHubApiAuger(object):
                 'experiment_session_id': '010def8e3cb89236'
             },
             'provider_info': {
-                'auger': {
-                    'credentials': {
-                        "url": "https://app-staging.auger.ai",
-                        "token": "XXX",
-                        "organization": "mt-org"
-                    }
-                },
                 'azure' : {
-                    'credentials': {
-                        "subscription_id":"XXX",
-                        "directory_tenant_id":"XXX",
-                        "application_client_id":"XXX",
-                        "client_secret":"XXX"
-                    },
                     'dataset': 'adult-822d0fbc.data.csv',
                     'project':{
                         'name': 'a2ml_azure_adult_3'
