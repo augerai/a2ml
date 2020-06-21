@@ -47,20 +47,73 @@ def _get_experiment_session(params):
         params['augerInfo']['experiment_session_id'])
     return session_api.properties()
 
+def _make_hub_objects_update(ctx, provider):
+    #project, project_file, experiment, experiment_session
+    project_name = ctx.config.get("name", parts=ctx.config.parts_changes)
+    project_file_dataset = ctx.config.get("dataset", parts=ctx.config.parts_changes)
+    # project_file_validation_dataset = ctx.config.get("experiment/validation_dataset", parts=ctx.config.parts_changes)
+
+    experiment_name = ctx.config.get('experiment/name', parts=ctx.config.parts_changes)
+    experiment_session_id = ctx.config.get('experiment/run_id', parts=ctx.config.parts_changes)
+    
+    updates = {}
+    if project_name:
+        updates['project'] = {
+            'provider_info': {provider: {'name': project_name}}
+        }
+    if project_file_dataset:
+        updates['project_file'] = {
+            'provider_info': {provider: {'dataset': project_file_dataset}}
+        }
+    # if project_file_validation_dataset:
+    #     if updates.get('project_file'):
+    #         updates['project_file']['provider_info'][provider] = {'validation_dataset': project_file_validation_dataset}
+    #     else:    
+    #         updates['project_file'] = {
+    #             'provider_info': {provider: {'validation_dataset': project_file_validation_dataset}}
+    #         }
+    if experiment_name:
+        updates['experiment'] = {
+            'provider_info': {provider: {'name': experiment_name}}
+        }
+    if experiment_session_id:
+        updates['experiment_session'] = {
+            'provider_info': {provider: {'id': experiment_session_id}}
+        }
+                
+    return updates
+
+def _get_options_from_dataset_statistic(config, stat_data):
+    excluded_features = []
+    target_feature = None
+
+    for item in stat_data:
+        if item.get('isTarget'):
+            target_feature = item['column_name']
+
+        if not item.get('use') and not item.get('isTarget'):
+            excluded_features.append(item['column_name'])
+
+    if target_feature:
+        config.set('target', target_feature)
+    if excluded_features:
+        config.set('exclude', excluded_features)
+
 @celeryApp.task(ignore_result=False, after_return=process_task_result)
 def evaluate_start_task(params):
     from a2ml.api.utils.context import Context
     from a2ml.api.a2ml import A2ML
+    #from a2ml.api.azure.a2ml import AzureA2ML
 
     experiment_session = _get_experiment_session(params)    
 
     ctx = Context(
+        name=params.get('provider'),
         #path=params.get('project_path'),
         debug=params.get('debug_log', True)
     )
     ctx.set_runs_on_server(True)
 
-    #TODO: support validation_source
     provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
     ctx.config.set('providers', [params.get('provider')])
     ctx.credentials = provider_info.get('credentials')
@@ -74,11 +127,13 @@ def evaluate_start_task(params):
     ctx.config.set('cluster/type', provider_info.get('cluster').get('type'), params.get('provider'))
 
     evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
+    dataset_statistics = experiment_session.get('dataset_statistics', {}).get('stat_data', [])
 
     ctx.config.set('model_type', 
         "classification" if evaluation_options.get('classification', True) else "regression")
-    #TODO: get target, exclude etc from dataset_statistics see _fill_data_options
-    ctx.config.set('target', evaluation_options.get('targetFeature'))
+    _get_options_from_dataset_statistic(ctx.config, dataset_statistics)
+
+    ctx.config.set('experiment/validation_source', evaluation_options.get('test_data_path'))
 
     ctx.config.set('experiment/cross_validation_folds', 
         evaluation_options.get('crossValidationFolds', 5))
@@ -90,54 +145,19 @@ def evaluate_start_task(params):
         evaluation_options.get('max_n_trials', 100))
     ctx.config.set('experiment/use_ensemble', 
         evaluation_options.get('use_ensemble', True))
-    ctx.config.set('experiment/metric', 'accuracy')
-        #evaluation_options.get('scoring', 6), params.get('provider'))
+    if evaluation_options.get('scoring') == "f1":
+        ctx.config.set('experiment/metric',
+            "accuracy", params.get('provider'))
+    else:    
+        ctx.config.set('experiment/metric',
+            evaluation_options.get('scoring'), params.get('provider'))
 
     ctx.config.clean_changes()    
     res = A2ML(ctx).train()
 
-    print(ctx.config.parts_changes.keys())
+    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
+    print(hub_objects_update)
     return res
-        # options = {
-        #     'crossValidationFolds':
-        #         config.get('experiment/cross_validation_folds', 5),
-        #     'max_total_time_mins':
-        #         config.get('experiment/max_total_time', 60),
-        #     'max_eval_time_mins':
-        #         config.get('experiment/max_eval_time', 6),
-        #     'max_n_trials':
-        #         config.get('experiment/max_n_trials', 1000),
-        #     'use_ensemble':
-        #         config.get('experiment/use_ensemble', True),
-        #     'classification':
-        #         True if model_type == 'classification' else False,
-        #     'scoring':
-        #         config.get('experiment/metric',
-        #             'f1_macro' if model_type == 'classification' else 'r2'),
-        #     'test_data_path': test_data_path
-        # }
-
-        # experiment_session = AugerMessenger(params).get_experiment_session(
-        #     params['augerInfo']['experiment_session_id'])
-
-        # if 'model_settings' in experiment_session:
-        #     auger_info = copy.deepcopy(params['augerInfo'])
-        #     params.update(experiment_session['model_settings'].get(
-        #         'evaluation_options', {}))
-        #     params['dataset_statistics'] = experiment_session.get('dataset_statistics', {})
-
-        #     # ['dataset_manifest_id'] = experiment_session['dataset_manifest_id']
-        #     params['augerInfo'].update(auger_info)
-        #     logging.info("evaluate_start_task augerInfo: %s"%params['augerInfo'])
-
-    # FSClient().waitForFSReady()
-    # params = AugerML.update_task_params(params, create_project_run=False)
-    # #params['evaluate_task_id'] = evaluate_task_id
-
-    # aml = AugerML(params)
-    # aml.update_options_by_project_settings()
-    # return aml.evaluate_start(run_top_pipelines=True,
-    #                           clean_project_runs=params.get('clean_project_runs', False))
 
 @celeryApp.task(ignore_result=False, after_return=process_task_result)
 def score_actuals_by_model_task(params):

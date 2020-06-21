@@ -105,6 +105,7 @@ class Context(object):
         new.notificator = self.notificator
         new.request_id = self.request_id
         new.config.parts = self.config.parts
+        new.config.parts_changes = self.config.parts_changes
 
         if self._runs_on_server:
             new.credentials = self.credentials

@@ -151,6 +151,22 @@ class BaseTest(object):
                     },
                     "py/object": "a2ml.api.utils.config.ConfigParts"
                 },
+                "parts_changes": {
+                    "is_loaded": True,
+                    "part_names": [
+                        "config",
+                        "auger",
+                        "azure",
+                        "google"
+                    ],
+                    "parts": {
+                        "auger": self.auger_yaml(),
+                        "azure": self.azure_yaml(),
+                        "config": self.config_yaml(),
+                        "google": self.google_yaml(),
+                    },
+                    "py/object": "a2ml.api.utils.config.ConfigParts"
+                },
                 "path": None,
                 "py/object": "a2ml.api.utils.config.Config",
                 "runs_on_server": False

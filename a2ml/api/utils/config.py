@@ -72,15 +72,17 @@ class Config(object):
         self.parts_changes = ConfigParts()
         self.load(path)
 
-    def get(self, path, default=None, config_name=None):
-        if len(self.parts.keys()) == 0:
+    def get(self, path, default=None, config_name=None, parts=None):
+        if parts is None:
+            parts = self.parts
+        if len(parts.keys()) == 0:
             return default
-        if 'config' in self.parts.keys():
-            default = self.parts.part('config').get(path, default)
+        if 'config' in parts.keys():
+            default = parts.part('config').get(path, default)
         if not config_name:
             config_name = self.name
 
-        return self.parts.part(config_name).get(path, default)
+        return parts.part(config_name).get(path, default)
 
     def get_list(self, path, default=None, config_name=None):
         data = self.get(path, default, config_name)
