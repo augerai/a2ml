@@ -3,6 +3,8 @@ import copy
 
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.model_review.model_helper import ModelHelper
+from a2ml.api.utils.context import Context
+from a2ml.api.a2ml import A2ML
 
 def _exception_message_with_all_causes(e):
     if isinstance(e, Exception) and e.__cause__:
@@ -28,7 +30,6 @@ def process_task_result(status, retval, task_id, args, kwargs, einfo):
             #     status, retval, str(einfo))
 
 def _get_hub_experiment_session(experiment_session_id):
-    from a2ml.api.utils.context import Context
     from a2ml.api.auger.experiment import AugerExperiment
     from a2ml.api.auger.impl.cloud.experiment_session import AugerExperimentSessionApi
 
@@ -36,17 +37,16 @@ def _get_hub_experiment_session(experiment_session_id):
     #ctx.credentials = params.get('provider_info', {}).get('auger', {}).get('credentials')
     experiment = AugerExperiment(ctx)
     session_api = AugerExperimentSessionApi(ctx, session_id=experiment_session_id)
-    return session_api.properties()
+    return session_api.properties(), ctx
 
 def _get_hub_project_file(project_file_id):
-    from a2ml.api.utils.context import Context
     from a2ml.api.auger.project import AugerProject
     from a2ml.api.auger.impl.cloud.project_file import AugerProjectFileApi
 
     ctx = Context(debug=True)
     project = AugerProject(ctx)
     project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
-    return project_file_api.properties()
+    return project_file_api.properties(), ctx
 
 def _make_hub_objects_update(ctx, provider):
     #project, project_file, experiment, experiment_session
@@ -83,6 +83,14 @@ def _make_hub_objects_update(ctx, provider):
         }
                 
     return updates
+
+def _update_hub_objects(ctx, provider, ctx_hub, params):
+    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
+    print(hub_objects_update)
+    for name, data in hub_objects_update.items():
+        data['id'] = params.get("augerInfo", {}).get(name+"_id")
+        print(name, data)
+        ctx_hub.rest_api.call('update_%s'%name, data)
 
 def _get_options_from_dataset_statistic(config, stat_data):
     excluded_features = []
@@ -127,14 +135,10 @@ def _get_options_from_dataset_statistic(config, stat_data):
 
 @celeryApp.task(ignore_result=False)
 def evaluate_start_task(params):
-    from a2ml.api.utils.context import Context
-    from a2ml.api.a2ml import A2ML
-    #from a2ml.api.azure.a2ml import AzureA2ML
-
     if not params.get('augerInfo', {}).get('experiment_session_id'):
         raise Exception("evaluate_start_task missed experiment_session_id parameter.")
 
-    experiment_session = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])    
+    experiment_session, ctx_hub = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])    
 
     ctx = Context(
         name=params.get('provider'),
@@ -184,21 +188,18 @@ def evaluate_start_task(params):
     ctx.config.clean_changes()    
     res = A2ML(ctx).train()
 
-    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
-    print(hub_objects_update)
+    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
     return res
 
 @celeryApp.task(ignore_result=False)
 def import_data_task(params):
-    from a2ml.api.utils.context import Context
-    from a2ml.api.a2ml import A2ML
-
-    if not params.get('project_file_id'):
+    if not params.get("augerInfo").get('project_file_id'):
         raise Exception("import_data_task missed project_file_id parameter.")
+
+    project_file, ctx_hub = _get_hub_project_file(params["augerInfo"]['project_file_id'])
 
     data_path = params.get('url')    
     if not data_path:    
-        project_file = _get_hub_project_file(params['project_file_id'])
         data_path = project_file.get('url')
 
     ctx = Context(
@@ -213,9 +214,8 @@ def import_data_task(params):
 
     ctx.config.clean_changes()    
     res = A2ML(ctx).import_data(source=data_path)
+    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
 
-    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
-    print(hub_objects_update)
     return res
 
 @celeryApp.task(ignore_result=False, after_return=process_task_result)

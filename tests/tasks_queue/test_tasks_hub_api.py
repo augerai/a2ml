@@ -12,7 +12,9 @@ class TestTasksHubApiAuger(unittest.TestCase):
     def test_import_data(self):
         params = {
             'provider': "azure",
-            'project_file_id': '2719',
+            'augerInfo': {
+                'project_file_id': '2719',
+            },
             'url': '/Users/evgenyvovchenko/Projects/auger-experiments/files/adult.data.csv',
             'provider_info': {
                 'azure' : {
@@ -34,6 +36,8 @@ class TestTasksHubApiAuger(unittest.TestCase):
         params = {
             'provider': "azure",
             'augerInfo': {
+                'experiment_id': 'bb29d41a246f601b',
+                'project_id': '820',
                 'experiment_session_id': '010def8e3cb89236'
             },
             'provider_info': {
