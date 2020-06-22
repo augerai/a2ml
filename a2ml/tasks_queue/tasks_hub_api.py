@@ -27,25 +27,26 @@ def process_task_result(status, retval, task_id, args, kwargs, einfo):
             # AugerMessenger(params).set_cluster_task_result(params['augerInfo']['cluster_task_id'],
             #     status, retval, str(einfo))
 
-def _get_experiment_session(params):
+def _get_hub_experiment_session(experiment_session_id):
     from a2ml.api.utils.context import Context
     from a2ml.api.auger.experiment import AugerExperiment
     from a2ml.api.auger.impl.cloud.experiment_session import AugerExperimentSessionApi
 
-    if not params.get('augerInfo', {}).get('experiment_session_id'):
-        raise Exception("evaluate_start_task missed experiment_session_id parameter.")
-
-    ctx = Context(
-        #path=params.get('project_path'),
-        debug=params.get('debug_log', True)
-    )
-
-    ctx.credentials = params.get('provider_info', {}).get('auger', {}).get('credentials')
-    experiment_api = AugerExperiment(ctx)
-
-    session_api = AugerExperimentSessionApi(ctx, experiment_api, None, 
-        params['augerInfo']['experiment_session_id'])
+    ctx = Context(debug=True)
+    #ctx.credentials = params.get('provider_info', {}).get('auger', {}).get('credentials')
+    experiment = AugerExperiment(ctx)
+    session_api = AugerExperimentSessionApi(ctx, session_id=experiment_session_id)
     return session_api.properties()
+
+def _get_hub_project_file(project_file_id):
+    from a2ml.api.utils.context import Context
+    from a2ml.api.auger.project import AugerProject
+    from a2ml.api.auger.impl.cloud.project_file import AugerProjectFileApi
+
+    ctx = Context(debug=True)
+    project = AugerProject(ctx)
+    project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
+    return project_file_api.properties()
 
 def _make_hub_objects_update(ctx, provider):
     #project, project_file, experiment, experiment_session
@@ -63,7 +64,7 @@ def _make_hub_objects_update(ctx, provider):
         }
     if project_file_dataset:
         updates['project_file'] = {
-            'provider_info': {provider: {'dataset': project_file_dataset}}
+            'provider_info': {provider: {'url': project_file_dataset}}
         }
     # if project_file_validation_dataset:
     #     if updates.get('project_file'):
@@ -87,6 +88,11 @@ def _get_options_from_dataset_statistic(config, stat_data):
     excluded_features = []
     target_feature = None
 
+    categoricals = []
+    label_encoded = []
+    time_series = []
+    date_time = []
+
     for item in stat_data:
         if item.get('isTarget'):
             target_feature = item['column_name']
@@ -94,18 +100,41 @@ def _get_options_from_dataset_statistic(config, stat_data):
         if not item.get('use') and not item.get('isTarget'):
             excluded_features.append(item['column_name'])
 
+        if item.get('use') or item.get('isTarget'):
+            if item['datatype'] == 'categorical':
+                categoricals.append(item['column_name'])
+            if item['datatype'] == 'hashing':
+                categoricals.append(item['column_name'])
+                label_encoded.append(item['column_name'])
+            if item['datatype'] == 'timeseries':
+                time_series.append(item['column_name'])
+            if item['datatype'] == 'datetime':
+                date_time.append(item['column_name'])
+
     if target_feature:
         config.set('target', target_feature)
     if excluded_features:
         config.set('exclude', excluded_features)
 
-@celeryApp.task(ignore_result=False, after_return=process_task_result)
+    if label_encoded:
+        config.set('experiment/label_encoded', label_encoded)
+    if categoricals:
+        config.set('experiment/categoricals', categoricals)
+    if date_time:    
+        config.set('experiment/date_time', date_time)
+    if time_series:
+        config.set('experiment/time_series', time_series)
+
+@celeryApp.task(ignore_result=False)
 def evaluate_start_task(params):
     from a2ml.api.utils.context import Context
     from a2ml.api.a2ml import A2ML
     #from a2ml.api.azure.a2ml import AzureA2ML
 
-    experiment_session = _get_experiment_session(params)    
+    if not params.get('augerInfo', {}).get('experiment_session_id'):
+        raise Exception("evaluate_start_task missed experiment_session_id parameter.")
+
+    experiment_session = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])    
 
     ctx = Context(
         name=params.get('provider'),
@@ -113,14 +142,14 @@ def evaluate_start_task(params):
         debug=params.get('debug_log', True)
     )
     ctx.set_runs_on_server(True)
+    ctx.config.set('providers', [params.get('provider')])
 
     provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
-    ctx.config.set('providers', [params.get('provider')])
-    ctx.credentials = provider_info.get('credentials')
 
-    ctx.config.set('dataset', provider_info.get('dataset'), params.get('provider'))
     ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
+    ctx.config.set('dataset', provider_info.get('project_file').get('url'), params.get('provider'))
     ctx.config.set('experiment/name', provider_info.get('experiment').get('name'), params.get('provider'))
+
     ctx.config.set('cluster/name', provider_info.get('cluster').get('name'), params.get('provider'))
     ctx.config.set('cluster/min_nodes', provider_info.get('cluster').get('min_nodes'), params.get('provider'))
     ctx.config.set('cluster/max_nodes', provider_info.get('cluster').get('max_nodes'), params.get('provider'))
@@ -154,6 +183,36 @@ def evaluate_start_task(params):
 
     ctx.config.clean_changes()    
     res = A2ML(ctx).train()
+
+    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
+    print(hub_objects_update)
+    return res
+
+@celeryApp.task(ignore_result=False)
+def import_data_task(params):
+    from a2ml.api.utils.context import Context
+    from a2ml.api.a2ml import A2ML
+
+    if not params.get('project_file_id'):
+        raise Exception("import_data_task missed project_file_id parameter.")
+
+    data_path = params.get('url')    
+    if not data_path:    
+        project_file = _get_hub_project_file(params['project_file_id'])
+        data_path = project_file.get('url')
+
+    ctx = Context(
+        name=params.get('provider'),
+        debug=params.get('debug_log', True)
+    )
+    ctx.set_runs_on_server(True)
+    ctx.config.set('providers', [params.get('provider')])
+
+    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
+    ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
+
+    ctx.config.clean_changes()    
+    res = A2ML(ctx).import_data(source=data_path)
 
     hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
     print(hub_objects_update)

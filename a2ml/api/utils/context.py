@@ -107,7 +107,7 @@ class Context(object):
         new.config.parts = self.config.parts
         new.config.parts_changes = self.config.parts_changes
 
-        if self._runs_on_server:
+        if self._runs_on_server and hasattr(self, 'credentials'):
             new.credentials = self.credentials
 
         return new
