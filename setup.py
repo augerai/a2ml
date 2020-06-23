@@ -74,20 +74,20 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]~=1.5.0'
+        'azureml-sdk[automl]~=1.8.0'
     ],
     'azure-predict-local': [
         'sklearn-pandas<=1.7.0,>=1.4.0',
-        'azureml-automl-runtime~=1.5.0'
+        'azureml-automl-runtime~=1.8.0'
     ],
     'azure-predict-remote': [
-        'azureml-core~=1.5.0'
+        'azureml-core~=1.8.0'
     ],
     'azure-deploy-predict': [
         'sklearn-pandas<=1.7.0,>=1.4.0',
-        'azureml-automl-runtime~=1.5.0',
-        'azureml-train-automl-client~=1.5.0',
-        'azureml-train-automl-runtime~=1.5.0'
+        'azureml-automl-runtime~=1.8.0',
+        'azureml-train-automl-client~=1.8.0',
+        'azureml-train-automl-runtime~=1.8.0'
     ],
     'google': [
         'google-cloud-automl'
