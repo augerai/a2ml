@@ -133,6 +133,19 @@ def _get_options_from_dataset_statistic(config, stat_data):
     if time_series:
         config.set('experiment/time_series', time_series)
 
+def execute_task(task, params, wait_for_result=False, delay=0):
+    if wait_for_result:
+        task.apply(args=[params], countdown = delay)
+    else:    
+        task.apply_async(args=[params], countdown = delay)
+
+@celeryApp.task(ignore_result=True, acks_late=True,
+    acks_on_failure_or_timeout=False, reject_on_worker_lost=True,
+    autoretry_for=(Exception,), retry_kwargs={'max_retries': None, 'countdown': 20})
+def monitor_evaluate_task(params):
+    execute_task( monitor_evaluate_task, params, wait_for_result=False, 
+        delay=params.get("monitor_evaluate_interval", 20))
+
 @celeryApp.task(ignore_result=False)
 def evaluate_start_task(params):
     if not params.get('augerInfo', {}).get('experiment_session_id'):
