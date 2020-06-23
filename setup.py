@@ -50,7 +50,7 @@ install_requires = [
 
 extras = {
     'testing': [
-        'flake8',
+        'flake8<=3.7.9,>=3.1.0',#version for azure
         'mock',
         'pytest',
         'pytest-cov',
