@@ -139,10 +139,93 @@ def execute_task(task, params, wait_for_result=False, delay=0):
     else:    
         task.apply_async(args=[params], countdown = delay)
 
+def _format_leaderboard_for_hub(leaderboard):
+    formatted_leaderboard_list = []
+
+    for item in leaderboard:
+        obj = {}
+        uid = item['uid']
+        obj[uid] = item
+        formatted_leaderboard_list.append(obj)
+
+    return formatted_leaderboard_list
+
+def _update_hub_trials(params, trials):
+    from a2ml.api.auger.experiment import AugerExperiment
+
+    ctx = Context(debug=True)
+    experiment = AugerExperiment(ctx)
+
+    ctx.rest_api.call("update_trials", {
+        'experiment_session_id': params['augerInfo']['experiment_session_id'],
+        #'dataset_manifest_id': status['evaluation_options']['augerInfo']['dataset_manifest_id'],
+        'trials': _format_leaderboard_for_hub(trials)
+    })
+
+def _get_leaderboad_trials(params):
+    ctx = Context(
+        name=params.get('provider'),
+        #path=params.get('project_path'),
+        debug=params.get('debug_log', True)
+    )
+    ctx.set_runs_on_server(True)
+    ctx.config.set('providers', [params.get('provider')])
+
+    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
+
+    ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
+    #ctx.config.set('dataset', provider_info.get('project_file').get('url'), params.get('provider'))
+    ctx.config.set('experiment/name', provider_info.get('experiment').get('name'), params.get('provider'))
+    ctx.config.set('experiment/run_id', provider_info.get('experiment_session').get('id'), params.get('provider'))
+
+    res = A2ML(ctx).evaluate()
+    leaderboard = []
+    if res.get(params.get('provider'), {}).get('result'):
+        leaderboard = res[params.get('provider')]['data']['leaderboard']
+
+    trials = []
+    if not leaderboard:
+        return trials
+
+    for item in leaderboard:
+        trials.append({
+            "uid": item['model id'],
+            "score": item['all_scores'][item['primary_metric']],
+            "scoring": item['primary_metric'],
+            "ensemble": 'Ensemble' in item['algorithm'],
+            "task_type": item['task_type'],
+            "all_scores": item['all_scores'],
+            "score_name": item['primary_metric'],
+            "algorithm_name": item['algorithm'],
+            "optimizer_name": "Azure",
+            "evaluation_time": item["fit_time"],
+            "algorithm_params": item['algorithm_params'],
+            "experiment_session_id": ctx.config.get('experiment/run_id'),            
+            "preprocessor": item["preprocessor"],
+
+            "error": None,
+            "ratio": 1.0,
+            "budget": None,
+            "create_trial_time": None,
+            "estimated_time": 0,
+            "estimated_timeout": False,
+            "trialClass": None,
+            "fold_scores": [],
+            "fold_times": [],
+            "metrics_time": 0,
+            "dataset_ncols": 0,
+            "dataset_nrows": 0,
+            "dataset_manifest_id": None,
+            "algorithm_params_hash": None,
+        })
+    return trials
+
 @celeryApp.task(ignore_result=True, acks_late=True,
     acks_on_failure_or_timeout=False, reject_on_worker_lost=True,
     autoretry_for=(Exception,), retry_kwargs={'max_retries': None, 'countdown': 20})
 def monitor_evaluate_task(params):
+
+    _update_hub_trials(params, _get_leaderboad_trials(params))
     execute_task( monitor_evaluate_task, params, wait_for_result=False, 
         delay=params.get("monitor_evaluate_interval", 20))
 
@@ -202,6 +285,10 @@ def evaluate_start_task(params):
     res = A2ML(ctx).train()
 
     _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+
+    execute_task( monitor_evaluate_task, params, wait_for_result=False, 
+        delay=params.get("monitor_evaluate_interval", 20))
+    
     return res
 
 @celeryApp.task(ignore_result=False)

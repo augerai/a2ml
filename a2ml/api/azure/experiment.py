@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 import datetime as dt
 import shortuuid
+import json
 
 from azureml.core import Run
 from azureml.core import Dataset
@@ -172,7 +173,10 @@ class AzureExperiment(object):
         run = AutoMLRun(experiment = experiment, run_id = run_id)
         leaderboard = self._get_leaderboard(run).to_dict('records')
         self.ctx.log('Leaderboard for Run %s' % run_id)
-        print_table(self.ctx.log,leaderboard)
+        headers = []
+        if leaderboard:
+            headers = list(leaderboard[0].keys())[:3]
+        print_table(self.ctx.log, leaderboard, headers)
         status = run.get_status()
         if status == 'Failed':
             self.ctx.log('Status: %s, Error: %s, Details: %s' % (
@@ -266,24 +270,53 @@ class AzureExperiment(object):
 
         return compute_target
 
-    def _get_leaderboard(self, run):
-        primary_metric = run.properties['primary_metric']
-        children = list(run.get_children(recursive=True))
-        leaderboard = pd.DataFrame(index=['model id', 'algorithm', 'score'])
+    def _get_leaderboard(self, experiment_run):
+        primary_metric = experiment_run.properties['primary_metric']
+        task_type = ""
+        if experiment_run.properties.get("AMLSettingsJsonString"):
+            settings = json.loads(experiment_run.properties.get("AMLSettingsJsonString"))
+            task_type = settings.get('task_type')
+
+        children = list(experiment_run.get_children(recursive=True))
+        leaderboard = pd.DataFrame(index=['model id', 'algorithm', 'score', 'fit_time', 'algorithm_name', 'algorithm_params', 'preprocessor', 'primary_metric', "all_scores", 'task_type'])
         goal_minimize = False
         for run in children:
             if('run_algorithm' in run.properties and 'score' in run.properties):
-                if(run.properties['run_preprocessor']):
+                if run.properties['run_preprocessor']:
                     run_algorithm = '%s,%s' % (run.properties['run_preprocessor'],
                         run.properties['run_algorithm'])
                 else:
                     run_algorithm = run.properties['run_algorithm']
+
+                algorithm_params = {}    
+                if run.properties.get('pipeline_spec'):
+                    pipeline_spec = json.loads(run.properties.get('pipeline_spec'))
+                    for item in pipeline_spec.get('objects', []):
+                        if item.get('spec_class') and item.get('spec_class') != "preproc" and \
+                            not "Ensemble" in item.get('class_name', ""):
+                            algorithm_params = item.get('param_kwargs')
+                            break
+
+                all_scores = run.get_metrics()
+                scores_to_remove = ['confusion_matrix', 'accuracy_table']
+                for item in scores_to_remove:
+                    if item in all_scores:
+                        del all_scores[item]
+
                 leaderboard[run.id] = [run.id,
                                       run_algorithm,
-                                      float(run.properties['score'])]
+                                      float(run.properties['score']),
+                                      run.properties['fit_time'],
+                                      run.properties['run_algorithm'],
+                                      algorithm_params,
+                                      run.properties['run_preprocessor'],
+                                      primary_metric,
+                                      all_scores,
+                                      task_type
+                                      ]
                 if('goal' in run.properties):
                     goal_minimize = run.properties['goal'].split('_')[-1] == 'min'
-
+                    
         leaderboard = leaderboard.T.sort_values(
             'score', ascending = goal_minimize)
         leaderboard = leaderboard.head(10)
