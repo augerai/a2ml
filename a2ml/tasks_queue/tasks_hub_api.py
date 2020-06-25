@@ -196,12 +196,13 @@ def _get_leaderboad_trials(params):
             "task_type": item['task_type'],
             "all_scores": item['all_scores'],
             "score_name": item['primary_metric'],
-            "algorithm_name": item['algorithm'],
+            "algorithm_name": item['algorithm_name'],
             "optimizer_name": "Azure",
             "evaluation_time": item["fit_time"],
             "algorithm_params": item['algorithm_params'],
             "experiment_session_id": ctx.config.get('experiment/run_id'),            
             "preprocessor": item["preprocessor"],
+            "algorithm_params_hash": None, #TODO : make_algorithm_params_hash in auger-ml
 
             "error": None,
             "ratio": 1.0,
@@ -216,7 +217,6 @@ def _get_leaderboad_trials(params):
             "dataset_ncols": 0,
             "dataset_nrows": 0,
             "dataset_manifest_id": None,
-            "algorithm_params_hash": None,
         })
     return trials
 
@@ -288,7 +288,7 @@ def evaluate_start_task(params):
 
     execute_task( monitor_evaluate_task, params, wait_for_result=False, 
         delay=params.get("monitor_evaluate_interval", 20))
-    
+
     return res
 
 @celeryApp.task(ignore_result=False)
