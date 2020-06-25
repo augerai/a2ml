@@ -2,10 +2,14 @@
 from celery import Celery
 from celery.concurrency import asynpool
 from a2ml.api.utils.json_utils import convert_simple_numpy_type
+from a2ml.tasks_queue.config import Config
+from kombu import Exchange, Queue
 from kombu.serialization import register
 from kombu.utils import json as _json
 import os
 import warnings
+
+task_config = Config()
 
 
 # Disable warnings
@@ -24,12 +28,10 @@ celeryApp = Celery(
 )
 
 celeryApp.conf.enable_utc = True
-celeryApp.conf.broker_url = os.environ.get(
-    "BROKER_URL",
-    "redis://%s:%s/0" % (
-        os.environ.get('REDIS_HOST', 'localhost'),
-        os.environ.get('REDIS_PORT', '6379')
-    )
+
+celeryApp.conf.broker_url = task_config.broker_url or "redis://%s:%s/0" % (
+    os.environ.get('REDIS_HOST', 'localhost'),
+    os.environ.get('REDIS_PORT', '6379')
 )
 
 # TODO: for AMQP there better to use "rpc://"
@@ -54,6 +56,14 @@ celeryApp.conf.result_persistent = True
 celeryApp.conf.task_acks_late = False
 celeryApp.conf.task_send_sent_event = True
 
+celeryApp.conf.task_queues = (
+    Queue('a2ml', Exchange('a2ml', delivery_mode=1),
+          routing_key='a2ml', durable=False, priority=3),
+)
+
+celeryApp.conf.task_routes = {
+    'a2ml.tasks_queue.tasks_hub_api.*': {'queue': 'a2ml'},
+}
 
 class NumpyKombuJSONEncoder(_json.JSONEncoder):
     """ Special json encoder for numpy types """
