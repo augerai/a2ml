@@ -12,13 +12,18 @@ class SyncSender:
         self.connection = None
 
     def publish(self, request_id, message):
-        if not self.connection:
-            self._open()
+        if config.notificator_redis_host:
+            if not self.connection:
+                self._open()
 
-        if isinstance(message, dict):
-            message = json.dumps(message)
+            if isinstance(message, dict):
+                message = json.dumps(message)
 
-        self.connection.xadd(request_id, {'json': message})
+            self.connection.xadd(request_id, {'json': message})
+        else:
+            # Not set NOTIFICATOR_REDIS_HOST env var if worker is run as Hub worker witouh A2ML server
+            # in this case worker will not try to notify about progress
+            pass
 
     def publish_result(self, request_id, status, result):
         self.publish(
