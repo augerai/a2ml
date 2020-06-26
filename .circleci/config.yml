@@ -131,33 +131,33 @@ workflows:
       #       branches:
       #         only:
       #           - master
-      - docker/publish:
-          cache_from: "augerai/a2ml:latest"
-          context: docker-hub
-          image: augerai/a2ml
-          name: docker-publish-tag
-          tag: $CIRCLE_TAG
-          requires:
-            - build-and-test
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - docker/publish:
-          cache_from: "augerai/a2ml:latest"
-          context: docker-hub
-          image: augerai/a2ml
-          name: docker-publish-master
-          tag: latest
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              ignore: /^v.*/
+      # - docker/publish:
+      #     cache_from: "augerai/a2ml:latest"
+      #     context: docker-hub
+      #     image: augerai/a2ml
+      #     name: docker-publish-tag
+      #     tag: $CIRCLE_TAG
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
+      # - docker/publish:
+      #     cache_from: "augerai/a2ml:latest"
+      #     context: docker-hub
+      #     image: augerai/a2ml
+      #     name: docker-publish-master
+      #     tag: latest
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #       tags:
+      #         ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
           cluster-name: eks_auger-cluster-staging1
