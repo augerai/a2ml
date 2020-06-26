@@ -105,6 +105,8 @@ jobs:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
+          aws-region: << parameters.aws-region >>
+          cluster-authentication-role-arn: ${ROLE_ARN}
       # - helm/install-helm-chart:
       #     chart: augerai/a2ml
       #     release-name: a2ml
