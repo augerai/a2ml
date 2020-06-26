@@ -81,15 +81,15 @@ jobs:
   deploy-to-k8s:
     executor: aws-eks/python3
     parameters:
-      cluster-name:
-        description: |
-          Name of the EKS cluster
-        type: string
-      aws-region:
-        description: |
-          AWS region
-        type: string
-        default: "us-west-2"
+      # cluster-name:
+      #   description: |
+      #     Name of the EKS cluster
+      #   type: string
+      # aws-region:
+      #   description: |
+      #     AWS region
+      #   type: string
+      #   default: "us-west-2"
       values-to-override:
         description: |
           Values will be used as helm install --set "key1=value1,key2=value2"
@@ -99,6 +99,8 @@ jobs:
       - run:
           name: Check Values to override
           command: |
+            echo << parameters.aws-region >>
+            echo << parameters.cluster-name >>
             echo << parameters.values-to-override >>
       # - kubernetes/install
       # - aws-eks/update-kubeconfig-with-authenticator:
@@ -154,30 +156,31 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
-          cluster-name: eks_auger-cluster-staging1
-          aws-region: us-west-2
-          context: eks
+          # cluster-name: $STAGING_CLUSTER_NAME
+          # aws-region: $AWS_REGION
           values-to-override: "image.tag=latest"
+          context: eks
           # requires:
-          #   - docker/publish
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              ignore: /^v.*/
+          #   - docker-publish-master
+          # filters:
+          #   branches:
+          #     only:
+          #       - master
+          #   tags:
+          #     ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-tag
-          cluster-name: eks_auger-cluster-staging1
-          aws-region: us-west-2
+          # cluster-name: $PROD_CLUSTER_NAME
+          # aws-region: AWS_REGION
+          values-to-override: "image.tag=$CIRCLE_TAG"
           context: eks
-          # values-to-override: "image.tag=$CIRCLE_TAG"
-          values-to-override: "image.tag=$CIRCLE_BRANCH"
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
+          requires:
+            - docker-publish-tag
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - publish-pip:
           filters:
             tags:
