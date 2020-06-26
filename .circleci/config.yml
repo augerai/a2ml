@@ -158,8 +158,8 @@ workflows:
           aws-region: us-west-2
           context: eks
           values-to-override: "image.tag=latest"
-          requires:
-            - docker/publish
+          # requires:
+          #   - docker/publish
           filters:
             branches:
               only:
@@ -173,8 +173,6 @@ workflows:
           context: eks
           # values-to-override: "image.tag=$CIRCLE_TAG"
           values-to-override: "image.tag=$CIRCLE_BRANCH"
-          # requires:
-          #   - docker/publish
           # filters:
           #   tags:
           #     only: /^v.*/
