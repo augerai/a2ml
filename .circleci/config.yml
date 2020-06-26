@@ -102,6 +102,8 @@ jobs:
             echo << parameters.aws-region >>
             echo << parameters.cluster-name >>
             echo << parameters.values-to-override >>
+            echo $ROLE_ARN
+            echo ${ROLE_ARN}
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
@@ -116,19 +118,19 @@ jobs:
 workflows:
   build-test-publish:
     jobs:
-      - build-and-test:
-          filters:
-            tags:
-              only: /^v.*/
-      - build-docs
-      - publish-docs:
-          requires:
-            - build-and-test
-            - build-docs
-          filters:
-            branches:
-              only:
-                - master
+      # - build-and-test:
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      # - build-docs
+      # - publish-docs:
+      #     requires:
+      #       - build-and-test
+      #       - build-docs
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
       - docker/publish:
           cache_from: "augerai/a2ml:latest"
           context: docker-hub
