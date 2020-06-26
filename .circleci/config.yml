@@ -173,8 +173,8 @@ workflows:
           context: eks
           # values-to-override: "image.tag=$CIRCLE_TAG"
           values-to-override: "image.tag=$CIRCLE_BRANCH"
-          requires:
-            - docker/publish
+          # requires:
+          #   - docker/publish
           # filters:
           #   tags:
           #     only: /^v.*/
