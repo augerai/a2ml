@@ -102,11 +102,8 @@ jobs:
             echo << parameters.aws-region >>
             echo << parameters.cluster-name >>
             echo << parameters.values-to-override >>
-      # - kubernetes/install
+      - kubernetes/install
       # - aws-eks/update-kubeconfig-with-authenticator:
-            # aws-profile: << parameters.aws-profile >>
-            # aws-region: << parameters.aws-region >>
-            # cluster-name: << parameters.cluster-name >>
       #     cluster-name: << parameters.cluster-name >>
       # - helm/install-helm-chart:
       #     chart: augerai/a2ml
@@ -159,8 +156,8 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
-          cluster-name: ${STAGING_CLUSTER_NAME}
-          aws-region: ${AWS_REGION}
+          cluster-name: eks_auger-cluster-staging1
+          aws-region: us-west-2
           values-to-override: "image.tag=latest"
           context: eks
           # requires:
@@ -173,8 +170,8 @@ workflows:
           #     ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-tag
-          cluster-name: ${PROD_CLUSTER_NAME}
-          aws-region: ${AWS_REGION}
+          cluster-name: eks_auger-cluster-prod2
+          aws-region: us-west-2
           values-to-override: "image.tag=$CIRCLE_TAG"
           context: eks
           requires:
