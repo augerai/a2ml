@@ -103,8 +103,8 @@ jobs:
             echo << parameters.cluster-name >>
             echo << parameters.values-to-override >>
       - kubernetes/install
-      # - aws-eks/update-kubeconfig-with-authenticator:
-      #     cluster-name: << parameters.cluster-name >>
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
       # - helm/install-helm-chart:
       #     chart: augerai/a2ml
       #     release-name: a2ml
