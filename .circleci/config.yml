@@ -81,15 +81,15 @@ jobs:
   deploy-to-k8s:
     executor: aws-eks/python3
     parameters:
-      # cluster-name:
-      #   description: |
-      #     Name of the EKS cluster
-      #   type: string
-      # aws-region:
-      #   description: |
-      #     AWS region
-      #   type: string
-      #   default: "us-west-2"
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+      aws-region:
+        description: |
+          AWS region
+        type: string
+        default: "us-west-2"
       values-to-override:
         description: |
           Values will be used as helm install --set "key1=value1,key2=value2"
@@ -104,6 +104,9 @@ jobs:
             echo << parameters.values-to-override >>
       # - kubernetes/install
       # - aws-eks/update-kubeconfig-with-authenticator:
+            # aws-profile: << parameters.aws-profile >>
+            # aws-region: << parameters.aws-region >>
+            # cluster-name: << parameters.cluster-name >>
       #     cluster-name: << parameters.cluster-name >>
       # - helm/install-helm-chart:
       #     chart: augerai/a2ml
@@ -156,8 +159,8 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
-          # cluster-name: $STAGING_CLUSTER_NAME
-          # aws-region: $AWS_REGION
+          cluster-name: $STAGING_CLUSTER_NAME
+          aws-region: $AWS_REGION
           values-to-override: "image.tag=latest"
           context: eks
           # requires:
@@ -170,8 +173,8 @@ workflows:
           #     ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-tag
-          # cluster-name: $PROD_CLUSTER_NAME
-          # aws-region: AWS_REGION
+          cluster-name: $PROD_CLUSTER_NAME
+          aws-region: AWS_REGION
           values-to-override: "image.tag=$CIRCLE_TAG"
           context: eks
           requires:
