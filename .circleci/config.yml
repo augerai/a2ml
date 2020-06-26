@@ -159,8 +159,8 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
-          cluster-name: $STAGING_CLUSTER_NAME
-          aws-region: $AWS_REGION
+          cluster-name: ${STAGING_CLUSTER_NAME}
+          aws-region: ${AWS_REGION}
           values-to-override: "image.tag=latest"
           context: eks
           # requires:
@@ -173,8 +173,8 @@ workflows:
           #     ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-tag
-          cluster-name: $PROD_CLUSTER_NAME
-          aws-region: AWS_REGION
+          cluster-name: ${PROD_CLUSTER_NAME}
+          aws-region: ${AWS_REGION}
           values-to-override: "image.tag=$CIRCLE_TAG"
           context: eks
           requires:
