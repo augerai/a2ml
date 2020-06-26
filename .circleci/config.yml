@@ -2,6 +2,9 @@ version: 2.1
 
 orbs:
   docker: circleci/docker@1.0.1
+  aws-eks: circleci/aws-eks@0.2.7
+  kubernetes: circleci/kubernetes@0.11.0
+  helm: circleci/helm@1.0.0
 
 jobs:
   build-docs:
@@ -30,7 +33,7 @@ jobs:
       - run:
           name: Build docs
           command: |
-            source venv/bin/activate 
+            source venv/bin/activate
             cd docs/
             make html
       - persist_to_workspace:
@@ -75,6 +78,37 @@ jobs:
       - run: make build
       - run: make release
 
+  deploy-to-k8s:
+    executor: aws-eks/python3
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+      aws-region:
+        description: |
+          AWS region
+        type: string
+        default: "us-west-2"
+      values-to-override:
+        description: |
+          Values will be used as helm install --set "key1=value1,key2=value2"
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Check Values to override
+          command: |
+            echo << parameters.values-to-override >>
+      # - kubernetes/install
+      # - aws-eks/update-kubeconfig-with-authenticator:
+      #     cluster-name: << parameters.cluster-name >>
+      # - helm/install-helm-chart:
+      #     chart: augerai/a2ml
+      #     release-name: a2ml
+      #     namespace: a2ml
+      #     values-to-override: << parameters.values-to-override >>
+
 workflows:
   build-test-publish:
     jobs:
@@ -118,6 +152,29 @@ workflows:
                 - master
             tags:
               ignore: /^v.*/
+      - deploy-to-k8s:
+          name: deploy-to-k8s-master
+          cluster-name: eks_auger-cluster-staging1
+          aws-region: us-west-2
+          context: eks
+          values-to-override: "image.tag=latest"
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              ignore: /^v.*/
+      - deploy-to-k8s:
+          name: deploy-to-k8s-tag
+          cluster-name: eks_auger-cluster-staging1
+          aws-region: us-west-2
+          context: eks
+          values-to-override: "image.tag=$CIRCLE_TAG"
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
       - publish-pip:
           filters:
             tags:
