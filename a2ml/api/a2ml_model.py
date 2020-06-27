@@ -56,7 +56,7 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = Model(ctx, 'auger').deploy(model_id='D881079E1ED14FB', locally=True)
+                model = A2MLModel(ctx, 'auger').deploy(model_id='D881079E1ED14FB', locally=True)
         """
         return self.get_runner(locally, provider).execute('deploy', model_id, locally)
 
@@ -70,30 +70,107 @@ class A2MLModel(BaseA2ML):
             model_id(str): The deployed model id you want to use.
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
+            data: dict or array of records
+            columns(list): list of column names if data is array of records            
             output(str): Output csv file path.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             Results for provider. ::
+                if filename is not None:
 
                 {
                     'auger': {
                         'result': True,
-                        'data': {'model_id': 'D881079E1ED14FB'}
+                        'data': {'predicted': 'dataset_predicted.csv'}
+                    }
+                }
+ 
+                if filename is None and data is not None and columns is None:
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
                     }
                 }
 
+                if filename is None and data is not None and columns is not None:
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
+                    }
+                }
 
         Examples:
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx, 'auger').predict(filename=<path_to_file>/dataset.csv,model_id='D881079E1ED14FB',threshold=None,locally=False)
+                rv = A2MLModel(ctx).predict('../irises.csv', model_id)
+                # if rv[provider].result is True
+                # predictions are stored in rv[provider]['data']['predicted']
+
+            .. code-block:: python
+
+                ctx = Context()
+                data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
+                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                # if rv[provider].result is True
+                # predictions are returned as rv[provider]['data']['predicted']
+
+            .. code-block:: python
+
+                ctx = Context()
+                data = [['value1', 'value2'], ['value3', 'value4']]
+                columns = ['col1', 'col2']                
+                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                # if rv[provider].result is True
+                # predictions are returned as rv[provider]['data']['predicted']
+
         """
         return self.get_runner(locally, provider).execute('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
-    def actual(self, filename, model_id, locally=False, provider=None):
+    def actual(self, model_id, prediction_id, actual_value, locally=False, provider=None):
+        """Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.
+
+        Note:
+            It is assumed you have predictions against this model first. 
+        Args:
+            model_id(str): The deployed model id you want to use.
+            prediction_id(str): id return by prediction
+            actual_value: actual value for the target 
+            locally(bool): Process actuals locally.
+
+        Returns:
+            Results for each provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': ''
+                    }
+                }
+
+                {
+                    'auger': {
+                        'result': False,
+                        'data': 'Prediction ID does not exist.'
+                    }
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2MLModel(ctx).actual('D881079E1ED14FB', 'prediction_1', 'actual_1')
+        """
+        return self.get_runner(locally, provider).execute('actual', model_id, prediction_id, actual_value, locally)
+
+    @show_result
+    def actuals(self, model_id, filename=None, actual_records=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
@@ -112,9 +189,10 @@ class A2MLModel(BaseA2ML):
 
 
         Args:
-            filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
+            filename(str): The file with data to request predictions for.
             locally(bool): Process actuals locally.
+            actual_records: array of records [[prediction_id, actual]]
 
         Returns:
             Results for each provider. ::
@@ -131,39 +209,16 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx, 'auger, azure').actual(filename=<path_to_file>/dataset_actuals.csv,model_id='D881079E1ED14FB')
-        """
-        return self.get_runner(locally, provider).execute('actual', filename, model_id, locally)
+                model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/dataset_actuals.csv)
 
-    @show_result
-    def build_review_data(self, model_id, locally=False, output=None, provider=None):
-        """Create data file with predcitions and actuals for the model.
-
-        Args:
-            model_id(str): The deployed model id you want to use.
-            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            output(str): Output data file path.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
-
-        Returns:
-            Results for provider. ::
-
-                {
-                    'auger': {
-                        'result': True,
-                        'data': {'path': 'path_to_file'}
-                    }
-                }
-
-
-        Examples:
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx, 'auger').build_review_data(model_id='D881079E1ED14FB',locally=False)
-        """
-        return self.get_runner(locally, provider).execute('build_review_data', model_id, locally, output)
+                actual_records = [['prediction_1', 'value1'], ['prediction_2', 'value2']]
+                model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
+        """
+        return self.get_runner(locally, provider).execute('actuals', model_id, filename, actual_records, locally)
 
     @show_result
     def review(self, model_id, locally=False, provider=None):
