@@ -184,9 +184,8 @@ class A2MLModel(BaseA2ML):
                   - actual
                 * - eaed9cd8-ba49-4c06-86d5-71d453c681d1
                   - Iris-setosa
-
-
-
+                * - eaed9cd8-ba49-4c06-86d5-71d453c65290
+                  - Iris-virginica
 
         Args:
             model_id(str): The deployed model id you want to use.
@@ -209,7 +208,7 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/dataset_actuals.csv)
+                model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
 
             .. code-block:: python
 
