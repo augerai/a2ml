@@ -31,3 +31,6 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, output)
+
+    def get_provider_info(self, ctx, provider):
+        return {"project": {"cluster": ctx.config.get("cluster", config_name=provider)}}

@@ -101,6 +101,11 @@ class AugerBaseApi(object):
         self._log_status(status)
 
     def _call_create(self, params=None, progress=None,has_return_object=True):
+        if self.ctx.provider_info:
+            params['provider'] = list(self.ctx.provider_info.keys())[0]
+            if self.ctx.provider_info[params['provider']].get(self.api_request_path):
+                params['provider_info'] = self.ctx.provider_info[params['provider']][self.api_request_path]
+
         object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
         if has_return_object:

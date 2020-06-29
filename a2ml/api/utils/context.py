@@ -36,6 +36,7 @@ class Context(object):
         self.name = self.config.name
         self.notificator = None
         self.request_id = None
+        self.provider_info = None
 
         if len(self.name) > 0:
             self.name = "{:<9}".format('[%s]' % self.name)
@@ -106,6 +107,7 @@ class Context(object):
         new.request_id = self.request_id
         new.config.parts = self.config.parts
         new.config.parts_changes = self.config.parts_changes
+        new.provider_info = self.provider_info
 
         if self._runs_on_server and hasattr(self, 'credentials'):
             new.credentials = self.credentials
