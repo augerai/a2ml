@@ -50,8 +50,13 @@ class ModelReview(object):
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
             actual_date=None, actuals_id = None):
 
+        features = None 
+        if actuals_path or (actual_records and type(actual_records[0]) == list):
+            features = ['prediction_id', 'actual']
+
         ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
-            features=['prediction_id', 'a2ml_actual'])
+            features=features)
+        ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         actuals_count = ds_actuals.count()
 
