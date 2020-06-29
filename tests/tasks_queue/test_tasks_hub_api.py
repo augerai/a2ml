@@ -1,6 +1,7 @@
 import os
 import pytest
 import unittest
+import json
 
 from a2ml.tasks_queue.tasks_hub_api import *
 
@@ -35,6 +36,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
     def test_evaluate_start(self):
         params = {
             'provider': "azure",
+            'start_monitor_evaluate': False,
             'augerInfo': {
                 'experiment_id': 'bb29d41a246f601b',
                 'project_id': '820',
@@ -46,16 +48,16 @@ class TestTasksHubApiAuger(unittest.TestCase):
                         'url': 'adult.data.csv'
                     },
                     'project':{
-                        'name': 'a2ml_azure_adult_3'
+                        'name': 'a2ml_azure_adult_3',
+                        'cluster': {
+                            'name': 'cpucluster',
+                            'min_nodes': 0,
+                            'max_nodes': 2,
+                            'type': 'STANDARD_D2_V2'
+                        }                        
                     },
                     'experiment': {
                         'name': 'adult-data-csv',
-                    },
-                    'cluster': {
-                        'name': 'cpucluster',
-                        'min_nodes': 0,
-                        'max_nodes': 2,
-                        'type': 'STANDARD_D2_V2'
                     }
                 }
             }
@@ -95,8 +97,96 @@ class TestTasksHubApiAuger(unittest.TestCase):
             }
         }
         res = _get_leaderboad_trials(params)
+        print(res)
         self.assertTrue(res)
         self.assertTrue(res[0]['uid'])
         self.assertTrue(res[0]['all_scores'])
         self.assertTrue(res[0]['algorithm_params'])
 
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_deploy_model(self):
+        params = {
+            'provider': "azure",
+            'model_id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b_0',
+            'review': True,
+
+            'augerInfo': {
+                'projectPath': 'tests/tmp',
+                'experiment_id': 'bb29d41a246f601b',
+                'experiment_session_id': '010def8e3cb89236'
+            },
+
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                    'experiment': {
+                        'name': 'adult-data-csv',
+                    },
+                    'experiment_session': {
+                        'id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b',
+                    },
+                }
+            }
+        }
+        res = deploy_model_task(params)
+        #print(res)
+
+        self.assertTrue("azure" in res)
+        self.assertTrue(res["azure"]["result"])
+
+    def _get_predict_params(self):
+        return {
+            'provider': "azure",
+
+            'model_id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b_0',
+            'path_to_predict':'tests/fixtures/adult.data_test.csv',
+
+            'augerInfo': {
+                'projectPath': 'tests/tmp',
+                'experiment_id': 'bb29d41a246f601b',
+                'experiment_session_id': '010def8e3cb89236'
+            },
+
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                    'experiment': {
+                        'name': 'adult-data-csv',
+                    },
+                    'experiment_session': {
+                        'id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b',
+                    },
+                }
+            }
+        }
+        
+    @pytest.mark.skip(reason='run it locally')
+    def test_predict(self):
+        params = self._get_predict_params()
+        res = predict_by_model_task(params)
+        print(res)
+
+        self.assertTrue(len(res["predicted"])>0)
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_predict_json(self):
+        params = self._get_predict_params()
+        params['json_result']=True
+        params['count_in_result']=True
+        params['threshold'] = 0.7
+
+        res = predict_by_model_task(params)
+        print(res)
+
+        self.assertTrue(len(res["predicted"])>0)
+
+        predicted = json.loads(res["predicted"])
+        print(predicted.keys())
+
+        self.assertEqual(predicted['columns'], ["prediction_id","age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income","proba_0","proba_1"] )
+        self.assertEqual(len(predicted['data']), 7)

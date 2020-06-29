@@ -29,13 +29,18 @@ def process_task_result(status, retval, task_id, args, kwargs, einfo):
             # AugerMessenger(params).set_cluster_task_result(params['augerInfo']['cluster_task_id'],
             #     status, retval, str(einfo))
 
-def _get_hub_experiment_session(experiment_session_id):
-    from a2ml.api.auger.experiment import AugerExperiment
-    from a2ml.api.auger.impl.cloud.experiment_session import AugerExperimentSessionApi
+def _get_hub_context():
+    from a2ml.api.auger.project import AugerProject
 
     ctx = Context(debug=True)
-    #ctx.credentials = params.get('provider_info', {}).get('auger', {}).get('credentials')
-    experiment = AugerExperiment(ctx)
+    project = AugerProject(ctx)
+
+    return ctx
+
+def _get_hub_experiment_session(experiment_session_id):
+    from a2ml.api.auger.impl.cloud.experiment_session import AugerExperimentSessionApi
+
+    ctx = _get_hub_context()
     session_api = AugerExperimentSessionApi(ctx, session_id=experiment_session_id)
     return session_api.properties(), ctx
 
@@ -43,8 +48,7 @@ def _get_hub_project_file(project_file_id):
     from a2ml.api.auger.project import AugerProject
     from a2ml.api.auger.impl.cloud.project_file import AugerProjectFileApi
 
-    ctx = Context(debug=True)
-    project = AugerProject(ctx)
+    ctx = _get_hub_context()
     project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
     return project_file_api.properties(), ctx
 
@@ -84,6 +88,37 @@ def _make_hub_objects_update(ctx, provider):
                 
     return updates
 
+def _read_hub_experiment_session(ctx, params):
+    experiment_session, ctx_hub = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])    
+
+    evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
+    dataset_statistics = experiment_session.get('dataset_statistics', {}).get('stat_data', [])
+
+    ctx.config.set('model_type', 
+        "classification" if evaluation_options.get('classification', True) else "regression")
+    _get_options_from_dataset_statistic(ctx.config, dataset_statistics)
+
+    ctx.config.set('experiment/validation_source', evaluation_options.get('test_data_path'))
+
+    ctx.config.set('experiment/cross_validation_folds', 
+        evaluation_options.get('crossValidationFolds', 5))
+    ctx.config.set('experiment/max_total_time', 
+        evaluation_options.get('max_total_time_mins', 60))
+    ctx.config.set('experiment/max_eval_time', 
+        evaluation_options.get('max_eval_time_mins', 6))
+    ctx.config.set('experiment/max_n_trials', 
+        evaluation_options.get('max_n_trials', 100))
+    ctx.config.set('experiment/use_ensemble', 
+        evaluation_options.get('use_ensemble', True))
+    if evaluation_options.get('scoring') == "f1":
+        ctx.config.set('experiment/metric',
+            "accuracy", params.get('provider'))
+    else:    
+        ctx.config.set('experiment/metric',
+            evaluation_options.get('scoring'), provider)
+
+    return ctx_hub
+        
 def _update_hub_objects(ctx, provider, ctx_hub, params):
     hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
     print(hub_objects_update)
@@ -162,21 +197,30 @@ def _update_hub_trials(params, trials):
         'trials': _format_leaderboard_for_hub(trials)
     })
 
-def _get_leaderboad_trials(params):
+def _create_provider_context(params):
+    provider = params.get('provider', 'auger')
+
     ctx = Context(
-        name=params.get('provider'),
-        #path=params.get('project_path'),
+        name=provider,
+        path=params.get('augerInfo', {}).get('projectPath'),
         debug=params.get('debug_log', True)
     )
     ctx.set_runs_on_server(True)
-    ctx.config.set('providers', [params.get('provider')])
+    ctx.config.set('providers', [provider])
 
-    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
+    provider_info = params.get('provider_info', {}).get(provider, {})
 
-    ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
-    #ctx.config.set('dataset', provider_info.get('project_file').get('url'), params.get('provider'))
-    ctx.config.set('experiment/name', provider_info.get('experiment').get('name'), params.get('provider'))
-    ctx.config.set('experiment/run_id', provider_info.get('experiment_session').get('id'), params.get('provider'))
+    if provider_info.get('project', {}).get('name'):
+        ctx.config.set('name', provider_info['project']['name'], provider)
+    if provider_info.get('experiment', {}).get('name'):    
+        ctx.config.set('experiment/name', provider_info['experiment']['name'], provider)
+    if provider_info.get('experiment_session', {}).get('id'):
+        ctx.config.set('experiment/run_id', provider_info['experiment_session']['id'], provider)
+
+    return ctx
+
+def _get_leaderboad_trials(params):
+    ctx = _create_provider_context(params)
 
     res = A2ML(ctx).evaluate()
     leaderboard = []
@@ -234,60 +278,27 @@ def evaluate_start_task(params):
     if not params.get('augerInfo', {}).get('experiment_session_id'):
         raise Exception("evaluate_start_task missed experiment_session_id parameter.")
 
-    experiment_session, ctx_hub = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])    
+    ctx = _create_provider_context(params)
+    provider = params.get('provider', 'auger')
+    provider_info = params.get('provider_info', {}).get(provider, {})
 
-    ctx = Context(
-        name=params.get('provider'),
-        #path=params.get('project_path'),
-        debug=params.get('debug_log', True)
-    )
-    ctx.set_runs_on_server(True)
-    ctx.config.set('providers', [params.get('provider')])
+    ctx.config.set('dataset', provider_info.get('project_file').get('url'), provider)
 
-    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
+    cluster = provider_info.get('project', {}).get('cluster', {})
+    ctx.config.set('cluster/name', cluster.get('name'), provider)
+    ctx.config.set('cluster/min_nodes', cluster.get('min_nodes'), provider)
+    ctx.config.set('cluster/max_nodes', cluster.get('max_nodes'), provider)
+    ctx.config.set('cluster/type', cluster.get('type'), provider)
 
-    ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
-    ctx.config.set('dataset', provider_info.get('project_file').get('url'), params.get('provider'))
-    ctx.config.set('experiment/name', provider_info.get('experiment').get('name'), params.get('provider'))
-
-    ctx.config.set('cluster/name', provider_info.get('cluster').get('name'), params.get('provider'))
-    ctx.config.set('cluster/min_nodes', provider_info.get('cluster').get('min_nodes'), params.get('provider'))
-    ctx.config.set('cluster/max_nodes', provider_info.get('cluster').get('max_nodes'), params.get('provider'))
-    ctx.config.set('cluster/type', provider_info.get('cluster').get('type'), params.get('provider'))
-
-    evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
-    dataset_statistics = experiment_session.get('dataset_statistics', {}).get('stat_data', [])
-
-    ctx.config.set('model_type', 
-        "classification" if evaluation_options.get('classification', True) else "regression")
-    _get_options_from_dataset_statistic(ctx.config, dataset_statistics)
-
-    ctx.config.set('experiment/validation_source', evaluation_options.get('test_data_path'))
-
-    ctx.config.set('experiment/cross_validation_folds', 
-        evaluation_options.get('crossValidationFolds', 5))
-    ctx.config.set('experiment/max_total_time', 
-        evaluation_options.get('max_total_time_mins', 60))
-    ctx.config.set('experiment/max_eval_time', 
-        evaluation_options.get('max_eval_time_mins', 6))
-    ctx.config.set('experiment/max_n_trials', 
-        evaluation_options.get('max_n_trials', 100))
-    ctx.config.set('experiment/use_ensemble', 
-        evaluation_options.get('use_ensemble', True))
-    if evaluation_options.get('scoring') == "f1":
-        ctx.config.set('experiment/metric',
-            "accuracy", params.get('provider'))
-    else:    
-        ctx.config.set('experiment/metric',
-            evaluation_options.get('scoring'), params.get('provider'))
-
+    ctx_hub = _read_hub_experiment_session(ctx, params)
     ctx.config.clean_changes()    
     res = A2ML(ctx).train()
 
-    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+    _update_hub_objects(ctx, provider, ctx_hub, params)
 
-    execute_task( monitor_evaluate_task, params, wait_for_result=False, 
-        delay=params.get("monitor_evaluate_interval", 20))
+    if params.get("start_monitor_evaluate", True):
+        execute_task( monitor_evaluate_task, params, wait_for_result=False, 
+            delay=params.get("monitor_evaluate_interval", 20))
 
     return res
 
@@ -302,18 +313,45 @@ def import_data_task(params):
     if not data_path:    
         data_path = project_file.get('url')
 
-    ctx = Context(
-        name=params.get('provider'),
-        debug=params.get('debug_log', True)
-    )
-    ctx.set_runs_on_server(True)
-    ctx.config.set('providers', [params.get('provider')])
-
-    provider_info = params.get('provider_info', {}).get(params.get('provider'), {})
-    ctx.config.set('name', provider_info.get('project').get('name'), params.get('provider'))
+    ctx = _create_provider_context(params)
 
     ctx.config.clean_changes()    
     res = A2ML(ctx).import_data(source=data_path)
+    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+
+    return res
+
+@celeryApp.task(ignore_result=False, after_return=process_task_result)
+def deploy_model_task(params):
+    ctx = _create_provider_context(params)
+    ctx_hub = _read_hub_experiment_session(ctx, params)
+
+    ctx.config.clean_changes()    
+    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('review'))
+    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+
+    return res
+
+@celeryApp.task(ignore_result=False, after_return=process_task_result)
+def predict_by_model_task(params):
+    from a2ml.api.utils.crud_runner import CRUDRunner
+
+    ctx = _create_provider_context(params)
+    ctx_hub = _get_hub_context()
+
+    ctx.config.clean_changes()
+    runner = CRUDRunner(ctx, "%s"%params.get('provider'), 'model')
+    res = list(runner.providers.values())[0].predict(
+        filename=params.get('path_to_predict'), 
+        model_id=params.get('model_id'), 
+        threshold=params.get('threshold'), 
+        data=params.get('records'), 
+        columns=params.get('features'),
+        json_result=params.get('json_result'),
+        count_in_result=params.get('count_in_result'),
+        prediction_date=params.get('prediction_date'),
+        prediction_id = params.get('prediction_id')        
+    )
     _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
 
     return res

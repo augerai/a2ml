@@ -58,7 +58,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = Model(ctx, 'auger').deploy(model_id='D881079E1ED14FB', locally=True)
         """
-        return self.get_runner(locally, provider).execute('deploy', model_id, locally)
+        return self.get_runner(locally, provider).execute('deploy', model_id, locally, review)
 
     @show_result
     def predict(self, filename,
