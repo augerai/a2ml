@@ -39,7 +39,7 @@ def predict(ctx, provider, filename, model_id, threshold, locally, output):
     """Predict with deployed model."""
     A2MLModel(ctx, provider).predict(filename, model_id, threshold=threshold, locally=locally, output=output)
 
-@click.command('actual', short_help='Send actual values for deployed model. Needed for review and monitoring.')
+@click.command('actuals', short_help='Send actual values for deployed model. Needed for review and monitoring.')
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--model-id', '-m', type=click.STRING, required=True,
     help='Deployed model id.')
@@ -48,23 +48,9 @@ help='Cloud AutoML Provider.')
 @click.option('--locally', is_flag=True, default=False,
     help='Process actuals locally.')
 @pass_context
-def actual(ctx, provider, filename, model_id, locally):
+def actuals(ctx, provider, filename, model_id, locally):
     """Predict with deployed model."""
-    A2MLModel(ctx, provider).actual(filename, model_id, locally)
-
-@click.command('build_review_data', short_help='Create data file with predcitions and actuals for the model.')
-@click.option('--model-id', '-m', type=click.STRING, required=True,
-    help='Deployed model id.')
-@click.option('--locally', is_flag=True, default=False,
-    help='Build data file for local usage.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
-    help='Cloud AutoML Provider.')
-@click.option('--output', '-o', type=click.STRING, required=False,
-    help='Output data file path.')
-@pass_context
-def build_review_data(ctx, provider, model_id, locally, output):
-    """Predict with deployed model."""
-    A2MLModel(ctx, provider).build_review_data(model_id, locally=locally, output=output)
+    A2MLModel(ctx, provider).actuals(model_id, filename=filename, locally=locally)
 
 @click.command('review', short_help='Review the performance of deployed model.')
 @click.option('--model-id', '-m', type=click.STRING, required=True,
@@ -80,8 +66,7 @@ def review(ctx, provider, model_id, output):
 def add_commands(ctx):
     cmdl.add_command(deploy)
     cmdl.add_command(predict)
-    cmdl.add_command(actual)
-    cmdl.add_command(build_review_data)    
+    cmdl.add_command(actuals)
     cmdl.add_command(review)
 
 add_commands()

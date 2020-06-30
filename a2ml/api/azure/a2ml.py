@@ -32,5 +32,17 @@ class AzureA2ML(object):
         return AzureModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, output)
 
+    def actual(self, model_id, prediction_id, actual_value, locally=False):
+        from a2ml.api.azure.model import AzureModel
+
+        return AzureModel(self.ctx).actual(
+            model_id, prediction_id, actual_value, locally)
+
+    def actuals(self, model_id, filename=None, actual_records=None, locally=False):
+        from a2ml.api.azure.model import AzureModel
+
+        return AzureModel(self.ctx).actuals(
+            model_id, filename, actual_records, locally)
+
     def get_provider_info(self, ctx, provider):
         return {"project": {"cluster": ctx.config.get("cluster", config_name=provider)}}

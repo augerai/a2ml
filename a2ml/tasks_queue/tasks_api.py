@@ -156,10 +156,31 @@ def stop_experiment_task(params):
 
 # Models
 @celeryApp.task(after_return=__handle_task_result)
+def actuals_model_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2MLModel(ctx, None).actuals(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
 def actual_model_task(params):
     return with_context(
         params,
         lambda ctx: A2MLModel(ctx, None).actual(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def actual_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).actual(*params['args'], **params['kwargs'])
+    )
+
+@celeryApp.task(after_return=__handle_task_result)
+def actuals_task(params):
+    return with_context(
+        params,
+        lambda ctx: A2ML(ctx).actuals(*params['args'], **params['kwargs'])
     )
 
 @celeryApp.task(after_return=__handle_task_result)
