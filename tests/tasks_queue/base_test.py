@@ -181,5 +181,6 @@ class BaseTest(object):
             "name": "[config] ",
             "notificator": None,
             "py/object": "a2ml.api.utils.context.Context",
-            "request_id": None
+            "request_id": None,
+            "provider_info": None
         }
