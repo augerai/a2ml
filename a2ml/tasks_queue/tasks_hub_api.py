@@ -56,7 +56,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
         if params and params.get('augerInfo', {}).get('cluster_task_id'):
             response = {
                 'type': 'TaskResult',
-                'task_id': params['augerInfo']['cluster_task_id'],
+                'augerInfo': params['augerInfo'],
                 'status': status,
             }
 
@@ -91,7 +91,7 @@ def _get_hub_project_file(project_file_id):
     project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
     return project_file_api.properties(), ctx
 
-def _make_hub_objects_update(ctx, provider):
+def _make_hub_provider_info_update(ctx, provider, auger_info):
     #project, project_file, experiment, experiment_session
     project_name = ctx.config.get("name", parts=ctx.config.parts_changes)
     project_file_dataset = ctx.config.get("dataset", parts=ctx.config.parts_changes)
@@ -100,33 +100,33 @@ def _make_hub_objects_update(ctx, provider):
     experiment_name = ctx.config.get('experiment/name', parts=ctx.config.parts_changes)
     experiment_session_id = ctx.config.get('experiment/run_id', parts=ctx.config.parts_changes)
 
-    updates = { 'type': 'ProviderInfoUpdate' }
+    provider_info = {}
 
     if project_name:
-        updates['project'] = {
-            'provider_info': {provider: {'name': project_name}}
-        }
-    if project_file_dataset:
-        updates['project_file'] = {
-            'provider_info': {provider: {'url': project_file_dataset}}
-        }
-    # if project_file_validation_dataset:
-    #     if updates.get('project_file'):
-    #         updates['project_file']['provider_info'][provider] = {'validation_dataset': project_file_validation_dataset}
-    #     else:
-    #         updates['project_file'] = {
-    #             'provider_info': {provider: {'validation_dataset': project_file_validation_dataset}}
-    #         }
-    if experiment_name:
-        updates['experiment'] = {
-            'provider_info': {provider: {'name': experiment_name}}
-        }
-    if experiment_session_id:
-        updates['experiment_session'] = {
-            'provider_info': {provider: {'id': experiment_session_id}}
-        }
+        provider_info['project'] = {'name': project_name}
 
-    return updates
+    if project_file_dataset:
+        provider_info['project_file'] = {'url': project_file_dataset}
+
+    # if project_file_validation_dataset:
+    #     if provider_info.get('project_file'):
+    #         provider_info['project_file']['validation_dataset'] = project_file_validation_dataset
+    #     else:
+    #         provider_info['project_file'] = {'validation_dataset': project_file_validation_dataset}
+
+    if experiment_name:
+        provider_info['experiment'] = {'name': experiment_name}
+
+    if experiment_session_id:
+        provider_info['experiment_session'] = {'id': experiment_session_id}
+
+    return {
+        'type': 'ProviderInfoUpdate',
+        'augerInfo': auger_info,
+        'provider_info': {
+            provider: provider_info
+        }
+    }
 
 def _read_hub_experiment_session(ctx, params):
     experiment_session, ctx_hub = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])
@@ -160,7 +160,7 @@ def _read_hub_experiment_session(ctx, params):
     return ctx_hub
 
 def _update_hub_objects(ctx, provider, ctx_hub, params):
-    hub_objects_update = _make_hub_objects_update(ctx, params.get('provider'))
+    hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('augerInfo'))
     send_result_to_hub.delay(json.dumps(hub_objects_update))
 
 def _get_options_from_dataset_statistic(config, stat_data):
