@@ -18,9 +18,6 @@ class BaseTest(object):
     def s3_resource(self):
         return boto3.resource('s3', endpoint_url=os.environ.get('S3_ENDPOINT_URL', None))
 
-    # def review_bucket(self):
-    #     return self.s3_resource().Bucket('review-data')
-
     def clear_bucket(self, bucket):
         try:
             for obj in bucket.objects.filter(Prefix='/'):
