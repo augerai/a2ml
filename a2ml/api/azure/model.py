@@ -62,7 +62,7 @@ class AzureModel(object):
         return result
 
     def _get_a2ml_info(self):
-        return {'augerInfo':{
+        return {'hub_info':{
                 'projectPath': self.ctx.config.get_path(),
                 'experiment_id': self.ctx.config.get('experiment/name', None),
                 'experiment_session_id':self.ctx.config.get('experiment/run_id', None),

@@ -79,9 +79,9 @@ def load_metric_task_params(model_path):
 
     res['model_path'] = model_path
     res['metrics_rebuild'] = False
-    res['augerInfo']['experiment_id'] = 'b04782c60b1bc194'
-    res['augerInfo']['experiment_session_id'] = '2cf2db7ae6eca1e0'
-    res['augerInfo']['projectPath'] = 'tests/fixtures/test_distribution_chart_stats'
+    res['hub_info']['experiment_id'] = 'b04782c60b1bc194'
+    res['hub_info']['experiment_session_id'] = '2cf2db7ae6eca1e0'
+    res['hub_info']['projectPath'] = 'tests/fixtures/test_distribution_chart_stats'
 
     return res
 
@@ -186,7 +186,7 @@ def test_get_feature_importances_no_metrics_cache():
     model_path = 'tests/fixtures/test_distribution_chart_stats/adult'
 
     params = load_metric_task_params(model_path)
-    params['augerInfo']['pipeline_id'] = '555555555555555'
+    params['hub_info']['pipeline_id'] = '555555555555555'
 
     res = ModelReview(params)._get_feature_importances()
 

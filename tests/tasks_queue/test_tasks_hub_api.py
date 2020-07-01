@@ -13,7 +13,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
     def test_import_data(self):
         params = {
             'provider': "azure",
-            'augerInfo': {
+            'hub_info': {
                 'project_file_id': '2719',
             },
             'url': '/Users/evgenyvovchenko/Projects/auger-experiments/files/adult.data.csv',
@@ -37,7 +37,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         params = {
             'provider': "azure",
             'start_monitor_evaluate': False,
-            'augerInfo': {
+            'hub_info': {
                 'experiment_id': 'bb29d41a246f601b',
                 'project_id': '820',
                 'experiment_session_id': '010def8e3cb89236'
@@ -77,7 +77,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         params = {
             'provider': "azure",
-            'augerInfo': {
+            'hub_info': {
                 'experiment_id': 'bb29d41a246f601b',
                 'project_id': '820',
                 'experiment_session_id': '010def8e3cb89236'
@@ -111,7 +111,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'model_id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b_0',
             'review': True,
 
-            'augerInfo': {
+            'hub_info': {
                 'projectPath': 'tests/tmp',
                 'experiment_id': 'bb29d41a246f601b',
                 'experiment_session_id': '010def8e3cb89236'
@@ -144,7 +144,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'model_id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b_0',
             'path_to_predict':'tests/fixtures/adult.data_test.csv',
 
-            'augerInfo': {
+            'hub_info': {
                 'projectPath': 'tests/tmp',
                 'experiment_id': 'bb29d41a246f601b',
                 'experiment_session_id': '010def8e3cb89236'

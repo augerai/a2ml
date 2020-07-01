@@ -16,12 +16,12 @@ class ModelReview(object):
     def __init__(self, params):
         self.model_path = params.get('model_path')
         if not self.model_path:
-            self.model_path = ModelHelper.get_model_path(params['augerInfo']['pipeline_id'],
-                params['augerInfo'].get('projectPath'))
+            self.model_path = ModelHelper.get_model_path(params['hub_info']['pipeline_id'],
+                params['hub_info'].get('projectPath'))
 
         self.options = fsclient.read_json_file(os.path.join(self.model_path, "options.json"))
-        if params.get('augerInfo'):
-            self.options['augerInfo'] = params['augerInfo']
+        if params.get('hub_info'):
+            self.options['hub_info'] = params['hub_info']
 
         self.target_feature = self.options.get('targetFeature')
 
