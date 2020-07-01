@@ -76,8 +76,7 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
-            Results for provider. ::
-                if filename is not None:
+            if filename is not None. ::
 
                 {
                     'auger': {
@@ -85,8 +84,8 @@ class A2MLModel(BaseA2ML):
                         'data': {'predicted': 'dataset_predicted.csv'}
                     }
                 }
- 
-                if filename is None and data is not None and columns is None:
+
+            if filename is None and data is not None and columns is None. ::
 
                 {
                     'auger': {
@@ -95,7 +94,7 @@ class A2MLModel(BaseA2ML):
                     }
                 }
 
-                if filename is None and data is not None and columns is not None:
+            if filename is None and data is not None and columns is not None. ::
 
                 {
                     'auger': {
