@@ -489,42 +489,33 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt>Results for provider. ::</dt><dd><p>if filename is not None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': 'dataset_predicted.csv'}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-<p>if filename is None and data is not None and columns is None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-<p>if filename is None and data is not None and columns is not None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
+<dd class="field-even"><p><p>if filename is not None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset_predicted.csv&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>if filename is None and data is not None and columns is None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>if filename is None and data is not None and columns is not None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </p>
 </dd>
 </dl>
@@ -1149,42 +1140,33 @@ interrupted: Search was interrupted</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt>Results for provider. ::</dt><dd><p>if filename is not None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': 'dataset_predicted.csv'}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-<p>if filename is None and data is not None and columns is None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-<p>if filename is None and data is not None and columns is not None:</p>
-<dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>'auger': {</dt><dd><p>'result': True,
-'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
+<dd class="field-even"><p><p>if filename is not None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset_predicted.csv&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>if filename is None and data is not None and columns is None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>if filename is None and data is not None and columns is not None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </p>
 </dd>
 </dl>
@@ -1391,11 +1373,10 @@ interrupted: Search was interrupted</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>ctx = Context()
-DataSet(ctx, 'auger, azure').select(dataset_name)</p>
 </dd></dl>
 
 </dd></dl>
