@@ -267,6 +267,7 @@ jobs:
           fi
     - run:
         command: |
+          ROLE_ARN_DEBUG="${ROLE_ARN}-DEBUG"
           CLUSTER_NAME="eks_auger-cluster-staging1"
           AWS_REGION="us-west-2"
           AWS_PROFILE=""
@@ -274,6 +275,7 @@ jobs:
           CLUSTER_CONTEXT_ALIAS=""
           DRY_RUN="false"
           VERBOSE="false"
+          echo "TEST ${ROLE_ARN_DEBUG}"
           if [ -n "${CLUSTER_NAME}" ]; then
             set -- "$@" --name "${CLUSTER_NAME}"
           fi
