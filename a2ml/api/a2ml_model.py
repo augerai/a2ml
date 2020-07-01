@@ -166,7 +166,8 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).actual('D881079E1ED14FB', 'prediction_1', 'actual_1')
         """
-        return self.get_runner(locally, provider).execute('actual', model_id, prediction_id, actual_value, locally)
+        actual_records = [[prediction_id, actual_value]]
+        return self.actuals(model_id, actual_records=actual_records, locally=locally, provider=provider)
 
     @show_result
     def actuals(self, model_id, filename=None, actual_records=None, locally=False, provider=None):
