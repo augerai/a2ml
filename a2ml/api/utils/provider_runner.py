@@ -48,7 +48,12 @@ class ProviderRunner(object):
         # no need to run it on the thread
         if len(self.providers) == 1:
             provider_name = list(self.providers.keys())[0]
-            return self.execute_provider(provider_name, operation_name, *args, **kwargs)
+            result = self.execute_provider(provider_name, operation_name, *args, **kwargs)
+
+            if list(self.providers.keys())[0] in result:
+                result = list(result.values())[0]
+
+            return result
 
         with ThreadPoolExecutor(max_workers=len(self.providers)) as executor:
             futures = {
