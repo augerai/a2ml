@@ -15,15 +15,9 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'provider': "azure",
             'hub_info': {
                 'project_file_id': '2719',
+                'project_name': 'a2ml_azure_adult_4'
             },
             'url': '/Users/evgenyvovchenko/Projects/auger-experiments/files/adult.data.csv',
-            'provider_info': {
-                'azure' : {
-                    'project':{
-                        'name': 'a2ml_azure_adult_3'
-                    },
-                }
-            }
         }
         res = import_data_task(params)
         print(res)
