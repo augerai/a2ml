@@ -133,7 +133,7 @@ class A2MLProject(BaseA2ML):
         Examples:
             .. code-block:: python
 
-            ctx = Context()
-            DataSet(ctx, 'auger, azure').select(dataset_name)
+                ctx = Context()
+                DataSet(ctx, 'auger, azure').select(dataset_name)
         """
         return self.runner.execute('select', name)
