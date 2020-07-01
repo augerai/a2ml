@@ -1,0 +1,369 @@
+# Orb 'circleci/docker@1.0.1' resolved to 'circleci/docker@1.0.1'
+# Orb 'circleci/aws-eks@0.2.7' resolved to 'circleci/aws-eks@0.2.7'
+# Orb 'circleci/kubernetes@0.11.0' resolved to 'circleci/kubernetes@0.11.0'
+# Orb 'circleci/helm@1.0.0' resolved to 'circleci/helm@1.0.0'
+version: 2
+jobs:
+  deploy-to-k8s-master:
+    docker:
+    - image: circleci/python:3
+    steps:
+    - run:
+        name: Check Values to override
+        command: |
+          echo $ROLE_ARN
+    - run:
+        command: |
+          if [[ latest == "latest" ]]; then
+            # get latest kops release
+            KOPS_VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)
+          else
+            KOPS_VERSION=latest
+          fi
+
+          PLATFORM="linux"
+          if [ -n "$(uname | grep "Darwin")" ]; then
+            PLATFORM="darwin"
+          fi
+
+          # download kops
+          curl -LO https://github.com/kubernetes/kops/releases/download/$KOPS_VERSION/kops-$PLATFORM-amd64
+
+          [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
+
+          $SUDO chmod +x kops-$PLATFORM-amd64
+
+          $SUDO mv kops-$PLATFORM-amd64 /usr/local/bin/kops
+        name: Install kops
+    - run:
+        command: |
+          if [[ latest == "latest" ]]; then
+            # get latest kubectl release
+            KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+          else
+            KUBECTL_VERSION=latest
+          fi
+
+          PLATFORM="linux"
+          if [ -n "$(uname | grep "Darwin")" ]; then
+            PLATFORM="darwin"
+          fi
+
+          # download kubectl
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/$PLATFORM/amd64/kubectl
+
+          [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
+
+          $SUDO chmod +x ./kubectl
+
+          $SUDO mv ./kubectl /usr/local/bin
+        name: Install kubectl
+    - run:
+        command: |
+          if which aws-iam-authenticator > /dev/null; then
+            echo "AWS IAM Authenticator for Kubernetes is already installed"
+            exit 0
+          fi
+
+          PLATFORM="linux"
+          if [ -n "$(uname | grep "Darwin")" ]; then
+            PLATFORM="darwin"
+          fi
+
+          RELEASE_TAG=""
+          RELEASE_URL="https://api.github.com/repos/kubernetes-sigs/aws-iam-authenticator/releases/latest"
+
+          FILENAME="aws-iam-authenticator"
+          VERSION=$(curl -Ls --fail --retry 3 -o /dev/null -w %{url_effective} "https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest" | sed 's:.*/::')
+          if [ -n "${RELEASE_TAG}" ]; then
+            VERSION="${RELEASE_TAG}"
+            if [ "${VERSION}" == "v0.3.0" ]; then
+              FILENAME="heptio-authenticator-aws"
+            fi
+          fi
+
+          # extract version number
+          VERSION_NUMBER=$(echo $VERSION | cut -c 2-)
+
+          DOWNLOAD_URL="https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/${VERSION}/${FILENAME}_${VERSION_NUMBER}_${PLATFORM}_amd64"
+
+          curl -L --fail --retry 3 -o aws-iam-authenticator "$DOWNLOAD_URL"
+
+          chmod +x ./aws-iam-authenticator
+
+          SUDO=""
+          if [ $(id -u) -ne 0 ] && which sudo > /dev/null ; then
+            SUDO="sudo"
+          fi
+
+          $SUDO mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+        name: Install the AWS IAM Authenticator for Kubernetes
+    - run:
+        name: Install AWS CLI
+        command: |
+          export PIP=$(which pip pip3 | head -1)
+          if [[ -n $PIP ]]; then
+            if which sudo > /dev/null; then
+              sudo $PIP install awscli --upgrade
+            else
+              # This installs the AWS CLI to ~/.local/bin. Make sure that ~/.local/bin is in your $PATH.
+              $PIP install awscli --upgrade --user
+            fi
+          elif [[ $(which unzip curl | wc -l) -eq 2 ]]; then
+            cd
+            curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+            unzip awscli-bundle.zip
+            if which sudo > /dev/null; then
+              sudo ~/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+            else
+              # This installs the AWS CLI to the default location (~/.local/lib/aws) and create a symbolic link (symlink) at ~/bin/aws. Make sure that ~/bin is in your $PATH.
+              awscli-bundle/install -b ~/bin/aws
+            fi
+            rm -rf awscli-bundle*
+            cd -
+          else
+            echo "Unable to install AWS CLI. Please install pip."
+            exit 1
+          fi
+    - run:
+        command: |
+          CLUSTER_NAME="eks_auger-cluster-staging1"
+          AWS_REGION="us-west-2"
+          AWS_PROFILE=""
+          KUBECONFIG_FILE_PATH=""
+          CLUSTER_CONTEXT_ALIAS=""
+          DRY_RUN="false"
+          VERBOSE="false"
+          if [ -n "${CLUSTER_NAME}" ]; then
+            set -- "$@" --name "${CLUSTER_NAME}"
+          fi
+          if [ -n "${AWS_REGION}" ]; then
+            set -- "$@" --region "${AWS_REGION}"
+          fi
+          if [ -n "${AWS_PROFILE}" ]; then
+            set -- "$@" --profile "${AWS_PROFILE}"
+          fi
+          if [ -n "${KUBECONFIG_FILE_PATH}" ]; then
+            set -- "$@" --kubeconfig "${KUBECONFIG_FILE_PATH}"
+          fi
+          if [ -n "${ROLE_ARN}" ]; then
+            set -- "$@" --role-arn "${ROLE_ARN}"
+          fi
+          if [ -n "${CLUSTER_CONTEXT_ALIAS}" ]; then
+            set -- "$@" --alias "${CLUSTER_CONTEXT_ALIAS}"
+          fi
+          if [ "${DRY_RUN}" == "true" ]; then
+            set -- "$@" --dry-run
+          fi
+          if [ "${VERBOSE}" == "true" ]; then
+            set -- "$@" --verbose
+          fi
+          aws eks update-kubeconfig "$@"
+        name: Update the kubectl configuration file to use the authenticator
+workflows:
+  build-test-publish:
+    jobs:
+    - deploy-to-k8s-master:
+        context: eks
+  version: 2
+
+# Original config.yml file:
+# version: 2.1
+#
+# orbs:
+#   docker: circleci/docker@1.0.1
+#   aws-eks: circleci/aws-eks@0.2.7
+#   kubernetes: circleci/kubernetes@0.11.0
+#   helm: circleci/helm@1.0.0
+#
+# jobs:
+#   build-docs:
+#     docker:
+#       - image: circleci/python:3.7-stretch
+#     steps:
+#       - checkout
+#       - run: sudo chown -R circleci:circleci /usr/local/bin
+#       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+#       - restore_cache:
+#           keys:
+#             - a2ml-python-doc-deps-v3-{{ arch }}-3.7-{{ .Branch }}-{{ checksum \"setup.py\" }}-{{ checksum \"docs/requirements.txt\" }}
+#             - a2ml-python-doc-deps-v3-{{ arch }}-3.7-{{ .Branch }}
+#             - a2ml-python-doc-deps-v3-{{ arch }}-3.7
+#       - run:
+#           name: Install dependencies
+#           command: |
+#             virtualenv venv
+#             source venv/bin/activate
+#             make develop-docs
+#       - save_cache:
+#           key: a2ml-python-doc-deps-v3-{{ arch }}-3.7-{{ .Branch }}-{{ checksum \"setup.py\" }}-{{ checksum \"docs/requirements.txt\" }}
+#           paths:
+#             - \"venv\"
+#             - \"/home/circleci/.cache/pip\"
+#       - run:
+#           name: Build docs
+#           command: |
+#             source venv/bin/activate
+#             cd docs/
+#             make html
+#       - persist_to_workspace:
+#           root: docs/build
+#           paths: html
+#
+#   publish-docs:
+#     docker:
+#       - image: node:10.15.0
+#     steps:
+#       - checkout
+#       - attach_workspace:
+#           at: docs/build
+#       - add_ssh_keys:
+#           fingerprints: \"44:aa:23:95:60:12:6b:b5:8d:b2:e5:05:24:1f:94:cf\"
+#       - run:
+#           name: Deploy docs to gh-pages branch
+#           command: |
+#             git config user.email \"23641280+augerbot@users.noreply.github.com\"
+#             git config user.name \"augerbot\"
+#             npm install -g --silent gh-pages@2.2.0
+#             gh-pages --dotfiles --message \"[skip ci] Updates\" --dist docs/build/html
+#   build-and-test:
+#     docker:
+#       - image: circleci/python:3.7-stretch
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#       - run: make config docker-test
+#
+#   publish-pip:
+#     docker:
+#       - image: circleci/python:3.7-stretch
+#     steps:
+#       - checkout
+#       - run:
+#           command: |
+#             echo -e \"[pypi]\" >> ~/.pypirc
+#             echo -e \"username = $PYPI_USERNAME\" >> ~/.pypirc
+#             echo -e \"password = $PYPI_PASSWORD\" >> ~/.pypirc
+#       - run: make build
+#       - run: make release
+#
+#   deploy-to-k8s:
+#     executor: aws-eks/python3
+#     parameters:
+#       cluster-name:
+#         description: |
+#           Name of the EKS cluster
+#         type: string
+#       aws-region:
+#         description: |
+#           AWS region
+#         type: string
+#         default: \"us-west-2\"
+#       values-to-override:
+#         description: |
+#           Values will be used as helm install --set \"key1=value1,key2=value2\"
+#         type: string
+#         default: \"\"
+#     steps:
+#       - run:
+#           name: Check Values to override
+#           command: |
+#             echo $ROLE_ARN
+#           # command: |
+#           #   echo << parameters.aws-region >>
+#           #   echo << parameters.cluster-name >>
+#           #   echo << parameters.values-to-override >>
+#           #   echo $ROLE_ARN
+#           #   echo ${ROLE_ARN}
+#       # - kubernetes/install
+#       - aws-eks/update-kubeconfig-with-authenticator:
+#           cluster-name: << parameters.cluster-name >>
+#           aws-region: << parameters.aws-region >>
+#           cluster-authentication-role-arn: 'TEST'
+#           install-kubectl: true
+#       # - helm/install-helm-chart:
+#       #     chart: augerai/a2ml
+#       #     release-name: a2ml
+#       #     namespace: a2ml
+#       #     values-to-override: << parameters.values-to-override >>
+#
+# workflows:
+#   build-test-publish:
+#     jobs:
+#       # - build-and-test:
+#       #     filters:
+#       #       tags:
+#       #         only: /^v.*/
+#       # - build-docs
+#       # - publish-docs:
+#       #     requires:
+#       #       - build-and-test
+#       #       - build-docs
+#       #     filters:
+#       #       branches:
+#       #         only:
+#       #           - master
+#       # - docker/publish:
+#       #     cache_from: \"augerai/a2ml:latest\"
+#       #     context: docker-hub
+#       #     image: augerai/a2ml
+#       #     name: docker-publish-tag
+#       #     tag: $CIRCLE_TAG
+#       #     requires:
+#       #       - build-and-test
+#       #     filters:
+#       #       tags:
+#       #         only: /^v.*/
+#       #       branches:
+#       #         ignore: /.*/
+#       # - docker/publish:
+#       #     cache_from: \"augerai/a2ml:latest\"
+#       #     context: docker-hub
+#       #     image: augerai/a2ml
+#       #     name: docker-publish-master
+#       #     tag: latest
+#       #     requires:
+#       #       - build-and-test
+#       #     filters:
+#       #       branches:
+#       #         only:
+#       #           - master
+#       #       tags:
+#       #         ignore: /^v.*/
+#       - deploy-to-k8s:
+#           name: deploy-to-k8s-master
+#           cluster-name: eks_auger-cluster-staging1
+#           aws-region: us-west-2
+#           values-to-override: \"image.tag=latest\"
+#           context: eks
+#           # requires:
+#           #   - docker-publish-master
+#           # filters:
+#           #   branches:
+#           #     only:
+#           #       - master
+#           #   tags:
+#           #     ignore: /^v.*/
+#       # - deploy-to-k8s:
+#       #     name: deploy-to-k8s-tag
+#       #     cluster-name: eks_auger-cluster-prod2
+#       #     aws-region: us-west-2
+#       #     values-to-override: \"image.tag=$CIRCLE_TAG\"
+#       #     context: eks
+#       #     requires:
+#       #       - docker-publish-tag
+#       #     filters:
+#       #       tags:
+#       #         only: /^v.*/
+#       #       branches:
+#       #         ignore: /.*/
+#       # - publish-pip:
+#       #     requires:
+#       #       - build-and-test
+#       #     filters:
+#       #       tags:
+#       #         only: /^v.*/
+#       #       branches:
+#       #         ignore: /.*/
+#       #     context: pypi
