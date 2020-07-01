@@ -287,12 +287,18 @@ def __error_to_result(retval, einfo):
     return res
 
 def __map_collection_to_name(res, collection_name):
-    for provder in res.keys():
-        if collection_name in res[provder]['data']:
-            res[provder]['data'][collection_name] = list(
-                map(lambda x: __map_to_name(x), res[provder]['data'][collection_name])
+    # if len(res.keys()) > 1:
+    #     for provider in res.keys():
+    #         if collection_name in res[provider]['data']:
+    #                 res[provider]['data'][collection_name] = list(
+    #                     map(lambda x: __map_to_name(x), res[provider]['data'][collection_name])
+    #                 )
+    # else:
+    if collection_name in res['data']:
+            res['data'][collection_name] = list(
+                map(lambda x: __map_to_name(x), res['data'][collection_name])
             )
-
+                    
     return res
 
 def __map_to_name(obj):

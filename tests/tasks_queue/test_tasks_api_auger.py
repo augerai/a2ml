@@ -17,7 +17,7 @@ class TestTasksApiAuger(BaseTest):
     def assert_result(self, res, expected_result, expected_data):
         assert isinstance(res, dict)
 
-        response = res['response']['auger']
+        response = res['response']#['auger']
         assert response['result'] == expected_result, response['data']
         assert response['data'] == expected_data
 
