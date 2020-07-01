@@ -3,18 +3,22 @@ import copy
 import json
 import traceback
 
+from celery.utils.log import get_task_logger
 from urllib.parse import urlparse
 
-from a2ml.api.model_review.model_review import ModelReview
-from a2ml.api.model_review.model_helper import ModelHelper
-from a2ml.api.utils.context import Context
 from a2ml.api.a2ml import A2ML
+from a2ml.api.model_review.model_helper import ModelHelper
+from a2ml.api.model_review.model_review import ModelReview
+from a2ml.api.utils import dict_dig
+from a2ml.api.utils.context import Context
 from a2ml.tasks_queue.config import Config
 
 from .celery_app import celeryApp
 
-task_config = Config()
 PERSISTENT_DELIVERY_MODE = 2
+
+task_config = Config()
+logger = get_task_logger(__name__)
 
 def _exception_message_chain(e):
     if isinstance(e, Exception) and e.__cause__:
@@ -30,6 +34,9 @@ def _exception_traces_chain(e):
 
 @celeryApp.task(ignore_result=True, autoretry_for=(Exception,), retry_backoff=True)
 def send_result_to_hub(json_data):
+    if task_config.debug:
+        logger.info('Send JSON data to Hub: ' + json_data)
+
     o = urlparse(task_config.broker_url)
 
     connection_params = {
@@ -53,10 +60,10 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
     if args:
         params = args[0]
 
-        if params and params.get('augerInfo', {}).get('cluster_task_id'):
+        if params and params.get('hub_info', {}).get('cluster_task_id'):
             response = {
                 'type': 'TaskResult',
-                'augerInfo': params['augerInfo'],
+                'hub_info': params['hub_info'],
                 'status': status,
             }
 
@@ -71,7 +78,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
 def _get_hub_context():
     from a2ml.api.auger.project import AugerProject
 
-    ctx = Context(debug=True)
+    ctx = Context(debug=task_config.debug)
     project = AugerProject(ctx)
 
     return ctx
@@ -91,7 +98,7 @@ def _get_hub_project_file(project_file_id):
     project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
     return project_file_api.properties(), ctx
 
-def _make_hub_provider_info_update(ctx, provider, auger_info):
+def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
     project_name = ctx.config.get("name", parts=ctx.config.parts_changes)
     project_file_dataset = ctx.config.get("dataset", parts=ctx.config.parts_changes)
@@ -122,14 +129,14 @@ def _make_hub_provider_info_update(ctx, provider, auger_info):
 
     return {
         'type': 'ProviderInfoUpdate',
-        'augerInfo': auger_info,
+        'hub_info': hub_info,
         'provider_info': {
             provider: provider_info
         }
     }
 
 def _read_hub_experiment_session(ctx, params):
-    experiment_session, ctx_hub = _get_hub_experiment_session(params['augerInfo']['experiment_session_id'])
+    experiment_session, ctx_hub = _get_hub_experiment_session(params['hub_info']['experiment_session_id'])
 
     evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
     dataset_statistics = experiment_session.get('dataset_statistics', {}).get('stat_data', [])
@@ -160,7 +167,7 @@ def _read_hub_experiment_session(ctx, params):
     return ctx_hub
 
 def _update_hub_objects(ctx, provider, ctx_hub, params):
-    hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('augerInfo'))
+    hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
     send_result_to_hub.delay(json.dumps(hub_objects_update))
 
 def _get_options_from_dataset_statistic(config, stat_data):
@@ -224,12 +231,12 @@ def _format_leaderboard_for_hub(leaderboard):
 def _update_hub_trials(params, trials):
     from a2ml.api.auger.experiment import AugerExperiment
 
-    ctx = Context(debug=True)
+    ctx = Context(debug=task_config.debug)
     experiment = AugerExperiment(ctx)
 
     data = {
         'type': 'Leaderboard',
-        'experiment_session_id': params['augerInfo']['experiment_session_id'],
+        'experiment_session_id': params['hub_info']['experiment_session_id'],
         'trials': _format_leaderboard_for_hub(trials)
     }
 
@@ -240,16 +247,18 @@ def _create_provider_context(params):
 
     ctx = Context(
         name=provider,
-        path=params.get('augerInfo', {}).get('projectPath'),
-        debug=params.get('debug_log', True)
+        path=params.get('hub_info', {}).get('projectPath'),
+        debug=task_config.debug
     )
     ctx.set_runs_on_server(True)
     ctx.config.set('providers', [provider])
 
+    hub_info = params.get('hub_info', {})
     provider_info = params.get('provider_info', {}).get(provider, {})
+    project_name = dict_dig(provider_info, 'project', 'name') or hub_info.get('project_name')
 
-    if provider_info.get('project', {}).get('name'):
-        ctx.config.set('name', provider_info['project']['name'], provider)
+    if project_name:
+        ctx.config.set('name', project_name, provider)
     if provider_info.get('experiment', {}).get('name'):
         ctx.config.set('experiment/name', provider_info['experiment']['name'], provider)
     if provider_info.get('experiment_session', {}).get('id'):
@@ -312,7 +321,7 @@ def monitor_evaluate_task(params):
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def evaluate_start_task(params):
-    if not params.get('augerInfo', {}).get('experiment_session_id'):
+    if not params.get('hub_info', {}).get('experiment_session_id'):
         raise Exception("evaluate_start_task missed experiment_session_id parameter.")
 
     ctx = _create_provider_context(params)
@@ -341,10 +350,10 @@ def evaluate_start_task(params):
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def import_data_task(params):
-    if not params.get("augerInfo").get('project_file_id'):
+    if not params.get("hub_info").get('project_file_id'):
         raise Exception("import_data_task missed project_file_id parameter.")
 
-    project_file, ctx_hub = _get_hub_project_file(params["augerInfo"]['project_file_id'])
+    project_file, ctx_hub = _get_hub_project_file(params["hub_info"]['project_file_id'])
 
     data_path = params.get('url')
     if not data_path:
@@ -401,7 +410,7 @@ def score_actuals_by_model_task(params):
         prediction_group_id=params.get('prediction_group_id', None),
         primary_prediction_group_id=params.get('primary_prediction_group_id', None),
         primary_model_path=ModelHelper.get_model_path(params.get('primary_pipeline_id', None),
-            params.get('augerInfo', {}).get('projectPath')),
+            params.get('hub_info', {}).get('projectPath')),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id')
     )
