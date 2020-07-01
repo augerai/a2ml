@@ -41,6 +41,9 @@ class CRUDRunner(object):
                     'result': False,
                     'data': str(e) }
 
+        if len(self.providers) == 1 and list(self.providers.keys())[0] in results:
+            results = list(results.values())[0]
+
         return results
 
     def _load_providers(self, ctx, providers, obj_name):
