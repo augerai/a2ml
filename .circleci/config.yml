@@ -1,5 +1,3 @@
-version: 2.1
-
 orbs:
   docker: circleci/docker@1.0.1
   aws-eks: circleci/aws-eks@0.2.7
@@ -8,7 +6,9 @@ orbs:
   kubernetes: circleci/kubernetes@0.11.0
   helm: circleci/helm@1.0.0
 
+version: 2
 jobs:
+<<<<<<< HEAD
   build-docs:
     docker:
       - image: circleci/python:3.7-stretch
@@ -43,9 +43,13 @@ jobs:
           paths: html
 
   publish-docs:
+=======
+  deploy-to-k8s-master:
+>>>>>>> cc477d5... Update config.yml
     docker:
-      - image: node:10.15.0
+    - image: circleci/python:3
     steps:
+<<<<<<< HEAD
       - checkout
       - attach_workspace:
           at: docs/build
@@ -142,6 +146,13 @@ jobs:
           #   echo $ROLE_ARN
           #   echo ${ROLE_ARN}
       - run:
+=======
+    - run:
+        name: Check Values to override
+        command: |
+          echo $ROLE_ARN
+    - run:
+>>>>>>> cc477d5... Update config.yml
         command: |
           if [[ latest == "latest" ]]; then
             # get latest kops release
@@ -289,6 +300,7 @@ jobs:
           fi
           aws eks update-kubeconfig "$@"
         name: Update the kubectl configuration file to use the authenticator
+<<<<<<< HEAD
       # - kubernetes/install
       # - aws-eks/update-kubeconfig-with-authenticator:
       #     cluster-name: << parameters.cluster-name >>
@@ -382,3 +394,11 @@ workflows:
             branches:
               ignore: /.*/
           context: pypi
+=======
+workflows:
+  build-test-publish:
+    jobs:
+    - deploy-to-k8s-master:
+        context: eks
+  version: 2
+>>>>>>> cc477d5... Update config.yml
