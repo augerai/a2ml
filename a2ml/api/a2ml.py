@@ -260,20 +260,18 @@ class A2ML(BaseA2ML):
             locally(bool): Process actuals locally.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': ''
-                    }
+                    'result': True,
+                    'data': True
                 }
 
+            Errors. ::
+
                 {
-                    'auger': {
-                        'result': False,
-                        'data': 'Prediction ID does not exist.'
-                    }
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
                 }
 
         Examples:
@@ -310,15 +308,19 @@ class A2ML(BaseA2ML):
             actual_records: array of records [[prediction_id, actual]]
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': ''
-                    }
+                    'result': True,
+                    'data': True
                 }
 
+            Errors. ::
+
+                {
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
+                }
 
         Examples:
             .. code-block:: python

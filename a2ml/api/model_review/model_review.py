@@ -65,7 +65,7 @@ class ModelReview(object):
             origin_dtypes = df_prediction_results.df.dtypes
             origin_columns = df_prediction_results.df.columns
 
-            if primary_ds:
+            if primary_ds is not None:
                 ds_actuals.df['prediction_id'] = ModelReview._map_primary_prediction_id_to_candidate(
                     ds_actuals.df['prediction_id'],
                     primary_ds.df['prediction_id'],
@@ -92,8 +92,11 @@ class ModelReview(object):
             ds_actuals.df = ds_actuals.df.combine_first(matched_scope)
 
             match_count = ds_actuals.df.count()[self.target_feature]
-            if actuals_count == match_count or primary_ds:
+            if actuals_count == match_count or primary_ds is not None:
                 break
+
+        if match_count == 0 and primary_ds is None:
+            raise Exception("Actual Prediction IDs not found in model predictions.")
 
         ds_actuals.df.reset_index(inplace=True)
         ds_actuals.dropna(columns=[self.target_feature, 'a2ml_actual'])
@@ -126,7 +129,7 @@ class ModelReview(object):
     # and prediction rows id should be matched with actuals using primary_prediction_group
     def add_actuals(self, actuals_path = None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=False):
+            actual_date=None, actuals_id = None, calc_score=True):
 
         features = None 
         if actuals_path or (actual_records and type(actual_records[0]) == list):
