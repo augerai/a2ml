@@ -20,5 +20,4 @@ def config_context(request):
         if ar_env[0] == 'AZURE_CREDENTIALS':
             os.environ['AZURE_CREDENTIALS'] = ar_env[1]
 
-    print(os.environ.get('AUGER_CREDENTIALS'))
     return

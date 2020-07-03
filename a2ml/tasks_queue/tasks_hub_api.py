@@ -230,19 +230,16 @@ def _format_leaderboard_for_hub(leaderboard):
 
     return formatted_leaderboard_list
 
-def _update_hub_trials(params, trials):
+def _update_hub_leaderboad(params, leaderboad):
     from a2ml.api.auger.experiment import AugerExperiment
 
     ctx = Context(debug=task_config.debug)
     experiment = AugerExperiment(ctx)
 
-    data = {
-        'type': 'Leaderboard',
-        'experiment_session_id': params['hub_info']['experiment_session_id'],
-        'trials': _format_leaderboard_for_hub(trials)
-    }
+    leaderboad['type'] = 'Leaderboard'
+    leaderboad['experiment_session_id'] = params['hub_info']['experiment_session_id']
 
-    send_result_to_hub.delay(json.dumps(data))
+    send_result_to_hub.delay(json.dumps(leaderboad))
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
@@ -269,13 +266,16 @@ def _create_provider_context(params):
 
     return ctx
 
-def _get_leaderboad_trials(params):
+def _get_leaderboad(params):
     ctx = _create_provider_context(params)
 
     res = A2ML(ctx).evaluate()
+    print(res)
     leaderboard = []
+    status = ""
     if res.get(params.get('provider'), {}).get('result'):
         leaderboard = res[params.get('provider')]['data']['leaderboard']
+        status = res[params.get('provider')]['data']['status']
 
     trials = []
     if not leaderboard:
@@ -312,13 +312,37 @@ def _get_leaderboad_trials(params):
             "dataset_nrows": 0,
             "dataset_manifest_id": None,
         })
-    return trials
+
+    #TODO: update counts    
+    evaluate_status = {
+        'status': status, 
+        'total_evaluations': 0, 
+        'start_time': None,
+        'completed_evaluations': 0,
+        'total_evaluations': 0,
+        #'ensemble_start_time': None,
+        # "timeouts": timeouts,
+        # 'timeouts_count': timeouts_count,
+        # 'timeouts_stat': timeouts_stat,
+        # "error_trials": error_trials, 
+        # "error_trials_count": error_trials_count,
+        # "error_trials_stat": error_trials_stat,
+        # "failed_trials": failed_trials,
+        # "failed_trials_count": failed_trials_count,
+        # "failed_trials_stat": failed_trials_stat,
+        # 'featureColumns': status.get('evaluation_options', {}).get('featureColumns', [])[:self.options.get('max_features_for_hub', 200)],
+        # 'featuresCount': len(status.get('evaluation_options', {}).get('featureColumns', []))
+    }
+    return {
+        'evaluate_status': evaluate_status,
+        'trials': trials,
+    }
 
 @celeryApp.task(ignore_result=False, acks_late=True,
     acks_on_failure_or_timeout=False, reject_on_worker_lost=True,
     autoretry_for=(Exception,), retry_kwargs={'max_retries': None, 'countdown': 20})
 def monitor_evaluate_task(params):
-    _update_hub_trials(params, _get_leaderboad_trials(params))
+    _update_hub_leaderboad(params, _get_leaderboad(params))
     execute_task( monitor_evaluate_task, params, wait_for_result=False,
         delay=params.get("monitor_evaluate_interval", 20))
 
