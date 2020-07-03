@@ -23,22 +23,6 @@ class Model(object):
             
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, output)
 
-    def actual(self, model_id, prediction_id, actual_value, locally=False):
-        if locally:
-            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
-                verify_local_model(model_id)
-
-            if not is_loaded:
-                raise AugerException('Model should be deployed locally.')
-
-            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            actual_records = [[prediction_id, actual_value]]
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).process_actuals(
-              actual_records=actual_records )
-        else:
-            actual_records = [[prediction_id, actual_value]]
-            return ModelActual(self.ctx).execute(model_id, None, actual_records)
-
     def actuals(self, model_id, filename=None, actual_records=None, locally=False):
         if locally:
             is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
@@ -48,7 +32,7 @@ class Model(object):
                 raise AugerException('Model should be deployed locally.')
 
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).process_actuals(
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).add_actuals(
               actuals_path=filename, actual_records=actual_records )
         else:    
             return ModelActual(self.ctx).execute(model_id, filename, actual_records)

@@ -173,20 +173,64 @@ class AzureExperiment(object):
         leaderboard = self._get_leaderboard(run).to_dict('records')
         self.ctx.log('Leaderboard for Run %s' % run_id)
         print_table(self.ctx.log,leaderboard)
-        status = run.get_status()
-        if status == 'Failed':
+        provider_status = run.get_status()
+        status = _map_provider_status(provider_status)
+
+        result = {
+            'run_id': run_id,
+            'leaderboard': leaderboard,
+            'status': status,
+            'provider_status': provider_status,
+        }
+
+        if status == 'error':
+            result['error'] = run.properties.get('errors')
+            result['error_details'] = run.get_details().get('error', {}).get('error', {}).get('message')
             self.ctx.log('Status: %s, Error: %s, Details: %s' % (
-                status, run.properties.get('errors'), run.get_details().get('error', {}).get('error', {}).get('message')
+                status, error, error_details
             ))
             self.ctx.log_debug(run.get_details().get('error'))
         else:    
             self.ctx.log('Status: %s' % status)
 
-        return {
-            'run_id': run_id,
-            'leaderboard': leaderboard,
-            'status': status }
+        return result
+            
+    def _map_provider_status(provider_status):
+        # * NotStarted - This is a temporary state client-side Run objects are in before cloud submission.
+        # * Starting - The Run has started being processed in the cloud. The caller has a run ID at this point.
+        # * Provisioning - Returned when on-demand compute is being created for a given job submission.
+        # * Preparing - The run environment is being prepared:
+        #     * docker image build
+        #     * conda environment setup
+        # * Queued - The job is queued in the compute target. For example, in BatchAI the job is in queued state
+        #      while waiting for all the requested nodes to be ready.
+        # * Running - The job started to run in the compute target.
+        # * Finalizing - User code has completed and the run is in post-processing stages.
+        # * CancelRequested - Cancellation has been requested for the job.
+        # * Completed - The run completed successfully. This includes both the user code and run
+        #     post-processing stages.
+        # * Failed - The run failed. Usually the Error property on a run will provide details as to why.
+        # * Canceled - Follows a cancellation request and indicates that the run is now successfully cancelled.
+        # * NotResponding - For runs that have Heartbeats enabled, no heartbeat has been recently sent.
 
+
+        if provider_status == 'NotStarted' or provider_status == 'Starting' or \
+           provider_status == 'Provisioning' or provider_status == 'Preparing' or \
+           provider_status == 'Queued':
+            return "preprocess"
+
+        if provider_status == 'Running' or provider_status == 'Finalizing':
+            return "started"
+
+        if provider_status == 'Completed':
+            return "completed"
+
+        if provider_status == 'Failed':
+            return "error"
+
+        if provider_status == 'CancelRequested' or provider_status == 'Canceled':
+            return "interrupted"
+                
     @error_handler 
     @authenticated       
     def get_experiment_settings(self):

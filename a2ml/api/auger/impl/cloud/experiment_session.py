@@ -63,10 +63,11 @@ class AugerExperimentSessionApi(AugerBaseApi):
             score_name = item.get('score_name')
             leaderboard.append({
                 'model id': item.get('id'),
-                item.get('score_name'):\
-                    '{0:.4f}'.format(item.get('score_value')),
                 'algorithm': item.get('hyperparameter').\
-                    get('algorithm_name').split('.')[-1]})
+                    get('algorithm_name').split('.')[-1],
+                item.get('score_name'):\
+                    '{0:.4f}'.format(item.get('score_value'))
+            })
 
         if score_name:
             leaderboard.sort(key=lambda t: t[score_name], reverse=False)

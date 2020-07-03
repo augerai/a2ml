@@ -1,22 +1,29 @@
 
 class BaseA2ML(object):
-    def build_runner(self, ctx, provider, object_name=None, force_local=False):
+    def __init__(self, ctx, object_name):
+        self.ctx = ctx
+        self.object_name = object_name
+
+    def build_runner(self, ctx, provider, force_local=False):
         if ctx.config.get('use_server') == True and not force_local:
             from a2ml.api.utils.remote_runner import RemoteRunner
 
-            return RemoteRunner(ctx, provider, object_name)
-        elif object_name:
+            return RemoteRunner(ctx, provider, self.object_name)
+        elif self.object_name:
             from a2ml.api.utils.crud_runner import CRUDRunner
 
-            return CRUDRunner(ctx, provider, object_name)
+            return CRUDRunner(ctx, provider, self.object_name)
         else:
             from a2ml.api.utils.provider_runner import ProviderRunner
 
             return ProviderRunner(ctx, provider)
 
-    def get_runner(self, locally, provider=None):
+    def get_runner(self, locally, model_id=None, provider=None):
+        if provider is None and model_id:
+            provider = self.ctx.get_model_provider(model_id)
+
         if provider:
-          return self.build_runner(self.ctx, provider, force_local=locally)
+            return self.build_runner(self.ctx, provider, force_local=locally)
         else:
           if locally:
               return self.local_runner()

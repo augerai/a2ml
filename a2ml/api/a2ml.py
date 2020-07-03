@@ -9,8 +9,8 @@ class A2ML(BaseA2ML):
         """Initializes A2ML PREDIT instance.
 
         Args:
-            context (object): An instance of the a2ml Context.
-            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
+            ctx (object): An instance of the a2ml Context.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'. The default is None - use provider set in config.
 
         Returns:
             A2ML object
@@ -21,8 +21,7 @@ class A2ML(BaseA2ML):
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
         """
-        super(A2ML, self).__init__()
-        self.ctx = ctx
+        super(A2ML, self).__init__(ctx, None)
         self.runner = self.build_runner(ctx, provider)
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
@@ -49,13 +48,12 @@ class A2ML(BaseA2ML):
                     'azure': {'result': True, 'data': {'created': 'dataset.csv'}}
                 }
 
-            Failures will return error messages. ::
+            Errors. ::
 
                 {
                     'auger': {'result': False, 'data': 'Please specify data source file...'}, \n
                     'azure': {'result': False, 'data': 'Please specify data source file...'}
                 }
-
 
 
         Examples:
@@ -78,16 +76,24 @@ class A2ML(BaseA2ML):
                     'auger': {
                         'result': True,
                         'data': {
-                            'eperiment_name': 'dataset.csv-4-experiment',
+                            'experiment_name': 'dataset.csv-4-experiment',
+                            'session_id': '9ccfe04eca67757a'
+                         }
+                    },
+                    'azure': {
+                        'result': True,
+                        'data': {
+                            'experiment_name': 'dataset.csv-4-experiment',
                             'session_id': '9ccfe04eca67757a'
                          }
                     }
                 }
 
-            Failures will return error messages. ::
+            Errors. ::
 
                 {
-                    'auger': {'result': False, 'data': 'Please set target to build model.'}
+                    'auger': {'result': False, 'data': 'Please set target to build model.'}, \n
+                    'azure': {'result': False, 'data': 'Please set target to build model.'}
                 }
 
         Examples:
@@ -120,9 +126,22 @@ class A2ML(BaseA2ML):
                                 {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
                                 {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
                             ],
-                            'status': 'started'
+                            'status': 'started',
+                            'provider_status': 'provider specific'
                         }
-                    }
+                    },
+                    'azure': {
+                        'result': True,
+                        'data': {
+                            'run_id': '9ccfe04eca67757a',
+                            'leaderboard': [
+                                {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
+                                {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
+                            ],
+                            'status': 'started',
+                            'provider_status': 'provider specific'                            
+                        }
+                    }                    
                 }
 
             **Status**
@@ -131,6 +150,7 @@ class A2ML(BaseA2ML):
                 * **started** - search is in progress
                 * **completed** - search is completed
                 * **interrupted** - search was interrupted
+                * **error** - search was finished with error
 
             Examples:
                 .. code-block:: python
@@ -149,18 +169,19 @@ class A2ML(BaseA2ML):
         """Deploy a model locally or to specified provider(s).
 
         Note:
-            See evaluate function to get model_id
+            See evaluate function to get model_id \n
+            This method support only one provider
 
         Args:
-            model_id (str): The model id from any experiment you will deploy
+            model_id (str): The model id from any experiment you will deploy.
             locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
             review(bool): Should model support review based on actual data. The default is True.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
 
-                {
+                {
                     'auger': {
                         'result': True,
                         'data': {'model_id': 'A017AC8EAD094FD'}
@@ -174,12 +195,16 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.deploy(model_id='A017AC8EAD094FD')
         """
-        return self.get_runner(locally, provider).execute('deploy', model_id, locally, review)
+        return self.get_runner(locally, model_id, provider).execute('deploy', model_id, locally, review)
 
     @show_result
     def predict(self, filename,
       model_id, threshold=None, locally=False, data=None, columns=None, output=None, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
+
+        Note:
+            Use deployed model_id \n
+            This method support only one provider
 
         Args:
             filename(str): The file with data to request predictions for.
@@ -189,7 +214,7 @@ class A2ML(BaseA2ML):
             data: dict or array of records
             columns(list): list of column names if data is array of records            
             output(str): Output csv file path.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             if filename is not None. ::
@@ -223,7 +248,7 @@ class A2ML(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                rv = A2MLModel(ctx).predict('../irises.csv', model_id)
+                rv = A2ML(ctx).predict('../irises.csv', model_id)
                 # if rv[provider].result is True
                 # predictions are stored in rv[provider]['data']['predicted']
 
@@ -231,7 +256,7 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
-                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                rv = A2ML(ctx).predict(None, model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
@@ -240,24 +265,27 @@ class A2ML(BaseA2ML):
                 ctx = Context()
                 data = [['value1', 'value2'], ['value3', 'value4']]
                 columns = ['col1', 'col2']                
-                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                rv = A2ML(ctx).predict(None, model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
         """
-        return self.get_runner(locally, provider).execute('predict', filename, model_id, threshold, locally, data, columns, output)
+        return self.get_runner(locally, model_id, provider).execute('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
     def actual(self, model_id, prediction_id, actual_value, locally=False, provider=None):
         """Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.
 
         Note:
-            It is assumed you have predictions against this model first. 
-        Args:
+            It is assumed you have predictions against this model first. \n
+            This method support only one provider
+
+        Args:
             model_id(str): The deployed model id you want to use.
             prediction_id(str): id return by prediction
             actual_value: actual value for the target 
             locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             Results for each provider. ::
@@ -265,14 +293,16 @@ class A2ML(BaseA2ML):
                 {
                     'auger': {
                         'result': True,
-                        'data': ''
+                        'data': True
                     }
                 }
+
+            Errors. ::
 
                 {
                     'auger': {
                         'result': False,
-                        'data': 'Prediction ID does not exist.'
+                        'data': 'Actual Prediction IDs not found in model predictions.'
                     }
                 }
 
@@ -280,9 +310,10 @@ class A2ML(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).actual('D881079E1ED14FB', 'prediction_1', 'actual_1')
+                model = A2ML(ctx).actual('D881079E1ED14FB', 'prediction_1', 'actual_1')
         """
-        return self.get_runner(locally, provider).execute('actual', model_id, prediction_id, actual_value, locally)
+        actual_records = [[prediction_id, actual_value]]
+        return self.actuals(model_id, actual_records=actual_records, locally=locally, provider=provider)
 
     @show_result
     def actuals(self, model_id, filename=None, actual_records=None, locally=False, provider=None):
@@ -302,11 +333,14 @@ class A2ML(BaseA2ML):
                 * - eaed9cd8-ba49-4c06-86d5-71d453c65290
                   - Iris-virginica
 
+            This method support only one provider
+
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            locally(bool): Process actuals locally.
             actual_records: array of records [[prediction_id, actual]]
+            locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             Results for each provider. ::
@@ -314,10 +348,18 @@ class A2ML(BaseA2ML):
                 {
                     'auger': {
                         'result': True,
-                        'data': ''
+                        'data': True
                     }
                 }
 
+            Errors. ::
+
+                {
+                    'auger': {
+                        'result': False,
+                        'data': 'Actual Prediction IDs not found in model predictions.'
+                    }
+                }
 
         Examples:
             .. code-block:: python
@@ -329,12 +371,34 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 actual_records = [['prediction_1', 'value1'], ['prediction_2', 'value2']]
-                model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
+                model = A2ML(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
         """
-        return self.get_runner(locally, provider).execute('actuals', model_id, filename, actual_records, locally)
+        return self.get_runner(locally, model_id, provider).execute('actuals', model_id, filename, actual_records, locally)
 
     @show_result
-    def review(self):
-        """Review the performance of deployed model."""
-        return self.runner.execute('review')
+    def review(self, model_id, locally=False, provider=None):
+        """Review the performance of deployed model.
+
+        Args:
+            model_id(str): The deployed model id you want to use.
+            locally(bool): Process review locally.
+
+        Returns:
+            Results for each provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {'score': {'accuracy': 0.8}}
+                    }
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2ML(ctx).review(model_id='D881079E1ED14FB')
+        """
+        return self.get_runner(locally, model_id, provider).execute('review', model_id)
+
