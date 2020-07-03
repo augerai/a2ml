@@ -9,8 +9,8 @@ class A2ML(BaseA2ML):
         """Initializes A2ML PREDIT instance.
 
         Args:
-            context (object): An instance of the a2ml Context.
-            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'.
+            ctx (object): An instance of the a2ml Context.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'. The default is None - use provider set in config.
 
         Returns:
             A2ML object
@@ -169,13 +169,14 @@ class A2ML(BaseA2ML):
         """Deploy a model locally or to specified provider(s).
 
         Note:
-            See evaluate function to get model_id
+            See evaluate function to get model_id \n
+            This method support only one provider
 
         Args:
             model_id (str): The model id from any experiment you will deploy.
             locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
             review(bool): Should model support review based on actual data. The default is True.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
@@ -200,6 +201,10 @@ class A2ML(BaseA2ML):
     def predict(self, filename,
       model_id, threshold=None, locally=False, data=None, columns=None, output=None, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
+
+        Note:
+            Use deployed model_id \n
+            This method support only one provider
 
         Args:
             filename(str): The file with data to request predictions for.
@@ -272,7 +277,9 @@ class A2ML(BaseA2ML):
         """Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.
 
         Note:
-            It is assumed you have predictions against this model first. 
+            It is assumed you have predictions against this model first. \n
+            This method support only one provider
+
         Args:
             model_id(str): The deployed model id you want to use.
             prediction_id(str): id return by prediction
@@ -325,6 +332,8 @@ class A2ML(BaseA2ML):
                   - Iris-setosa
                 * - eaed9cd8-ba49-4c06-86d5-71d453c65290
                   - Iris-virginica
+
+            This method support only one provider
 
         Args:
             model_id(str): The deployed model id you want to use.

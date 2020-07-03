@@ -6,11 +6,9 @@ class A2MLModel(BaseA2ML):
     def __init__(self, ctx, provider=None):
         """Initializes a new a2ml model.
 
-        Note:
-            Provider determines by model_id parameter of the A2MLModel methods.
-
         Args:
-            context (object): An instance of the a2ml Context.
+            ctx (object): An instance of the a2ml Context.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider from methods.
 
         Returns:
             A2MLModel object
@@ -34,7 +32,7 @@ class A2MLModel(BaseA2ML):
             model_id (str): Model ID from the any experiment leaderboard.
             locally(bool): Deploys using a local model if True, on the Provider Cloud if False.
             review(bool): Should model support review based on actual data. The default is True.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
@@ -67,7 +65,7 @@ class A2MLModel(BaseA2ML):
             data: dict or array of records
             columns(list): list of column names if data is array of records            
             output(str): Output csv file path.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             if filename is not None. ::
@@ -136,7 +134,7 @@ class A2MLModel(BaseA2ML):
             prediction_id(str): id return by prediction
             actual_value: actual value for the target 
             locally(bool): Process actuals locally.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
@@ -189,7 +187,7 @@ class A2MLModel(BaseA2ML):
             filename(str): The file with data to request predictions for.
             actual_records: array of records [[prediction_id, actual]]
             locally(bool): Process actuals locally.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
@@ -232,7 +230,7 @@ class A2MLModel(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             locally(bool): Process review locally.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
             Results for each provider. ::
