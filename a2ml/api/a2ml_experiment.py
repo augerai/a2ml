@@ -19,9 +19,8 @@ class A2MLExperiment(BaseA2ML):
                 ctx = Context()
                 model = A2MLExperiment(ctx, 'auger, azure')
         """
-        super(A2MLExperiment, self).__init__()
-        self.ctx = ctx
-        self.runner = self.build_runner(ctx, provider, 'experiment')
+        super(A2MLExperiment, self).__init__(ctx, 'experiment')
+        self.runner = self.build_runner(ctx, provider)
 
     @show_result
     def list(self):

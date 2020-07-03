@@ -19,9 +19,9 @@ class A2MLProject(BaseA2ML):
                 ctx = Context()
                 project = A2MLDataset(ctx, 'auger, azure')
         """
-        super(A2MLProject, self).__init__()
+        super(A2MLProject, self).__init__(ctx, 'project')
         self.ctx = ctx
-        self.runner = self.build_runner(ctx, provider, 'project')
+        self.runner = self.build_runner(ctx, provider)
 
     @show_result
     def list(self):

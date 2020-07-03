@@ -19,9 +19,9 @@ class A2MLDataset(BaseA2ML):
                 ctx = Context()
                 dataset = A2MLDataset(ctx, 'auger, azure')
         """
-        super(A2MLDataset, self).__init__()
+        super(A2MLDataset, self).__init__(ctx, 'dataset')
         self.ctx = ctx
-        self.runner = self.build_runner(ctx, provider, 'dataset')
+        self.runner = self.build_runner(ctx, provider)
 
     @show_result
     def list(self):
