@@ -34,7 +34,8 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'hub_info': {
                 'experiment_id': 'bb29d41a246f601b',
                 'project_id': '820',
-                'experiment_session_id': '010def8e3cb89236'
+                'experiment_session_id': '010def8e3cb89236',
+                'experiment_name': 'adult-data-csv'
             },
             'provider_info': {
                 'azure' : {
@@ -49,9 +50,6 @@ class TestTasksHubApiAuger(unittest.TestCase):
                             'max_nodes': 2,
                             'type': 'STANDARD_D2_V2'
                         }                        
-                    },
-                    'experiment': {
-                        'name': 'adult-data-csv',
                     }
                 }
             }

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from a2ml.api.a2ml import A2ML
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
-from a2ml.api.utils import dict_dig
+from a2ml.api.utils import dict_dig, merge_dicts
 from a2ml.api.utils.context import Context
 from a2ml.tasks_queue.config import Config
 
@@ -170,6 +170,8 @@ def _update_hub_objects(ctx, provider, ctx_hub, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
     send_result_to_hub.delay(json.dumps(hub_objects_update))
 
+    return hub_objects_update
+
 def _get_options_from_dataset_statistic(config, stat_data):
     excluded_features = []
     target_feature = None
@@ -256,11 +258,12 @@ def _create_provider_context(params):
     hub_info = params.get('hub_info', {})
     provider_info = params.get('provider_info', {}).get(provider, {})
     project_name = dict_dig(provider_info, 'project', 'name') or hub_info.get('project_name')
+    experiment_name = dict_dig(provider_info, 'experiment', 'name') or hub_info.get('experiment_name')
 
     if project_name:
         ctx.config.set('name', project_name, provider)
-    if provider_info.get('experiment', {}).get('name'):
-        ctx.config.set('experiment/name', provider_info['experiment']['name'], provider)
+    if experiment_name:
+        ctx.config.set('experiment/name', experiment_name, provider)
     if provider_info.get('experiment_session', {}).get('id'):
         ctx.config.set('experiment/run_id', provider_info['experiment_session']['id'], provider)
 
@@ -340,9 +343,13 @@ def evaluate_start_task(params):
 
     res = A2ML(ctx).train()
 
-    _update_hub_objects(ctx, provider, ctx_hub, params)
+    hub_objects_update = _update_hub_objects(ctx, provider, ctx_hub, params)
 
     if params.get("start_monitor_evaluate", True):
+        if not params.get('provider_info'):
+            params['provider_info'] = {}
+
+        merge_dicts(params['provider_info'], hub_objects_update.get('provider_info'))
         execute_task( monitor_evaluate_task, params, wait_for_result=False,
             delay=params.get("monitor_evaluate_interval", 20))
 
