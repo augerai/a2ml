@@ -178,11 +178,6 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
-<<<<<<< HEAD
-=======
-          cluster-name: auger-cluster-staging1
-          aws-region: us-west-2
->>>>>>> 90bf70e... rename cluster name
           values-to-override: "image.tag=latest"
           release-name: "a2ml-latest"
           namespace: a2ml-latest
