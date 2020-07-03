@@ -20,7 +20,6 @@ class A2MLProject(BaseA2ML):
                 project = A2MLDataset(ctx, 'auger, azure')
         """
         super(A2MLProject, self).__init__(ctx, 'project')
-        self.ctx = ctx
         self.runner = self.build_runner(ctx, provider)
 
     @show_result

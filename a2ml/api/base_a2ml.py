@@ -18,7 +18,14 @@ class BaseA2ML(object):
 
             return ProviderRunner(ctx, provider)
 
-    def get_runner(self, locally, model_id):
-        provider = self.ctx.get_model_provider(model_id)
+    def get_runner(self, locally, model_id=None, provider=None):
+        if provider is None and model_id:
+            provider = self.ctx.get_model_provider(model_id)
 
-        return self.build_runner(self.ctx, provider, force_local=locally)
+        if provider:
+            return self.build_runner(self.ctx, provider, force_local=locally)
+        else:
+          if locally:
+              return self.local_runner()
+          else:
+              return self.runner
