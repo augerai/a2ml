@@ -126,7 +126,8 @@ class A2ML(BaseA2ML):
                                 {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
                                 {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
                             ],
-                            'status': 'started'
+                            'status': 'started',
+                            'provider_status': 'provider specific'
                         }
                     },
                     'azure': {
@@ -137,7 +138,8 @@ class A2ML(BaseA2ML):
                                 {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
                                 {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
                             ],
-                            'status': 'started'
+                            'status': 'started',
+                            'provider_status': 'provider specific'                            
                         }
                     }                    
                 }
@@ -201,7 +203,7 @@ class A2ML(BaseA2ML):
 
         Args:
             filename(str): The file with data to request predictions for.
-            model_id(str): The deployed model id you want to use. It defines provider to use.
+            model_id(str): The deployed model id you want to use.
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
             data: dict or array of records
@@ -272,7 +274,7 @@ class A2ML(BaseA2ML):
         Note:
             It is assumed you have predictions against this model first. 
         Args:
-            model_id(str): The deployed model id you want to use. It defines provider to use.
+            model_id(str): The deployed model id you want to use.
             prediction_id(str): id return by prediction
             actual_value: actual value for the target 
             locally(bool): Process actuals locally.
@@ -325,7 +327,7 @@ class A2ML(BaseA2ML):
                   - Iris-virginica
 
         Args:
-            model_id(str): The deployed model id you want to use. It defines provider to use.
+            model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
             actual_records: array of records [[prediction_id, actual]]
             locally(bool): Process actuals locally.

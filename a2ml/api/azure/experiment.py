@@ -176,11 +176,16 @@ class AzureExperiment(object):
         provider_status = run.get_status()
         status = _map_provider_status(provider_status)
 
-        error = None
-        error_details = None
+        result = {
+            'run_id': run_id,
+            'leaderboard': leaderboard,
+            'status': status,
+            'provider_status': provider_status,
+        }
+
         if status == 'error':
-            error = run.properties.get('errors')
-            error_details = run.get_details().get('error', {}).get('error', {}).get('message')
+            result['error'] = run.properties.get('errors')
+            result['error_details'] = run.get_details().get('error', {}).get('error', {}).get('message')
             self.ctx.log('Status: %s, Error: %s, Details: %s' % (
                 status, error, error_details
             ))
@@ -188,15 +193,8 @@ class AzureExperiment(object):
         else:    
             self.ctx.log('Status: %s' % status)
 
-        return {
-            'run_id': run_id,
-            'leaderboard': leaderboard,
-            'status': status,
-            'provider_status': provider_status,
-            'error': error,
-            'error_details': error_details
-        }
-
+        return result
+            
     def _map_provider_status(provider_status):
         # * NotStarted - This is a temporary state client-side Run objects are in before cloud submission.
         # * Starting - The Run has started being processed in the cloud. The caller has a run ID at this point.

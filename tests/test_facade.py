@@ -50,16 +50,17 @@ class TestFacade(object):
             for arg in range(len(args)):
                 assert auger_operation.args[arg+1] == args[arg]
             #run operation for multiple providers
-            ctx.config.set('providers', ['auger','google'])
-            auger_operation.reset()
-            google_operation.reset()
-            a2ml = A2ML(ctx)
-            getattr(a2ml, operation)(*args)
-            assert auger_operation.times == 1
-            assert google_operation.times == 1
-            for arg in range(len(args)):
-                assert auger_operation.args[arg+1] == args[arg]
-                assert google_operation.args[arg+1] == args[arg]
+            if operation != 'deploy' and operation != 'predict':
+                ctx.config.set('providers', ['auger','google'])
+                auger_operation.reset()
+                google_operation.reset()
+                a2ml = A2ML(ctx)
+                getattr(a2ml, operation)(*args)
+                assert auger_operation.times == 1
+                assert google_operation.times == 1
+                for arg in range(len(args)):
+                    assert auger_operation.args[arg+1] == args[arg]
+                    assert google_operation.args[arg+1] == args[arg]
         ops = {
             'import_data': [],
             'train': [],

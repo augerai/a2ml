@@ -83,17 +83,19 @@ class AugerExperiment(object):
         else:
             self.ctx.log('Search status is %s' % status)
 
-        #TODO: get experiment session errors    
-        error = None
-        error_details = None    
-        return {
+        result = {
             'run_id': run_id, 
             'leaderboard': leaderboard, 
             'status': status,
-            'provider_status': status,
-            'error': error,
-            'error_details': error_details
+            'provider_status': status
         }
+
+        if status == "error":
+            #TODO: get experiment session errors
+            result['error'] = error
+            result['error_details'] = error_details
+        
+        return result
 
     @error_handler
     @authenticated
