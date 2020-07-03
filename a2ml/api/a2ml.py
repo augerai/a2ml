@@ -253,11 +253,12 @@ class A2ML(BaseA2ML):
 
         Note:
             It is assumed you have predictions against this model first. 
-        Args:
+        Args:
             model_id(str): The deployed model id you want to use.
             prediction_id(str): id return by prediction
             actual_value: actual value for the target 
             locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             ::
@@ -267,7 +268,8 @@ class A2ML(BaseA2ML):
                     'data': True
                 }
 
-            Errors. ::
+        Errors
+            ::
 
                 {
                     'result': False,
@@ -304,8 +306,9 @@ class A2ML(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            locally(bool): Process actuals locally.
             actual_records: array of records [[prediction_id, actual]]
+            locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             ::
@@ -315,7 +318,8 @@ class A2ML(BaseA2ML):
                     'data': True
                 }
 
-            Errors. ::
+        Errors
+            ::
 
                 {
                     'result': False,

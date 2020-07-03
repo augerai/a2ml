@@ -42,7 +42,7 @@ class ModelReview(object):
 
     def _process_actuals(self, ds_actuals,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=False):
+            actual_date=None, actuals_id = None, calc_score=False, raise_not_found=False):
 
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
@@ -95,7 +95,7 @@ class ModelReview(object):
             if actuals_count == match_count or primary_ds is not None:
                 break
 
-        if match_count == 0 and primary_ds is None:
+        if raise_not_found and match_count == 0 and primary_ds is None:
             raise Exception("Actual Prediction IDs not found in model predictions.")
 
         ds_actuals.df.reset_index(inplace=True)
@@ -139,7 +139,7 @@ class ModelReview(object):
             features=features)
 
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
-            actual_date, actuals_id, calc_score)
+            actual_date, actuals_id, calc_score, raise_not_found=True)
 
         ds_actuals.drop(self.target_feature)
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})

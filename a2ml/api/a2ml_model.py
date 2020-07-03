@@ -137,27 +137,27 @@ class A2MLModel(BaseA2ML):
 
         Note:
             It is assumed you have predictions against this model first. 
-        Args:
+        Args:
             model_id(str): The deployed model id you want to use.
             prediction_id(str): id return by prediction
             actual_value: actual value for the target 
             locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': ''
-                    }
+                    'result': True,
+                    'data': True
                 }
 
+        Errors
+            ::
+
                 {
-                    'auger': {
-                        'result': False,
-                        'data': 'Prediction ID does not exist.'
-                    }
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
                 }
 
         Examples:
@@ -190,19 +190,25 @@ class A2MLModel(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            locally(bool): Process actuals locally.
             actual_records: array of records [[prediction_id, actual]]
+            locally(bool): Process actuals locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': ''
-                    }
+                    'result': True,
+                    'data': True
                 }
 
+        Errors
+            ::
+
+                {
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
+                }
 
         Examples:
             .. code-block:: python
