@@ -34,12 +34,6 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def actual(self, project, model_id, prediction_id, actual_value, locally=False):
-        return Model(self.ctx, project).actual(model_id, prediction_id, actual_value, locally)
-
-    @error_handler
-    @authenticated
-    @with_project(autocreate=False)
     def actuals(self, project, model_id, filename=None, actual_records=None, locally=False):
         return Model(self.ctx, project).actuals(model_id, filename, actual_records, locally)
 

@@ -31,7 +31,6 @@ docker-test-clean:
 	docker-compose -f docker-compose.test.yml down -v --remove-orphans
 
 docker-test: docker-test-clean docker-minio-clean docker-test-build
-	docker-compose -f docker-compose.test.yml run createbucket && \
 	docker-compose -f docker-compose.test.yml run --rm a2ml
 
 build: clean

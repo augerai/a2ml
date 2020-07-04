@@ -86,6 +86,15 @@ class Context(object):
 
         raise Exception('Expecting list of providers in config.yaml\providers')
 
+    def get_model_provider(self, model_id):
+        if not model_id:
+            return None
+            
+        if model_id.startswith("AutoML_"):
+            return "azure"
+
+        return "auger"
+
     def copy(self, name):
         """creates a copy of an existing Context
         

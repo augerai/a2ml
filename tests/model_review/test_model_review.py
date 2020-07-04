@@ -259,7 +259,7 @@ def test_score_actuals_with_not_full_actuals():
 
     actual_date = datetime.date.today() - datetime.timedelta(days=1)
 
-    res = ModelReview({'model_path': model_path}).score_actuals(
+    res = ModelReview({'model_path': model_path}).add_actuals(
       actuals_path=None, actual_records=actuals, actual_date=actual_date
     )
     actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
@@ -315,7 +315,8 @@ def test_score_actuals_lucas_case():
       { 'actual': 'Iris-setosa', 'prediction_id': 'f1dd6088-8d70-43e3-bf84-bebf14eaa3b6' }
     ]
 
-    res = ModelReview({'model_path': model_path}).score_actuals(actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
+      calc_score=True)
 
     assert res == {
       'accuracy': 1.0,
@@ -349,7 +350,8 @@ def test_score_actuals_lucas_case_array():
       ['f1dd6088-8d70-43e3-bf84-bebf14eaa3b6', 'Iris-setosa']
     ]
 
-    res = ModelReview({'model_path': model_path}).score_actuals(actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
+      calc_score=True)
 
     assert res == {
       'accuracy': 1.0,
@@ -377,7 +379,7 @@ def test_score_actuals_with_no_predictions_in_model_folder():
     ]
 
     try:
-      ModelReview({'model_path': model_path}).score_actuals(actuals_path=None, actual_records=actuals)
+      ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
     except Exception as e:
       assert 'there is no prediction results for this model' in str(e)
     else:
@@ -407,9 +409,10 @@ def test_score_actuals_for_candidate_prediction():
     { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
   ]
 
-  res = ModelReview({'model_path': model_path}).score_actuals(
+  res = ModelReview({'model_path': model_path}).add_actuals(
     actual_records=actuals, prediction_group_id=prediction_group_id,
-    primary_prediction_group_id=primary_prediction_group_id, primary_model_path=primary_model_path
+    primary_prediction_group_id=primary_prediction_group_id, primary_model_path=primary_model_path,
+    calc_score=True
   )
 
   assert type(res) == dict
@@ -446,6 +449,6 @@ def test_score_actuals_another_result_first():
     { 'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7', 'actual':'good' },
   ]
 
-  res = ModelReview({'model_path': model_path}).score_actuals(actual_records=actuals)
+  res = ModelReview({'model_path': model_path}).add_actuals(actual_records=actuals, calc_score=True)
   assert res['accuracy'] == 1
 

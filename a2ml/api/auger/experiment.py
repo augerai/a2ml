@@ -74,14 +74,28 @@ class AugerExperiment(object):
             'preprocess': 'Search is preprocessing data for training...',
             'started': 'Search is in progress...',
             'completed': 'Search is completed.',
-            'interrupted': 'Search was interrupted.'
+            'interrupted': 'Search was interrupted.',
+            'error': 'Search was finished with error.'
         }
         message = messages.get(status, None)
         if message:
             self.ctx.log(message)
         else:
             self.ctx.log('Search status is %s' % status)
-        return {'run_id': run_id, 'leaderboard': leaderboard, 'status': status}
+
+        result = {
+            'run_id': run_id, 
+            'leaderboard': leaderboard, 
+            'status': status,
+            'provider_status': status
+        }
+
+        if status == "error":
+            #TODO: get experiment session errors
+            result['error'] = error
+            result['error_details'] = error_details
+        
+        return result
 
     @error_handler
     @authenticated

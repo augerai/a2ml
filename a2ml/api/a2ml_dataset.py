@@ -3,12 +3,12 @@ from a2ml.api.utils.show_result import show_result
 
 class A2MLDataset(BaseA2ML):
     """Contains the dataset CRUD operations that interact with provider."""
-    def __init__(self, ctx, provider):
+    def __init__(self, ctx, provider=None):
         """Initializes a new a2ml dataset.
 
         Args:
-            context (object): An instance of the a2ml Context.
-            provider (str): The automl provider(s) you wish to run. For example: 'auger,azure,google'.
+            ctx (object): An instance of the a2ml Context.
+            provider (str): The automl provider(s) you wish to run. For example 'auger,azure,google'. The default is None - use provider set in config.
         
         Returns:
             A2MLDataset object
@@ -19,9 +19,8 @@ class A2MLDataset(BaseA2ML):
                 ctx = Context()
                 dataset = A2MLDataset(ctx, 'auger, azure')
         """
-        super(A2MLDataset, self).__init__()
-        self.ctx = ctx
-        self.runner = self.build_runner(ctx, provider, 'dataset')
+        super(A2MLDataset, self).__init__(ctx, 'dataset')
+        self.runner = self.build_runner(ctx, provider)
 
     @show_result
     def list(self):

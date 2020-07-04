@@ -25,37 +25,25 @@ class ModelReview(object):
 
         self.target_feature = self.options.get('targetFeature')
 
-    def process_actuals(self, actuals_path = None, actual_records=None, actuals_ds=None,
-            prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, date_from=None, date_to=None):
-        score = self.score_actuals(actuals_path, actual_records, actuals_ds,
-            prediction_group_id, primary_prediction_group_id, primary_model_path,
-            actual_date, actuals_id)
-
+    def get_actuals_statistic(self, date_from=None, date_to=None):
         count_actuals = self.count_actuals_by_prediction_id()
         performance_daily = self.score_model_performance_daily(date_from, date_to)
         distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
 
         return {
-            'score': score,
             'count_actuals': count_actuals,
             'performance_daily': performance_daily,
             'distribution_chart_stats': distribution_chart_stats
         }
 
-    # prediction_group_id - prediction group for these actuals
-    # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
-    # and prediction rows id should be matched with actuals using primary_prediction_group
-    def score_actuals(self, actuals_path = None, actual_records=None, actuals_ds=None,
+    def get_actuals_score(self):
+        #TODO: calc score for the all actuals (use some size or count limit)
+        return {}
+
+    def _process_actuals(self, ds_actuals,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None):
+            actual_date=None, actuals_id = None, calc_score=False, raise_not_found=False):
 
-        features = None 
-        if actuals_path or (actual_records and type(actual_records[0]) == list):
-            features = ['prediction_id', 'actual']
-
-        ds_actuals = actuals_ds or DataFrame.create_dataframe(actuals_path, actual_records, 
-            features=features)
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         actuals_count = ds_actuals.count()
@@ -77,7 +65,7 @@ class ModelReview(object):
             origin_dtypes = df_prediction_results.df.dtypes
             origin_columns = df_prediction_results.df.columns
 
-            if primary_ds:
+            if primary_ds is not None:
                 ds_actuals.df['prediction_id'] = ModelReview._map_primary_prediction_id_to_candidate(
                     ds_actuals.df['prediction_id'],
                     primary_ds.df['prediction_id'],
@@ -104,8 +92,11 @@ class ModelReview(object):
             ds_actuals.df = ds_actuals.df.combine_first(matched_scope)
 
             match_count = ds_actuals.df.count()[self.target_feature]
-            if actuals_count == match_count or primary_ds:
+            if actuals_count == match_count or primary_ds is not None:
                 break
+
+        if raise_not_found and match_count == 0 and primary_ds is None:
+            raise Exception("Actual Prediction IDs not found in model predictions.")
 
         ds_actuals.df.reset_index(inplace=True)
         ds_actuals.dropna(columns=[self.target_feature, 'a2ml_actual'])
@@ -121,25 +112,45 @@ class ModelReview(object):
             origin_dtypes[self.target_feature], copy=False
         )
 
-        ds_true = DataFrame({})
-        ds_true.df = ds_actuals.df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+        result = True
+        if calc_score:
+            ds_true = DataFrame({})
+            ds_true.df = ds_actuals.df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
 
-        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
-        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
+            y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
+            y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
-        score = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred)
+            result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred)
 
-        if not actuals_ds:
-            ds_actuals.drop(self.target_feature)
-            ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
+        return result
+            
+    # prediction_group_id - prediction group for these actuals
+    # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
+    # and prediction rows id should be matched with actuals using primary_prediction_group
+    def add_actuals(self, actuals_path = None, actual_records=None,
+            prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
+            actual_date=None, actuals_id = None, calc_score=True):
 
-            if not actuals_id:
-                actuals_id = get_uid()
+        features = None 
+        if actuals_path or (actual_records and type(actual_records[0]) == list):
+            features = ['prediction_id', 'actual']
 
-            file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_actuals.feather.zstd"
-            ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
+        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, 
+            features=features)
 
-        return score
+        result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
+            actual_date, actuals_id, calc_score, raise_not_found=True)
+
+        ds_actuals.drop(self.target_feature)
+        ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
+
+        if not actuals_id:
+            actuals_id = get_uid()
+
+        file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_actuals.feather.zstd"
+        ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
+
+        return result
 
     def build_review_data(self, data_path=None, output=None):
         if not data_path:
@@ -209,7 +220,7 @@ class ModelReview(object):
                 
             if df_actuals.count() > 0:
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
-                scores = self.score_actuals(actuals_ds=df_actuals)
+                scores = self._process_actuals(ds_actuals=df_actuals, calc_score=True)
                 res[str(curr_date)] = scores[self.options.get('score_name')]
 
         return res

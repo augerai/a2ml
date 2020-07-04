@@ -159,21 +159,7 @@ def stop_experiment_task(params):
 def actuals_model_task(params):
     return with_context(
         params,
-        lambda ctx: A2MLModel(ctx, None).actuals(*params['args'], **params['kwargs'])
-    )
-
-@celeryApp.task(after_return=__handle_task_result)
-def actual_model_task(params):
-    return with_context(
-        params,
-        lambda ctx: A2MLModel(ctx, None).actual(*params['args'], **params['kwargs'])
-    )
-
-@celeryApp.task(after_return=__handle_task_result)
-def actual_task(params):
-    return with_context(
-        params,
-        lambda ctx: A2ML(ctx).actual(*params['args'], **params['kwargs'])
+        lambda ctx: A2MLModel(ctx).actuals(*params['args'], **params['kwargs'])
     )
 
 @celeryApp.task(after_return=__handle_task_result)
@@ -187,13 +173,13 @@ def actuals_task(params):
 def deploy_model_task(params):
     return with_context(
         params,
-        lambda ctx: A2MLModel(ctx, None).deploy(*params['args'], **params['kwargs'])
+        lambda ctx: A2MLModel(ctx).deploy(*params['args'], **params['kwargs'])
     )
 
 @celeryApp.task(after_return=__handle_task_result)
 def predict_model_task(params):
     def _predict(ctx):
-        return A2MLModel(ctx, None).predict(*params['args'], **params['kwargs'])
+        return A2MLModel(ctx).predict(*params['args'], **params['kwargs'])
 
     return with_context(params, _predict)
 
@@ -285,16 +271,10 @@ def __error_to_result(retval, einfo):
     return res
 
 def __map_collection_to_name(res, collection_name):
-    # if len(res.keys()) > 1:
-    #     for provider in res.keys():
-    #         if collection_name in res[provider]['data']:
-    #                 res[provider]['data'][collection_name] = list(
-    #                     map(lambda x: __map_to_name(x), res[provider]['data'][collection_name])
-    #                 )
-    # else:
-    if collection_name in res['data']:
-            res['data'][collection_name] = list(
-                map(lambda x: __map_to_name(x), res['data'][collection_name])
+    for provder in res.keys():
+        if collection_name in res[provder]['data']:
+            res[provder]['data'][collection_name] = list(
+                map(lambda x: __map_to_name(x), res[provder]['data'][collection_name])
             )
                     
     return res
