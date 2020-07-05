@@ -40,6 +40,14 @@ class ProviderRunner(object):
             traceback.print_exc()
             raise e
 
+    def execute_one_provider(self, operation_name, *args, **kwargs):
+        result = self.execute(operation_name, *args, **kwargs)
+
+        if list(self.providers.keys())[0] in result:
+            return list(result.values())[0]
+
+        return result
+            
     def execute(self, operation_name, *args, **kwargs):
         if len(self.providers) == 0:
             raise Exception('Please specify list of providers '

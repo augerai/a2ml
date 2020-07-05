@@ -8,6 +8,10 @@ class CRUDRunner(object):
         self.ctx = ctx
         self.providers = self._load_providers(ctx, providers, obj_name)
 
+    def execute_one_provider(self, operation_name, *args, **kwargs):
+        result = self.execute(operation_name, *args, **kwargs)        
+        return list(result.values())[0]
+
     def execute(self, operation_name, *args, **kwargs):
         def send_error(p, msg):
             self.ctx.log('[%s]  %s' % (p, msg))
