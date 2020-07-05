@@ -171,7 +171,8 @@ class AzureExperiment(object):
                 'Pleae provide Run ID (experiment/run_id) to evaluate')
         experiment = Experiment(ws, experiment_name)
         run = AutoMLRun(experiment = experiment, run_id = run_id)
-        leaderboard = self._get_leaderboard(run).to_dict('records')
+        leaderboard, trials_count = self._get_leaderboard(run)
+        leaderboard = leaderboard.to_dict('records')
         self.ctx.log('Leaderboard for Run %s' % run_id)
 
         headers = []
@@ -179,11 +180,12 @@ class AzureExperiment(object):
             headers = list(leaderboard[0].keys())[:3]
         print_table(self.ctx.log, leaderboard, headers)
         provider_status = run.get_status()
-        status = _map_provider_status(provider_status)
+        status = self._map_provider_status(provider_status)
 
         result = {
             'run_id': run_id,
             'leaderboard': leaderboard,
+            'trials_count': trials_count,
             'status': status,
             'provider_status': provider_status,
         }
@@ -200,7 +202,7 @@ class AzureExperiment(object):
 
         return result
             
-    def _map_provider_status(provider_status):
+    def _map_provider_status(self, provider_status):
         # * NotStarted - This is a temporary state client-side Run objects are in before cloud submission.
         # * Starting - The Run has started being processed in the cloud. The caller has a run ID at this point.
         # * Provisioning - Returned when on-demand compute is being created for a given job submission.
@@ -364,6 +366,8 @@ class AzureExperiment(object):
                     
         leaderboard = leaderboard.T.sort_values(
             'score', ascending = goal_minimize)
+        trials_count = len(leaderboard)
         leaderboard = leaderboard.head(10)
         leaderboard.rename(columns={'score':primary_metric}, inplace=True)
-        return leaderboard
+
+        return leaderboard, trials_count

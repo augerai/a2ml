@@ -123,10 +123,38 @@ class A2MLExperiment(BaseA2ML):
                     'auger': {
                         'result': True,
                         'data': {
-                            'leaderboard': <experiment_name>
+                            'run_id': '9ccfe04eca67757a',
+                            'leaderboard': [
+                                {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
+                                {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
+                            ],
+                            'trials_count': 10,
+                            'status': 'started',
+                            'provider_status': 'provider specific'
                         }
-                    }
+                    },
+                    'azure': {
+                        'result': True,
+                        'data': {
+                            'run_id': '9ccfe04eca67757a',
+                            'leaderboard': [
+                                {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
+                                {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
+                            ],
+                            'trials_count': 10,
+                            'status': 'started',
+                            'provider_status': 'provider specific'                            
+                        }
+                    }                    
                 }
+
+            **Status**
+
+                * **preprocess** - search is preprocessing data for traing
+                * **started** - search is in progress
+                * **completed** - search is completed
+                * **interrupted** - search was interrupted
+                * **error** - search was finished with error
         
         Examples:
             .. code-block:: python

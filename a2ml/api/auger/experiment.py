@@ -64,12 +64,16 @@ class AugerExperiment(object):
         if run_id is None:
             run_id = self.ctx.config.get(
                 'experiment/experiment_session_id', None)
-        leaderboard, status, run_id = Experiment(
+        leaderboard, status, run_id, trials_count = Experiment(
             self.ctx, dataset, name).leaderboard(run_id)
         if leaderboard is None:
             raise AugerException('No leaderboard was found...')
         self.ctx.log('Leaderboard for Run %s' % run_id)
-        print_table(self.ctx.log, leaderboard[::-1])
+
+        leaderboard = leaderboard[::-1]
+        leaderboard = leaderboard[:10]
+
+        print_table(self.ctx.log, leaderboard)
         messages = {
             'preprocess': 'Search is preprocessing data for training...',
             'started': 'Search is in progress...',
@@ -85,7 +89,8 @@ class AugerExperiment(object):
 
         result = {
             'run_id': run_id, 
-            'leaderboard': leaderboard, 
+            'leaderboard': leaderboard,
+            'trials_count': trials_count,
             'status': status,
             'provider_status': status
         }
