@@ -174,7 +174,7 @@ class AzureExperiment(object):
         self.ctx.log('Leaderboard for Run %s' % run_id)
         print_table(self.ctx.log,leaderboard)
         provider_status = run.get_status()
-        status = _map_provider_status(provider_status)
+        status = self._map_provider_status(provider_status)
 
         result = {
             'run_id': run_id,
@@ -195,7 +195,7 @@ class AzureExperiment(object):
 
         return result
             
-    def _map_provider_status(provider_status):
+    def _map_provider_status(self, provider_status):
         # * NotStarted - This is a temporary state client-side Run objects are in before cloud submission.
         # * Starting - The Run has started being processed in the cloud. The caller has a run ID at this point.
         # * Provisioning - Returned when on-demand compute is being created for a given job submission.
