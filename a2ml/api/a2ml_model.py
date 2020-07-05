@@ -35,13 +35,11 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': {'model_id': 'A017AC8EAD094FD'}
-                    }
+                    'result': True,
+                    'data': {'model_id': 'A017AC8EAD094FD'}
                 }
 
         Examples:
@@ -50,7 +48,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).deploy(model_id='D881079E1ED14FB', locally=True)
         """
-        return self.get_runner(locally, model_id, provider).execute('deploy', model_id, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally)
 
     @show_result
     def predict(self, filename,
@@ -71,28 +69,22 @@ class A2MLModel(BaseA2ML):
             if filename is not None. ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': {'predicted': 'dataset_predicted.csv'}
-                    }
+                    'result': True,
+                    'data': {'predicted': 'dataset_predicted.csv'}
                 }
 
             if filename is None and data is not None and columns is None. ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
-                    }
+                    'result': True,
+                    'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
                 }
 
             if filename is None and data is not None and columns is not None. ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
-                    }
+                    'result': True,
+                    'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
                 }
 
         Examples:
@@ -121,7 +113,7 @@ class A2MLModel(BaseA2ML):
                 # predictions are returned as rv[provider]['data']['predicted']
 
         """
-        return self.get_runner(locally, model_id, provider).execute('predict', filename, model_id, threshold, locally, data, columns, output)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
     def actual(self, model_id, prediction_id, actual_value, locally=False, provider=None):
@@ -137,22 +129,18 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': True
-                    }
+                    'result': True,
+                    'data': True
                 }
 
             Errors. ::
 
                 {
-                    'auger': {
-                        'result': False,
-                        'data': 'Actual Prediction IDs not found in model predictions.'
-                    }
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
                 }
 
         Examples:
@@ -190,13 +178,11 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': True
-                    }
+                    'result': True,
+                    'data': True
                 }
 
             Errors. ::
@@ -221,7 +207,7 @@ class A2MLModel(BaseA2ML):
                 model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
         """
-        return self.get_runner(locally, model_id, provider).execute('actuals', model_id, filename, actual_records, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, locally)
 
     @show_result
     def review(self, model_id, locally=False, provider=None):
@@ -233,13 +219,11 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
-            Results for each provider. ::
+            ::
 
                 {
-                    'auger': {
-                        'result': True,
-                        'data': {'score': {'accuracy': 0.8}}
-                    }
+                    'result': True,
+                    'data': {'score': {'accuracy': 0.8}}
                 }
 
         Examples:
@@ -248,5 +232,5 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).review(model_id='D881079E1ED14FB')
         """
-        return self.get_runner(locally, model_id, provider).execute('review', model_id)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
 
