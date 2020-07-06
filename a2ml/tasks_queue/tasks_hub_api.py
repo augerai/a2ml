@@ -307,7 +307,6 @@ def _get_leaderboad(params):
             "dataset_manifest_id": None,
         })
 
-    #TODO: update counts    
     evaluate_status = {
         'status': data.get('status'),
         'completed_evaluations': data.get('trials_count', 0),
