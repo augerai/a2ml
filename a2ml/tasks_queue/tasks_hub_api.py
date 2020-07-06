@@ -270,18 +270,12 @@ def _get_leaderboad(params):
     ctx = _create_provider_context(params)
 
     res = A2ML(ctx).evaluate()
-    print(res)
-    leaderboard = []
-    status = ""
+    data = {}
     if res.get(params.get('provider'), {}).get('result'):
-        leaderboard = res[params.get('provider')]['data']['leaderboard']
-        status = res[params.get('provider')]['data']['status']
+        data = res[params.get('provider')]['data']
 
     trials = []
-    if not leaderboard:
-        return trials
-
-    for item in leaderboard:
+    for item in data.get('leaderboard', []):
         trials.append({
             "uid": item['model id'],
             "score": item['all_scores'][item['primary_metric']],
@@ -315,11 +309,12 @@ def _get_leaderboad(params):
 
     #TODO: update counts    
     evaluate_status = {
-        'status': status, 
-        'total_evaluations': 0, 
-        'start_time': None,
-        'completed_evaluations': 0,
-        'total_evaluations': 0,
+        'status': data.get('status'),
+        'completed_evaluations': data.get('trials_count', 0),
+
+        #'start_time': None,
+        #'total_evaluations': ctx.config.get('experiment/max_n_trials'), 
+
         #'ensemble_start_time': None,
         # "timeouts": timeouts,
         # 'timeouts_count': timeouts_count,
