@@ -151,7 +151,7 @@ class AzureExperiment(object):
             run_id = self.ctx.config.get('experiment/run_id', None)
         if run_id is None:
             raise AzureException(
-                'Pleae provide Run ID (experiment/run_id)...')
+                'Please provide Run ID (experiment/run_id)...')
         experiment = Experiment(ws, experiment_name)
         run = AutoMLRun(experiment = experiment, run_id = run_id)
         run.cancel()
@@ -168,7 +168,7 @@ class AzureExperiment(object):
             run_id = self.ctx.config.get('experiment/run_id', None)
         if run_id is None:
             raise AzureException(
-                'Pleae provide Run ID (experiment/run_id) to evaluate')
+                'Please provide Run ID (experiment/run_id) to evaluate')
         experiment = Experiment(ws, experiment_name)
         run = AutoMLRun(experiment = experiment, run_id = run_id)
         leaderboard, trials_count = self._get_leaderboard(run)
