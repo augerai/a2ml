@@ -3,6 +3,7 @@ import dateutil
 from collections import OrderedDict
 from collections.abc import Iterable
 import time
+import os
 
 from a2ml.api.utils import fsclient
 
@@ -46,6 +47,94 @@ def process_arff_line(line, date_attrs):
             date_attrs[date_field] = date_format
 
     return line
+
+def url_encode(path):
+    try:
+        from urllib.parse import urlparse, parse_qs, quote
+    except ImportError:
+        from urlparse import urlparse, parse_qs, quote
+
+    return quote(path, safe='#&%:/?*=\'')
+
+def get_remote_file_info(remote_path):
+    from urllib.request import urlopen
+    import urllib
+    import codecs
+
+    try:
+        from urllib.parse import urlparse, parse_qs
+    except ImportError:
+        from urlparse import urlparse, parse_qs
+
+    file_info  = {}
+    remote_path1 = url_encode(remote_path)
+    # logging.info("Get info for file from url: %s" % remote_path1)
+
+    req = urlopen(remote_path1)
+    #print(req.info())
+
+    # Make local path
+    contentDisp = req.getheader('Content-Disposition')
+    contentType = req.getheader('Content-Type')
+    fileext = ''
+    if contentType:
+        if contentType == 'application/x-gzip':
+            fileext = '.gz'
+        elif contentType == 'text/csv':
+            fileext = '.csv'
+
+    filename = ''
+    if contentDisp:
+        items = contentDisp.split(';')
+        for item in items:
+            item = item.strip()
+            if item.startswith("filename=\""):
+                filename = item[10:-1]
+                break
+            elif item.startswith("filename="):
+                filename = item[9:]
+                break
+
+    if not filename:
+        uri = urlparse(remote_path)
+        params = parse_qs(uri.query)
+        if len(params.get('id', []))>0:
+            filename = params['id'][0]+fileext
+        else:
+            if len(uri.path)>0 and len(os.path.basename(uri.path))>0:
+                filename = os.path.basename(uri.path)
+            else:
+                filename = get_uid()+fileext
+
+    remote_file_size = 0
+    try:
+        remote_file_size = int(req.getheader('Content-Length'))
+    except:
+        pass
+
+    remote_file_etag = ''
+    try:
+        remote_file_etag = req.getheader('ETag').strip("\"\'")
+    except:
+        pass
+
+    req.close()
+
+    file_info = {
+        'file_name': "",
+        'file_ext': "",
+        'file_size': remote_file_size,
+        'file_etag': remote_file_etag
+    }
+
+    dot_index = filename.find('.')
+    if dot_index>=0:
+        file_info['file_name'] = filename[:dot_index]
+        file_info['file_ext'] = filename[dot_index:]
+    else:
+        file_info['file_name'] = filename
+
+    return file_info
 
 def download_file(remote_path, local_dir, file_name, force_download=False):
     local_file_path = ""
