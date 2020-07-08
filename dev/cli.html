@@ -220,7 +220,8 @@
 </ul>
 <div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the name of the project</span>
 <span class="nt">provider</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the AutoML provider. **GC (for Google Cloud)**, **AZ (for Microsoft Azure)**, or **Auger**</span>
-<span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the CSV file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage (&quot;gs://...&quot;) for Google Cloud AutoML.</span>
+<span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the CSV or Parquet file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage (&quot;gs://...&quot;) for Google Cloud AutoML.</span>
+<span class="nt">source_format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">csv(default), parquet. Set it if source is url or file has no extension</span>
 <span class="nt">exclude</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">features from the dataset to exclude from the model</span>
 <span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the feature which is the target</span>
 <span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Can be regression, classification or timeseries</span>
