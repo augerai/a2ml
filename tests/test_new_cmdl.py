@@ -67,4 +67,4 @@ class TestNewCommand():
             cmdl, ['new', 'test_project', '--source', 'file_with_wrong.extension'])
         #assert result.exit_code != 0
         assert log.messages[-1] ==\
-             '[config] Source file has to be one of the supported fomats: .csv, .arff, .gz, .bz2, .zip, .xz, .json, .xls, .xlsx, .feather, .h5, .hdf5'
+             '[config] Source file has to be one of the supported fomats: .csv, .arff, .gz, .bz2, .zip, .xz, .json, .xls, .xlsx, .feather, .h5, .hdf5, .parquet'
