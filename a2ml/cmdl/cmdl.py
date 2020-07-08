@@ -38,6 +38,7 @@ class A2mlCli(click.MultiCommand):
 
 
 @click.command(cls=A2mlCli, context_settings=CONTEXT_SETTINGS)
+@click.version_option()
 @pass_context
 def cmdl(ctx):
     """A2ML command line interface."""

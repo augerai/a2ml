@@ -121,6 +121,7 @@ setup(
     python_requires='>=3',
     keywords='augerai aa2ml.cmdl.cmdl:cmdluger ai '
         'machine learning automl deeplearn api sdk',
+    license='Apache License 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -129,7 +130,7 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
-        "Programming Language :: Python :: 3 :: Only"
+        'Programming Language :: Python :: 3 :: Only'
     ],
     install_requires=install_requires,
     extras_require=extras,
