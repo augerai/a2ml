@@ -25,6 +25,6 @@ class AugerA2ML(object):
         return AugerModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, locally=False):
-        return AugerModel(self.ctx).actuals(
+    def actual(self, model_id, filename=None, actual_records=None, locally=False):
+        return AugerModel(self.ctx).actual(
             model_id, filename, actual_records, locally)

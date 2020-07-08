@@ -106,7 +106,7 @@ class RemoteProviderRunner(RequestMixin, object):
     }
 
     NON_CRUD_TO_METHOD = {
-        'actuals': 'post',
+        'actual': 'post',
         'deploy': 'patch',
         'evaluate': 'patch',
         'history': 'get',

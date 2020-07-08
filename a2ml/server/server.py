@@ -11,7 +11,7 @@ from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, del
     new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
     list_experiments_task, leaderboard_experiment_task, history_experiment_task, \
     start_experiment_task, stop_experiment_task, \
-    actuals_model_task, actuals_task, deploy_model_task, predict_model_task, \
+    actual_model_task, actual_task, deploy_model_task, predict_model_task, \
     deploy_task, evaluate_task, import_data_task, predict_task, train_task, review_task
 
 
@@ -54,11 +54,11 @@ API_SCHEMA = {
     '/api/v1/import_data': {
         'patch': import_data_task,
     },
-    '/api/v1/models/actuals': {
-        'post': actuals_model_task,
+    '/api/v1/models/actual': {
+        'post': actual_model_task,
     },
-    '/api/v1/actuals': {
-        'post': actuals_task,
+    '/api/v1/actual': {
+        'post': actual_task,
     },    
     '/api/v1/models/deploy': {
         'patch': deploy_model_task,

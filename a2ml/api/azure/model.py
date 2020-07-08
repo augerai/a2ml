@@ -210,7 +210,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actuals(self, model_id, filename=None, actual_records=None, locally=False):
+    def actual(self, model_id, filename=None, actual_records=None, locally=False):
         if locally:
             model_path = self.ctx.config.get_model_path(model_id)
 

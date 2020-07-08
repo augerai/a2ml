@@ -23,7 +23,7 @@ class Model(object):
             
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, locally=False):
+    def actual(self, model_id, filename=None, actual_records=None, locally=False):
         if locally:
             is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
                 verify_local_model(model_id)
