@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 import datetime as dt
 import shortuuid
+import re
 
 from azureml.core import Run
 from azureml.core import Dataset
@@ -59,9 +60,8 @@ class AzureExperiment(object):
         dataset_name = self.ctx.config.get('dataset', None)
         if dataset_name is None:
             raise AzureException('Please specify Dataset name...')
-        experiment_name = self._fix_name(
-            self.ctx.config.get('experiment/name', dataset_name))
-        cluster_name = self._fix_name(
+        experiment_name = self.ctx.config.get('experiment/name', dataset_name)
+        cluster_name = self._fix_cluster_name(
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
@@ -134,6 +134,7 @@ class AzureExperiment(object):
 
         self.ctx.log("Started Experiment %s search..." % experiment_name)
         self.ctx.config.set('experiment/name', experiment_name)
+        self.ctx.config.set('cluster/name', cluster_name)
         self.ctx.config.set('experiment/run_id', run.run_id)
         self.ctx.config.write()
 
@@ -262,12 +263,24 @@ class AzureExperiment(object):
         print_table(self.ctx.log, result)
         return {'history': result}
 
-    def _fix_name(self, name):
+    def _fix_cluster_name(self, name):
         # Name can include letters, digits and dashes.
         # It must start with a letter, end with a letter or digit,
         # and be between 2 and 16 characters in length.
         #TODO check for all conditions
-        return name.replace('_','-').replace('.','-')[:16]
+
+        name = re.sub(r'\W+', '-', name)
+        name = name.replace('_','-')[:16]
+        if name[0].isdigit():
+            test = list(name)
+            test[0] = 'C'
+            name = ''.join(test)
+        if name[-1].isdigit():
+            test = list(name)
+            test[-1] = 'C'
+            name = ''.join(test)
+
+        return name
 
     def _get_compute_target(self, ws, cluster_name):
         compute_min_nodes = int(self.ctx.config.get('cluster/min_nodes',1))
