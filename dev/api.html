@@ -236,49 +236,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.actual">
-<code class="sig-name descname">actual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">prediction_id</span></em>, <em class="sig-param"><span class="n">actual_value</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actual" title="Permalink to this definition">¶</a></dt>
-<dd><p>Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is assumed you have predictions against this model first.</p>
-<p>This method support only one provider</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
-<li><p><strong>prediction_id</strong> (<em>str</em>) -- id return by prediction</p></li>
-<li><p><strong>actual_value</strong> -- actual value for the target</p></li>
-<li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
-<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="kc">True</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Errors.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Actual Prediction IDs not found in model predictions.&#39;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actual</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="s1">&#39;prediction_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_1&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.actuals">
 <code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_records</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
@@ -337,6 +294,12 @@
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To pass just one actual:</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value&#39;</span><span class="p">]]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
@@ -1024,48 +987,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.actual">
-<code class="sig-name descname">actual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">prediction_id</span></em>, <em class="sig-param"><span class="n">actual_value</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actual" title="Permalink to this definition">¶</a></dt>
-<dd><p>Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is assumed you have predictions against this model first.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
-<li><p><strong>prediction_id</strong> (<em>str</em>) -- id return by prediction</p></li>
-<li><p><strong>actual_value</strong> -- actual value for the target</p></li>
-<li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
-<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="kc">True</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Errors.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Actual Prediction IDs not found in model predictions.&#39;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actual</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="s1">&#39;prediction_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_1&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.actuals">
 <code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_records</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
@@ -1125,6 +1046,12 @@
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To pass just one actual:</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value&#39;</span><span class="p">]]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
