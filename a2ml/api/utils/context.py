@@ -114,6 +114,7 @@ class Context(object):
         new.notificator = self.notificator
         new.request_id = self.request_id
         new.config.parts = self.config.parts
+        new.config.set("providers", name, config_name='config')
 
         if self._runs_on_server:
             new.credentials = self.credentials
