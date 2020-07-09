@@ -267,45 +267,6 @@ class A2ML(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, output)
 
     @show_result
-    def actual(self, model_id, prediction_id, actual_value, locally=False, provider=None):
-        """Submits actual result(ground truths) for prediction of a deployed model. This is used to review and monitor active models.
-
-        Note:
-            It is assumed you have predictions against this model first. \n
-            This method support only one provider
-
-        Args:
-            model_id(str): The deployed model id you want to use.
-            prediction_id(str): id return by prediction
-            actual_value: actual value for the target 
-            locally(bool): Process actuals locally.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
-
-        Returns:
-            ::
-
-                {
-                    'result': True,
-                    'data': True
-                }
-
-            Errors. ::
-
-                {
-                    'result': False,
-                    'data': 'Actual Prediction IDs not found in model predictions.'
-                }
-
-        Examples:
-            .. code-block:: python
-
-                ctx = Context()
-                model = A2ML(ctx).actual('D881079E1ED14FB', 'prediction_1', 'actual_1')
-        """
-        actual_records = [[prediction_id, actual_value]]
-        return self.actuals(model_id, actual_records=actual_records, locally=locally, provider=provider)
-
-    @show_result
     def actuals(self, model_id, filename=None, actual_records=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
@@ -352,6 +313,13 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
+
+            .. code-block:: python
+            
+                # To pass just one actual:
+                ctx = Context()
+                actual_records = [['prediction_id', 'actual_value']]
+                model = A2ML(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
             .. code-block:: python
 

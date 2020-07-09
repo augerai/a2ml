@@ -1,7 +1,7 @@
 import os
 
 from azureml.core import Dataset
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, get_remote_file_info
 from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
@@ -38,8 +38,14 @@ class AzureDataset(object):
             raise AzureException('Please specify data source file...')
 
         if source.startswith("http:") or source.startswith("https:"):
-            dataset = Dataset.Tabular.from_delimited_files(path=source)
-            dataset_name = os.path.basename(source)
+            url_info = get_remote_file_info(source)
+
+            if self.ctx.config.get('source_format', "") == "parquet":
+                dataset = Dataset.Tabular.from_parquet_files(path=source)
+            else:        
+                dataset = Dataset.Tabular.from_delimited_files(path=source)
+
+            dataset_name = url_info.get('file_name')+url_info.get('file_ext')
         else:
             with fsclient.with_s3_downloaded_or_local_file(source) as local_path:
                 ds = self.ws.get_default_datastore()
@@ -50,8 +56,11 @@ class AzureDataset(object):
                 ds.upload_files(files=[local_path], relative_root=None,
                     target_path=None, overwrite=True, show_progress=True)
                 dataset_name = os.path.basename(local_path)
-                dataset = Dataset.Tabular.from_delimited_files(
-                    path=ds.path(dataset_name))
+                if dataset_name.endswith(".parquet") or self.ctx.config.get('source_format', "") == "parquet":
+                    dataset = Dataset.Tabular.from_parquet_files(path=ds.path(dataset_name))
+                else:    
+                    dataset = Dataset.Tabular.from_delimited_files(
+                        path=ds.path(dataset_name))
 
         dataset.register(workspace = ws, name = dataset_name,
             create_new_version = True)

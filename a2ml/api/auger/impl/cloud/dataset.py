@@ -15,7 +15,7 @@ from ..exceptions import AugerException
 from  a2ml.api.utils import fsclient
 from  a2ml.api.utils.file_uploader import FileUploader, NewlineProgressPercentage
 
-SUPPORTED_FORMATS = ['.csv', '.arff', '.gz', '.bz2', '.zip', '.xz', '.json', '.xls', '.xlsx', '.feather', '.h5', '.hdf5']
+SUPPORTED_FORMATS = ['.csv', '.arff', '.gz', '.bz2', '.zip', '.xz', '.json', '.xls', '.xlsx', '.feather', '.h5', '.hdf5', '.parquet']
 
 
 class AugerDataSetApi(AugerProjectFileApi):
@@ -178,7 +178,7 @@ class AugerDataSetApi(AugerProjectFileApi):
         else:
             url = res['url']
             file_path = res['fields']['key']
-            with fsclient.open_file(file_to_upload, 'rb', auto_decompression=False) as f:
+            with fsclient.open_file(file_to_upload, 'rb', encoding=None, auto_decompression=False) as f:
                 files = {'file': (file_path, f)}
                 res = requests.post(url, data=res['fields'], files=files)
 
