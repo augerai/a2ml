@@ -1,5 +1,6 @@
 import amqp
 import copy
+import logging
 import json
 import traceback
 
@@ -20,6 +21,10 @@ PERSISTENT_DELIVERY_MODE = 2
 task_config = Config()
 logger = get_task_logger(__name__)
 
+def _log(payload, level=logging.INFO):
+    if (level == logging.DEBUG and task_config.debug) or level == logging.INFO:
+        logger.info(str(payload))
+
 def _exception_message_chain(e):
     if isinstance(e, Exception) and e.__cause__:
         return str(e) + ' caused by ' + _exception_message_chain(e.__cause__)
@@ -34,8 +39,7 @@ def _exception_traces_chain(e):
 
 @celeryApp.task(ignore_result=True, autoretry_for=(Exception,), retry_backoff=True)
 def send_result_to_hub(json_data):
-    if task_config.debug:
-        logger.info('Send JSON data to Hub: ' + json_data)
+    _log('Send JSON data to Hub: ' + json_data, level=logging.DEBUG)
 
     o = urlparse(task_config.broker_url)
 
@@ -63,6 +67,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
         if params and params.get('hub_info', {}).get('cluster_task_id'):
             response = {
                 'type': 'TaskResult',
+                'provider': params['provider'],
                 'hub_info': params['hub_info'],
                 'status': status,
             }
@@ -130,6 +135,7 @@ def _make_hub_provider_info_update(ctx, provider, hub_info):
     return {
         'type': 'ProviderInfoUpdate',
         'hub_info': hub_info,
+        'provider': provider,
         'provider_info': {
             provider: provider_info
         }
@@ -137,6 +143,7 @@ def _make_hub_provider_info_update(ctx, provider, hub_info):
 
 def _read_hub_experiment_session(ctx, params):
     experiment_session, ctx_hub = _get_hub_experiment_session(params['hub_info']['experiment_session_id'])
+    provider = params['provider']
 
     evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
     dataset_statistics = experiment_session.get('dataset_statistics', {}).get('stat_data', [])
@@ -230,16 +237,22 @@ def _format_leaderboard_for_hub(leaderboard):
 
     return formatted_leaderboard_list
 
-def _update_hub_leaderboad(params, leaderboad):
+def _update_hub_leaderboad(params, leaderboard):
     from a2ml.api.auger.experiment import AugerExperiment
 
     ctx = Context(debug=task_config.debug)
     experiment = AugerExperiment(ctx)
+    _log(leaderboard, level=logging.DEBUG)
 
-    leaderboad['type'] = 'Leaderboard'
-    leaderboad['experiment_session_id'] = params['hub_info']['experiment_session_id']
+    data = {
+        'type': 'Leaderboard',
+        'provider': params['provider'],
+        'hub_info': params['hub_info'],
+        'trials': _format_leaderboard_for_hub(leaderboard.get('trials', [])),
+        'evaluate_status': leaderboard.get('evaluate_status'),
+    }
 
-    send_result_to_hub.delay(json.dumps(leaderboad))
+    send_result_to_hub.delay(json.dumps(data))
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
@@ -268,77 +281,67 @@ def _create_provider_context(params):
 
 def _get_leaderboad(params):
     ctx = _create_provider_context(params)
+    provider = params['provider']
 
     res = A2ML(ctx).evaluate()
-    data = {}
-    if res.get(params.get('provider'), {}).get('result'):
-        data = res[params.get('provider')]['data']
+    _log(res, level=logging.DEBUG)
 
-    trials = []
-    for item in data.get('leaderboard', []):
-        trials.append({
-            "uid": item['model id'],
-            "score": item['all_scores'][item['primary_metric']],
-            "scoring": item['primary_metric'],
-            "ensemble": 'Ensemble' in item['algorithm'],
-            "task_type": item['task_type'],
-            "all_scores": item['all_scores'],
-            "score_name": item['primary_metric'],
-            "algorithm_name": item['algorithm_name'],
-            "optimizer_name": "Azure",
-            "evaluation_time": item["fit_time"],
-            "algorithm_params": item['algorithm_params'],
-            "experiment_session_id": ctx.config.get('experiment/run_id'),
-            "preprocessor": item["preprocessor"],
-            "algorithm_params_hash": None, #TODO : make_algorithm_params_hash in auger-ml
+    if res.get(provider, {}).get('result'):
+        data = res[provider]['data']
+        leaderboard = data['leaderboard']
+        status = data['status']
+        trials_count = data.get('trials_count', 0)
 
-            "error": None,
-            "ratio": 1.0,
-            "budget": None,
-            "create_trial_time": None,
-            "estimated_time": 0,
-            "estimated_timeout": False,
-            "trialClass": None,
-            "fold_scores": [],
-            "fold_times": [],
-            "metrics_time": 0,
-            "dataset_ncols": 0,
-            "dataset_nrows": 0,
-            "dataset_manifest_id": None,
-        })
+        trials = []
 
-    evaluate_status = {
-        'status': data.get('status'),
-        'completed_evaluations': data.get('trials_count', 0),
+        for item in leaderboard:
+            trials.append({
+                "uid": item['model id'],
+                "score": item['all_scores'][item['primary_metric']],
+                "scoring": item['primary_metric'],
+                "ensemble": 'Ensemble' in item['algorithm'],
+                "task_type": item['task_type'],
+                "all_scores": item['all_scores'],
+                "score_name": item['primary_metric'],
+                "algorithm_name": item['algorithm_name'],
+                "optimizer_name": "Azure",
+                "evaluation_time": float(item["fit_time"]),
+                "algorithm_params": item['algorithm_params'],
+                "experiment_session_id": ctx.config.get('experiment/run_id'),
+                "preprocessor": item["preprocessor"],
+                "algorithm_params_hash": None, #TODO : make_algorithm_params_hash in auger-ml
 
-        #'start_time': None,
-        #'total_evaluations': ctx.config.get('experiment/max_n_trials'), 
+                "error": None,
+                "ratio": 1.0,
+                "budget": None,
+                "create_trial_time": None,
+                "estimated_time": 0,
+                "estimated_timeout": False,
+                "trialClass": None,
+                "fold_scores": [],
+                "fold_times": [],
+                "metrics_time": 0,
+                "dataset_ncols": 0,
+                "dataset_nrows": 0,
+                "dataset_manifest_id": None,
+            })
 
-        #'ensemble_start_time': None,
-        # "timeouts": timeouts,
-        # 'timeouts_count': timeouts_count,
-        # 'timeouts_stat': timeouts_stat,
-        # "error_trials": error_trials, 
-        # "error_trials_count": error_trials_count,
-        # "error_trials_stat": error_trials_stat,
-        # "failed_trials": failed_trials,
-        # "failed_trials_count": failed_trials_count,
-        # "failed_trials_stat": failed_trials_stat,
-        # 'featureColumns': status.get('evaluation_options', {}).get('featureColumns', [])[:self.options.get('max_features_for_hub', 200)],
-        # 'featuresCount': len(status.get('evaluation_options', {}).get('featureColumns', []))
-    }
-    return {
-        'evaluate_status': evaluate_status,
-        'trials': trials,
-    }
+        evaluate_status = {
+            'status': status,
+            'completed_evaluations': trials_count,
+        }
 
-@celeryApp.task(ignore_result=False, acks_late=True,
-    acks_on_failure_or_timeout=False, reject_on_worker_lost=True,
-    autoretry_for=(Exception,), retry_kwargs={'max_retries': None, 'countdown': 20})
+        return {
+            'evaluate_status': evaluate_status,
+            'trials': trials,
+        }
+
+@celeryApp.task(ignore_result=True)
 def monitor_evaluate_task(params):
-    _update_hub_leaderboad(params, _get_leaderboad(params))
-    execute_task( monitor_evaluate_task, params, wait_for_result=False,
-        delay=params.get("monitor_evaluate_interval", 20))
+    leaderboard = _get_leaderboad(params)
+
+    if leaderboard:
+        _update_hub_leaderboad(params, leaderboard)
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def evaluate_start_task(params):
@@ -361,15 +364,7 @@ def evaluate_start_task(params):
 
     res = A2ML(ctx).train()
 
-    hub_objects_update = _update_hub_objects(ctx, provider, ctx_hub, params)
-
-    if params.get("start_monitor_evaluate", True):
-        if not params.get('provider_info'):
-            params['provider_info'] = {}
-
-        merge_dicts(params['provider_info'], hub_objects_update.get('provider_info'))
-        execute_task( monitor_evaluate_task, params, wait_for_result=False,
-            delay=params.get("monitor_evaluate_interval", 20))
+    _update_hub_objects(ctx, provider, ctx_hub, params)
 
     return res
 
