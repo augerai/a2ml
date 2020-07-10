@@ -38,6 +38,7 @@ class ModelPredict():
 
         ds_result = DataFrame.create_dataframe(None, records=predictions['data'], features=predictions['columns'])
         ds_result.options['data_path'] = filename
+        ds_result.loaded_columns = columns
         return ModelHelper.save_prediction_result(ds_result, 
             prediction_id = None, support_review_model = False, 
             json_result=False, count_in_result=False, prediction_date=None, 
