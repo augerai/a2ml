@@ -258,14 +258,14 @@ class RemoteProviderRunner(RequestMixin, object):
         while not self.get_response_data_type(data) == 'result':
             data = await self.connect_and_get_result(request_id, local_file)
 
-        result = data.get('result', {})
-        if result:
+        if data.get('status') == 'SUCCESS':
+            result = data.get('result', {})
             return dict_dig(result, 'response') or result
         else:
             return {
                 self.provider: {
                     'result': False,
-                    'data': "Server error. Please try again..."
+                    'data': "Server error. Details: %s"%data.get('result')
                 }
             }
 
