@@ -4,7 +4,7 @@ from a2ml.api.utils.context import pass_context
 
 
 @click.command('predict', short_help='Predict with deployed model.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--threshold', '-t', default=None, type=float,
