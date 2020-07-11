@@ -15,7 +15,7 @@ def cmdl(ctx):
     help='Download and deploy trained model locally.')
 @click.option('--review', is_flag=True, default=True,
     help='Should model support review based on actual data.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def deploy(ctx, provider, model_id, locally, review):
@@ -30,7 +30,7 @@ def deploy(ctx, provider, model_id, locally, review):
     help='Deployed model id.')
 @click.option('--locally', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @click.option('--output', '-o', type=click.STRING, required=False,
     help='Output csv file path.')
@@ -43,7 +43,7 @@ def predict(ctx, provider, filename, model_id, threshold, locally, output):
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--model-id', '-m', type=click.STRING, required=True,
     help='Deployed model id.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
 help='Cloud AutoML Provider.')
 @click.option('--locally', is_flag=True, default=False,
     help='Process actuals locally.')
@@ -55,7 +55,7 @@ def actuals(ctx, provider, filename, model_id, locally):
 @click.command('review', short_help='Review the performance of deployed model.')
 @click.option('--model-id', '-m', type=click.STRING, required=True,
     help='Deployed model id.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def review(ctx, provider, model_id, output):

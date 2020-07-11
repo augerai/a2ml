@@ -11,7 +11,7 @@ def cmdl(ctx):
 
 
 @click.command(short_help='List Data Sets on Provider Cloud')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def list_cmd(ctx, provider):
@@ -19,9 +19,9 @@ def list_cmd(ctx, provider):
     A2MLDataset(ctx, provider).list()
 
 
-@click.command(short_help='Create Data Set on Provider Cloud')
+@click.command(short_help='Create Dataset on Provider Cloud')
 @click.argument('source', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def create(ctx, provider, source):
@@ -32,22 +32,22 @@ def create(ctx, provider, source):
     A2MLDataset(ctx, provider).create(source)
 
 
-@click.command(short_help='Delete data set on the Provider Cloud')
+@click.command(short_help='Delete Dataset on Provider Cloud')
 @click.argument('name', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def delete(ctx, provider, name):
-    """Delete data set on the Provider Cloud
+    """Delete Dataset on the Provider Cloud
        If name is not specified, config.yaml/dataset
        will be used instead.
     """
     A2MLDataset(ctx, provider).delete(name)
 
 
-@click.command(short_help='Select data set')
+@click.command(short_help='Select Dataset')
 @click.argument('name', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def select(ctx, provider, name):

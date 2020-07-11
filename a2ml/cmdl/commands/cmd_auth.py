@@ -42,30 +42,30 @@ def cmdl(ctx):
     """Authenticate with AutoML provider."""
     ctx.setup_logger(format='')
 
-@click.command(short_help='Login to Auger.')
-@click.option('--provider', '-p', default='auger', help='Provider name.', callback=prompt_login)
-@click.option('--username', '-u', default=None, type=click.STRING, help='Auger username.', is_eager=True)
-@click.option('--organization', '-o', default=None, type=click.STRING, help='Auger organization.', is_eager=True)
-@click.option('--password', '-w', confirmation_prompt=False, default=None, help='Auger password.', is_eager=True, hide_input=True)
+@click.command(short_help='Login to a provider.')
+@click.option('--provider', '-p', default='auger', help='Provider name.', callback=prompt_login, show_default=True)
+@click.option('--username', '-u', default=None, type=click.STRING, help='Provider username.', is_eager=True)
+@click.option('--organization', '-o', default=None, type=click.STRING, help='Provider organization.', is_eager=True)
+@click.option('--password', '-w', confirmation_prompt=False, default=None, help='Provider password.', is_eager=True, hide_input=True)
 @click.option('--system', '-s', default='production',
-    type=click.Choice(['production','staging']),help='Auger API endpoint.')
+    type=click.Choice(['production','staging']), help='Auger Provider endpoint.', show_default=True)
 @pass_context
 def login(ctx, username, password, organization, system, provider):
-    """Login to Auger."""
+    """Login to a provider."""
     urls = {
         'production': 'https://app.auger.ai',
         'staging': 'https://app-staging.auger.ai'}
     AuthCmd(ctx, provider['name']).login(provider['username'], provider['password'], provider['organization'], urls[provider['system']])
 
-@click.command(short_help='Logout from Auger.')
-@click.option('--provider', '-p', default='auger', type=click.STRING, help='Provider name.')
+@click.command(short_help='Logout from a provider.')
+@click.option('--provider', '-p', default='auger', type=click.Choice(['auger','azure']), help='Provider name.', show_default=True)
 @pass_context
 def logout(ctx, provider):
-    """Logout from Auger."""
+    """Logout from a provider."""
     AuthCmd(ctx, provider).logout()
 
-@click.command(short_help='Display the current logged in user.')
-@click.option('--provider', '-p', default='auger', type=click.STRING, help='Provider name.')
+@click.command(short_help='Display the current logged in user for a provider.')
+@click.option('--provider', '-p', default='auger', type=click.Choice(['auger','azure']), help='Provider name.', show_default=True)
 @pass_context
 def whoami(ctx, provider):
     """Display the current logged in user."""
