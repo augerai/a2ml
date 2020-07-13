@@ -19,6 +19,27 @@ experiment:
   # Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
   metric: accuracy
 
+  # Optional. Default: None. Use it if you have a lot of failed trials
+  # Set it to value < 8 to give trial fit process more memory.  
+  # trials_per_worker: 2
+
+  # Optional. Default: None. Used in case of unbalanced datasets.
+  # Class Weight Weights associated with classes. If None, all classes are supposed to have weight one. 
+  # The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. 
+  # The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.
+  # class_weight: balanced
+
+  # Oversampling Methods to adjust the class distribution of a data set 
+  # (in binary classification if 1-class is 99% and 0-class is 1% then samples from 0-class should be added to dataset in order to prevent overfitting on majority class)
+  # Name should be from imbalanced-learn library. For example: SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek
+  # Read https://imbalanced-learn.readthedocs.io/en/stable/api.html#module-imblearn.over_sampling
+  # For full parameters description  
+  # oversampling:
+    # name: SMOTE
+    # params:
+    #   sampling_strategy: minority
+    #   k_neighbors: 5
+
 # CPU cluster hardware settings
 cluster:
   # Type could be standard or high_memory

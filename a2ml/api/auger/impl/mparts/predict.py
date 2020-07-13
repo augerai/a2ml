@@ -38,6 +38,7 @@ class ModelPredict():
 
         ds_result = DataFrame.create_dataframe(None, records=predictions['data'], features=predictions['columns'])
         ds_result.options['data_path'] = filename
+        ds_result.loaded_columns = columns
         return ModelHelper.save_prediction_result(ds_result, 
             prediction_id = None, support_review_model = False, 
             json_result=False, count_in_result=False, prediction_date=None, 
@@ -69,6 +70,7 @@ class ModelPredict():
             # if it wasn't unzipped before
             if not model_existed:
                 shutil.rmtree(model_path, ignore_errors=True)
+                model_path = None
 
         if not filename_arg:
             ds_result = DataFrame.create_dataframe(predicted)
@@ -77,9 +79,10 @@ class ModelPredict():
             ds_result.loaded_columns = columns
 
             return ModelHelper.save_prediction_result(ds_result, 
-                prediction_id = None, support_review_model = model_options.get("support_review_model"), 
+                prediction_id = None, 
+                support_review_model = model_options.get("support_review_model") if model_path else False, 
                 json_result=False, count_in_result=False, prediction_date=None, 
-                model_path=None, model_id=model_id, output=output)
+                model_path=model_path, model_id=model_id, output=output)
         elif output:
             fsclient.move_file(predicted, output)
             predicted = output
@@ -103,8 +106,8 @@ class ModelPredict():
         data_path = os.path.abspath(os.path.dirname(filename))
         model_path = os.path.abspath(model_path)
 
-        call_args = "--path_to_predict=./model_data/%s %s" % \
-            (predict_file, "--threshold=%s --verbose=True" % str(threshold) if threshold else '')
+        call_args = "--verbose=True --path_to_predict=./model_data/%s %s" % \
+            (predict_file, "--threshold=%s" % str(threshold) if threshold else '')
 
         command = (r"docker run "
             "-v {model_path}:/var/src/auger-ml-worker/exported_model "

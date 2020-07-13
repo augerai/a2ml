@@ -28,7 +28,8 @@ This includes both general options that apply to all vendors and vendor specific
 
     name: the name of the project
     provider: the AutoML provider. **GC (for Google Cloud)**, **AZ (for Microsoft Azure)**, or **Auger**
-    source: the CSV file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage ("gs://...") for Google Cloud AutoML.
+    source: the CSV or Parquet file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage ("gs://...") for Google Cloud AutoML.
+    source_format: csv(default), parquet. Set it if source is url or file has no extension
     exclude: features from the dataset to exclude from the model
     target: the feature which is the target
     model_type: Can be regression, classification or timeseries

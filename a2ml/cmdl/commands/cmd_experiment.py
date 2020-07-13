@@ -11,7 +11,7 @@ def cmdl(ctx):
 
 
 @click.command(short_help='List Experiments for selected DataSet')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def list_cmd(ctx, provider):
@@ -20,7 +20,7 @@ def list_cmd(ctx, provider):
 
 
 @click.command(short_help='Start Experiment')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def start(ctx, provider):
@@ -32,7 +32,7 @@ def start(ctx, provider):
 
 @click.command(short_help='Stop Experiment')
 @click.argument('run-id', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def stop(ctx, provider, run_id):
@@ -42,7 +42,7 @@ def stop(ctx, provider, run_id):
 
 @click.command(short_help='Show Experiment leaderboard')
 @click.argument('run-id', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def leaderboard(ctx, provider, run_id):
@@ -53,7 +53,7 @@ def leaderboard(ctx, provider, run_id):
     A2MLExperiment(ctx, provider).leaderboard(run_id)
 
 @click.command(short_help='Show Experiment history')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def history(ctx, provider):

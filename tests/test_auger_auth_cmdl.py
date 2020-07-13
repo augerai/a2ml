@@ -29,7 +29,7 @@ class TestAugerAuth():
             }
         }
         interceptor(PAYLOAD, monkeypatch)
-        monkeypatch.setenv("AUGER_CREDENTIALS_PATH", os.getcwd())
+        #monkeypatch.setenv("AUGER_CREDENTIALS_PATH", os.getcwd())
         result = runner.invoke(
             cmdl,
             ['auth', 'login'],
