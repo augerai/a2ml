@@ -119,8 +119,6 @@ workflows:
             tags:
               ignore: /^v.*/
       - publish-pip:
-          requires:
-            - build-and-test
           filters:
             tags:
               only: /^v.*/
