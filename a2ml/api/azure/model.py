@@ -175,9 +175,9 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def predict(self, filename, model_id,
-        threshold=None, locally=False, data=None, columns=None, output = None,
-        json_result=False, count_in_result=False, prediction_date=None, prediction_id=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
+        predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
+        ):
         ds = DataFrame.create_dataframe(filename, data, columns)
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
@@ -200,7 +200,7 @@ def get_df(data):
             target_categories)
 
         predicted = ModelHelper.save_prediction(ds, prediction_id,
-            options.get('support_review_model', True), json_result, count_in_result, prediction_date,
+            options.get('support_review_model', True), json_result, count_in_result, predicted_at,
             model_path, model_id, output)
 
         if filename:
@@ -210,7 +210,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actuals(self, model_id, filename=None, actual_records=None, locally=False):
+    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
         if locally:
             model_path = self.ctx.config.get_model_path(model_id)
 
@@ -218,7 +218,7 @@ def get_df(data):
                 raise Exception('Model should be deployed first.')
 
             return ModelReview({'model_path': model_path}).add_actuals(
-                actuals_path=filename, actual_records=actual_records)
+                actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
         else:    
             raise Exception("Not Implemented")
 
