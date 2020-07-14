@@ -393,7 +393,7 @@ def deploy_model_task(params):
     ctx_hub = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
-    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('review'))
+    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'))
     _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
 
     return res
@@ -420,7 +420,7 @@ def predict_by_model_task(params):
     )
     _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
 
-    return res
+    return res['predicted']
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def score_actuals_by_model_task(params):
