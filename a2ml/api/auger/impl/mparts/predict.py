@@ -18,33 +18,33 @@ class ModelPredict():
         super(ModelPredict, self).__init__()
         self.ctx = ctx
 
-    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, output=None):
+    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
         if filename and not fsclient.is_s3_path(filename):
             self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
         if locally:
-            predicted = self._predict_locally(filename, model_id, threshold, data, columns, output)
+            predicted = self._predict_locally(filename, model_id, threshold, data, columns, predicted_at, output)
         else:
-            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, output)
+            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, predicted_at, output)
 
         return predicted
 
-    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, output):
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         ds = DataFrame.create_dataframe(filename, data, columns)
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-        predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold)
+        predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
 
         ds_result = DataFrame.create_dataframe(None, records=predictions['data'], features=predictions['columns'])
         ds_result.options['data_path'] = filename
         ds_result.loaded_columns = columns
         return ModelHelper.save_prediction_result(ds_result, 
             prediction_id = None, support_review_model = False, 
-            json_result=False, count_in_result=False, prediction_date=None, 
+            json_result=False, count_in_result=False, prediction_date=predicted_at, 
             model_path=None, model_id=model_id, output=output)
 
-    def _predict_locally(self, filename_arg, model_id, threshold, data, columns, output):
+    def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, output):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
             model_deploy.verify_local_model(model_id)
@@ -81,7 +81,7 @@ class ModelPredict():
             return ModelHelper.save_prediction_result(ds_result, 
                 prediction_id = None, 
                 support_review_model = model_options.get("support_review_model") if model_path else False, 
-                json_result=False, count_in_result=False, prediction_date=None, 
+                json_result=False, count_in_result=False, prediction_date=predicted_at, 
                 model_path=model_path, model_id=model_id, output=output)
         elif output:
             fsclient.move_file(predicted, output)

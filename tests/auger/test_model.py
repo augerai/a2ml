@@ -37,7 +37,7 @@ class TestModel():
         monkeypatch.setattr('subprocess.check_call', lambda *a, **kw: b'iris_predicted.csv')
 
         result = AugerModel(ctx).predict(filename='iris.csv', model_id='87C81FE615DE46D', 
-            threshold=None, locally=True, data=None, columns=None, output=None)
+            threshold=None, locally=True, data=None, columns=None, predicted_at=None, output=None)
 
         assert result.get('predicted')
         assert 'test_project/predictions/iris_predicted.csv' in result.get('predicted')

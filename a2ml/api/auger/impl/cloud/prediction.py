@@ -11,10 +11,11 @@ class AugerPredictionApi(AugerBaseApi):
             ctx, pipeline_api, prediction_name, prediction_id)
         assert pipeline_api is not None, 'Pipeline must be set for Prediction'
 
-    def create(self, records, features, threshold=None):
+    def create(self, records, features, threshold=None, predicted_at=None):
         return self._call_create({
             'pipeline_id': self.parent_api.object_id,
             'records': records, 
             'features': features,
-            'threshold': threshold
+            'threshold': threshold,
+            'predicted_at': str(predicted_at)
             }, ['requested', 'running'])

@@ -60,7 +60,8 @@ class AzureExperiment(object):
         dataset_name = self.ctx.config.get('dataset', None)
         if dataset_name is None:
             raise AzureException('Please specify Dataset name...')
-        experiment_name = self.ctx.config.get('experiment/name', dataset_name)
+        experiment_name = self._fix_experiment_name(
+            self.ctx.config.get('experiment/name', dataset_name))
         cluster_name = self._fix_cluster_name(
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
@@ -262,6 +263,16 @@ class AzureExperiment(object):
             })
         print_table(self.ctx.log, result)
         return {'history': result}
+
+    def _fix_experiment_name(self, name):
+        # Experiment name must be between 1 and 255 characters long. 
+        # Its first character has to be alphanumeric, and the rest may contain hyphens and underscores. 
+        # No whitespace is allowed.
+
+        name = re.sub(r'\W+', '-', name)
+        name = name[:255]
+
+        return name
 
     def _fix_cluster_name(self, name):
         # Name can include letters, digits and dashes.
