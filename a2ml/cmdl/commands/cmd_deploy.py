@@ -4,7 +4,7 @@ from a2ml.api.utils.context import pass_context
 
 
 @click.command('deploy', short_help='Deploy trained model.')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,

@@ -118,6 +118,12 @@ class Context(object):
         new.config.parts_changes = self.config.parts_changes
         new.provider_info = self.provider_info
 
+        try:
+            new.config.set("providers", name, config_name='config')
+        except Exception as e:
+            # In case if command run in folder without config, do not set it
+            pass
+            
         if self._runs_on_server and hasattr(self, 'credentials'):
             new.credentials = self.credentials
 

@@ -87,6 +87,13 @@ class AugerExperimentApi(AugerBaseApi):
             'test_data_path': test_data_path
         }
 
+        if config.get('experiment/trials_per_worker'):
+            options['trials_per_worker'] = config.get('experiment/trials_per_worker')
+        if config.get('experiment/class_weight'):
+            options['algorithm_params_common'] = {'class_weight': config.get('experiment/class_weight')}
+        if config.get('experiment/oversampling'):
+            options['oversampling'] = config.get('experiment/oversampling')
+
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(
             self.ctx, self.parent_api, None, data_set_id)

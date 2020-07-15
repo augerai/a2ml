@@ -9,7 +9,7 @@ def cmdl(ctx):
     ctx.setup_logger(format='')
 
 @click.command(short_help='List Projects')
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def list_cmd(ctx, provider):
@@ -18,7 +18,7 @@ def list_cmd(ctx, provider):
 
 @click.command(short_help='Create Project')
 @click.argument('name', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def create(ctx, provider, name):
@@ -27,7 +27,7 @@ def create(ctx, provider, name):
 
 @click.command(short_help='Delete Project')
 @click.argument('name', required=False, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def delete(ctx, provider, name):
@@ -37,7 +37,7 @@ def delete(ctx, provider, name):
 
 @click.command(short_help='Select Project')
 @click.argument('name', required=True, type=click.STRING)
-@click.option('--provider', '-p', type=click.STRING, required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def select(ctx, provider, name):

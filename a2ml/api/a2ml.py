@@ -199,7 +199,7 @@ class A2ML(BaseA2ML):
 
     @show_result
     def predict(self, filename,
-      model_id, threshold=None, locally=False, data=None, columns=None, output=None, provider=None):
+      model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Note:
@@ -212,7 +212,8 @@ class A2ML(BaseA2ML):
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
             data: dict or array of records
-            columns(list): list of column names if data is array of records            
+            columns(list): list of column names if data is array of records
+            predicted_at: Predict data date. Use for review of historical data.
             output(str): Output csv file path.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
@@ -264,10 +265,10 @@ class A2ML(BaseA2ML):
                 # predictions are returned as rv[provider]['data']['predicted']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, output)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
     @show_result
-    def actuals(self, model_id, filename=None, actual_records=None, locally=False, provider=None):
+    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
@@ -290,6 +291,7 @@ class A2ML(BaseA2ML):
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
             actual_records: array of records [[prediction_id, actual]]
+            actuals_at: Actuals date. Use for review of historical data.
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
@@ -328,7 +330,7 @@ class A2ML(BaseA2ML):
                 model = A2ML(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
 
     @show_result
     def review(self, model_id, locally=False, provider=None):
