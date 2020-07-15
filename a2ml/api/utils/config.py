@@ -50,9 +50,12 @@ class ConfigParts(object):
         return self.parts.keys()
 
     def part(self, name, create_if_not_exist=False):
-        if create_if_not_exist and name not in self.parts:
-            self.parts[name] = SerializableConfigYaml()
-
+        if name not in self.parts:
+            if create_if_not_exist:
+                self.parts[name] = SerializableConfigYaml()
+            else:
+                return SerializableConfigYaml()
+                    
         return self.parts[name]
 
     def _load(self, name):
