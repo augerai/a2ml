@@ -189,7 +189,7 @@ class AzureExperiment(object):
             result['error'] = run.properties.get('errors')
             result['error_details'] = run.get_details().get('error', {}).get('error', {}).get('message')
             self.ctx.log('Status: %s, Error: %s, Details: %s' % (
-                status, error, error_details
+                status, result['error'], result['error_details']
             ))
             self.ctx.log_debug(run.get_details().get('error'))
         else:    
