@@ -73,9 +73,6 @@ class AzureExperiment(object):
         if exclude_columns:
             dataset = dataset.drop_columns(exclude_columns)
 
-        training_data_columns = AzureDataset(self.ctx, ws)._columns(dataset)
-        training_data_columns.remove(target)
-
         compute_target = self._get_compute_target(ws, cluster_name)
 
         automl_settings = {
@@ -98,6 +95,10 @@ class AzureExperiment(object):
                     source = self.ctx.config.get('experiment/validation_source'),
                     validation = True
                 )
+
+                training_data_columns = AzureDataset(self.ctx, ws)._columns(dataset)
+                training_data_columns.remove(target)
+
                 validation_data = Dataset.get_by_name(ws, res['dataset']).keep_columns(training_data_columns)
         else:
             self.ctx.config.remove('experiment/validation_dataset')
