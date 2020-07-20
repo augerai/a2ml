@@ -67,6 +67,8 @@ class AzureExperiment(object):
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
         exclude_columns = self.ctx.config.get_list('exclude', [])
+        if target in exclude_columns:
+            exclude_columns.remove(target)
 
         ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
