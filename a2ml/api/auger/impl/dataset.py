@@ -21,7 +21,8 @@ class DataSet(AugerDataSetApi):
             self.ctx.log('Starting Project to process request...')
             self.project.start()
 
-        return super().create(data_source_file, self.object_name, local_data_source=local_data_source)
+        super().create(data_source_file, self.object_name, local_data_source=local_data_source)
+        return self
 
     def upload_file(self, data_source_file):
         if data_source_file is None:
