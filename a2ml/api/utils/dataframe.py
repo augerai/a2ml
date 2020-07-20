@@ -209,8 +209,8 @@ class DataFrame(object):
     def _check_remote_path(self, force_download=False):
         remote_path = None
         if self.options['data_path'].startswith("http:") or self.options['data_path'].startswith("https:"):
-            local_dir = LocalFSClient.get_temp_folder()
-            file_name = 'data-' + get_uid4
+            local_dir = LocalFSClient().get_temp_folder()
+            file_name = 'data-' + get_uid4()
 
             local_file_path = download_file(self.options['data_path'],
                 local_dir=local_dir, file_name=file_name, force_download=force_download)

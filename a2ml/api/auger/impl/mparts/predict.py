@@ -20,7 +20,8 @@ class ModelPredict():
         self.ctx = ctx
 
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
-        if filename and not fsclient.is_s3_path(filename):
+        if filename and not (filename.startswith("http:") or filename.startswith("https:")) and\
+            not fsclient.is_s3_path(filename):
             self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
@@ -35,9 +36,8 @@ class ModelPredict():
     def _upload_file_to_cloud(self, project, filename):
         from ..dataset import DataSet
 
-        dataset = DataSet(self.ctx, project).create(filename)
-        print(dataset)
-        return dataset.url
+        file_url, file_name = DataSet(self.ctx, project).upload_file(filename)
+        return file_url
         
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         send_records = False
@@ -46,13 +46,13 @@ class ModelPredict():
             if not (filename.startswith("http:") or filename.startswith("https:")) and \
                not fsclient.is_s3_path(filename):
                 file_size = fsclient.get_file_size(filename)
-                if file_size <= 10: #*1024:
+                if file_size <= 10*1024:
                     self.ctx.log("Local file '%s' with size %s(KB) is smaller 10KB, so send records to hub." % (filename, file_size/1024))
                     send_records = True
             else:
                 file_url = filename
 
-        elif len(data) > 100:
+        elif len(data) > 300:
             self.ctx.log("Number of records %s > 300, so send file to hub." % (len(data)))
         else:
             send_records = True        
@@ -68,24 +68,27 @@ class ModelPredict():
                     with fsclient.save_atomic("temp_predict.csv.gz") as local_path:
                         ds = DataFrame.create_dataframe(filename, data, columns)
                         ds.saveToCsvFile(local_path)
-                        #file_url = self._upload_file_to_cloud(local_path)
+                        file_url = self._upload_file_to_cloud(local_path)
                 else:
-                    pass    
-                    #file_url = self._upload_file_to_cloud(filename)
+                    file_url = self._upload_file_to_cloud(filename)
 
-            file_url = "s3://auger-auger-mt-efl4si/workspace/projects/a2ml_ev_iris/files/iris_data_test-36232f.csv"        
             predictions = pipeline_api.predict(None, None, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
-            print(predictions['signed_prediction_url'])
 
         ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'), 
             records=predictions.get('data'), features=predictions.get('columns'))
-        ds_result.options['data_path'] = filename
-        ds_result.loaded_columns = columns
-        return ModelHelper.save_prediction_result(ds_result, 
-            prediction_id = None, support_review_model = False, 
-            json_result=False, count_in_result=False, prediction_date=predicted_at, 
-            model_path=None, model_id=model_id, output=output)
+        temp_file = ds_result.options['data_path'] if predictions.get('signed_prediction_url') else None
 
+        try:
+            ds_result.options['data_path'] = filename
+            ds_result.loaded_columns = columns
+            return ModelHelper.save_prediction_result(ds_result, 
+                prediction_id = None, support_review_model = False, 
+                json_result=False, count_in_result=False, prediction_date=predicted_at, 
+                model_path=None, model_id=model_id, output=output)
+        finally:
+            if temp_file:
+                fsclient.remove_file(temp_file)        
+                
     def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, output):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
