@@ -8,7 +8,7 @@ import warnings
 
 from functools import wraps
 
-from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line
+from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line, download_file
 from a2ml.api.utils.local_fsclient import LocalFSClient
 
 # To avoid warnings for inplace operation on datasets
@@ -209,7 +209,7 @@ class DataFrame(object):
     def _check_remote_path(self, force_download=False):
         remote_path = None
         if self.options['data_path'].startswith("http:") or self.options['data_path'].startswith("https:"):
-            local_dir = Localfsclient.get_temp_folder()
+            local_dir = LocalFSClient.get_temp_folder()
             file_name = 'data-' + get_uid4
 
             local_file_path = download_file(self.options['data_path'],

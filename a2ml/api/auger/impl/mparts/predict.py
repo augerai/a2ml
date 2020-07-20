@@ -10,6 +10,7 @@ from ..exceptions import AugerException
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_helper import ModelHelper
+from ..decorators import with_project
 
 class ModelPredict():
     """Predict using deployed Auger Model."""
@@ -30,13 +31,54 @@ class ModelPredict():
 
         return predicted
 
+    @with_project(autocreate=False)
+    def _upload_file_to_cloud(self, project, filename):
+        from ..dataset import DataSet
+
+        dataset = DataSet(self.ctx, project).create(filename)
+        print(dataset)
+        return dataset.url
+        
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
-        ds = DataFrame.create_dataframe(filename, data, columns)
+        send_records = False
+        file_url = None
+        if filename:
+            if not (filename.startswith("http:") or filename.startswith("https:")) and \
+               not fsclient.is_s3_path(filename):
+                file_size = fsclient.get_file_size(filename)
+                if file_size <= 10: #*1024:
+                    self.ctx.log("Local file '%s' with size %s(KB) is smaller 10KB, so send records to hub." % (filename, file_size/1024))
+                    send_records = True
+            else:
+                file_url = filename
+
+        elif len(data) > 100:
+            self.ctx.log("Number of records %s > 300, so send file to hub." % (len(data)))
+        else:
+            send_records = True        
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-        predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
 
-        ds_result = DataFrame.create_dataframe(None, records=predictions['data'], features=predictions['columns'])
+        if send_records:    
+            ds = DataFrame.create_dataframe(filename, data, columns)
+            predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
+        else:
+            if not file_url:
+                if not filename:
+                    with fsclient.save_atomic("temp_predict.csv.gz") as local_path:
+                        ds = DataFrame.create_dataframe(filename, data, columns)
+                        ds.saveToCsvFile(local_path)
+                        #file_url = self._upload_file_to_cloud(local_path)
+                else:
+                    pass    
+                    #file_url = self._upload_file_to_cloud(filename)
+
+            file_url = "s3://auger-auger-mt-efl4si/workspace/projects/a2ml_ev_iris/files/iris_data_test-36232f.csv"        
+            predictions = pipeline_api.predict(None, None, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
+            print(predictions['signed_prediction_url'])
+
+        ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'), 
+            records=predictions.get('data'), features=predictions.get('columns'))
         ds_result.options['data_path'] = filename
         ds_result.loaded_columns = columns
         return ModelHelper.save_prediction_result(ds_result, 
