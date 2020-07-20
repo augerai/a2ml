@@ -49,7 +49,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                             'min_nodes': 0,
                             'max_nodes': 2,
                             'type': 'STANDARD_D2_V2'
-                        }                        
+                        }
                     }
                 }
             }
@@ -104,7 +104,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'review': True,
 
             'hub_info': {
-                'projectPath': 'tests/tmp',
+                'project_path': 'tests/tmp',
                 'experiment_id': 'bb29d41a246f601b',
                 'experiment_session_id': '010def8e3cb89236'
             },
@@ -137,7 +137,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'path_to_predict':'tests/fixtures/adult.data_test.csv',
 
             'hub_info': {
-                'projectPath': 'tests/tmp',
+                'project_path': 'tests/tmp',
                 'experiment_id': 'bb29d41a246f601b',
                 'experiment_session_id': '010def8e3cb89236'
             },
@@ -156,7 +156,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 }
             }
         }
-        
+
     @pytest.mark.skip(reason='run it locally')
     def test_predict(self):
         params = self._get_predict_params()

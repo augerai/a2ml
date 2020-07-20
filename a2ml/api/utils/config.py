@@ -55,7 +55,7 @@ class ConfigParts(object):
                 self.parts[name] = SerializableConfigYaml()
             else:
                 return SerializableConfigYaml()
-                    
+
         return self.parts[name]
 
     def _load(self, name):
@@ -99,7 +99,7 @@ class Config(object):
                 res = list(data)
 
         return res
-               
+
     def get_path(self):
         path = self.path
         if path is None:
@@ -113,13 +113,13 @@ class Config(object):
     def set(self, path, value, config_name=None):
         if not config_name:
             config_name = self.name
-                
+
         self.parts.part(config_name, True).set(path, value)
         if self.runs_on_server:
             self.parts_changes.part(config_name, True).set(path, value)
 
     def clean_changes(self):
-        self.parts_changes = ConfigParts()    
+        self.parts_changes = ConfigParts()
 
     def remove(self, path, config_name=None):
         if not config_name:

@@ -17,7 +17,7 @@ class ModelReview(object):
         self.model_path = params.get('model_path')
         if not self.model_path:
             self.model_path = ModelHelper.get_model_path(params['hub_info']['pipeline_id'],
-                params['hub_info'].get('projectPath'))
+                params['hub_info'].get('project_path'))
 
         self.options = fsclient.read_json_file(os.path.join(self.model_path, "options.json"))
         if params.get('hub_info'):
@@ -123,7 +123,7 @@ class ModelReview(object):
             result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred)
 
         return result
-            
+
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
@@ -131,11 +131,11 @@ class ModelReview(object):
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
             actual_date=None, actuals_id = None, calc_score=True):
 
-        features = None 
+        features = None
         if actuals_path or (actual_records and type(actual_records[0]) == list):
             features = ['prediction_id', 'actual']
 
-        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, 
+        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records,
             features=features)
 
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
@@ -173,7 +173,7 @@ class ModelReview(object):
                 ds_train.drop_duplicates()
 
         if not output:
-            output = os.path.splitext(data_path)[0] + "_review_%s.feather.zstd"%(get_uid())    
+            output = os.path.splitext(data_path)[0] + "_review_%s.feather.zstd"%(get_uid())
 
         ds_train.saveToFile(output)
         return output
@@ -217,7 +217,7 @@ class ModelReview(object):
             df_actuals = DataFrame({})
             for (file, df) in DataFrame.load_from_files(files, features):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
-                
+
             if df_actuals.count() > 0:
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 scores = self._process_actuals(ds_actuals=df_actuals, calc_score=True)
@@ -235,7 +235,7 @@ class ModelReview(object):
             date_from, date_to, "_*_actuals.feather.zstd", features, categoricalFeatures, mapper
         )
 
-        features += self.options.get('originalFeatureColumns')
+        features += self.options.get('originalFeatureColumns', [])
         features_stats = self._distribution_stats(
             date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures
         )
@@ -370,7 +370,7 @@ class ModelReview(object):
             path = os.path.join(model_path, "predictions/" + "*" + path_suffix)
             files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
             yield ("today", files)
-                    
+
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'

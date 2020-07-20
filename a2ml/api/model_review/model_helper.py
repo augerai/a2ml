@@ -45,7 +45,7 @@ class ModelHelper(object):
 
     @staticmethod
     def get_metrics_path(params):
-        project_path = params.get('hub_info', {}).get('projectPath')
+        project_path = params.get('hub_info', {}).get('project_path')
         if not project_path:
             project_path = ModelHelper.get_project_path()
 
@@ -71,7 +71,7 @@ class ModelHelper(object):
 
     @staticmethod
     def save_metric(metric_id, project_path, metric_name, metric_data):
-        metric_path = ModelHelper.get_metric_path({'hub_info':{'projectPath': projectPath}}, metric_id)
+        metric_path = ModelHelper.get_metric_path({'hub_info':{'project_path': project_path}}, metric_id)
 
         fsclient.write_json_file(os.path.join(metric_path,
             "metric_names_feature_importance.json"))

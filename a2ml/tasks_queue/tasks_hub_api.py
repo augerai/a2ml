@@ -1,5 +1,6 @@
 import amqp
 import copy
+import kombu.serialization
 import logging
 import json
 import traceback
@@ -78,7 +79,8 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
             else:
                 response['result'] = retval
 
-            send_result_to_hub.delay(json.dumps(response))
+            # send_result_to_hub.delay(json.dumps(response))
+            send_result_to_hub.delay(kombu.serialization.dumps(response, serializer='myjson')[2])
 
 def _get_hub_context():
     from a2ml.api.auger.project import AugerProject
@@ -259,9 +261,10 @@ def _create_provider_context(params):
 
     ctx = Context(
         name=provider,
-        path=params.get('hub_info', {}).get('projectPath'),
+        path=params.get('hub_info', {}).get('project_path'),
         debug=task_config.debug
     )
+
     ctx.set_runs_on_server(True)
     ctx.config.set('providers', [provider])
 
@@ -415,7 +418,7 @@ def predict_by_model_task(params):
         columns=params.get('features'),
         json_result=params.get('json_result'),
         count_in_result=params.get('count_in_result'),
-        prediction_date=params.get('prediction_date'),
+        predicted_at=params.get('prediction_date'),
         prediction_id = params.get('prediction_id')
     )
     _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
@@ -424,13 +427,13 @@ def predict_by_model_task(params):
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def score_actuals_by_model_task(params):
-    return ModelReview(params).score_actuals(
+    return ModelReview(params).add_actuals(
         actuals_path = params.get('actuals_path'),
         actual_records=params.get('actual_records'),
         prediction_group_id=params.get('prediction_group_id', None),
         primary_prediction_group_id=params.get('primary_prediction_group_id', None),
         primary_model_path=ModelHelper.get_model_path(params.get('primary_pipeline_id', None),
-            params.get('hub_info', {}).get('projectPath')),
+            params.get('hub_info', {}).get('project_path')),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id')
     )
