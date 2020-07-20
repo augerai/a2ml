@@ -4,6 +4,7 @@ from collections import OrderedDict
 from collections.abc import Iterable
 import time
 import os
+import logging
 
 from a2ml.api.utils import fsclient
 
@@ -141,7 +142,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
     download_file = True
     remote_file_info = {}
 
-    logging.info("download_file: %s, %s, %s, %s"%(remote_path, local_dir, file_name, force_download))
+    #logging.info("download_file: %s, %s, %s, %s"%(remote_path, local_dir, file_name, force_download))
     if file_name:
         all_local_files = fsclient.list_folder(os.path.join(local_dir, file_name+".*"), wild=True, remove_folder_name=True)
         if all_local_files:
@@ -159,7 +160,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
             local_file_path = os.path.join(local_dir,
                 remote_file_info.get('file_name') + remote_file_info.get('file_ext'))
 
-    if fsclient.isFileExists(local_file_path):
+    if fsclient.is_file_exists(local_file_path):
         etag_changed = False
         file_size_changed = False
 
@@ -172,7 +173,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
             download_file = False
 
     if download_file:
-        logging.info("Download to local file path: %s"%local_file_path)
+        #logging.info("Download to local file path: %s"%local_file_path)
         fsclient.download_file(remote_path, local_file_path)
 
     return local_file_path
