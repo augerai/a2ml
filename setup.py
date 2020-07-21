@@ -32,6 +32,7 @@ install_requires = [
     'pandas<=0.23.4,>=0.21.0', #version for azure
     'joblib==0.14.1', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
+    'cryptography==2.9.2', #version for azure
     'asyncio',
     'boto3',
     'pyarrow==0.17.1',
