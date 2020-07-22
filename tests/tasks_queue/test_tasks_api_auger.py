@@ -47,8 +47,8 @@ class TestTasksApiAuger(BaseTest):
     def test_evaluate_valid(self):
         params = self.params('auger', '29654979bf8a1877')
         res = evaluate_task.apply(params).result
-        self.assert_result(res, True, 
-            {'leaderboard': ANY, 'run_id': '29654979bf8a1877', 
+        self.assert_result(res, True,
+            {'leaderboard': ANY, 'run_id': '29654979bf8a1877',
             'status': 'completed', 'provider_status': 'completed'})
 
     @vcr.use_cassette('auger/deploy/valid.yaml')
@@ -91,7 +91,7 @@ class TestTasksApiAuger(BaseTest):
     def test_experiment_leaderboard_valid(self):
         params = self.params('auger', 'a6bc4bdb6607e7c2')
         res = leaderboard_experiment_task.apply(params).result
-        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2', 
+        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2',
             'status': 'completed', 'provider_status': 'completed'})
 
     @vcr.use_cassette('auger/experiment/list_valid.yaml')
@@ -105,13 +105,12 @@ class TestTasksApiAuger(BaseTest):
         params = self.params(
             'auger',
             's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
-            '555777999',
+            '2B702A5511A44E3',
             None,
             False
         )
 
         res = predict_model_task.apply(params).result
-        print(res)
         self.assert_result(res, True, {'predicted': ANY}, no_provider_in_result=True)
 
     @vcr.use_cassette('auger/predict/invalid_model.yaml')
@@ -119,11 +118,11 @@ class TestTasksApiAuger(BaseTest):
         params = self.params(
             'auger',
             's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
-            '000111222',
+            'BF8BDC3CD21648A',
             None,
             False
         )
 
         res = predict_model_task.apply(params).result
-        self.assert_result(res, False, 'Pipeline 000111222 is not ready...', no_provider_in_result=True)
+        self.assert_result(res, False, 'Pipeline BF8BDC3CD21648A is not ready...', no_provider_in_result=True)
 
