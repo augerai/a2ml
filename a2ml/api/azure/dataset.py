@@ -39,8 +39,8 @@ class AzureDataset(object):
 
         if source.startswith("http:") or source.startswith("https:"):
             url_info = get_remote_file_info(source)
-
-            if self.ctx.config.get('source_format', "") == "parquet":
+            if self.ctx.config.get('source_format', "") == "parquet" or \
+               url_info.get('file_ext', "").endswith(".parquet"):
                 dataset = Dataset.Tabular.from_parquet_files(path=source)
             else:        
                 dataset = Dataset.Tabular.from_delimited_files(path=source)

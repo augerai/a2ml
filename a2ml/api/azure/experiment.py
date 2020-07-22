@@ -60,20 +60,20 @@ class AzureExperiment(object):
         dataset_name = self.ctx.config.get('dataset', None)
         if dataset_name is None:
             raise AzureException('Please specify Dataset name...')
-        experiment_name = self.ctx.config.get('experiment/name', dataset_name)
+        experiment_name = self._fix_experiment_name(
+            self.ctx.config.get('experiment/name', dataset_name))
         cluster_name = self._fix_cluster_name(
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
         exclude_columns = self.ctx.config.get_list('exclude', [])
+        if target in exclude_columns:
+            exclude_columns.remove(target)
 
         ws = AzureProject(self.ctx)._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
         if exclude_columns:
             dataset = dataset.drop_columns(exclude_columns)
-
-        training_data_columns = AzureDataset(self.ctx, ws)._columns(dataset)
-        training_data_columns.remove(target)
 
         compute_target = self._get_compute_target(ws, cluster_name)
 
@@ -97,6 +97,10 @@ class AzureExperiment(object):
                     source = self.ctx.config.get('experiment/validation_source'),
                     validation = True
                 )
+
+                training_data_columns = AzureDataset(self.ctx, ws)._columns(dataset)
+                training_data_columns.remove(target)
+
                 validation_data = Dataset.get_by_name(ws, res['dataset']).keep_columns(training_data_columns)
         else:
             self.ctx.config.remove('experiment/validation_dataset')
@@ -188,7 +192,7 @@ class AzureExperiment(object):
             result['error'] = run.properties.get('errors')
             result['error_details'] = run.get_details().get('error', {}).get('error', {}).get('message')
             self.ctx.log('Status: %s, Error: %s, Details: %s' % (
-                status, error, error_details
+                status, result['error'], result['error_details']
             ))
             self.ctx.log_debug(run.get_details().get('error'))
         else:    
@@ -262,6 +266,16 @@ class AzureExperiment(object):
             })
         print_table(self.ctx.log, result)
         return {'history': result}
+
+    def _fix_experiment_name(self, name):
+        # Experiment name must be between 1 and 255 characters long. 
+        # Its first character has to be alphanumeric, and the rest may contain hyphens and underscores. 
+        # No whitespace is allowed.
+
+        name = re.sub(r'\W+', '-', name)
+        name = name[:255]
+
+        return name
 
     def _fix_cluster_name(self, name):
         # Name can include letters, digits and dashes.

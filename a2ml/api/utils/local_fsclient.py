@@ -189,7 +189,7 @@ class LocalFSClient:
 
     def download_file(self, path, local_path):
         from urllib.request import urlretrieve
-        from auger_ml.Utils import url_encode
+        from . import url_encode
 
         self.create_parent_folder(local_path)
         if local_path and local_path.startswith("/var/src"):
