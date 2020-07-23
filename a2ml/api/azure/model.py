@@ -426,3 +426,29 @@ def get_df(data):
         target_categories = target_categoricals.get(self.ctx.config.get('target'), {}).get("categories")
 
         return results, results_proba, proba_classes, target_categories
+
+    @error_handler
+    @authenticated
+    def undeploy(self, model_id, locally):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+            self.ctx.log("Undeploy model. Remove local model folder: %s"%model_path)
+            fsclient.remove_folder(model_path)
+        else:
+            from azureml.train.automl.run import AutoMLRun
+            from azureml.core.webservice import Webservice
+            from azureml.exceptions import WebserviceException
+            
+            ws, experiment = self._get_experiment()
+            model_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_name = model_run.properties['model_name']
+
+            aci_service_name = self._aci_service_name(model_name)
+            try:
+                Webservice(ws, aci_service_name).delete()
+            except WebserviceException as exc:
+                self.ctx.log(exc.message)                
+                pass
+
+            self.ctx.log("Model endpoint has been removed.")
+

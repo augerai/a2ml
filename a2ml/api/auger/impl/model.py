@@ -1,6 +1,7 @@
 import os
 
 from .mparts.deploy import ModelDeploy
+from .mparts.undeploy import ModelUndeploy
 from .mparts.predict import ModelPredict
 from .mparts.actual import ModelActual
 from a2ml.api.model_review.model_review import ModelReview
@@ -16,6 +17,9 @@ class Model(object):
 
     def deploy(self, model_id, locally=False, review=True):
         return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review)
+
+    def undeploy(self, model_id, locally=False):
+        return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
         if locally:

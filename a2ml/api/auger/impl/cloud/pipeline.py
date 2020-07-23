@@ -15,6 +15,9 @@ class AugerPipelineApi(AugerBaseApi):
         return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review},
             ['creating_files', 'packaging', 'deploying'])
 
+    def remove(self, trial_id):
+        return self._call_update({'id': trial_id, 'status': 'undeploying'})
+
     def predict(self, records, features, threshold=None, file_url=None, predicted_at=None):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
