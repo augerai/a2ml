@@ -111,6 +111,7 @@ class TestTasksApiAuger(BaseTest):
         )
 
         res = predict_model_task.apply(params).result
+        print(res)
         self.assert_result(res, True, {'predicted': ANY}, no_provider_in_result=True)
 
     @vcr.use_cassette('auger/predict/invalid_model.yaml')

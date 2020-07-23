@@ -159,10 +159,12 @@ class ModelHelper(object):
         for scoring in options.get('scoreNames', []):
             try:
                 if options.get('task_type') == "timeseries":
-                    from auger_ml.preprocessors.space import ppspace_is_timeseries_model
+                    # from auger_ml.preprocessors.space import ppspace_is_timeseries_model
 
-                    if ppspace_is_timeseries_model(options.get('algorithm_name')) and \
-                        scoring != options.get('scoring'):
+                    # if ppspace_is_timeseries_model(options.get('algorithm_name')) and \
+                    #     scoring != options.get('scoring'):
+                    #     continue
+                    if scoring != options.get('scoring'):
                         continue
 
                 scorer = ModelHelper._get_score_byname(scoring)

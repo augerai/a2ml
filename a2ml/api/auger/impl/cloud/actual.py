@@ -9,10 +9,14 @@ class AugerActualApi(AugerBaseApi):
             ctx, pipeline_api, prediction_id)
 
     def create(self, records, actuals_at):
+        params = {
+            'pipeline_id': self.parent_api.object_id,
+            'actuals': records
+        }
+
+        if actuals_at:
+            params['actuals_at'] = str(actuals_at)
+
         return self._call_create(
-            params={
-                'pipeline_id': self.parent_api.object_id,
-                'actuals': records,
-                'actuals_at': str(actuals_at)
-            }, 
+            params=params, 
             has_return_object=False)

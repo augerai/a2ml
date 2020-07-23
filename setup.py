@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.5.0.rc5'
+VERSION = '0.5.0.rc6'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -32,6 +32,7 @@ install_requires = [
     'pandas<=0.23.4,>=0.21.0', #version for azure
     'joblib==0.14.1', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
+    'cryptography==2.9.2', #version for azure
     'asyncio',
     'boto3',
     'pyarrow==0.17.1',

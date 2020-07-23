@@ -26,7 +26,7 @@ class AugerDataSetApi(AugerProjectFileApi):
         super(AugerDataSetApi, self).__init__(
             ctx, project_api, data_set_name, data_set_id)
 
-    def create(self, data_source_file, data_set_name=None, local_data_source=True):
+    def do_upload_file(self, data_source_file, data_set_name=None, local_data_source=True):
         # data_source_file, local_data_source = \
         #     AugerDataSetApi.verify(data_source_file, self.ctx.config.path)
 
@@ -42,6 +42,11 @@ class AugerDataSetApi(AugerProjectFileApi):
             url_path = urllib.parse.urlparse(file_url).path
             file_name = os.path.basename(url_path)
             self.object_name = file_name
+
+        return file_url, file_name    
+
+    def create(self, data_source_file, data_set_name=None, local_data_source=True):
+        file_url, file_name = self.do_upload_file(data_source_file, data_set_name=data_set_name, local_data_source=local_data_source)
 
         try:
             return super().create(file_url, file_name)
@@ -183,8 +188,8 @@ class AugerDataSetApi(AugerProjectFileApi):
                 res = requests.post(url, data=res['fields'], files=files)
 
             if res.status_code == 201 or res.status_code == 200:
-                bucket = urllib.parse.urlparse(url).netloc.split('.')[0]
-                return 's3://%s/%s' % (bucket, file_path)
+                bucket = urllib.parse.urlparse(url).path #netloc.split('.')[0]
+                return 's3:/%s/%s' % (bucket, file_path)
             else:
                 if res.status_code == 400 and b'EntityTooLarge' in res.content:
                     max_size = ElementTree.fromstring(res.content).find('MaxSizeAllowed').text

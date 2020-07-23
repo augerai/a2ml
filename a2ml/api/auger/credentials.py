@@ -27,10 +27,10 @@ class Credentials(BaseCredentials):
 
         self.username = content.get('username')
         self.organization = content.get('organization')
-        if content.get('url'):
-            self.api_url = content.get('url')
-        else:        
-            self.api_url = content.get('api_url', 'https://app.auger.ai')
+        if content.get('api_url'): 
+            self.api_url = content['api_url']
+        else:
+            self.api_url = content.get('url', 'https://app.auger.ai')
 
         self.token = content.get('token')
             

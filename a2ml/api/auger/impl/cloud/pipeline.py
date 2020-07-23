@@ -15,7 +15,7 @@ class AugerPipelineApi(AugerBaseApi):
         return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review},
             ['creating_files', 'packaging', 'deploying'])
 
-    def predict(self, records, features, threshold=None, predicted_at=None):
+    def predict(self, records, features, threshold=None, file_url=None, predicted_at=None):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
 
@@ -36,7 +36,7 @@ class AugerPipelineApi(AugerBaseApi):
 
         prediction_api = AugerPredictionApi(self.ctx, self)
         prediction_properties = \
-            prediction_api.create(records, features, threshold=threshold, predicted_at=predicted_at)
+            prediction_api.create(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
         return prediction_properties.get('result')
 
     def actual(self, records, actuals_at):
