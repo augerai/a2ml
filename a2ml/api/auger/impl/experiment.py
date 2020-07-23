@@ -67,8 +67,9 @@ class Experiment(AugerExperimentApi):
         else:
             session_api = AugerExperimentSessionApi(
                 self.ctx, None, None, run_id)
-            status = session_api.properties().get('status')
-            return session_api.get_leaderboard(), status, run_id
+            session_props = session_api.properties()
+            status = session_props.get('status')
+            return session_api.get_leaderboard(), status, run_id, session_props.get('model_settings', {}).get('completed_evaluations', 0)
 
     def history(self):
         return AugerExperimentSessionApi(self.ctx, self).list()

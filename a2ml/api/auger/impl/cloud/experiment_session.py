@@ -7,7 +7,7 @@ from ..exceptions import AugerException
 class AugerExperimentSessionApi(AugerBaseApi):
     """Auger Experiment Api."""
 
-    def __init__(self, ctx, experiment_api,
+    def __init__(self, ctx, experiment_api=None,
         session_name=None, session_id=None):
         super(AugerExperimentSessionApi, self).__init__(
             ctx, experiment_api, session_name, session_id)
@@ -57,6 +57,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
             'model_type': model_type})
 
     def get_leaderboard(self):
+        #TODO: create leaderboard same way as in auger-ml
         trial_api = AugerTrialApi(self.ctx, self)
         leaderboard, score_name = [], None
         for item in iter(trial_api.list()):

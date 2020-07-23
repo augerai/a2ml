@@ -126,6 +126,7 @@ class A2ML(BaseA2ML):
                                 {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
                                 {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
                             ],
+                            'trials_count': 10,
                             'status': 'started',
                             'provider_status': 'provider specific'
                         }
@@ -138,6 +139,7 @@ class A2ML(BaseA2ML):
                                 {'model id': 'A017AC8EAD094FD', 'rmse': '0.0000', 'algorithm': 'LGBMRegressor'},
                                 {'model id': '4602AFCEEEAE413', 'rmse': '0.0000', 'algorithm': 'ExtraTreesRegressor'}
                             ],
+                            'trials_count': 10,
                             'status': 'started',
                             'provider_status': 'provider specific'                            
                         }
@@ -152,15 +154,15 @@ class A2ML(BaseA2ML):
                 * **interrupted** - search was interrupted
                 * **error** - search was finished with error
 
-            Examples:
-                .. code-block:: python
+        Examples:
+            .. code-block:: python
 
-                    ctx = Context()
-                    a2ml = A2ML(ctx, 'auger, azure')
-                    while True:
-                        res = a2ml.evaluate()
-                        if status['auger']['status'] not in ['preprocess','started']:
-                            break
+                ctx = Context()
+                a2ml = A2ML(ctx, 'auger, azure')
+                while True:
+                    res = a2ml.evaluate()
+                    if status['auger']['status'] not in ['preprocess','started']:
+                        break
         """
         return self.runner.execute('evaluate', run_id = run_id)
 

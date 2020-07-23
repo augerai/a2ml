@@ -47,9 +47,9 @@ class TestTasksApiAuger(BaseTest):
     def test_evaluate_valid(self):
         params = self.params('auger', '29654979bf8a1877')
         res = evaluate_task.apply(params).result
-        self.assert_result(res, True,
-            {'leaderboard': ANY, 'run_id': '29654979bf8a1877',
-            'status': 'completed', 'provider_status': 'completed'})
+        self.assert_result(res, True, 
+            {'leaderboard': ANY, 'run_id': '29654979bf8a1877', 
+            'status': 'completed', 'provider_status': 'completed', 'trials_count': 19})
 
     @vcr.use_cassette('auger/deploy/valid.yaml')
     def test_deploy_valid(self):
@@ -91,8 +91,8 @@ class TestTasksApiAuger(BaseTest):
     def test_experiment_leaderboard_valid(self):
         params = self.params('auger', 'a6bc4bdb6607e7c2')
         res = leaderboard_experiment_task.apply(params).result
-        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2',
-            'status': 'completed', 'provider_status': 'completed'})
+        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2', 
+            'status': 'completed', 'provider_status': 'completed', 'trials_count': 34})
 
     @vcr.use_cassette('auger/experiment/list_valid.yaml')
     def test_experiment_list_valid(self):

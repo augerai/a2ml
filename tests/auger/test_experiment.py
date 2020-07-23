@@ -133,7 +133,7 @@ class TestExperiment():
         result = AugerExperiment(ctx).leaderboard()
 
         assert result.get('leaderboard')
-        assert len(result.get('leaderboard')) == 20
+        assert len(result.get('leaderboard')) == 10
         assert result.get('status') == 'completed'
 
     def test_history(self, log, project, ctx, authenticated, monkeypatch):

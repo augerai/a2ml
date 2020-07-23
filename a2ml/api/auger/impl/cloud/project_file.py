@@ -9,7 +9,7 @@ class AugerProjectFileApi(AugerBaseApi):
         project_file_name=None, project_file_id=None):
         super(AugerProjectFileApi, self).__init__(
             ctx, project_api, project_file_name, project_file_id)
-        assert project_api is not None, 'Project must be set for Project File'
+        #assert project_api is not None, 'Project must be set for Project File'
         self._set_api_request_path('AugerProjectFileApi')
 
     def create(self, file_url, file_name=None):

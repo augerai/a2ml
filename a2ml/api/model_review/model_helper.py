@@ -45,20 +45,20 @@ class ModelHelper(object):
 
     @staticmethod
     def get_metrics_path(params):
-        project_path = params.get('augerInfo', {}).get('projectPath')
+        project_path = params.get('hub_info', {}).get('project_path')
         if not project_path:
             project_path = ModelHelper.get_project_path()
 
-        if params.get('augerInfo', {}).get('experiment_id') and params.get('augerInfo', {}).get('experiment_session_id'):
-            return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
-                "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+        if params.get('hub_info', {}).get('experiment_id') and params.get('hub_info', {}).get('experiment_session_id'):
+            return os.path.join(project_path, "channels", params['hub_info']['experiment_id'],
+                "project_runs", params['hub_info']['experiment_session_id'], "metrics")
 
         return None
 
     @staticmethod
     def get_metric_path(params, metric_id=None):
         if not metric_id:
-            metric_id = params.get('augerInfo', {}).get('pipeline_id')
+            metric_id = params.get('hub_info', {}).get('pipeline_id')
 
         if not metric_id:
             metric_id = params.get('uid')
@@ -71,7 +71,7 @@ class ModelHelper(object):
 
     @staticmethod
     def save_metric(metric_id, project_path, metric_name, metric_data):
-        metric_path = ModelHelper.get_metric_path({'augerInfo':{'projectPath': projectPath}}, metric_id)
+        metric_path = ModelHelper.get_metric_path({'hub_info':{'project_path': project_path}}, metric_id)
 
         fsclient.write_json_file(os.path.join(metric_path,
             "metric_names_feature_importance.json"))
@@ -302,10 +302,7 @@ class ModelHelper(object):
             else:
                 return predict_path
         else:
-            if json_result:
-                return ds.df.to_json(orient='split', index=False)
-
-            if ds.loaded_columns:
+            if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
                 return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
 

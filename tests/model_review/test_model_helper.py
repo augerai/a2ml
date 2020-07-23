@@ -10,12 +10,12 @@ from a2ml.api.model_review.model_helper import ModelHelper
 
 
 class TestModelHelper(unittest.TestCase):
-   
+
     def test_preprocess_target(self):
         model_path = 'tests/fixtures/test_predict_by_model/iris'
 
-        y_true, target_categoricals = ModelHelper.preprocess_target(model_path, 
-            records=[["setosa"], ["versicolor"], ["virginica"], ["setosa"], ["versicolor"], ["virginica"]], 
+        y_true, target_categoricals = ModelHelper.preprocess_target(model_path,
+            records=[["setosa"], ["versicolor"], ["virginica"], ["setosa"], ["versicolor"], ["virginica"]],
             features=["species"]
         )
         self.assertEqual(list(y_true), [0, 1, 2, 0, 1, 2])
@@ -25,12 +25,12 @@ class TestModelHelper(unittest.TestCase):
         model_path = 'tests/fixtures/test_predict_by_model/iris'
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
-        y_test, _ = ModelHelper.preprocess_target(model_path, 
-            records=[["setosa"], ["versicolor"], ["virginica"], ["setosa"], ["versicolor"], ["virginica"]], 
+        y_test, _ = ModelHelper.preprocess_target(model_path,
+            records=[["setosa"], ["versicolor"], ["virginica"], ["setosa"], ["versicolor"], ["virginica"]],
             features=["species"]
         )
-        y_pred, _ = ModelHelper.preprocess_target(model_path, 
-            records=[["setosa"], ["versicolor"], ["versicolor"], ["setosa"], ["versicolor"], ["virginica"]], 
+        y_pred, _ = ModelHelper.preprocess_target(model_path,
+            records=[["setosa"], ["versicolor"], ["versicolor"], ["setosa"], ["versicolor"], ["virginica"]],
             features=["species"]
         )
 
@@ -45,13 +45,13 @@ class TestModelHelper(unittest.TestCase):
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
         ds.drop([options['targetFeature']])
-        results = ["setosa", "versicolor", "virginica", "setosa", "versicolor", "virginica"] 
+        results = ["setosa", "versicolor", "virginica", "setosa", "versicolor", "virginica"]
         results_proba =  None
         proba_classes = None
 
-        ModelHelper.process_prediction(ds, 
-            results, results_proba, proba_classes, 
-            None, options.get('minority_target_class'), 
+        ModelHelper.process_prediction(ds,
+            results, results_proba, proba_classes,
+            None, options.get('minority_target_class'),
             options['targetFeature'], target_categories)
 
         ds_test = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
@@ -64,9 +64,9 @@ class TestModelHelper(unittest.TestCase):
 
         prediction_id = "123"
         prediction_date="today"
-        results_file_path = os.path.join(model_path, "predictions", 
+        results_file_path = os.path.join(model_path, "predictions",
             prediction_date + '_' + prediction_id + "_results.feather.zstd")
-        predicted_file_path = os.path.join(model_path, "predictions", 
+        predicted_file_path = os.path.join(model_path, "predictions",
             "iris_test_"+prediction_id+"_"+options.get('uid')+"_predicted.csv")
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
@@ -75,8 +75,8 @@ class TestModelHelper(unittest.TestCase):
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
-        res = ModelHelper.save_prediction(ds, prediction_id, 
-            support_review_model=True, json_result=False, count_in_result=False, prediction_date=prediction_date, 
+        res = ModelHelper.save_prediction(ds, prediction_id,
+            support_review_model=True, json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual(res, predicted_file_path)
         self.assertTrue(fsclient.is_file_exists(predicted_file_path))
@@ -88,10 +88,9 @@ class TestModelHelper(unittest.TestCase):
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
-        res = ModelHelper.save_prediction(ds, prediction_id, 
-            support_review_model=True, json_result=True, count_in_result=False, prediction_date=prediction_date, 
+        res = ModelHelper.save_prediction(ds, prediction_id,
+            support_review_model=True, json_result=True, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
-        res = json.loads(res)
         self.assertEqual( res['columns'], ds.columns)
         self.assertEqual( len(res['data']), 6)
 
@@ -102,8 +101,8 @@ class TestModelHelper(unittest.TestCase):
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         ds.options['data_path'] = None
-        res = ModelHelper.save_prediction(ds, prediction_id, 
-            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date, 
+        res = ModelHelper.save_prediction(ds, prediction_id,
+            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual( type(res[0]), dict)
         self.assertEqual( res[0][options['targetFeature']], 'setosa')
@@ -116,8 +115,8 @@ class TestModelHelper(unittest.TestCase):
 
         ds.options['data_path'] = None
         ds.loaded_columns = ds.columns
-        res = ModelHelper.save_prediction(ds, prediction_id, 
-            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date, 
+        res = ModelHelper.save_prediction(ds, prediction_id,
+            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual( res['columns'], ds.columns)
         self.assertEqual( len(res['data']), 6)
@@ -130,16 +129,16 @@ class TestModelHelper(unittest.TestCase):
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
         ds.drop([options['targetFeature']])
-        results = None #[0, 1, 2, 0, 1, 2] 
+        results = None #[0, 1, 2, 0, 1, 2]
         results_proba =  [
-            [0.8, 0.1, 0.1], [0.4, 0.6, 0.1], [0.1, 0.2, 0.7], 
+            [0.8, 0.1, 0.1], [0.4, 0.6, 0.1], [0.1, 0.2, 0.7],
             [0.7, 0.2, 0.1], [0.3, 0.7, 0.1], [0.1, 0.3, 0.6]]
         results_proba = np.array(results_proba)
         proba_classes = [0, 1, 2]
 
-        ModelHelper.process_prediction(ds, 
-            results, results_proba, proba_classes, 
-            0.5, None, 
+        ModelHelper.process_prediction(ds,
+            results, results_proba, proba_classes,
+            0.5, None,
             options['targetFeature'], target_categories)
 
         ds_test = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))

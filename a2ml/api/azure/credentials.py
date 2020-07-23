@@ -15,7 +15,7 @@ class Credentials(BaseCredentials):
 
     def load(self):
         content = {}
-        if hasattr(self.ctx, 'credentials'):
+        if hasattr(self.ctx, 'credentials') and self.ctx.credentials:
             content = self.ctx.credentials
         elif 'AZURE_CREDENTIALS' in os.environ:
             content = os.environ.get('AZURE_CREDENTIALS', None)

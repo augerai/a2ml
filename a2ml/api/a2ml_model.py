@@ -25,7 +25,7 @@ class A2MLModel(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def deploy(self, model_id, locally, review=True, provider=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None):
         """Deploy a model locally or to specified provider(s).
 
         Args:
