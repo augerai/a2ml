@@ -257,7 +257,7 @@ class DataFrame(object):
         fsclient.save_object_to_file(self.df, path, fmt="feather")
 
     def loadFromFeatherFile(self, path, features=None):
-        self.df = fsclient.load_db_from_feather_file(path, features)    
+        self.df = fsclient.load_db_from_feather_file(path, features)
         return self.df
 
     def saveToFile(self, path):
@@ -268,7 +268,7 @@ class DataFrame(object):
             if path.endswith('.gz'):
                 compression = 'gzip'
 
-            self.saveToCsvFile(path, compression) 
+            self.saveToCsvFile(path, compression)
 
     def count(self):
         if self.df is not None:
