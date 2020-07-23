@@ -365,6 +365,7 @@
                 <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;LGBMRegressor&#39;</span><span class="p">},</span>
                 <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;4602AFCEEEAE413&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;ExtraTreesRegressor&#39;</span><span class="p">}</span>
             <span class="p">],</span>
+            <span class="s1">&#39;trials_count&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
             <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;started&#39;</span><span class="p">,</span>
             <span class="s1">&#39;provider_status&#39;</span><span class="p">:</span> <span class="s1">&#39;provider specific&#39;</span>
         <span class="p">}</span>
@@ -377,6 +378,7 @@
                 <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;LGBMRegressor&#39;</span><span class="p">},</span>
                 <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;4602AFCEEEAE413&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;ExtraTreesRegressor&#39;</span><span class="p">}</span>
             <span class="p">],</span>
+            <span class="s1">&#39;trials_count&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
             <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;started&#39;</span><span class="p">,</span>
             <span class="s1">&#39;provider_status&#39;</span><span class="p">:</span> <span class="s1">&#39;provider specific&#39;</span>
         <span class="p">}</span>
@@ -394,6 +396,9 @@
 <li><p><strong>error</strong> - search was finished with error</p></li>
 </ul>
 </div></blockquote>
+</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
@@ -403,9 +408,6 @@
         <span class="k">break</span>
 </pre></div>
 </div>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -839,12 +841,42 @@
     <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">experiment_name</span><span class="o">&gt;</span>
+            <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;9ccfe04eca67757a&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;LGBMRegressor&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;4602AFCEEEAE413&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;ExtraTreesRegressor&#39;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;trials_count&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;started&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;provider_status&#39;</span><span class="p">:</span> <span class="s1">&#39;provider specific&#39;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="s1">&#39;9ccfe04eca67757a&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;leaderboard&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;LGBMRegressor&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">&#39;model id&#39;</span><span class="p">:</span> <span class="s1">&#39;4602AFCEEEAE413&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0000&#39;</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s1">&#39;ExtraTreesRegressor&#39;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;trials_count&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;started&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;provider_status&#39;</span><span class="p">:</span> <span class="s1">&#39;provider specific&#39;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><strong>Status</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>preprocess</strong> - search is preprocessing data for traing</p></li>
+<li><p><strong>started</strong> - search is in progress</p></li>
+<li><p><strong>completed</strong> - search is completed</p></li>
+<li><p><strong>interrupted</strong> - search was interrupted</p></li>
+<li><p><strong>error</strong> - search was finished with error</p></li>
+</ul>
+</div></blockquote>
 </p>
 </dd>
 </dl>
@@ -1066,7 +1098,7 @@
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy a model locally or to specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
