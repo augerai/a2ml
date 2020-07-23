@@ -38,7 +38,7 @@ class ModelPredict():
 
         file_url, file_name = DataSet(self.ctx, project).upload_file(filename)
         return file_url
-        
+
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         send_records = False
         file_url = None
@@ -51,15 +51,18 @@ class ModelPredict():
                     send_records = True
             else:
                 file_url = filename
+                if fsclient.is_s3_path(file_url):
+                    with fsclient.with_s3_downloaded_or_local_file(file_url) as local_path:
+                        file_url = self._upload_file_to_cloud(local_path)
 
         elif len(data) > 300:
             self.ctx.log("Number of records %s > 300, so send file to hub." % (len(data)))
         else:
-            send_records = True        
+            send_records = True
 
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
 
-        if send_records:    
+        if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
             predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
         else:
@@ -74,21 +77,21 @@ class ModelPredict():
 
             predictions = pipeline_api.predict(None, None, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
 
-        ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'), 
+        ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
             records=predictions.get('data'), features=predictions.get('columns'))
         temp_file = ds_result.options['data_path'] if predictions.get('signed_prediction_url') else None
 
         try:
             ds_result.options['data_path'] = filename
             ds_result.loaded_columns = columns
-            return ModelHelper.save_prediction_result(ds_result, 
-                prediction_id = None, support_review_model = False, 
-                json_result=False, count_in_result=False, prediction_date=predicted_at, 
+            return ModelHelper.save_prediction_result(ds_result,
+                prediction_id = None, support_review_model = False,
+                json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=None, model_id=model_id, output=output)
         finally:
             if temp_file:
-                fsclient.remove_file(temp_file)        
-                
+                fsclient.remove_file(temp_file)
+
     def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, output):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path, model_name = \
@@ -103,7 +106,7 @@ class ModelPredict():
 
         filename = filename_arg
         if not filename:
-            ds = DataFrame.create_dataframe(filename, data, columns)            
+            ds = DataFrame.create_dataframe(filename, data, columns)
             filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
             ds.saveToCsvFile(filename, compression=None)
 
@@ -123,17 +126,17 @@ class ModelPredict():
             ds_result.options['data_path'] = None
             ds_result.loaded_columns = columns
 
-            return ModelHelper.save_prediction_result(ds_result, 
-                prediction_id = None, 
-                support_review_model = model_options.get("support_review_model") if model_path else False, 
-                json_result=False, count_in_result=False, prediction_date=predicted_at, 
+            return ModelHelper.save_prediction_result(ds_result,
+                prediction_id = None,
+                support_review_model = model_options.get("support_review_model") if model_path else False,
+                json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)
         elif output:
             fsclient.move_file(predicted, output)
             predicted = output
 
         return predicted
-            
+
     def _extract_model(self, model_name):
         model_path = os.path.splitext(model_name)[0]
         model_existed = os.path.exists(model_path)
