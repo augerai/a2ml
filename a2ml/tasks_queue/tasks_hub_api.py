@@ -9,6 +9,7 @@ from celery.utils.log import get_task_logger
 from urllib.parse import urlparse
 
 from a2ml.api.a2ml import A2ML
+from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
@@ -402,6 +403,15 @@ def deploy_model_task(params):
     return res
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
+def undeploy_model_task(params):
+    ctx = _create_provider_context(params)
+    ctx_hub = _read_hub_experiment_session(ctx, params)
+
+    ctx.config.clean_changes()
+    res = A2MLModel(ctx).undeploy(model_id = params.get('model_id'))
+    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
 def predict_by_model_task(params):
     from a2ml.api.utils.crud_runner import CRUDRunner
 
@@ -456,15 +466,15 @@ def set_support_review_model_flag_task(params):
     )
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
-def remove_model_task(params):
-    return ModelReview(params).remove_model()
-
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
 def distribution_chart_stats_task(params):
     return ModelReview(params).distribution_chart_stats(
         date_from=params.get('date_from'),
         date_to=params.get('date_to')
     )
+
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
+def remove_model_task(params):
+    return ModelReview(params).remove_model()
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def clear_model_results_and_actuals(params):

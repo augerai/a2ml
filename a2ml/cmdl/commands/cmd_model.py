@@ -13,7 +13,7 @@ def cmdl(ctx):
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
-@click.option('--review', is_flag=True, default=True,
+@click.option('--review', is_flag=True, default=False,
     help='Should model support review based on actual data.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
@@ -62,11 +62,23 @@ def review(ctx, provider, model_id, output):
     """Predict with deployed model."""
     A2MLModel(ctx, provider).review(model_id)
 
+@click.command('undeploy', short_help='Undeploy trained model.')
+@click.argument('model-id', required=True, type=click.STRING)
+@click.option('--locally', is_flag=True, default=False,
+    help='Download and deploy trained model locally.')
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+    help='Cloud AutoML Provider.')
+@pass_context
+def undeploy(ctx, provider, model_id, locally):
+    """Deploy trained model."""
+    A2MLModel(ctx, provider).undeploy(model_id, locally)
+
 @pass_context
 def add_commands(ctx):
     cmdl.add_command(deploy)
     cmdl.add_command(predict)
     cmdl.add_command(actuals)
     cmdl.add_command(review)
+    cmdl.add_command(undeploy)
 
 add_commands()

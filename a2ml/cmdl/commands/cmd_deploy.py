@@ -9,7 +9,7 @@ from a2ml.api.utils.context import pass_context
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
-@click.option('--review', is_flag=True, default=True,
+@click.option('--review', is_flag=True, default=False,
     help='Should model support review based on actual data.')
 @pass_context
 def cmdl(ctx, provider, model_id, locally, review):

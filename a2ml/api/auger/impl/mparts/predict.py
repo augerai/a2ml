@@ -117,7 +117,7 @@ class ModelPredict():
             # clean up unzipped model
             # if it wasn't unzipped before
             if not model_existed:
-                shutil.rmtree(model_path, ignore_errors=True)
+                fsclient.remove_folder(model_path)
                 model_path = None
 
         if not filename_arg:
