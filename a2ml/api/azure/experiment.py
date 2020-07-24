@@ -63,7 +63,7 @@ class AzureExperiment(object):
             raise AzureException('Please specify Dataset name...')
         experiment_name = self._fix_experiment_name(
             self.ctx.config.get('experiment/name', dataset_name))
-        cluster_name = self._fix_cluster_name(
+        cluster_name = self.fix_cluster_name(
             self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
@@ -284,7 +284,8 @@ class AzureExperiment(object):
 
         return name
 
-    def _fix_cluster_name(self, name):
+    @staticmethod    
+    def fix_cluster_name(name):
         # Name can include letters, digits and dashes.
         # It must start with a letter, end with a letter or digit,
         # and be between 2 and 16 characters in length.

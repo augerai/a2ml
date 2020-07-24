@@ -71,9 +71,6 @@ class AzureModel(object):
     def _deploy_remotly(self, model_id, model_run, ws, experiment):
         from azureml.core.model import Model
         from azureml.core.model import InferenceConfig
-        from azureml.core.webservice import Webservice
-        from azureml.core.webservice import AciWebservice
-        from azureml.exceptions import WebserviceException
         from azureml.train.automl.run import AutoMLRun
 
         # ws, experiment = self._get_experiment()
@@ -94,33 +91,88 @@ class AzureModel(object):
 
         self._edit_score_script(script_file_name)
 
-        # Deploying ACI Service
-        aci_service_name = self._aci_service_name(model_name)
-        self.ctx.log('Deploying AciWebservice %s ...' % aci_service_name)
+        service_name, service_config, service_target = \
+            self._create_deploy_service(model_name, ws)
 
         inference_config = InferenceConfig(
             environment = model_run.get_environment(),
             entry_script = script_file_name)
 
-        aciconfig = AciWebservice.deploy_configuration(
-            cpu_cores = 1,
-            memory_gb = 2,
-            tags = {'type': "inference-%s" % aci_service_name},
-            description = "inference-%s" % aci_service_name)
+        deploy_service = Model.deploy(
+            ws, service_name, [model], inference_config, deployment_config=service_config, 
+            deployment_target=service_target, overwrite=True)
+        deploy_service.wait_for_deployment(show_output=True)
+        self.ctx.log('%s state %s' % (service_name, str(deploy_service.state)))
 
-        # Remove any existing service under the same name.
+        return {'model_id': model_id, 'service_name': service_name}
+
+    def _create_deploy_service(self, model_name, ws):
+        from azureml.core.webservice import AciWebservice, AksWebservice, Webservice
+        from azureml.exceptions import WebserviceException
+        from azureml.core.compute import AksCompute, ComputeTarget
+        from .experiment import AzureExperiment
+
+        service_type = self.ctx.config.get('deploy_cluster/type', 'aci').lower()
+        cpu_cores = int(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
+        memory_gb = int(self.ctx.config.get('deploy_cluster/memory_gb', 2))
+        service_name = self._deploy_service_name(model_name)
+        service_target = None
+
+        if service_type == "aci":
+            self.ctx.log('Deploying AciWebservice %s ...' % service_name)
+
+            service_config = AciWebservice.deploy_configuration(
+                cpu_cores = cpu_cores,
+                memory_gb = memory_gb,
+                tags = {'type': "inference-%s" % service_name},
+                description = "inference-%s" % service_name)
+        elif service_type == "aks":
+            self.ctx.log('Deploying AksWebservice %s ...' % service_name)
+            aks_compute_target = AzureExperiment.fix_cluster_name(
+                self.ctx.config.get('deploy_cluster/compute_target', "a2ml_aks_deploy"))
+            if not aks_compute_target in ws.compute_targets:
+                self.ctx.log('Creating AksCompute %s ...' % aks_compute_target)
+                prov_config = AksCompute.provisioning_configuration(
+                    agent_count=int(self.ctx.config.get('deploy_cluster/agent_count', 2)), 
+                    vm_size=self.ctx.config.get('deploy_cluster/vm_size', "STANDARD_D2_V2"),
+                    cluster_purpose=self.ctx.config.get('deploy_cluster/purpose', AksCompute.ClusterPurpose.DEV_TEST)
+                )
+                service_target = ComputeTarget.create(workspace = ws,
+                                name = aks_compute_target,
+                                provisioning_configuration = prov_config)
+
+                # Wait for the create process to complete
+                service_target.wait_for_completion(show_output = True)
+            else:    
+                service_target = AksCompute(ws, aks_compute_target)
+
+            service_config = AksWebservice.deploy_configuration(
+                cpu_cores = cpu_cores,
+                memory_gb = memory_gb)
+        else:
+            raise AzureException("deploy_cluster/type: %s it not supported. Supported type: aci, aks"%service_type)
+
         try:
-            Webservice(ws, aci_service_name).delete()
-            self.ctx.log('Remove any existing service under the same name...')
-        except WebserviceException:
-            pass
+            Webservice(ws, service_name).delete()
+        except WebserviceException as exc:
+            self.ctx.log("Delete existing service failed: %s"%exc.message)
+            
+        return service_name, service_config, service_target
 
-        aci_service = Model.deploy(
-            ws, aci_service_name, [model], inference_config, aciconfig)
-        aci_service.wait_for_deployment(True)
-        self.ctx.log('%s state %s' % (aci_service_name, str(aci_service.state)))
+    def _get_deploy_service(self, model_name, ws):
+        from azureml.core.webservice import AciWebservice, AksWebservice
 
-        return {'model_id': model_id, 'aci_service_name': aci_service_name}
+        service_name = self._deploy_service_name(model_name)
+        service_type = self.ctx.config.get('deploy_cluster/type', 'aci').lower()
+
+        if service_type == "aci":
+            deploy_service = AciWebservice(ws, service_name)
+        elif service_type == "aks":
+            deploy_service = AksWebservice(ws, service_name)
+        else:
+            raise AzureException("deploy_cluster/type: %s it not supported. Supported type: aci, aks"%service_type)        
+        
+        return deploy_service
 
     def _edit_score_script(self, script_file_name):
         text = fsclient.read_text_file(script_file_name)
@@ -250,7 +302,7 @@ def get_df(data):
             iteration = parts[2]
         return iteration, run_id
 
-    def _aci_service_name(self, model_name):
+    def _deploy_service_name(self, model_name):
         # It must only consist of lowercase letters, numbers, or dashes, start
         # with a letter, end with a letter or number, and be between 3 and 32
         # characters long.
@@ -321,7 +373,6 @@ def get_df(data):
         return {}
 
     def _predict_remotely(self, predict_data, model_id, predict_proba):
-        from azureml.core.webservice import AciWebservice
         from azureml.train.automl.run import AutoMLRun
         from azureml.core.run import Run
 
@@ -343,10 +394,6 @@ def get_df(data):
             predict_data = predict_data[model_features]
 
         input_payload = predict_data.to_json(orient='split', index = False)
-
-        aci_service_name = self._aci_service_name(model_name)
-        aci_service = AciWebservice(ws, aci_service_name)
-
         input_payload = json.loads(input_payload)
         # If you have a classification model, you can get probabilities by changing this to 'predict_proba'.
         method = 'predict'
@@ -356,11 +403,14 @@ def get_df(data):
             'data': {'data': input_payload['data'], 'method': method}
         }
         input_payload = json.dumps(input_payload)
+
+        deploy_service = self._get_deploy_service(model_name, ws)
+
         try:
-            response = aci_service.run(input_data = input_payload)
+            response = deploy_service.run(input_data = input_payload)
         except Exception as e:
             log_file = 'automl_errors.log'
-            fsclient.write_text_file(log_file, aci_service.get_logs(), mode="a")
+            fsclient.write_text_file(log_file, deploy_service.get_logs(), mode="a")
             raise AzureException("Prediction service error. Please redeploy the model. Log saved to file '%s'. Details: %s"%(log_file, str(e)))
 
         response = json.loads(response)
@@ -443,12 +493,12 @@ def get_df(data):
             model_run = AutoMLRun(experiment = experiment, run_id = model_id)
             model_name = model_run.properties['model_name']
 
-            aci_service_name = self._aci_service_name(model_name)
+            service_name = self._deploy_service_name(model_name)
             try:
-                Webservice(ws, aci_service_name).delete()
+                Webservice(ws, service_name).delete()
             except WebserviceException as exc:
-                self.ctx.log(exc.message)                
-                pass
-
+                #self.ctx.log(exc.message)
+                raise AzureException(exc.message)
+                
             self.ctx.log("Model endpoint has been removed.")
 
