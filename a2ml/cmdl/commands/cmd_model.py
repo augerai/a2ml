@@ -65,12 +65,12 @@ def review(ctx, provider, model_id, output):
 @click.command('undeploy', short_help='Undeploy trained model.')
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
-    help='Download and deploy trained model locally.')
+    help='Undeploy trained model locally.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
 def undeploy(ctx, provider, model_id, locally):
-    """Deploy trained model."""
+    """Undeploy trained model."""
     A2MLModel(ctx, provider).undeploy(model_id, locally)
 
 @pass_context
