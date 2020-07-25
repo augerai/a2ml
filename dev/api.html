@@ -1225,12 +1225,12 @@
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.undeploy">
 <code class="sig-name descname">undeploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.undeploy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Undeploy a model locally or to specified provider(s).</p>
+<dd><p>Undeploy a model locally or from specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em>) -- Model ID from the any experiment leaderboard.</p></li>
-<li><p><strong>locally</strong> (<em>bool</em>) -- Deploys using a local model if True, on the Provider Cloud if False.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em>) -- Model ID from any experiment leaderboard.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Deploys using a local model if True, on the Provider Cloud if False. The default is False.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
 </ul>
 </dd>
