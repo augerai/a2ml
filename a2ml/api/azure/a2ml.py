@@ -38,3 +38,6 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).actuals(
             model_id, filename, actual_records, actuals_at, locally)
+
+    def get_provider_info(self, ctx, provider):
+        return {"project": {"cluster": ctx.config.get("cluster", config_name=provider)}}

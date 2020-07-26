@@ -49,7 +49,13 @@ class ConfigParts(object):
     def keys(self):
         return self.parts.keys()
 
-    def part(self, name):
+    def part(self, name, create_if_not_exist=False):
+        if name not in self.parts:
+            if create_if_not_exist:
+                self.parts[name] = SerializableConfigYaml()
+            else:
+                return SerializableConfigYaml()
+
         return self.parts[name]
 
     def _load(self, name):
@@ -66,17 +72,20 @@ class Config(object):
         self.name = name
         self.path = path
         self.parts = ConfigParts()
+        self.parts_changes = ConfigParts()
         self.load(path)
 
-    def get(self, path, default=None, config_name=None):
-        if len(self.parts.keys()) == 0:
+    def get(self, path, default=None, config_name=None, parts=None):
+        if parts is None:
+            parts = self.parts
+        if len(parts.keys()) == 0:
             return default
-        if 'config' in self.parts.keys():
-            default = self.parts.part('config').get(path, default)
+        if 'config' in parts.keys():
+            default = parts.part('config').get(path, default)
         if not config_name:
             config_name = self.name
 
-        return self.parts.part(config_name).get(path, default)
+        return parts.part(config_name).get(path, default)
 
     def get_list(self, path, default=None, config_name=None):
         data = self.get(path, default, config_name)
@@ -90,7 +99,7 @@ class Config(object):
                 res = list(data)
 
         return res
-               
+
     def get_path(self):
         path = self.path
         if path is None:
@@ -105,7 +114,12 @@ class Config(object):
         if not config_name:
             config_name = self.name
 
-        self.parts.part(config_name).set(path, value)
+        self.parts.part(config_name, True).set(path, value)
+        if self.runs_on_server:
+            self.parts_changes.part(config_name, True).set(path, value)
+
+    def clean_changes(self):
+        self.parts_changes = ConfigParts()
 
     def remove(self, path, config_name=None):
         if not config_name:

@@ -28,11 +28,11 @@ class AzureModel(object):
         from azureml.train.automl.run import AutoMLRun
 
         ws, experiment = self._get_experiment()
-        model_run = AutoMLRun(experiment = experiment, run_id = model_id)        
+        model_run = AutoMLRun(experiment = experiment, run_id = model_id)
 
         result = self._deploy_locally(model_id, model_run, ws, experiment) if locally else \
             self._deploy_remotly(model_id, model_run, ws, experiment)
-        
+
         model_features, target_categories = self._get_remote_model_features(model_run)
         feature_importance = self._get_feature_importance(model_run)
 
@@ -49,25 +49,25 @@ class AzureModel(object):
         options.update(self._get_a2ml_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
-        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"), 
+        fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"),
             {self.ctx.config.get('target'): {"categories": target_categories}})
 
         metric_path = ModelHelper.get_metric_path( options, model_id)
-        fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"), 
+        fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
             {'feature_importance_data': {
-                'features': list(feature_importance.keys()), 
+                'features': list(feature_importance.keys()),
                 'scores': list(feature_importance.values())
             }})
 
         return result
 
     def _get_a2ml_info(self):
-        return {'augerInfo':{
-                'projectPath': self.ctx.config.get_path(),
+        return {'hub_info':{
+                'project_path': self.ctx.config.get_path(),
                 'experiment_id': self.ctx.config.get('experiment/name', None),
                 'experiment_session_id':self.ctx.config.get('experiment/run_id', None),
             }};
-            
+
     def _deploy_remotly(self, model_id, model_run, ws, experiment):
         from azureml.core.model import Model
         from azureml.core.model import InferenceConfig
@@ -175,7 +175,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None,
         predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
         ):
         ds = DataFrame.create_dataframe(filename, data, columns)
@@ -219,7 +219,7 @@ def get_df(data):
 
             return ModelReview({'model_path': model_path}).add_actuals(
                 actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
-        else:    
+        else:
             raise Exception("Not Implemented")
 
     @error_handler
@@ -230,7 +230,7 @@ def get_df(data):
 
             if not fsclient.is_folder_exists(model_path):
                 raise Exception('Model should be deployed first.')
-                
+
             return ModelReview({'model_path': os.path.join(model_path, "model")}).build_review_data(
               data_path=self.ctx.config.get("source"), output=output)
         else:
@@ -319,7 +319,7 @@ def get_df(data):
             self.ctx.log('Cannot get feature_importance from remote model: %s'%e)
 
         return {}
-            
+
     def _predict_remotely(self, predict_data, model_id, predict_proba):
         from azureml.core.webservice import AciWebservice
         from azureml.train.automl.run import AutoMLRun
@@ -426,3 +426,29 @@ def get_df(data):
         target_categories = target_categoricals.get(self.ctx.config.get('target'), {}).get("categories")
 
         return results, results_proba, proba_classes, target_categories
+
+    @error_handler
+    @authenticated
+    def undeploy(self, model_id, locally):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+            self.ctx.log("Undeploy model. Remove local model folder: %s"%model_path)
+            fsclient.remove_folder(model_path)
+        else:
+            from azureml.train.automl.run import AutoMLRun
+            from azureml.core.webservice import Webservice
+            from azureml.exceptions import WebserviceException
+            
+            ws, experiment = self._get_experiment()
+            model_run = AutoMLRun(experiment = experiment, run_id = model_id)
+            model_name = model_run.properties['model_name']
+
+            aci_service_name = self._aci_service_name(model_name)
+            try:
+                Webservice(ws, aci_service_name).delete()
+            except WebserviceException as exc:
+                self.ctx.log(exc.message)                
+                pass
+
+            self.ctx.log("Model endpoint has been removed.")
+

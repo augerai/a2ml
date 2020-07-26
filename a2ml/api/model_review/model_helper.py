@@ -45,35 +45,35 @@ class ModelHelper(object):
 
     @staticmethod
     def get_metrics_path(params):
-        project_path = params.get('augerInfo', {}).get('projectPath')
+        project_path = params.get('hub_info', {}).get('project_path')
         if not project_path:
             project_path = ModelHelper.get_project_path()
 
-        if params.get('augerInfo', {}).get('experiment_id') and params.get('augerInfo', {}).get('experiment_session_id'):
-            return os.path.join(project_path, "channels", params['augerInfo']['experiment_id'],
-                "project_runs", params['augerInfo']['experiment_session_id'], "metrics")
+        if params.get('hub_info', {}).get('experiment_id') and params.get('hub_info', {}).get('experiment_session_id'):
+            return os.path.join(project_path, "channels", params['hub_info']['experiment_id'],
+                "project_runs", params['hub_info']['experiment_session_id'], "metrics")
 
         return None
 
     @staticmethod
     def get_metric_path(params, metric_id=None):
         if not metric_id:
-            metric_id = params.get('augerInfo', {}).get('pipeline_id')
+            metric_id = params.get('hub_info', {}).get('pipeline_id')
 
         if not metric_id:
             metric_id = params.get('uid')
 
-        metrics_path = ModelHelper.get_metrics_path(params)    
+        metrics_path = ModelHelper.get_metrics_path(params)
         if metrics_path:
             return os.path.join(metrics_path, metric_id)
 
-        return None    
+        return None
 
     @staticmethod
     def save_metric(metric_id, project_path, metric_name, metric_data):
-        metric_path = ModelHelper.get_metric_path({'augerInfo':{'projectPath': projectPath}}, metric_id)
+        metric_path = ModelHelper.get_metric_path({'hub_info':{'project_path': project_path}}, metric_id)
 
-        fsclient.write_json_file(os.path.join(metric_path, 
+        fsclient.write_json_file(os.path.join(metric_path,
             "metric_names_feature_importance.json"))
 
     @staticmethod
@@ -83,7 +83,7 @@ class ModelHelper(object):
 
         #TODO: below metrics does not directly map to sklearn:
         # Classification : weighted_accuracy, accuracy_table, balanced_accuracy, matthews_correlation,norm_macro_recall
-        # Regression,  Time Series Forecasting: 
+        # Regression,  Time Series Forecasting:
         #spearman_correlation, normalized_root_mean_squared_error, normalized_mean_absolute_error
         scorer = None
         if scoring.startswith("AUC"):
@@ -128,10 +128,10 @@ class ModelHelper(object):
         elif "median_absolute_error" in scoring:
             scorer = get_scorer("median_absolute_error")
 
-        if scorer is None:    
+        if scorer is None:
             scorer = get_scorer(scoring)
 
-        return scorer    
+        return scorer
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
@@ -260,7 +260,7 @@ class ModelHelper(object):
                 ds.df['proba_'+str(name)] = list(results_proba[:, idx])
 
     @staticmethod
-    def save_prediction(ds, prediction_id, support_review_model, 
+    def save_prediction(ds, prediction_id, support_review_model,
         json_result, count_in_result, prediction_date, model_path, model_id, output=None):
         # Ids for each row of prediction (predcition row's ids)
         prediction_ids = []
@@ -269,11 +269,11 @@ class ModelHelper(object):
 
         ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
-        return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model, 
+        return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
             json_result, count_in_result, prediction_date, model_path, model_id, output)
 
     @staticmethod
-    def save_prediction_result(ds, prediction_id, support_review_model, 
+    def save_prediction_result(ds, prediction_id, support_review_model,
         json_result, count_in_result, prediction_date, model_path, model_id, output=None):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
@@ -289,7 +289,7 @@ class ModelHelper(object):
         if path_to_predict and not json_result:
             if output:
                 predict_path = output
-            else:    
+            else:
                 parent_path = os.path.dirname(path_to_predict)
                 file_name = os.path.basename(path_to_predict)
                 predict_path = os.path.join(parent_path, "predictions",
@@ -302,10 +302,7 @@ class ModelHelper(object):
             else:
                 return predict_path
         else:
-            if json_result:
-                return ds.df.to_json(orient='split', index=False)
-
-            if ds.loaded_columns:
+            if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
                 return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
 
@@ -361,7 +358,7 @@ class ModelHelper(object):
                     proba_idx = idx
                     break
 
-            # Find class with value > threshold from the last        
+            # Find class with value > threshold from the last
             if proba_idx is None and len(mapped_threshold) == 1:
                 threshold_value = list(mapped_threshold.values())[0]
                 for idx, value in enumerate(item):

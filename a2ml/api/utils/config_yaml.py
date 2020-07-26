@@ -8,7 +8,7 @@ class ConfigYaml(object):
     def __init__(self):
         super(ConfigYaml, self).__init__()
         self.filename = None
-        self.yaml = None
+        self.yaml = ruamel.yaml.comments.CommentedMap()
 
     def load_from_file(self, filename):
         if not isinstance(filename, str) or len(filename) == 0:
@@ -39,7 +39,11 @@ class ConfigYaml(object):
         options = self.yaml
         path = path.split('/')
         for opt in path[0:-1]:
+            if not opt in options:
+                options[opt] = ruamel.yaml.comments.CommentedMap()
+
             options = options[opt]
+                    
         options[path[-1]] = value
 
     def remove(self, path):

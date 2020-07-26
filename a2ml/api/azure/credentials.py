@@ -3,6 +3,8 @@ import json
 import shutil
 from a2ml.api.utils.base_credentials import BaseCredentials
 from .exceptions import AzureException
+from a2ml.api.utils import fsclient
+
 
 class Credentials(BaseCredentials):
     """Manage credentials on user computer."""
@@ -15,7 +17,7 @@ class Credentials(BaseCredentials):
 
     def load(self):
         content = {}
-        if hasattr(self.ctx, 'credentials'):
+        if hasattr(self.ctx, 'credentials') and self.ctx.credentials:
             content = self.ctx.credentials
         elif 'AZURE_CREDENTIALS' in os.environ:
             content = os.environ.get('AZURE_CREDENTIALS', None)
@@ -75,8 +77,7 @@ class Credentials(BaseCredentials):
     def logout(self):
         self.load()
         azure_root_dir = os.path.abspath('%s/.azureml' % os.environ.get('HOME', ''))
-        if os.path.exists(azure_root_dir):
-            shutil.rmtree(azure_root_dir, ignore_errors=True)
+        fsclient.remove_folder(azure_root_dir)
         self.subscription_id = None
         self.directory_tenant_id = None
         self.application_client_id = None

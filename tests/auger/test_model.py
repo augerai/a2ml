@@ -3,6 +3,8 @@ import pytest
 
 from .utils import interceptor, object_status_chain, ORGANIZATIONS, PROJECTS
 from a2ml.api.auger.model import AugerModel
+from a2ml.api.utils import fsclient
+
 
 class TestModel():
     def test_deploy_locally(self, log, project, ctx, authenticated, monkeypatch):
@@ -21,6 +23,25 @@ class TestModel():
 
         result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True, review=True)
         assert result['model_id'] == '87C81FE615DE46D'
+
+    def test_undeploy_locally(self, log, project, ctx, authenticated, monkeypatch):
+        PAYLOAD = {
+            'get_organizations': ORGANIZATIONS,
+            'get_projects': PROJECTS,
+        }
+        interceptor(PAYLOAD, monkeypatch)
+
+        model_folder = "models/model-87C81FE615DE46D"
+        model_file = "models/model-87C81FE615DE46D.zip"
+        fsclient.create_folder(model_folder)
+        assert fsclient.is_folder_exists(model_folder)
+        fsclient.write_text_file(model_file, "TEST")
+        assert fsclient.is_file_exists(model_file)
+
+        result = AugerModel(ctx).undeploy('87C81FE615DE46D', locally=True)
+        assert result['model_id'] == '87C81FE615DE46D'
+        assert not fsclient.is_folder_exists(model_folder)
+        assert not fsclient.is_file_exists(model_file)
 
     @pytest.mark.skip(reason="not implemented on server-side currently")
     def test_deploy_remoteley(self, log, project, ctx, authenticated, monkeypatch):

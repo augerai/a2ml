@@ -25,7 +25,7 @@ class A2MLModel(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def deploy(self, model_id, locally, review=True, provider=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None):
         """Deploy a model locally or to specified provider(s).
 
         Args:
@@ -48,7 +48,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).deploy(model_id='D881079E1ED14FB', locally=True)
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review)
 
     @show_result
     def predict(self, filename,
@@ -206,3 +206,27 @@ class A2MLModel(BaseA2ML):
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
 
+    @show_result
+    def undeploy(self, model_id, locally=False, provider=None):
+        """Undeploy a model locally or from specified provider(s).
+
+        Args:
+            model_id (str): Model ID from any experiment leaderboard.
+            locally(bool): Deploys using a local model if True, on the Provider Cloud if False. The default is False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                    'data': {'model_id': 'A017AC8EAD094FD'}
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2MLModel(ctx).undeploy(model_id='D881079E1ED14FB', locally=True)
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('undeploy', model_id, locally)

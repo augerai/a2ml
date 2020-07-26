@@ -48,3 +48,11 @@ class AugerModel(object):
     @with_project(autocreate=False)
     def review(self, project, model_id):
         pass
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)    
+    def undeploy(self, project, model_id, locally):
+        Model(self.ctx, project).undeploy(model_id, locally)
+        return {'model_id': model_id}
+
