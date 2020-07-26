@@ -6,7 +6,7 @@ from ..cloud.pipeline import AugerPipelineApi
 
 
 class ModelUndeploy(object):
-    """Deploy Model on locally or on Auger Cloud."""
+    """Undeploy Model locally or from Auger Cloud."""
 
     def __init__(self, ctx, project):
         super(ModelUndeploy, self).__init__()
@@ -17,7 +17,7 @@ class ModelUndeploy(object):
         if locally:
             is_loaded, model_path, model_name = \
                 ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
-            self.ctx.log("Undeploy model. Remove local model: %s"%model_name)
+            self.ctx.log("Undeploy model. Remove local model: %s" % model_name)
 
             if is_loaded:
                 fsclient.remove_file(model_name)

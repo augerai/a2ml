@@ -208,11 +208,11 @@ class A2MLModel(BaseA2ML):
 
     @show_result
     def undeploy(self, model_id, locally=False, provider=None):
-        """Undeploy a model locally or to specified provider(s).
+        """Undeploy a model locally or from specified provider(s).
 
         Args:
-            model_id (str): Model ID from the any experiment leaderboard.
-            locally(bool): Deploys using a local model if True, on the Provider Cloud if False.
+            model_id (str): Model ID from any experiment leaderboard.
+            locally(bool): Deploys using a local model if True, on the Provider Cloud if False. The default is False.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
