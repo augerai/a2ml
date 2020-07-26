@@ -17,3 +17,22 @@ cluster:
   max_nodes: 2
   type: STANDARD_D2_V2
   name: a2ml-azure
+
+#Optional. Cluster to deploy models
+deploy_cluster:
+  #Default type
+  type: aci
+
+  #Common properties:
+  memory_gb: 2
+  cpu_cores: 1
+
+  # AKS only properties:
+  #https://aka.ms/azureml-aks-details
+  #type: aks
+  compute_target: a2ml_aks
+  # Properties to create compute target for AKS
+  purpose: DevTest
+  agent_count: 2
+  vm_size: STANDARD_D2_V2
+
