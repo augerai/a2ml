@@ -10,13 +10,15 @@ class BaseCredentials(object):
         self.ctx = ctx
         self.provider = provider
         self.creds_path = self._path_to_credentials()
-        self.creds_file = os.path.join(self.creds_path, '%s.json'%self.provider)
+        self.creds_file = os.environ.get(
+            '%s_CREDENTIALS_PATH' % self.provider.upper(),
+            os.path.join(self.creds_path, '%s.json'%self.provider)
+        )
+        self.creds_path = os.path.dirname(self.creds_file)
 
     def _path_to_credentials(self):
         if self.ctx.config.get('path_to_credentials'):
             creds_path = os.path.abspath(self.ctx.config.get('path_to_credentials'))
-        elif os.environ.get('%s_CREDENTIALS_PATH'%self.provider.upper()):
-            creds_path = os.environ.get('%s_CREDENTIALS_PATH'%self.provider.upper())
         else:
             cur_path = os.getcwd()
             if self.ctx.config.path:
