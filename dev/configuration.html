@@ -115,10 +115,23 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#a2ml-cloud-coming-soon">A2ML Cloud (Coming Soon)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a2ml-local">A2ML Local</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#direct-provider-connection">Direct Provider Connection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#server-provider-connection">Server Provider Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#files">Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#all-providers">All Providers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#provider-specfic">Provider Specfic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#auger">Auger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azure">Azure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#google">Google</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture">Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-cloud-coming-soon">A2ML Cloud (Coming Soon)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-local">A2ML Local</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#direct-provider-connection">Direct Provider Connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#server-provider-connection">Server Provider Connection</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -201,23 +214,191 @@
             
   <div class="section" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<p>To use the Python API or the command line interface for a specific PREDIT pipeline, configure the project first.</p>
+<p>This includes both general options that apply to all providers and provider specific options in separate YAML files.</p>
+<div class="section" id="all-providers">
+<h3>All Providers<a class="headerlink" href="#all-providers" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code></p></li>
+</ul>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span>
+<span class="nt">providers</span><span class="p">:</span>
+<span class="nt">source</span><span class="p">:</span>
+<span class="nt">exclude</span><span class="p">:</span>
+<span class="nt">target</span><span class="p">:</span>
+<span class="nt">model_type</span><span class="p">:</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">cross_validation_folds</span><span class="p">:</span>
+  <span class="nt">max_total_time</span><span class="p">:</span>
+  <span class="nt">max_eval_time</span><span class="p">:</span>
+  <span class="nt">max_n_trials</span><span class="p">:</span>
+  <span class="nt">use_ensemble</span><span class="p">:</span>
+  <span class="nt">validation_source</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>name</strong> The project name.</p></li>
+<li><p><strong>providers</strong> List of providers: auger, google, azure.</p></li>
+<li><p><strong>source</strong> Local file name or remote url to the data source file.</p></li>
+<li><p><strong>exclude</strong> List of columns to be excluded from the training data.</p></li>
+<li><p><strong>target</strong> Target column name.</p></li>
+<li><p><strong>model_type</strong>  Model type: classification|regression|timeseries.</p></li>
+<li><p><strong>experiment.cross_validation_folds</strong> Number of folds used for k-folds validation of individual trial.</p></li>
+<li><p><strong>experiment.max_total_time</strong> Maximum time to run experiment in minutes.</p></li>
+<li><p><strong>experiment.max_eval_time</strong> Maximum time to run individual trial in minutes.</p></li>
+<li><p><strong>experiment.max_n_trials</strong> Maximum trials to run to complete experiment.</p></li>
+<li><p><strong>experiment.use_ensemble</strong> Try to improve model performance by creating ensembles from the trial models true | false.</p></li>
+<li><p><strong>experiment.validation_source</strong> Path to validation dataset. If not set your source dataset will be split to validate.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="provider-specfic">
+<h3>Provider Specfic<a class="headerlink" href="#provider-specfic" title="Permalink to this headline">¶</a></h3>
+<p>Currently a2ml supports Auger, Azure, and Google providers.</p>
+<div class="section" id="auger">
+<h4>Auger<a class="headerlink" href="#auger" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code></p></li>
+</ul>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">experiment_session_id</span><span class="p">:</span>
+  <span class="nt">time_series</span><span class="p">:</span>
+  <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+  <span class="nt">trials_per_worker</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">class_weight</span><span class="p">:</span>
+  <span class="nt">oversampling</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span>
+    <span class="nt">params</span><span class="p">:</span>
+      <span class="nt">sampling_strategy</span><span class="p">:</span>
+      <span class="nt">k_neighbors</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>dataset</strong> Name of the DataSet on Auger Cloud.</p></li>
+<li><p><strong>experiment.name</strong> Latest experiment name.</p></li>
+<li><p><strong>experiment.experiment_session_id</strong> Latest experiment session.</p></li>
+<li><p><strong>experiment.time_series</strong> Time series feature. If Data Source contains more then one DATETIME feature you will have to explicitly specify feature to use as time series.</p></li>
+<li><p><strong>experiment.label_encoded</strong> List of columns which should be used as label encoded features.</p></li>
+<li><p><strong>experiment.metric</strong>  Score used to optimize ML model.</p>
+<ul>
+<li><p><strong>Classification</strong> accuracy, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, precision_weighted, recall_macro, recall_micro, recall_weighted</p></li>
+<li><p><strong>Binary Classification</strong> accuracy, average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, precision_weighted, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef</p></li>
+<li><p><strong>Regression and/or Time Series</strong> explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse</p></li>
+</ul>
+</li>
+<li><p><strong>trials_per_worker</strong> Use it if you have a lot of failed trials. Set it to value &lt; 8 to give trial fit process more memory. Default is None.</p></li>
+<li><p><strong>class_weight</strong> Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.</p></li>
+<li><p><strong>oversampling.name</strong> SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set</p></li>
+<li><p><strong>oversampling.params.sampling_strategy</strong>  auto, minority, majority, not minority, not majority, all</p></li>
+<li><p><strong>oversampling.params.k_neighbors</strong>  Integer value of k_neighbors</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on <a href="https://imbalanced-learn.readthedocs.io/en/stable/api.html#module-imblearn.over_sampling" target="_blank">oversampling</a></p>
+</div>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="azure">
+<h4>Azure<a class="headerlink" href="#azure" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code></p></li>
+</ul>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+  <span class="nt">run_id</span><span class="p">:</span>
+  <span class="nt">metric</span><span class="p">:</span>
+
+<span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">region</span><span class="p">:</span>
+  <span class="nt">min_nodes</span><span class="p">:</span>
+  <span class="nt">max_nodes</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>dataset</strong> Name of the DataSet on Azure Cloud.</p></li>
+<li><p><strong>experiment.name</strong> Latest experiment name.</p></li>
+<li><p><strong>experiment.run_id</strong> Latest experiment run.</p></li>
+<li><p><strong>experiment.metric</strong> Metric used to build Model</p>
+<ul>
+<li><p><strong>Classification</strong> accuracy, AUC_macro, AUC_micro, AUC_weighted, average_precision_score_macro, average_precision_score_micro, average_precision_score_weighted, balanced_accuracy, f1_score_macro, f1_score_micro, f1_score_weighted, log_loss, norm_macro_recall, precision_score_macro, precision_score_micro, precision_score_weighted, recall_score_macro, recall_score_micro, recall_score_weighted, weighted_accuracy</p></li>
+<li><p><strong>Regression and/or Time Series</strong> explained_variance, r2_score, spearman_correlation, mean_absolute_error, normalized_mean_absolute_error, median_absolute_error, normalized_median_absolute_error, root_mean_squared_error, normalized_root_mean_squared_error, root_mean_squared_log_error, normalized_root_mean_squared_log_error</p></li>
+</ul>
+</li>
+<li><p><strong>cluster.region</strong> Name of cluster region. For example: eastus2</p></li>
+<li><p><strong>cluster.min_nodes</strong> Minimum number of nodes allocated for cluster. Minimum is 0.</p></li>
+<li><p><strong>cluster.max_nodes</strong> Maximum number of nodes allocated for cluster.</p></li>
+<li><p><strong>cluster.type</strong> Cluster node type. For example: STANDARD_D2_V2. Please read Azure documentation for available options and prices.</p></li>
+<li><p><strong>cluster.name</strong> Name of existing cluster or new one to create.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="google">
+<h4>Google<a class="headerlink" href="#google" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">google.yaml</span></code></p></li>
+</ul>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">project</span><span class="p">:</span>
+<span class="nt">experiment</span><span class="p">:</span>
+  <span class="nt">metric</span><span class="p">:</span>
+<span class="nt">cluster</span><span class="p">:</span>
+  <span class="nt">region</span><span class="p">:</span>
+<span class="nt">gsbucket</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Attributes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>project</strong> Name of the Project on Google Cloud.</p></li>
+<li><p><strong>experiment.metric</strong> Metric used to build Model</p></li>
+<li><p><strong>cluster.region</strong></p></li>
+<li><p><strong>gsbucket</strong></p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
 <p>A2ML can be configured in three different ways.</p>
+</div>
+</div>
+</div>
+<div class="section" id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="a2ml-cloud-coming-soon">
-<h2>A2ML Cloud (Coming Soon)<a class="headerlink" href="#a2ml-cloud-coming-soon" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png" style="width: 70%;" /></a>
+<h3>A2ML Cloud (Coming Soon)<a class="headerlink" href="#a2ml-cloud-coming-soon" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png" style="width: 50%;" /></a>
 <p>Create one account in the <a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a> and let the cloud manage all the provider connections.</p>
 </div>
 <div class="section" id="a2ml-local">
-<h2>A2ML Local<a class="headerlink" href="#a2ml-local" title="Permalink to this headline">¶</a></h2>
+<h3>A2ML Local<a class="headerlink" href="#a2ml-local" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="direct-provider-connection">
-<h3>Direct Provider Connection<a class="headerlink" href="#direct-provider-connection" title="Permalink to this headline">¶</a></h3>
-<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png"><img alt="A2ML client direct providers" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png" style="width: 70%;" /></a>
+<h4>Direct Provider Connection<a class="headerlink" href="#direct-provider-connection" title="Permalink to this headline">¶</a></h4>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png"><img alt="A2ML client direct providers" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png" style="width: 50%;" /></a>
 <p>Directly configure the provider(s) and connect to them from the a2ml client.</p>
 </div>
 <div class="section" id="server-provider-connection">
-<h3>Server Provider Connection<a class="headerlink" href="#server-provider-connection" title="Permalink to this headline">¶</a></h3>
-<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png" style="width: 70%;" /></a>
+<h4>Server Provider Connection<a class="headerlink" href="#server-provider-connection" title="Permalink to this headline">¶</a></h4>
+<a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png" style="width: 50%;" /></a>
 <p>Host a server which manages provider connections. The a2ml client would then point to the server.</p>
+</div>
 </div>
 </div>
 </div>
