@@ -99,7 +99,7 @@ To login programmatically without the browser use the |spc|.
 
 The azure.json file can also be referred to by:
 
-  - An environment variable called ``AZURE_CREDENTIALS_PATH`` - should conatin a full path to the file
+  - An environment variable called ``AZURE_CREDENTIALS_PATH`` - should contain a full path to the file
   - An attribute path_to_credentials inside ``config.yaml``
 
 Google Cloud Provider
