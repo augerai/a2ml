@@ -54,8 +54,8 @@ To include the Google Cloud AutoML provider.
 
   $ pip install "a2ml[google]"
 
-Server Installion
-=================
+Server Installation
+===================
 
 To install server dependencies.
 
