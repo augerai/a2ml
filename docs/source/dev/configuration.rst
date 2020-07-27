@@ -27,7 +27,7 @@ All Providers
       max_eval_time: 
       max_n_trials: 
       use_ensemble: 
-      validation_data: 
+      validation_source: 
 
   **Attributes**
 
@@ -42,7 +42,7 @@ All Providers
     * **experiment.max_eval_time** Maximum time to run individual trial in minutes.
     * **experiment.max_n_trials** Maximum trials to run to complete experiment.
     * **experiment.use_ensemble** Try to improve model performance by creating ensembles from the trial models true | false.
-    * **experiment.validation_data** Path to validation dataset. If not set your source dataset will be split to validate.
+    * **experiment.validation_source** Path to validation dataset. If not set your source dataset will be split to validate.
 
 
 Provider Specfic
@@ -128,11 +128,15 @@ Azure
     * **experiment.name** Latest experiment name.
     * **experiment.run_id** Latest experiment run.
     * **experiment.metric** Metric used to build Model
-    * **cluster.region** 
-    * **cluster.min_nodes**  
-    * **cluster.max_nodes** 
-    * **cluster.type**
-    * **cluster.name**
+
+      * **Classification** accuracy, AUC_macro, AUC_micro, AUC_weighted, average_precision_score_macro, average_precision_score_micro, average_precision_score_weighted, balanced_accuracy, f1_score_macro, f1_score_micro, f1_score_weighted, log_loss, norm_macro_recall, precision_score_macro, precision_score_micro, precision_score_weighted, recall_score_macro, recall_score_micro, recall_score_weighted, weighted_accuracy
+      * **Regression and/or Time Series** explained_variance, r2_score, spearman_correlation, mean_absolute_error, normalized_mean_absolute_error, median_absolute_error, normalized_median_absolute_error, root_mean_squared_error, normalized_root_mean_squared_error, root_mean_squared_log_error, normalized_root_mean_squared_log_error
+
+    * **cluster.region** Name of cluster region. For example: eastus2
+    * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 
+    * **cluster.max_nodes** Maximum number of nodes allocated for cluster.
+    * **cluster.type** Cluster node type. For example: STANDARD_D2_V2. Please read Azure documentation for available options and prices.
+    * **cluster.name** Name of existing cluster or new one to create.
   
 
 Google
