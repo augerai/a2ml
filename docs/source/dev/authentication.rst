@@ -18,7 +18,7 @@ You can login to the A2ML Cloud with the ``a2ml auth login`` command.
 
   $ a2ml auth login
 
-You will be prompted for your A2ML service user and password. 
+You will be prompted for your A2ML service user and password.
 
 Download Credentials
 --------------------
@@ -99,7 +99,7 @@ To login programmatically without the browser use the |spc|.
 
 The azure.json file can also be referred to by:
 
-  - An environment variable called ``AZURE_CREDENTIALS_PATH``
+  - An environment variable called ``AZURE_CREDENTIALS_PATH`` - should conatin a full path to the file
   - An attribute path_to_credentials inside ``config.yaml``
 
 Google Cloud Provider
@@ -111,7 +111,7 @@ If you haven't run Google Cloud AutoML, set up a service account and save the cr
   $ export GOOGLE_APPLICATION_CREDENTIALS="/Users/user/a2ml/automl.json"
 
 
-For ease of use you can set up a default project ID to use with your project with the ``PROJECT_ID`` environment variable. For example:  
+For ease of use you can set up a default project ID to use with your project with the ``PROJECT_ID`` environment variable. For example:
 
 .. code-block:: bash
 
