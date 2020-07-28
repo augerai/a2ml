@@ -340,12 +340,14 @@ def _get_leaderboad(params):
             'trials': trials,
         }
 
-@celeryApp.task(ignore_result=True)
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
 def monitor_evaluate_task(params):
     leaderboard = _get_leaderboad(params)
 
     if leaderboard:
         _update_hub_leaderboad(params, leaderboard)
+
+    return True
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def evaluate_start_task(params):
