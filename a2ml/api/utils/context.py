@@ -116,7 +116,6 @@ class Context(object):
         new.request_id = self.request_id
         new.config.parts = self.config.parts
         new.config.parts_changes = self.config.parts_changes
-        new.provider_info = self.provider_info
 
         try:
             new.config.set("providers", name, config_name='config')
