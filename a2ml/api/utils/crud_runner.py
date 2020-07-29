@@ -6,7 +6,7 @@ class CRUDRunner(object):
     def __init__(self, ctx, providers, obj_name):
         super(CRUDRunner, self).__init__()
         self.ctx = ctx
-        self.providers = self._load_providers(ctx, providers, obj_name)
+        self.providers = self._load_providers(providers, obj_name)
 
     def execute_one_provider(self, operation_name, *args, **kwargs):
         result = self.execute(operation_name, *args, **kwargs)        
@@ -47,21 +47,22 @@ class CRUDRunner(object):
 
         return results
 
-    def _load_providers(self, ctx, providers, obj_name):
+    def _load_providers(self, provider, obj_name):
+        def get_provider_class(p):
+            module = importlib.import_module('a2ml.api.%s.%s' % (p, obj_name))
+            return getattr(module, '%s%s' % (p.capitalize(),obj_name.capitalize()))
+
         def get_instance(p):
-            try:
-                module = importlib.import_module(
-                    'a2ml.api.%s.%s' % (p, obj_name))
-                provider_class = getattr(module, '%s%s' % \
-                    (p.capitalize(),obj_name.capitalize()))
-                return provider_class(ctx.copy(p))
-            except:
-                if self.ctx.debug:
-                    import traceback
-                    traceback.print_exc()
-                return '%s%s' % (p.capitalize(),obj_name.capitalize())
-        if providers:
-            providers = [p.strip() for p in providers.split(',')]
-        else:
-            providers = ctx.get_providers()
-        return {p: get_instance(p) for p in providers}
+            provider_class = get_provider_class(p)
+            
+            if self.ctx.config.get('use_a2ml_hub', False) and p != 'auger':
+                new_ctx = self.ctx.copy("auger")
+                new_ctx.provider_info = {p: {"project": {"cluster": self.ctx.config.get("cluster", config_name=p)}}}
+                provider_class = get_provider_class("auger")
+            else:
+                new_ctx = self.ctx.copy(p)
+
+            return provider_class(new_ctx)
+
+        return {p: get_instance(p) for p in self.ctx.get_providers(provider)}
+
