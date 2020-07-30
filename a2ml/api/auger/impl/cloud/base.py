@@ -102,9 +102,10 @@ class AugerBaseApi(object):
 
     def _call_create(self, params=None, progress=None,has_return_object=True):
         if self.ctx.provider_info:
-            params['provider'] = list(self.ctx.provider_info.keys())[0]
-            if self.ctx.provider_info[params['provider']].get(self.api_request_path):
-                params['provider_info'] = self.ctx.provider_info[params['provider']][self.api_request_path]
+            provider = list(self.ctx.provider_info.keys())[0]
+            params['providers'] = [provider]
+            if self.ctx.provider_info[provider].get(self.api_request_path):
+                params['provider_info'] = self.ctx.provider_info[provider][self.api_request_path]
 
         object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
@@ -117,9 +118,10 @@ class AugerBaseApi(object):
 
     def _call_update(self, params=None, progress=None, has_return_object=True):
         if self.ctx.provider_info:
-            params['provider'] = list(self.ctx.provider_info.keys())[0]
-            if self.ctx.provider_info[params['provider']].get(self.api_request_path):
-                params['provider_info'] = self.ctx.provider_info[params['provider']][self.api_request_path]
+            provider = list(self.ctx.provider_info.keys())[0]
+            params['providers'] = [provider]
+            if self.ctx.provider_info[provider].get(self.api_request_path):
+                params['provider_info'] = self.ctx.provider_info[provider][self.api_request_path]
 
         object_properties = self.rest_api.call(
             'update_%s' % self.api_request_path, params)
