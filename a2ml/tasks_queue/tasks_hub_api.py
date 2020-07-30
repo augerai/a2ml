@@ -376,14 +376,7 @@ def deploy_model_task(params):
     ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
-    model_id = params.get('pipeline_id')
-    if not model_id:
-        model_id = params.get('model_id')
-
-    if not model_id:
-        raise Exception("deploy_model_task: pipeline_id should be provided.")
-
-    res = A2ML(ctx).deploy(model_id = model_id, review = params.get('support_review_model'))
+    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'))
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
@@ -393,8 +386,15 @@ def undeploy_model_task(params):
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
 
+    model_id = params.get('hub_info', {}).get('pipeline_id')
+    if not model_id:
+        model_id = params.get('model_id')
+
+    if not model_id:
+        raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
+
     ctx.config.clean_changes()
-    res = A2MLModel(ctx).undeploy(model_id = params.get('model_id'))
+    res = A2MLModel(ctx).undeploy(model_id = model_id)
     _update_hub_objects(ctx, params.get('provider'), params)
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
