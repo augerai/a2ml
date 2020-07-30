@@ -61,7 +61,7 @@ class NewCmd(object):
             config.write('config')
 
             if self.model_type != 'classification':
-                self.ctx.config.set('experiment/metric', 'spearman_correlation', config_name='azure')
+                self.ctx.config.set('experiment/metric', 'r2_score', config_name='azure')
                 self.ctx.config.write('azure')
                 self.ctx.config.set('experiment/metric', 'r2', config_name='auger')
                 self.ctx.config.write('auger')

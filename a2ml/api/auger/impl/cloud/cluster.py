@@ -46,27 +46,26 @@ class AugerClusterApi(AugerBaseApi):
         if docker_image_tag is not None:
             settings["docker_image_tag"] = docker_image_tag
 
-        cluster_type = config.get('cluster/type', None)
-        if cluster_type is not None:
-            if cluster_type not in ['standard', 'high_memory']:
-                raise AugerException(
-                    'Cluster type \'%s\' is not supported' % cluster_type)
-            settings.update({
-                "worker_type_id": 1 if cluster_type == 'standard' else 2,
-                "workers_count": config.get('cluster/max_nodes', 2),
-            })
-        else: # single tenant settings
-            worker_nodes_count = config.get('cluster/worker_count', 2)
-            worker_nodes_count = config.get(
-                'cluster/worker_nodes_count', worker_nodes_count)
+        cluster_type = config.get('cluster/type', 'standard')
+        if cluster_type not in ['standard', 'high_memory']:
+            raise AugerException(
+                'Cluster type \'%s\' is not supported' % cluster_type)
+        settings.update({
+            "worker_type_id": 1 if cluster_type == 'standard' else 2,
+            "workers_count": config.get('cluster/max_nodes', 2),
+        })
+        # else: # single tenant settings
+        #     worker_nodes_count = config.get('cluster/worker_count', 2)
+        #     worker_nodes_count = config.get(
+        #         'cluster/worker_nodes_count', worker_nodes_count)
 
-            settings.update({
-                "worker_nodes_count": worker_nodes_count,
-                "instance_type": config.get('cluster/instance_type', 'c5.large')
-            })
-            workers_per_node_count = config.get(
-                'cluster/workers_per_node_count', None)
-            if workers_per_node_count is not None:
-                settings["workers_per_node_count"] = workers_per_node_count
+        #     settings.update({
+        #         "worker_nodes_count": worker_nodes_count,
+        #         "instance_type": config.get('cluster/instance_type', 'c5.large')
+        #     })
+        #     workers_per_node_count = config.get(
+        #         'cluster/workers_per_node_count', None)
+        #     if workers_per_node_count is not None:
+        #         settings["workers_per_node_count"] = workers_per_node_count
 
         return settings

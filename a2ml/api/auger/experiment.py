@@ -69,7 +69,6 @@ class AugerExperiment(object):
         if leaderboard is None:
             raise AugerException('No leaderboard was found...')
         self.ctx.log('Leaderboard for Run %s' % run_id)
-
         leaderboard = leaderboard[::-1]
         leaderboard = leaderboard[:10]
 
@@ -97,8 +96,8 @@ class AugerExperiment(object):
 
         if status == "error":
             #TODO: get experiment session errors
-            result['error'] = error
-            result['error_details'] = error_details
+            result['error'] = message
+            #result['error_details'] = error_details
         
         return result
 

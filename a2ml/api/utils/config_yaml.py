@@ -50,7 +50,11 @@ class ConfigYaml(object):
         options = self.yaml
         path = path.split('/')
         for opt in path[0:-1]:
-            options = options[opt]
+            if opt in options:
+                options = options[opt]
+            else:
+                return
+
         options.pop(path[-1], None)
 
     def write(self, filename=None):

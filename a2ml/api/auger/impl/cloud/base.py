@@ -107,6 +107,7 @@ class AugerBaseApi(object):
             if self.ctx.provider_info[provider].get(self.api_request_path):
                 params['provider_info'] = self.ctx.provider_info[provider][self.api_request_path]
 
+        #print("_call_create %s: %s"%(self.api_request_path,params))
         object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
         if has_return_object:
@@ -123,6 +124,7 @@ class AugerBaseApi(object):
             if self.ctx.provider_info[provider].get(self.api_request_path):
                 params['provider_info'] = self.ctx.provider_info[provider][self.api_request_path]
 
+        #print("_call_update %s: %s"%(self.api_request_path,params))
         object_properties = self.rest_api.call(
             'update_%s' % self.api_request_path, params)
 
