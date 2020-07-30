@@ -83,7 +83,7 @@ class AugerExperimentApi(AugerBaseApi):
                 True if model_type == 'classification' else False,
             'scoring':
                 config.get('experiment/metric',
-                    'f1_macro' if model_type == 'classification' else 'r2'),
+                    'accuracy' if model_type == 'classification' else 'r2'),
             'test_data_path': test_data_path
         }
 

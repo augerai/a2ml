@@ -9,7 +9,7 @@ experiment:
   # Latest experiment run
   run_id:
   ### Metric used to build Model
-  metric: AUC_weighted
+  metric: accuracy
 
 cluster:
   region: eastus2

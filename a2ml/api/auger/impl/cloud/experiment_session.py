@@ -19,18 +19,20 @@ class AugerExperimentSessionApi(AugerBaseApi):
 
     def run(self):
         try:
-            return self.rest_api.call(
-                'update_experiment_session',
-                {'id': self.object_id, 'status': 'preprocess'})
+            return self._call_update({'id': self.object_id, 'status': 'preprocess'})
+            # return self.rest_api.call(
+            #     'update_experiment_session',
+            #     {'id': self.object_id, 'status': 'preprocess'})
         except Exception as e:
             self.ctx.log(
                 'Start experiment session failed. Try one more time ...: %s' % (e))
 
             #Try one more time
             time.sleep(60)
-            return self.rest_api.call(
-                'update_experiment_session',
-                {'id': self.object_id, 'status': 'preprocess'})
+            return self._call_update({'id': self.object_id, 'status': 'preprocess'})
+            # return self.rest_api.call(
+            #     'update_experiment_session',
+            #     {'id': self.object_id, 'status': 'preprocess'})
 
         # self.wait_for_status(['waiting', 'preprocess', 'started'])
 
@@ -71,6 +73,6 @@ class AugerExperimentSessionApi(AugerBaseApi):
             })
 
         if score_name:
-            leaderboard.sort(key=lambda t: t[score_name], reverse=False)
+            leaderboard.sort(key=lambda t: list(t.values())[-1], reverse=False)
             
         return leaderboard
