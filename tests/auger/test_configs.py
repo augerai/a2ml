@@ -35,7 +35,7 @@ class TestConfigs(object):
         assert config['evaluation_options']['max_n_trials'] == 101
         assert config['evaluation_options']['use_ensemble'] == False
         assert config['evaluation_options']['classification'] == True
-        assert config['evaluation_options']['scoring'] == 'f1_macro'
+        assert config['evaluation_options']['scoring'] == 'accuracy'
 
         stats = dataset_statistics['stat_data']
         assert stats == [
