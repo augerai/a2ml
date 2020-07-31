@@ -397,11 +397,14 @@ def undeploy_model_task(params):
     res = A2MLModel(ctx).undeploy(model_id = model_id)
     _update_hub_objects(ctx, params.get('provider'), params)
 
+    return res
+
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def predict_by_model_task(params):
     from a2ml.api.utils.crud_runner import CRUDRunner
 
     ctx = _create_provider_context(params)
+    ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
     runner = CRUDRunner(ctx, "%s"%params.get('provider'), 'model')

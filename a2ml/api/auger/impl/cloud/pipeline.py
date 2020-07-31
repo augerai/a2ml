@@ -16,7 +16,7 @@ class AugerPipelineApi(AugerBaseApi):
             ['creating_files', 'packaging', 'deploying'])
 
     def remove(self, trial_id):
-        return self._call_update({'id': trial_id, 'status': 'undeploying'})
+        return self._call_update({'id': trial_id, 'status': 'undeploying'}, progress=['ready','packaged_with_error'])
 
     def predict(self, records, features, threshold=None, file_url=None, predicted_at=None):
         if self.object_id is None:
