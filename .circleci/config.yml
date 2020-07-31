@@ -190,21 +190,22 @@ workflows:
                 - master
             tags:
               ignore: /^v.*/
-      - deploy-to-k8s:
-          name: deploy-to-k8s-tag
-          namespace: a2ml-stable
-          release-name: "a2ml-stable"
-          values-to-override: "image.tag=$CIRCLE_TAG"
-          context: eks
-          requires:
-            - publish-docs
-            - docker-publish-tag
-            - publish-pip
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+      # TODO: Test separately first time
+      # - deploy-to-k8s:
+      #     name: deploy-to-k8s-tag
+      #     namespace: a2ml-stable
+      #     release-name: "a2ml-stable"
+      #     values-to-override: "image.tag=$CIRCLE_TAG"
+      #     context: eks
+      #     requires:
+      #       - publish-docs
+      #       - docker-publish-tag
+      #       - publish-pip
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
       - publish-pip:
           filters:
             tags:
