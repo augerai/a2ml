@@ -64,7 +64,6 @@ class ModelPredict():
 
         if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
-            print(ds.df.dtypes)
             records = ds.get_records()
             for record in records:
                 for idx, item in enumerate(record):
