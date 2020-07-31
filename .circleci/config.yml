@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   docker: circleci/docker@1.0.1
   aws-eks: circleci/aws-eks@0.2.7
+  role: airswap/assume-role@0.2.0
+  aws-cli: circleci/aws-cli@0.1.22
   kubernetes: circleci/kubernetes@0.11.0
   helm: circleci/helm@1.0.0
 
@@ -33,7 +35,7 @@ jobs:
       - run:
           name: Build docs
           command: |
-            source venv/bin/activate
+            source venv/bin/activate 
             cd docs/
             make html
       - persist_to_workspace:
@@ -85,106 +87,122 @@ jobs:
         description: |
           Name of the EKS cluster
         type: string
+        default: ${STAGING_CLUSTER_NAME}
       aws-region:
         description: |
           AWS region
         type: string
-        default: "us-west-2"
+        default: ${AWS_DEFAULT_REGION}
+      namespace:
+        description: |
+          a2ml namespace
+        type: string
+        default: "a2ml-latest"
+      release-name:
+        description: |
+          a2ml helm release-name
+        type: string
+        default: "a2ml-latest"
       values-to-override:
         description: |
           Values will be used as helm install --set "key1=value1,key2=value2"
         type: string
         default: ""
     steps:
-      - run:
-          name: Check Values to override
-          command: |
-            echo << parameters.aws-region >>
-            echo << parameters.cluster-name >>
-            echo << parameters.values-to-override >>
-            echo $ROLE_ARN
-            echo ${ROLE_ARN}
-      - kubernetes/install
+      - aws-cli/setup
+      - role/assume-role
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
           aws-region: << parameters.aws-region >>
-          cluster-authentication-role-arn: ${ROLE_ARN}
-      # - helm/install-helm-chart:
-      #     chart: augerai/a2ml
-      #     release-name: a2ml
-      #     namespace: a2ml
-      #     values-to-override: << parameters.values-to-override >>
+          install-kubectl: true
+      - helm/install-helm-client:
+          version: v3.2.4
+      - run:
+          command: |
+            helm repo add augerai https://augerai.github.io/charts
+            helm repo update
+            helm repo list
+          name: Add augerai repo
+      - helm/upgrade-helm-chart:
+          helm-version: v3.2.4
+          chart: augerai/a2ml
+          namespace: << parameters.namespace >>
+          release-name: << parameters.release-name >>
+          values-to-override: << parameters.values-to-override >>
 
 workflows:
   build-test-publish:
     jobs:
-      # - build-and-test:
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      # - build-docs
-      # - publish-docs:
-      #     requires:
-      #       - build-and-test
-      #       - build-docs
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - docker/publish:
-      #     cache_from: "augerai/a2ml:latest"
-      #     context: docker-hub
-      #     image: augerai/a2ml
-      #     name: docker-publish-tag
-      #     tag: $CIRCLE_TAG
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
-      # - docker/publish:
-      #     cache_from: "augerai/a2ml:latest"
-      #     context: docker-hub
-      #     image: augerai/a2ml
-      #     name: docker-publish-master
-      #     tag: latest
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #       tags:
-      #         ignore: /^v.*/
-      - deploy-to-k8s:
-          name: deploy-to-k8s-master
-          cluster-name: eks_auger-cluster-staging1
-          aws-region: us-west-2
-          values-to-override: "image.tag=latest"
-          context: eks
-          # requires:
-          #   - docker-publish-master
-          # filters:
-          #   branches:
-          #     only:
-          #       - master
-          #   tags:
-          #     ignore: /^v.*/
-      - deploy-to-k8s:
-          name: deploy-to-k8s-tag
-          cluster-name: eks_auger-cluster-prod2
-          aws-region: us-west-2
-          values-to-override: "image.tag=$CIRCLE_TAG"
-          context: eks
+      - build-and-test:
+          filters:
+            tags:
+              only: /^v.*/
+      - build-docs
+      - publish-docs:
           requires:
-            - docker-publish-tag
+            - build-and-test
+            - build-docs
+          filters:
+            branches:
+              only:
+                - master
+      - docker/publish:
+          cache_from: "augerai/a2ml:latest"
+          context: docker-hub
+          image: augerai/a2ml
+          name: docker-publish-tag
+          tag: $CIRCLE_TAG
+          requires:
+            - build-and-test
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - docker/publish:
+          cache_from: "augerai/a2ml:latest"
+          context: docker-hub
+          image: augerai/a2ml
+          name: docker-publish-master
+          tag: latest
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              ignore: /^v.*/
+      - deploy-to-k8s:
+          name: deploy-to-k8s-master
+          values-to-override: "image.tag=latest"
+          release-name: "a2ml-latest"
+          namespace: a2ml-latest
+          context: eks
+          requires:
+            - docker-publish-master
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              ignore: /^v.*/
+      # TODO: Test separately
+      # - deploy-to-k8s:
+      #     name: deploy-to-k8s-tag
+      #     namespace: a2ml-stable
+      #     release-name: "a2ml-stable"
+      #     values-to-override: "image.tag=$CIRCLE_TAG"
+      #     context: eks
+      #     requires:
+      #       - publish-docs
+      #       - docker-publish-tag
+      #       - publish-pip
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
       - publish-pip:
           filters:
             tags:
