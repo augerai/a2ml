@@ -154,10 +154,10 @@ class DataFrame(object):
                 compression=compression
             )
 
-        if res_df is not None:
-            for name, value in res_df.dtypes.items():
-                if value == 'object':
-                    res_df[name] = pd.to_datetime(res_df[name], infer_datetime_format=True, errors='ignore', utc=True)
+        # if res_df is not None:
+        #     for name, value in res_df.dtypes.items():
+        #         if value == 'object':
+        #             res_df[name] = pd.to_datetime(res_df[name], infer_datetime_format=True, errors='ignore', utc=True)
 
         return res_df
 

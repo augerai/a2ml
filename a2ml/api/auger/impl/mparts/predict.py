@@ -64,13 +64,7 @@ class ModelPredict():
 
         if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
-            records = ds.get_records()
-            for record in records:
-                for idx, item in enumerate(record):
-                    if type(item).__name__ == "Timestamp":
-                        record[idx] = str(item)
-
-            predictions = pipeline_api.predict(records, ds.columns, threshold=threshold, predicted_at=predicted_at)
+            predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
         else:
             if not file_url:
                 if not filename:
