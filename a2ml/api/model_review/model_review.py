@@ -289,7 +289,6 @@ class ModelReview(object):
                     stats[feature]['count'] += df.df[feature].count()
 
                     if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
-                        'datetime64' in df.df[feature].dtype.name or \
                         feature in categoricalFeatures:
                         stats[feature]['dist'] = merge_dicts(
                             stats[feature]['dist'] or {},
