@@ -274,6 +274,7 @@
   <span class="nt">time_series</span><span class="p">:</span>
   <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
   <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+  <span class="nt">estimate_trial_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
   <span class="nt">trials_per_worker</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
   <span class="nt">class_weight</span><span class="p">:</span>
   <span class="nt">oversampling</span><span class="p">:</span>
@@ -298,6 +299,7 @@
 <li><p><strong>Regression and/or Time Series</strong> explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse</p></li>
 </ul>
 </li>
+<li><p><strong>estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
 <li><p><strong>trials_per_worker</strong> Use it if you have a lot of failed trials. Set it to value &lt; 8 to give trial fit process more memory. Default is None.</p></li>
 <li><p><strong>class_weight</strong> Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.</p></li>
 <li><p><strong>oversampling.name</strong> SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set</p></li>
