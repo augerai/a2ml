@@ -1,7 +1,7 @@
 
 from celery import Celery
 from celery.concurrency import asynpool
-from a2ml.api.utils.json_utils import convert_simple_numpy_type
+from a2ml.api.utils.json_utils import convert_simple_numpy_type, convert_nan_inf
 from a2ml.tasks_queue.config import Config
 from kombu import Exchange, Queue
 from kombu.serialization import register
@@ -77,8 +77,8 @@ class NumpyKombuJSONEncoder(_json.JSONEncoder):
 
 # Encoder function
 def my_dumps(obj):
+    obj = convert_nan_inf(obj)
     return _json.dumps(obj, cls=NumpyKombuJSONEncoder)
-
 
 register(
     'myjson', my_dumps, _json.loads,
