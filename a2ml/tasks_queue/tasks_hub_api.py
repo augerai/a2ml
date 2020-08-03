@@ -80,8 +80,10 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
             else:
                 response['result'] = retval
 
-            # send_result_to_hub.delay(json.dumps(response))
-            send_result_to_hub.delay(kombu.serialization.dumps(response, serializer='myjson')[2])
+            send_result_to_hub.delay(serialize_to_json(response))
+
+def serialize_to_json(data):
+    return kombu.serialization.dumps(data, serializer='myjson')[2]
 
 def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
@@ -155,7 +157,7 @@ def _read_hub_experiment_session(ctx, params):
 
 def _update_hub_objects(ctx, provider, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
-    send_result_to_hub.delay(json.dumps(hub_objects_update))
+    send_result_to_hub.delay(serialize_to_json(hub_objects_update))
 
     return hub_objects_update
 
@@ -232,7 +234,7 @@ def _update_hub_leaderboad(params, leaderboard):
         'evaluate_status': leaderboard.get('evaluate_status'),
     }
 
-    send_result_to_hub.delay(json.dumps(data))
+    send_result_to_hub.delay(serialize_to_json(data))
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')

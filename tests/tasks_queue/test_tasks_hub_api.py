@@ -182,3 +182,14 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         self.assertEqual(predicted['columns'], ["prediction_id","age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income","proba_0","proba_1"] )
         self.assertEqual(len(predicted['data']), 7)
+
+    def test_serialize_to_json(self):
+        data = {
+            'data1': 123,
+            'data2': '456',
+            'data3': float('NaN')
+        }
+
+        res = serialize_to_json(data)
+
+        self.assertEqual(res, '{"data1": 123, "data2": "456", "data3": null}')
