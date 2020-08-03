@@ -93,6 +93,8 @@ class AugerExperimentApi(AugerBaseApi):
             options['algorithm_params_common'] = {'class_weight': config.get('experiment/class_weight')}
         if config.get('experiment/oversampling'):
             options['oversampling'] = config.get('experiment/oversampling')
+        if config.get('experiment/estimate_trial_time'):
+            options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(

@@ -51,7 +51,7 @@ class AugerClusterApi(AugerBaseApi):
             raise AugerException(
                 'Cluster type \'%s\' is not supported' % cluster_type)
         settings.update({
-            "worker_type_id": 1 if cluster_type == 'standard' else 2,
+            "worker_type_id": 1 if cluster_type == 'standard' else 3,
             "workers_count": config.get('cluster/max_nodes', 2, config_name="auger"),
         })
         # else: # single tenant settings
