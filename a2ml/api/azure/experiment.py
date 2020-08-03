@@ -373,7 +373,7 @@ class AzureExperiment(object):
                             break
 
                 all_scores = run.get_metrics()
-                scores_to_remove = ['confusion_matrix', 'accuracy_table']
+                scores_to_remove = ['confusion_matrix', 'accuracy_table', 'predicted_true', 'residuals']
                 for item in scores_to_remove:
                     if item in all_scores:
                         del all_scores[item]

@@ -288,7 +288,8 @@ class ModelReview(object):
                 for feature in features:
                     stats[feature]['count'] += df.df[feature].count()
 
-                    if df.df[feature].dtype.name in ['category', 'string', 'object'] or feature in categoricalFeatures:
+                    if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
+                        feature in categoricalFeatures:
                         stats[feature]['dist'] = merge_dicts(
                             stats[feature]['dist'] or {},
                             dict(df.df[feature].value_counts()),

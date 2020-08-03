@@ -19,6 +19,10 @@ experiment:
   # Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
   metric: accuracy
 
+  # Optional. Default: False. 
+  # Estimate Trial Time Predict the training time of each individual model to avoid timeouts.
+  #estimate_trial_time: False
+
   # Optional. Default: None. Use it if you have a lot of failed trials
   # Set it to value < 8 to give trial fit process more memory.  
   # trials_per_worker: 2

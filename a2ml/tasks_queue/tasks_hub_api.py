@@ -1,6 +1,5 @@
 import amqp
 import copy
-import kombu.serialization
 import logging
 import json
 import traceback
@@ -13,6 +12,7 @@ from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
+from a2ml.api.utils.json_utils import json_dumps_np
 from a2ml.api.utils.context import Context
 from a2ml.tasks_queue.config import Config
 
@@ -80,31 +80,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
             else:
                 response['result'] = retval
 
-            # send_result_to_hub.delay(json.dumps(response))
-            send_result_to_hub.delay(kombu.serialization.dumps(response, serializer='myjson')[2])
-
-def _get_hub_context():
-    from a2ml.api.auger.project import AugerProject
-
-    ctx = Context(debug=task_config.debug)
-    project = AugerProject(ctx)
-
-    return ctx
-
-def _get_hub_experiment_session(experiment_session_id):
-    from a2ml.api.auger.impl.cloud.experiment_session import AugerExperimentSessionApi
-
-    ctx = _get_hub_context()
-    session_api = AugerExperimentSessionApi(ctx, session_id=experiment_session_id)
-    return session_api.properties(), ctx
-
-def _get_hub_project_file(project_file_id):
-    from a2ml.api.auger.project import AugerProject
-    from a2ml.api.auger.impl.cloud.project_file import AugerProjectFileApi
-
-    ctx = _get_hub_context()
-    project_file_api = AugerProjectFileApi(ctx, project_file_id=project_file_id)
-    return project_file_api.properties(), ctx
+            send_result_to_hub.delay(json_dumps_np(response))
 
 def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
@@ -145,7 +121,7 @@ def _make_hub_provider_info_update(ctx, provider, hub_info):
     }
 
 def _read_hub_experiment_session(ctx, params):
-    experiment_session, ctx_hub = _get_hub_experiment_session(params['hub_info']['experiment_session_id'])
+    experiment_session = params['hub_info']['experiment_session']
     provider = params['provider']
 
     evaluation_options = experiment_session.get('model_settings', {}).get('evaluation_options')
@@ -174,11 +150,11 @@ def _read_hub_experiment_session(ctx, params):
         ctx.config.set('experiment/metric',
             evaluation_options.get('scoring'), provider)
 
-    return ctx_hub
+    return ctx
 
-def _update_hub_objects(ctx, provider, ctx_hub, params):
+def _update_hub_objects(ctx, provider, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
-    send_result_to_hub.delay(json.dumps(hub_objects_update))
+    send_result_to_hub.delay(json_dumps_np(hub_objects_update))
 
     return hub_objects_update
 
@@ -255,7 +231,7 @@ def _update_hub_leaderboad(params, leaderboard):
         'evaluate_status': leaderboard.get('evaluate_status'),
     }
 
-    send_result_to_hub.delay(json.dumps(data))
+    send_result_to_hub.delay(json_dumps_np(data))
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
@@ -340,12 +316,14 @@ def _get_leaderboad(params):
             'trials': trials,
         }
 
-@celeryApp.task(ignore_result=True)
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
 def monitor_evaluate_task(params):
     leaderboard = _get_leaderboad(params)
 
     if leaderboard:
         _update_hub_leaderboad(params, leaderboard)
+
+    return True
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def evaluate_start_task(params):
@@ -363,21 +341,21 @@ def evaluate_start_task(params):
     ctx.config.set('cluster/max_nodes', cluster.get('max_nodes'), provider)
     ctx.config.set('cluster/type', cluster.get('type'), provider)
 
-    ctx_hub = _read_hub_experiment_session(ctx, params)
+    ctx = _read_hub_experiment_session(ctx, params)
     ctx.config.clean_changes()
 
     res = A2ML(ctx).train()
 
-    _update_hub_objects(ctx, provider, ctx_hub, params)
+    _update_hub_objects(ctx, provider, params)
 
     return res
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def import_data_task(params):
-    if not params.get("hub_info").get('project_file_id'):
-        raise Exception("import_data_task missed project_file_id parameter.")
+    if not params.get('hub_info').get('project_file'):
+        raise Exception("import_data_task missed project_file parameter.")
 
-    project_file, ctx_hub = _get_hub_project_file(params["hub_info"]['project_file_id'])
+    project_file = params['hub_info']['project_file']
 
     data_path = params.get('url')
     if not data_path:
@@ -387,36 +365,45 @@ def import_data_task(params):
 
     ctx.config.clean_changes()
     res = A2ML(ctx).import_data(source=data_path)
-    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+    _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def deploy_model_task(params):
     ctx = _create_provider_context(params)
-    ctx_hub = _read_hub_experiment_session(ctx, params)
+    ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
     res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'))
-    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+    _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
-    ctx_hub = _read_hub_experiment_session(ctx, params)
+    ctx = _read_hub_experiment_session(ctx, params)
+
+    model_id = params.get('hub_info', {}).get('pipeline_id')
+    if not model_id:
+        model_id = params.get('model_id')
+
+    if not model_id:
+        raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
     ctx.config.clean_changes()
-    res = A2MLModel(ctx).undeploy(model_id = params.get('model_id'))
-    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+    res = A2MLModel(ctx).undeploy(model_id = model_id)
+    _update_hub_objects(ctx, params.get('provider'), params)
+
+    return res
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def predict_by_model_task(params):
     from a2ml.api.utils.crud_runner import CRUDRunner
 
     ctx = _create_provider_context(params)
-    ctx_hub = _get_hub_context()
+    ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
     runner = CRUDRunner(ctx, "%s"%params.get('provider'), 'model')
@@ -431,7 +418,7 @@ def predict_by_model_task(params):
         predicted_at=params.get('prediction_date'),
         prediction_id = params.get('prediction_id')
     )
-    _update_hub_objects(ctx, params.get('provider'), ctx_hub, params)
+    _update_hub_objects(ctx, params.get('provider'), params)
 
     return res['predicted']
 

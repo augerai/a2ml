@@ -99,8 +99,18 @@ class ProviderRunner(object):
             }
 
     def _load_providers(self, provider = None):
-        def get_instance(p):
+        def get_provider_class(p):
             module = importlib.import_module('a2ml.api.%s.a2ml' % p)
-            provider_class = getattr(module, '%sA2ML' % p.capitalize())
-            return provider_class(self.ctx.copy(p))
+            return getattr(module, '%sA2ML' % p.capitalize())
+
+        def get_instance(p):
+            provider_class = get_provider_class(p)
+            new_ctx = self.ctx.copy(p)
+            
+            if self.ctx.config.get('use_a2ml_hub', False) and p != 'auger':
+                new_ctx.provider_info = {p: {"project": {"cluster": self.ctx.config.get("cluster", config_name=p)}}}
+                provider_class = get_provider_class("auger")
+
+            return provider_class(new_ctx)
+
         return {p: get_instance(p) for p in self.ctx.get_providers(provider)}
