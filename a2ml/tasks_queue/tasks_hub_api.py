@@ -1,6 +1,5 @@
 import amqp
 import copy
-import kombu.serialization
 import logging
 import json
 import traceback
@@ -13,6 +12,7 @@ from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
+from a2ml.api.utils.json_utils import json_dumps_np
 from a2ml.api.utils.context import Context
 from a2ml.tasks_queue.config import Config
 
@@ -80,10 +80,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
             else:
                 response['result'] = retval
 
-            send_result_to_hub.delay(serialize_to_json(response))
-
-def serialize_to_json(data):
-    return kombu.serialization.dumps(data, serializer='myjson')[2]
+            send_result_to_hub.delay(json_dumps_np(response))
 
 def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
@@ -157,7 +154,7 @@ def _read_hub_experiment_session(ctx, params):
 
 def _update_hub_objects(ctx, provider, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
-    send_result_to_hub.delay(serialize_to_json(hub_objects_update))
+    send_result_to_hub.delay(json_dumps_np(hub_objects_update))
 
     return hub_objects_update
 
@@ -234,7 +231,7 @@ def _update_hub_leaderboad(params, leaderboard):
         'evaluate_status': leaderboard.get('evaluate_status'),
     }
 
-    send_result_to_hub.delay(serialize_to_json(data))
+    send_result_to_hub.delay(json_dumps_np(data))
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
