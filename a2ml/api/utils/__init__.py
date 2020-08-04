@@ -180,7 +180,7 @@ def download_file(remote_path, local_dir, file_name, force_download=False):
 
 # by default value from other dict overwrites value in d
 def merge_dicts(d, other, concat_func=lambda v, ov: ov):
-    from collections import Mapping
+    from collections.abc import Mapping
 
     for k, v in other.items():
         d_v = d.get(k)

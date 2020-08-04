@@ -5,7 +5,7 @@ import json
 
 from a2ml.tasks_queue.tasks_hub_api import *
 
-pytestmark = pytest.mark.usefixtures('config_context')
+# pytestmark = pytest.mark.usefixtures('config_context')
 
 class TestTasksHubApiAuger(unittest.TestCase):
 
