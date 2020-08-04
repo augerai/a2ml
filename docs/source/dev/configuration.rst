@@ -131,8 +131,8 @@ Azure
     * **experiment.run_id** Latest experiment run.
     * **experiment.metric** Metric used to build Model
 
-      * **Classification** accuracy, AUC_macro, AUC_micro, AUC_weighted, average_precision_score_macro, average_precision_score_micro, average_precision_score_weighted, balanced_accuracy, f1_score_macro, f1_score_micro, f1_score_weighted, log_loss, norm_macro_recall, precision_score_macro, precision_score_micro, precision_score_weighted, recall_score_macro, recall_score_micro, recall_score_weighted, weighted_accuracy
-      * **Regression and/or Time Series** explained_variance, r2_score, spearman_correlation, mean_absolute_error, normalized_mean_absolute_error, median_absolute_error, normalized_median_absolute_error, root_mean_squared_error, normalized_root_mean_squared_error, root_mean_squared_log_error, normalized_root_mean_squared_log_error
+      * **Classification** accuracy, precision_score_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
+      * **Regression and/or Time Series** spearman_correlation, r2_score, normalized_mean_absolute_error, normalized_root_mean_squared_error
 
     * **cluster.region** Name of cluster region. For example: eastus2
     * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 
