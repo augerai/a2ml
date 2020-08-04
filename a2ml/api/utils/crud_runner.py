@@ -53,12 +53,13 @@ class CRUDRunner(object):
             return getattr(module, '%s%s' % (p.capitalize(),obj_name.capitalize()))
 
         def get_instance(p):
-            provider_class = get_provider_class(p)
             new_ctx = self.ctx.copy(p)
             
             if self.ctx.config.get('use_a2ml_hub', False) and p != 'auger':
                 new_ctx.provider_info = {p: {"project": {"cluster": self.ctx.config.get("cluster", config_name=p)}}}
                 provider_class = get_provider_class("auger")
+            else:
+                provider_class = get_provider_class(p)
 
             return provider_class(new_ctx)
 

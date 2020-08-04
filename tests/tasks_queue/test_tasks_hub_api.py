@@ -65,35 +65,37 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
     @pytest.mark.skip(reason='run it locally')
     def test_evaluate_monitor(self):
-        from a2ml.tasks_queue.tasks_hub_api import _get_leaderboad
+        from a2ml.tasks_queue.tasks_hub_api import _get_leaderboad, monitor_evaluate_task
 
         params = {
             'provider': "azure",
             'hub_info': {
-                'experiment_id': 'bb29d41a246f601b',
-                'project_id': '820',
-                'experiment_session_id': '010def8e3cb89236'
+                'experiment_id': '6707c6082dd7b08f',
+                'project_id': '851',
+                'experiment_session_id': 'd0592e467e322eaf'
             },
             'provider_info': {
                 'azure' : {
                     'project':{
-                        'name': 'a2ml_azure_adult_3'
+                        'name': 'options-a2ml'
                     },
                     'experiment': {
-                        'name': 'adult-data-csv',
+                        'name': 'options-a2ml',
                     },
                     'experiment_session': {
-                        'id': 'AutoML_19b37de8-6bfe-46c5-8162-86c1c5a6967d',
+                        'id': 'AutoML_adfc1a28-2963-4fba-821c-503786ad5c7b',
                     },
                 }
             }
         }
+        #monitor_evaluate_task(params)
         res = _get_leaderboad(params)
         print(res)
-        # self.assertTrue(res)
-        # self.assertTrue(res[0]['uid'])
-        # self.assertTrue(res[0]['all_scores'])
-        # self.assertTrue(res[0]['algorithm_params'])
+        
+        self.assertTrue(res)
+        self.assertTrue(res[0]['uid'])
+        self.assertTrue(res[0]['all_scores'])
+        self.assertTrue(res[0]['algorithm_params'])
 
 
     @pytest.mark.skip(reason='run it locally')
