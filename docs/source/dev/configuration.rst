@@ -168,7 +168,7 @@ A2ML can be configured in three different ways.
 Architecture
 ============
 
-A2ML Cloud (Coming Soon)
+Auger Cloud
 ------------------------
 
 .. image:: https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png
@@ -180,7 +180,7 @@ Create one account in the |a2mlcloud| and let the cloud manage all the provider 
 
 .. |a2mlcloud| raw:: html
 
-   <a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a>
+   <a href="https://app.auger.ai/signup" target="_blank">Auger Cloud</a>
 
 A2ML Local
 ----------
