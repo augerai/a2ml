@@ -432,7 +432,8 @@ def score_actuals_by_model_task(params):
         primary_model_path=ModelHelper.get_model_path(params.get('primary_pipeline_id', None),
             params.get('hub_info', {}).get('project_path')),
         actual_date=params.get('actual_date'),
-        actuals_id=params.get('actuals_id')
+        actuals_id=params.get('actuals_id'),
+        return_count=params.get('return_count', False)
     )
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
