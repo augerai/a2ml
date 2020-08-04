@@ -129,7 +129,7 @@ class ModelReview(object):
     # and prediction rows id should be matched with actuals using primary_prediction_group
     def add_actuals(self, actuals_path = None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=True):
+            actual_date=None, actuals_id = None, calc_score=True, return_count=False):
 
         features = None
         if actuals_path or (actual_records and type(actual_records[0]) == list):
@@ -137,6 +137,8 @@ class ModelReview(object):
 
         ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records,
             features=features)
+
+        actuals_count = ds_actuals.count()
 
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
             actual_date, actuals_id, calc_score, raise_not_found=True)
@@ -150,7 +152,10 @@ class ModelReview(object):
         file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_actuals.feather.zstd"
         ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
-        return result
+        if return_count:
+            return {'score': result, 'count': actuals_count}
+        else:
+            return result
 
     def build_review_data(self, data_path=None, output=None):
         if not data_path:
