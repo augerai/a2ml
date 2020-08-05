@@ -32,7 +32,9 @@ class TestTasksApiAuger(BaseTest):
         self.assert_result(res, True, {'created': 'new-project-name'})
 
     @vcr.use_cassette('auger/import/valid.yaml')
-    def test_import_valid(self):
+    def test_import_valid(self, monkeypatch):
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
+
         params = self.params('auger')
         res = import_data_task.apply(params).result
         self.assert_result(res, True, {'created': 'iris-13.csv'})
@@ -53,7 +55,9 @@ class TestTasksApiAuger(BaseTest):
             'status': 'completed', 'provider_status': 'completed', 'trials_count': 19})
 
     @vcr.use_cassette('auger/deploy/valid.yaml')
-    def test_deploy_valid(self):
+    def test_deploy_valid(self, monkeypatch):
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
+
         params = self.params('auger', '390955D2AB984D7')
         res = deploy_task.apply(params).result
         self.assert_result(res, True, {'model_id': '390955D2AB984D7'}, no_provider_in_result=True)
@@ -102,7 +106,9 @@ class TestTasksApiAuger(BaseTest):
         self.assert_result(res, True, {'experiments': ANY})
 
     @vcr.use_cassette('auger/predict/valid.yaml')
-    def test_predict_success(self):
+    def test_predict_success(self, monkeypatch):
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
+
         params = self.params(
             'auger',
             's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
@@ -115,7 +121,9 @@ class TestTasksApiAuger(BaseTest):
         self.assert_result(res, True, {'predicted': ANY}, no_provider_in_result=True)
 
     @vcr.use_cassette('auger/predict/invalid_model.yaml')
-    def test_predict_failure_model_status(self):
+    def test_predict_failure_model_status(self, monkeypatch):
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
+        
         params = self.params(
             'auger',
             's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
