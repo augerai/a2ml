@@ -24,7 +24,7 @@ class ModelDeploy(object):
     def deploy_model_in_cloud(self, model_id, review):
         self.ctx.log('Deploying model %s' % model_id)
 
-        self._start_project()
+        self.project.start()
 
         pipeline_properties = AugerPipelineApi(
             self.ctx, None).create(model_id, review)
@@ -40,7 +40,7 @@ class ModelDeploy(object):
         if not is_loaded:
             self.ctx.log('Downloading model %s' % model_id)
 
-            self._start_project()
+            self.project.start()
 
             pipeline_file_api = AugerPipelineFileApi(self.ctx, None)
             pipeline_file_properties = pipeline_file_api.create(model_id)
@@ -61,11 +61,6 @@ class ModelDeploy(object):
         model_path = os.path.join(self.ctx.config.get_path(), 'models')
         model_name = os.path.join(model_path, 'model-%s.zip' % model_id)
         return fsclient.is_file_exists(model_name), model_path, model_name
-
-    def _start_project(self):
-        if not self.project.is_running():
-            self.ctx.log('Starting Project to process request...')
-            self.project.start()
 
     def _docker_pull_image(self):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)
