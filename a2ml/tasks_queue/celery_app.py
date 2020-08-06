@@ -53,8 +53,10 @@ celeryApp.conf.result_expires = int(
     os.environ.get('CELERY_RESULT_EXPIRES_SEC', 86400)
 )
 celeryApp.conf.result_persistent = True
-celeryApp.conf.task_acks_late = False
+celeryApp.conf.task_acks_late = True
+celeryApp.conf.task_default_priority = 5 # Lower number -> higher priority
 celeryApp.conf.task_send_sent_event = True
+celeryApp.conf.worker_prefetch_multiplier = 1
 
 celeryApp.conf.task_queues = (
     Queue('a2ml', Exchange('a2ml', delivery_mode=1),
