@@ -35,7 +35,7 @@ install_requires = [
     'cryptography==2.9.2', #version for azure
     'asyncio',
     'boto3',
-    'pyarrow==0.17.1',
+    'pyarrow==1.0.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
