@@ -283,7 +283,7 @@ class ModelReview(object):
                 }
 
             df_list = []
-            for (file, df) in DataFrame.load_from_files(files, features):
+            for (file, df) in DataFrame.load_from_files(files, features + ['prediction_id']):
                 ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
 
                 df_list.append(df)
@@ -380,11 +380,8 @@ class ModelReview(object):
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'
-        df.df[dup_flag_column_name] = False
-
-        for index, row in df.df.iterrows():
-            if not counter.add(row[column_name]):
-                df.df.loc[index, dup_flag_column_name] = True
+        df.df[dup_flag_column_name] = df.df[column_name]
+        df.df[dup_flag_column_name] = df.df[dup_flag_column_name].apply(lambda uid: not counter.add(uid))
 
         df.df = df.df[df.df[dup_flag_column_name] == False]
         df.drop([dup_flag_column_name])
