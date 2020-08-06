@@ -62,6 +62,9 @@ def send_result_to_hub(json_data):
             routing_key=task_config.task_result_queue
         )
 
+def send_result_to_hub_async(json_data):
+    send_result_to_hub.apply_async(args=(json_dumps_np(json_data),), priority=0)
+
 def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
     if args:
         params = args[0]
@@ -80,7 +83,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
             else:
                 response['result'] = retval
 
-            send_result_to_hub.delay(json_dumps_np(response))
+            send_result_to_hub_async(response)
 
 def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
@@ -154,7 +157,7 @@ def _read_hub_experiment_session(ctx, params):
 
 def _update_hub_objects(ctx, provider, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
-    send_result_to_hub.delay(json_dumps_np(hub_objects_update))
+    send_result_to_hub_async(hub_objects_update)
 
     return hub_objects_update
 
@@ -231,7 +234,7 @@ def _update_hub_leaderboad(params, leaderboard):
         'evaluate_status': leaderboard.get('evaluate_status'),
     }
 
-    send_result_to_hub.delay(json_dumps_np(data))
+    send_result_to_hub_async(data)
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
