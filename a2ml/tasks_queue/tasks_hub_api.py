@@ -312,6 +312,7 @@ def _get_leaderboad(params):
         evaluate_status = {
             'status': status,
             'completed_evaluations': trials_count,
+            'errors' : {'error': data.get('error'), 'error_details': data.get('error_details')}
         }
 
         return {
