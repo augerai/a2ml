@@ -114,7 +114,8 @@ class DataFrame(object):
             path = fsclient.s3fs_open(path)
             return pd.read_excel(path)
         elif extension.endswith('.feather') or extension.endswith('.feather.gz') or extension.endswith('.feather.zstd') or extension.endswith('.feather.lz4'):
-            return self.loadFromFeatherFile(path)
+            # Features list is optional for feather file, but it can segfault without it on some files
+            return self.loadFromFeatherFile(path, features)
 
         csv_with_header = self.options.get('csv_with_header', True)
         header = 0 if csv_with_header else None
