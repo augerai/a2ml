@@ -64,7 +64,7 @@ class AugerExperiment(object):
         if run_id is None:
             run_id = self.ctx.config.get(
                 'experiment/experiment_session_id', None)
-        leaderboard, status, run_id, trials_count = Experiment(
+        leaderboard, status, run_id, trials_count, errors = Experiment(
             self.ctx, dataset, name).leaderboard(run_id)
         if leaderboard is None:
             raise AugerException('No leaderboard was found...')
@@ -78,13 +78,9 @@ class AugerExperiment(object):
             'started': 'Search is in progress...',
             'completed': 'Search is completed.',
             'interrupted': 'Search was interrupted.',
-            'error': 'Search was finished with error.'
+            'error': 'Search was finished with error'
         }
         message = messages.get(status, None)
-        if message:
-            self.ctx.log(message)
-        else:
-            self.ctx.log('Search status is %s' % status)
 
         result = {
             'run_id': run_id, 
@@ -94,10 +90,18 @@ class AugerExperiment(object):
             'provider_status': status
         }
 
-        if status == "error":
-            #TODO: get experiment session errors
-            result['error'] = message
-            #result['error_details'] = error_details
+        if status == "error" and errors:
+            result['error'] = errors.get('error')
+            result['error_details'] = errors.get('error_details')
+            message += ": " + result['error']
+            if result['error_details']:
+                message += "Details: " + result['error_details']
+
+        if message:
+            self.ctx.log(message)
+        else:
+            self.ctx.log('Search status is %s' % status)
+
         
         return result
 
