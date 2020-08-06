@@ -36,7 +36,7 @@ class TestDataSet():
 
         interceptor(PAYLOAD, monkeypatch)
         object_status_chain(['processing', 'processed'], monkeypatch)
-        monkeypatch.setattr(AugerProjectApi, 'is_running', lambda x: True)
+        monkeypatch.setattr(AugerProjectApi, 'start', lambda self: None)
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.dataset.AugerDataSetApi._upload_to_cloud', lambda *args: 's3://iris.csv')
 
         result = AugerDataset(ctx).create(source='iris.csv')
