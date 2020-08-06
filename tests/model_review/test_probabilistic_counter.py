@@ -2,8 +2,7 @@ from a2ml.api.model_review.probabilistic_counter import ProbabilisticCounter
 
 class TestProbabilisticCounter(object):
     def test_error_rate(self):
-        error_rate = 0.01
-        counter = ProbabilisticCounter(error_rate)
+        counter = ProbabilisticCounter()
         offset = 123456789
 
         for i in range(0, 100):
@@ -23,5 +22,5 @@ class TestProbabilisticCounter(object):
             total += 1
             if not counter.add(str(offset + i)):
                 false_positives += 1
-        assert false_positives / total == error_rate
+        assert false_positives / total == 0
         assert counter.count() == 200

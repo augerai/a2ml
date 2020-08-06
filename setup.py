@@ -45,8 +45,7 @@ install_requires = [
     'smart_open==1.9.0',
     'jsonpickle',
     'websockets',
-    'HLL',
-    'liac-arff'    
+    'liac-arff'
 ]
 
 extras = {
