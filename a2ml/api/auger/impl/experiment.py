@@ -67,10 +67,16 @@ class Experiment(AugerExperimentApi):
                 self.ctx, None, None, run_id)
             session_props = session_api.properties()
             status = session_props.get('status')
-            return session_api.get_leaderboard(), status, run_id, \
-                session_props.get('model_settings', {}).get('completed_evaluations', 0), \
-                session_props.get('model_settings', {}).get('errors')
+            errors = None
+            if session_props.get('providers_data'):
+                if session_props['providers_data'].get(self.ctx.get_name()):
+                    errors = session_props['providers_data'][self.ctx.get_name()].get('errors')
+            if not errors:
+                errors = session_props.get('model_settings', {}).get('errors')
 
+            return session_api.get_leaderboard(), status, run_id, \
+                session_props.get('model_settings', {}).get('completed_evaluations', 0), errors
+                
     def history(self):
         return AugerExperimentSessionApi(self.ctx, self).list()
 

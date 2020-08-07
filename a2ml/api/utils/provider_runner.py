@@ -106,7 +106,7 @@ class ProviderRunner(object):
         def get_instance(p):
             new_ctx = self.ctx.copy(p)
             
-            if self.ctx.config.get('use_a2ml_hub', False) and p != 'auger':
+            if self.ctx.use_auger_cloud() and p != 'auger':
                 new_ctx.provider_info = {p: {"project": {"cluster": self.ctx.config.get("cluster", config_name=p)}}}
                 provider_class = get_provider_class("auger")
             else:
