@@ -280,7 +280,7 @@ def _get_leaderboad(params):
         for item in leaderboard:
             score = item['all_scores'].get(item['primary_metric'])
             if score is None:
-                self.ctx.log('Leaderboard item does not contain primary score: %s'%item)
+                ctx.log('Leaderboard item does not contain primary score: %s'%item)
                 score = 0.0
 
             trials.append({
