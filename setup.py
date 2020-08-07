@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.5.0.rc7'
+VERSION = '0.5.0.rc8'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -35,7 +35,7 @@ install_requires = [
     'cryptography==2.9.2', #version for azure
     'asyncio',
     'boto3',
-    'pyarrow==0.17.1',
+    'pyarrow==1.0.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
@@ -45,8 +45,7 @@ install_requires = [
     'smart_open==1.9.0',
     'jsonpickle',
     'websockets',
-    'HLL',
-    'liac-arff'    
+    'liac-arff'
 ]
 
 extras = {

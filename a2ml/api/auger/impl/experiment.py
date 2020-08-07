@@ -37,9 +37,7 @@ class Experiment(AugerExperimentApi):
                 self.ctx.log('Current experiment setup with different DataSet. '
                     'Will create new Experimet...')
 
-        if not self.dataset.project.is_running():
-            self.ctx.log('Starting Project to process request...')
-            self.dataset.project.start()
+        self.dataset.project.start()
 
         if (self.object_name is None) or (not self.is_exists):
             self.create(self.dataset.name)
@@ -69,7 +67,9 @@ class Experiment(AugerExperimentApi):
                 self.ctx, None, None, run_id)
             session_props = session_api.properties()
             status = session_props.get('status')
-            return session_api.get_leaderboard(), status, run_id, session_props.get('model_settings', {}).get('completed_evaluations', 0)
+            return session_api.get_leaderboard(), status, run_id, \
+                session_props.get('model_settings', {}).get('completed_evaluations', 0), \
+                session_props.get('model_settings', {}).get('errors')
 
     def history(self):
         return AugerExperimentSessionApi(self.ctx, self).list()

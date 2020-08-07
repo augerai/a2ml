@@ -15,7 +15,7 @@ class TestModel():
         interceptor(PAYLOAD, monkeypatch)
         object_status_chain(['undeployed', 'deployed', 'deploying', 'running'], monkeypatch)
         monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy._docker_pull_image', lambda self: 'experimental')
-        monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy._start_project', lambda self: None)
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
         os.remove('models/model-87C81FE615DE46D.zip')
         # FIXME: let AugerPipelineFileApi do it's work
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.create', lambda self, model_id: {'signed_s3_model_path': 'None'})
