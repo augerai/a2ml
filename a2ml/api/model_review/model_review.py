@@ -129,7 +129,7 @@ class ModelReview(object):
     # and prediction rows id should be matched with actuals using primary_prediction_group
     def add_actuals(self, actuals_path = None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=True):
+            actual_date=None, actuals_id = None, calc_score=True, return_count=False):
 
         features = None
         if actuals_path or (actual_records and type(actual_records[0]) == list):
@@ -137,6 +137,8 @@ class ModelReview(object):
 
         ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records,
             features=features)
+
+        actuals_count = ds_actuals.count()
 
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
             actual_date, actuals_id, calc_score, raise_not_found=True)
@@ -150,7 +152,10 @@ class ModelReview(object):
         file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_actuals.feather.zstd"
         ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
-        return result
+        if return_count:
+            return {'score': result, 'count': actuals_count}
+        else:
+            return result
 
     def build_review_data(self, data_path=None, output=None):
         if not data_path:
@@ -278,7 +283,7 @@ class ModelReview(object):
                 }
 
             df_list = []
-            for (file, df) in DataFrame.load_from_files(files, features):
+            for (file, df) in DataFrame.load_from_files(files, features + ['prediction_id']):
                 ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
 
                 df_list.append(df)
@@ -375,11 +380,8 @@ class ModelReview(object):
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'
-        df.df[dup_flag_column_name] = False
-
-        for index, row in df.df.iterrows():
-            if not counter.add(row[column_name]):
-                df.df.loc[index, dup_flag_column_name] = True
+        df.df[dup_flag_column_name] = df.df[column_name]
+        df.df[dup_flag_column_name] = df.df[dup_flag_column_name].apply(lambda uid: not counter.add(uid))
 
         df.df = df.df[df.df[dup_flag_column_name] == False]
         df.drop([dup_flag_column_name])

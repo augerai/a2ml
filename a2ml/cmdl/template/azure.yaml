@@ -9,6 +9,8 @@ experiment:
   # Latest experiment run
   run_id:
   ### Metric used to build Model
+  # Supported metrics for classification: accuracy, precision_score_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
+  # Supported metrics for regression: spearman_correlation, r2_score, normalized_mean_absolute_error, normalized_root_mean_squared_error
   metric: accuracy
 
 cluster:

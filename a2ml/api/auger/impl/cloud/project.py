@@ -22,12 +22,39 @@ class AugerProjectApi(AugerBaseApi):
             'name': self.object_name, 'organization_id': self.parent_api.oid})
 
     def start(self):
-        self._ensure_object_id()
+        project_properties = self.properties()
+        if project_properties.get('status') != 'running':
+            self.ctx.log('Starting Project...')
+            self._do_start(project_properties)
+            self.ctx.log('Started Project %s' % self.object_name)
+        # else:
+        #     self.ctx.log('Project is already running...')
+
+        self._update_cluster_settings()
+
+    def _update_cluster_settings(self):
         project_properties = self.properties()
 
+        cluster_id = project_properties.get('cluster_id')
+        cluster_api = AugerClusterApi(self.ctx, self, cluster_id)
+        cluster_settings = cluster_api.get_cluster_settings(self.ctx)
+
+        update_properties = {}
+        props_to_update = ['worker_type_id', 'workers_count', 'kubernetes_stack']
+        for prop in props_to_update:
+            if project_properties.get(prop, cluster_settings.get(prop)) != cluster_settings.get(prop):
+                update_properties[prop] = cluster_settings.get(prop)
+
+        if update_properties:
+            self.ctx.log('Update project cluster: %s' % update_properties)
+
+            update_properties['id'] = self.object_id
+            self._call_update(update_properties, progress=['undeployed', 'deployed', 'scaling', 'zero_scaled', 'deploying'])
+                
+    def _do_start(self, project_properties):
+        self._ensure_object_id()
         status = project_properties.get('status')
-        if status == 'running':
-            return project_properties
+
         project_status = ['deployed', 'deploying']
         if status in project_status:
             return self.wait_for_status(project_status)

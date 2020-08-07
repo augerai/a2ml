@@ -48,12 +48,7 @@ class AugerProject(object):
     @authenticated
     def start(self, name):
         old_name, name, project = self._setup_op(name)
-        if not project.is_running():
-            self.ctx.log('Starting Project...')
-            project.start()
-            self.ctx.log('Started Project %s' % name)
-        else:
-            self.ctx.log('Project is already running...')
+        project.start()
         return {'running': name}
 
     @error_handler
