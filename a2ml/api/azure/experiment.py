@@ -310,6 +310,9 @@ class AzureExperiment(object):
 
         if cluster_name in ws.compute_targets:
             compute_target = ws.compute_targets[cluster_name]
+            if self.ctx.is_runs_on_server():
+                return compute_target
+            
             if compute_target and type(compute_target) is AmlCompute:
                 ct_status = compute_target.get_status()
                 if ct_status:
@@ -333,6 +336,8 @@ class AzureExperiment(object):
                     compute_target.wait_for_completion(show_output = True)
                 except Exception as e:
                     self.ctx.log_debug(str(e))    
+        elif self.ctx.is_runs_on_server():
+            raise AzureException("Coumpute target %s does not exist. It should exist when run on Auger Cloud."%cluster_name)
 
         self.ctx.log('Creating new AML compute context %s...'%cluster_name)
         provisioning_config = AmlCompute.provisioning_configuration(

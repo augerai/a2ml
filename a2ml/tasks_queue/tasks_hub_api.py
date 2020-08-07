@@ -278,9 +278,14 @@ def _get_leaderboad(params):
         trials = []
 
         for item in leaderboard:
+            score = item['all_scores'].get(item['primary_metric'])
+            if score is None:
+                self.ctx.log('Leaderboard item does not contain primary score: %s'%item)
+                score = 0.0
+
             trials.append({
                 "uid": item['model id'],
-                "score": item['all_scores'][item['primary_metric']],
+                "score": score,
                 "scoring": item['primary_metric'],
                 "ensemble": 'Ensemble' in item['algorithm'],
                 "task_type": item['task_type'],

@@ -95,7 +95,7 @@ class AugerExperiment(object):
             result['error_details'] = errors.get('error_details')
             message += ": " + result['error']
             if result['error_details']:
-                message += "Details: " + result['error_details']
+                message += ". Details: " + result['error_details']
 
         if message:
             self.ctx.log(message)
