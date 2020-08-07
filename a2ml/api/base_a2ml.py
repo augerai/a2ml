@@ -7,7 +7,7 @@ class BaseA2ML(object):
         self.object_name = object_name
 
     def build_runner(self, ctx, provider, force_local=False):
-        if not ctx.config.get('use_a2ml_hub', False) and ctx.config.get('use_server', False) and not force_local:
+        if not ctx.use_auger_cloud() and ctx.config.get('use_server', False) and not force_local:
             from a2ml.api.utils.remote_runner import RemoteRunner
 
             return RemoteRunner(ctx, provider, self.object_name)

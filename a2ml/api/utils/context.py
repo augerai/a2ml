@@ -52,6 +52,12 @@ class Context(object):
         self._runs_on_server = value
         self.config.runs_on_server = value
 
+    def use_auger_cloud(self):
+        return self.config.get('use_auger_cloud', self.config.get('use_a2ml_hub', False))
+
+    def get_name(self):
+        return self.config.name
+
     def get_providers(self, provider = None):
         """constructs Context instance
 
