@@ -1,5 +1,5 @@
 from a2ml.api.auger.impl.cloud.rest_api import RestApi
-
+from a2ml.api.auger.impl.cloud.base import AugerBaseApi
 
 ORGANIZATIONS = {
     'meta': {
@@ -90,4 +90,12 @@ def interceptor(payload, monkeypatch):
         return payload[method]
     monkeypatch.setattr(
         RestApi, 'call_ex', payloader)
+
+
+def object_status_chain(statuses, monkeypatch):
+    current = statuses.pop(0)
+    if len(statuses):
+        monkeypatch.setattr(
+            AugerBaseApi, 'wait_for_status', lambda x, *a, **kw: current)
+    return current
 
