@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_model import A2MLModel
+from a2ml.api.a2ml_experiment import A2MLExperiment
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
@@ -356,6 +357,17 @@ def evaluate_start_task(params):
     res = A2ML(ctx).train()
 
     _update_hub_objects(ctx, provider, params)
+
+    return res
+
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
+def stop_evaluate_task(params):
+    ctx = _create_provider_context(params)
+    #ctx = _read_hub_experiment_session(ctx, params)
+
+    ctx.config.clean_changes()
+    res = A2MLExperiment(ctx).stop()
+    _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
 

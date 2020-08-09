@@ -99,6 +99,32 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
 
     @pytest.mark.skip(reason='run it locally')
+    def test_stop_evaluate(self):
+        from a2ml.tasks_queue.tasks_hub_api import stop_evaluate_task
+
+        params = {
+            'provider': "azure",
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                    'experiment': {
+                        'name': '123_adult_data_csv',
+                    },
+                    'experiment_session': {
+                        'id': 'AutoML_54a4538c-b9d7-4f56-91f4-775be7f02c75',
+                    },
+                }
+            }
+        }
+        #monitor_evaluate_task(params)
+        res = stop_evaluate_task(params)
+        print(res)
+        
+        self.assertTrue(res)
+
+    @pytest.mark.skip(reason='run it locally')
     def test_deploy_model(self):
         params = {
             'provider': "azure",
