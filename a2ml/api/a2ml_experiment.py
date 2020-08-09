@@ -82,7 +82,7 @@ class A2MLExperiment(BaseA2ML):
         return self.runner.execute('start')
 
     @show_result
-    def stop(self, run_id):
+    def stop(self, run_id=None):
         """Stops runninng experiment/s.
 
         Args:
