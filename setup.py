@@ -28,20 +28,20 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy>=1.16.6', #version for azure
+    'numpy<1.17.0,>=1.16.0', #version for azure
     'pandas>=0.22', #version for azure
     'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
+    'pyarrow<1.0.0,>=0.17.0', #version for azure    
     'asyncio',
     'boto3',
-    'pyarrow==1.0.0',
     'auger-hub-api-client>=0.6.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
     'psutil',
     'requests',
-    'smart_open==1.9.0',
+    'smart_open==1.9.0', #version for azure
     'jsonpickle',
     'websockets',
     'liac-arff'
