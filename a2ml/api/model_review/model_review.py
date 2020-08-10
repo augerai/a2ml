@@ -145,6 +145,7 @@ class ModelReview(object):
 
         ds_actuals.drop(self.target_feature)
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
+        ds_actuals.select(['prediction_id', self.target_feature])
 
         if not actuals_id:
             actuals_id = get_uid()
