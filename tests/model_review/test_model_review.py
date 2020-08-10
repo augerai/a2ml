@@ -393,8 +393,8 @@ def test_score_actuals_with_no_predictions_in_model_folder():
       os.remove(actuals_path)
 
     actuals = [
-      { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'species':'versicolor' },
-      { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'species':'virginica' }
+      { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
+      { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
     ]
 
     try:

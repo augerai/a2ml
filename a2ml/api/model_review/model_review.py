@@ -137,6 +137,8 @@ class ModelReview(object):
 
         ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records,
             features=features)
+        if features is None:
+            ds_actuals.select(['prediction_id', 'actual'])
 
         actuals_count = ds_actuals.count()
 
