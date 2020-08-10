@@ -28,11 +28,10 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy<=1.16.2,>=1.16.0', #version for azure
-    'pandas<=0.23.4,>=0.21.0', #version for azure
-    'joblib==0.14.1', #version for azure
+    'numpy>=1.16.6', #version for azure
+    'pandas>=0.22', #version for azure
+    'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
-    'cryptography==2.9.2', #version for azure
     'asyncio',
     'boto3',
     'pyarrow==1.0.0',
@@ -74,20 +73,7 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]~=1.8.0'
-    ],
-    'azure-predict-local': [
-        'sklearn-pandas<=1.7.0,>=1.4.0',
-        'azureml-automl-runtime~=1.8.0'
-    ],
-    'azure-predict-remote': [
-        'azureml-core~=1.8.0'
-    ],
-    'azure-deploy-predict': [
-        'sklearn-pandas<=1.7.0,>=1.4.0',
-        'azureml-automl-runtime~=1.8.0',
-        'azureml-train-automl-client~=1.8.0',
-        'azureml-train-automl-runtime~=1.8.0'
+        'azureml-sdk[automl]~=1.11.0'
     ],
     'google': [
         'google-cloud-automl'
@@ -97,8 +83,7 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    if group_name != 'azure-predict-local' and group_name != 'azure-predict-remote' and group_name != 'azure-deploy-predict':
-        all_deps += extras[group_name]
+    all_deps += extras[group_name]
 extras['all'] = all_deps
 
 description = """A2ML ("Automate AutoML") is a set of scripts to automate
