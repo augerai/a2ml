@@ -9,11 +9,11 @@ class AugerOrganizationApi(AugerBaseApi):
         super(AugerOrganizationApi, self).__init__(
             ctx, None, org_name, org_id)
 
-    def get_cluster_mode(self):
-        cluster_mode = getattr(self, 'cluster_mode', None)
-        if not cluster_mode:
-            self.cluster_mode = self.properties().get('cluster_mode')
-        return self.cluster_mode
+    # def get_cluster_mode(self):
+    #     cluster_mode = getattr(self, 'cluster_mode', None)
+    #     if not cluster_mode:
+    #         self.cluster_mode = self.properties().get('cluster_mode')
+    #     return self.cluster_mode
 
     def create(self):
         raise AugerException(
