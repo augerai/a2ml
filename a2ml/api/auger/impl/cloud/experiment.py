@@ -95,6 +95,10 @@ class AugerExperimentApi(AugerBaseApi):
             options['oversampling'] = config.get('experiment/oversampling')
         if config.get('experiment/estimate_trial_time'):
             options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
+        if config.get('experiment/max_cores_per_iteration'):
+            options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_iteration')
+        if config.get('experiment/max_concurrent_iterations'):
+            options['max_concurrent_iterations'] = config.get('experiment/max_concurrent_iterations')
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(
@@ -117,7 +121,7 @@ class AugerExperimentApi(AugerBaseApi):
         categoricals = config.get_list('experiment/categoricals', [])
         date_time = config.get_list('experiment/date_time', [])
         time_series = None
-        if model_type is 'timeseries':
+        if model_type == 'timeseries':
             time_series = config.get('experiment/time_series', None)
             if not time_series:
                 raise AugerException('Please select time series feature'

@@ -114,6 +114,10 @@ class AzureExperiment(object):
 
         if self.ctx.config.get('experiment/max_total_time'):
             automl_settings["experiment_timeout_hours"] = float(self.ctx.config.get('experiment/max_total_time'))/60.0
+        if self.ctx.config.get('experiment/max_cores_per_iteration'):
+            automl_settings["max_cores_per_iteration"] = self.ctx.config.get('experiment/max_cores_per_iteration')
+        if self.ctx.config.get('experiment/max_concurrent_iterations'):
+            automl_settings["max_concurrent_iterations"] = self.ctx.config.get('experiment/max_concurrent_iterations')
 
         # if self.ctx.config.get('exclude'):
         #     fc = FeaturizationConfig()
@@ -312,7 +316,7 @@ class AzureExperiment(object):
             compute_target = ws.compute_targets[cluster_name]
             if self.ctx.is_runs_on_server():
                 return compute_target
-            
+
             if compute_target and type(compute_target) is AmlCompute:
                 ct_status = compute_target.get_status()
                 if ct_status:
