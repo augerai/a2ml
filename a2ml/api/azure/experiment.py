@@ -311,6 +311,7 @@ class AzureExperiment(object):
         compute_min_nodes = int(self.ctx.config.get('cluster/min_nodes',1))
         compute_max_nodes = int(self.ctx.config.get('cluster/max_nodes',4))
         compute_sku = self.ctx.config.get('cluster/type','STANDARD_D2_V2')
+        idle_seconds_before_scaledown = self.ctx.config.get('cluster/idle_seconds_before_scaledown')
 
         if cluster_name in ws.compute_targets:
             compute_target = ws.compute_targets[cluster_name]
@@ -318,24 +319,33 @@ class AzureExperiment(object):
                 return compute_target
 
             if compute_target and type(compute_target) is AmlCompute:
+                #scale_settings: {'minimum_node_count': 0, 'maximum_node_count': 4, 'idle_seconds_before_scaledown': 120}
                 ct_status = compute_target.get_status()
                 if ct_status:
-                    ct_def = ct_status.serialize()
-                    if ct_def.get('vmSize') == compute_sku and \
-                       ct_def.get('scaleSettings', {}).get('minNodeCount') == compute_min_nodes and \
-                       ct_def.get('scaleSettings', {}).get('maxNodeCount') == compute_max_nodes:
-                        self.ctx.log(
-                            'Found compute target %s ...' % cluster_name)
+                    if ct_status.vm_size == compute_sku:
+                        params = {}
+                        if ct_status.scale_settings.minimum_node_count != compute_min_nodes:
+                            params['min_nodes'] = compute_min_nodes
+                        if ct_status.scale_settings.maximum_node_count != compute_max_nodes:
+                            params['max_nodes'] = compute_max_nodes
+                        if idle_seconds_before_scaledown is not None and ct_status.scale_settings.idle_seconds_before_scaledown != idle_seconds_before_scaledown:
+                            params['idle_seconds_before_scaledown'] = idle_seconds_before_scaledown
+
+                        if params:
+                            self.ctx.log('Update compute target %s: %s' % (cluster_name, params))
+                            compute_target.update(**params)
+                            try:
+                                compute_target.wait_for_completion(show_output = True)
+                            except Exception as e:
+                                self.ctx.log_debug(str(e))                            
+                        else:    
+                            self.ctx.log('Found compute target %s ...' % cluster_name)
 
                         return compute_target
                     else:    
-                        self.ctx.log('Delete existing AML compute context, since parameters has been modified.')
+                        self.ctx.log('Delete existing AML compute context, since cluster type has been changed from %s to %s.'%(ct_def.get('vmSize'),compute_sku))
                         compute_target.delete()
 
-                # It works versy slow, so just change name        
-                # cluster_name = self._fix_name(shortuuid.uuid())
-                # self.ctx.config.set('cluster/name', cluster_name)
-                # self.ctx.config.write()
                 try:
                     compute_target.wait_for_completion(show_output = True)
                 except Exception as e:
@@ -346,7 +356,7 @@ class AzureExperiment(object):
         self.ctx.log('Creating new AML compute context %s...'%cluster_name)
         provisioning_config = AmlCompute.provisioning_configuration(
             vm_size=compute_sku, min_nodes=compute_min_nodes,
-            max_nodes=compute_max_nodes)
+            max_nodes=compute_max_nodes, idle_seconds_before_scaledown=idle_seconds_before_scaledown)
         compute_target = ComputeTarget.create(
             ws, cluster_name, provisioning_config)
         compute_target.wait_for_completion(show_output = True)
