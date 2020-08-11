@@ -279,7 +279,7 @@ class DataFrame(object):
 
     @property
     def columns(self):
-        return self.df.columns.get_values().tolist()
+        return self.df.columns.tolist()
 
     def _map_dtypes(self, dtype):
         dtype_map = {'int64': 'integer', 'float64':'double', 'object': 'string',
