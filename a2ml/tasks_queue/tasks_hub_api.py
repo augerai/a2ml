@@ -141,6 +141,12 @@ def _read_hub_experiment_session(ctx, params):
         evaluation_options.get('crossValidationFolds', 5))
     ctx.config.set('experiment/max_total_time',
         evaluation_options.get('max_total_time_mins', 60))
+
+    ctx.config.set('experiment/max_cores_per_iteration',
+        evaluation_options.get('cpu_per_mt_algorithm', 1))
+    ctx.config.set('experiment/max_concurrent_iterations',
+        evaluation_options.get('max_concurrent_iterations', 1))
+
     ctx.config.set('experiment/max_eval_time',
         evaluation_options.get('max_eval_time_mins', 6))
     ctx.config.set('experiment/max_n_trials',
