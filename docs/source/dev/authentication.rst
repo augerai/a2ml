@@ -124,11 +124,3 @@ Detailed instructions for setting up |gcautoml|.
 
    <a href="https://cloud.google.com/vision/automl/docs/before-you-begin" target="_blank">Google Cloud AutoML</a>
 
-.. _Auth_Matrix:
-
-A2ML Authentication Matrix
--------------------------------
-The following shows which authentication components are necessary depending on your A2ML use case.
-
-.. csv-table:: Authentication Matrix
-   :file: authentication_matrix.csv
