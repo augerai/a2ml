@@ -63,21 +63,21 @@ class AzureExperiment(object):
             raise AzureException('Please specify Dataset name...')
         experiment_name = self._fix_experiment_name(
             self.ctx.config.get('experiment/name', dataset_name))
-        cluster_name = self._fix_cluster_name(
-            self.ctx.config.get('cluster/name', 'cpucluster'))
+        # cluster_name = self._fix_cluster_name(
+        #     self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
         exclude_columns = self.ctx.config.get_list('exclude', [])
         if target in exclude_columns:
             exclude_columns.remove(target)
 
-        ws = AzureProject(self.ctx)._get_ws()     
+        project = AzureProject(self.ctx)    
+        ws = project._get_ws()     
         dataset = Dataset.get_by_name(ws, dataset_name)
         if exclude_columns:
             dataset = dataset.drop_columns(exclude_columns)
 
-        compute_target = self._get_compute_target(ws, cluster_name)
-
+        compute_target, cluster_name = self._get_compute_target(ws, project)
         automl_settings = {
             "iteration_timeout_minutes" : self.ctx.config.get(
                 'experiment/max_eval_time',10),
@@ -288,80 +288,16 @@ class AzureExperiment(object):
 
         return name
 
-    def _fix_cluster_name(self, name):
-        # Name can include letters, digits and dashes.
-        # It must start with a letter, end with a letter or digit,
-        # and be between 2 and 16 characters in length.
-        #TODO check for all conditions
+    def _get_compute_target(self, ws, project):
+        remote_cluster = project.get_cluster_config(name=None, local_config=False, ws=ws)
+        if self.ctx.is_runs_on_server():
+            if not remote_cluster.get('vm_size'):
+                raise AzureException("Compute target %s does not exist. It should exist when run on Auger Cloud."%remote_cluster['name'])
+        else:        
+            local_cluster = project.get_cluster_config(name=None, local_config=True, ws=ws)
+            project.update_cluster_config(name=None, params=local_cluster, ws=ws)
 
-        name = re.sub(r'\W+', '-', name)
-        name = name.replace('_','-')[:16]
-        if name[0].isdigit():
-            test = list(name)
-            test[0] = 'C'
-            name = ''.join(test)
-        if name[-1].isdigit():
-            test = list(name)
-            test[-1] = 'C'
-            name = ''.join(test)
-
-        return name
-
-    def _get_compute_target(self, ws, cluster_name):
-        compute_min_nodes = int(self.ctx.config.get('cluster/min_nodes',1))
-        compute_max_nodes = int(self.ctx.config.get('cluster/max_nodes',4))
-        compute_sku = self.ctx.config.get('cluster/type','STANDARD_D2_V2')
-        idle_seconds_before_scaledown = self.ctx.config.get('cluster/idle_seconds_before_scaledown')
-
-        if cluster_name in ws.compute_targets:
-            compute_target = ws.compute_targets[cluster_name]
-            if self.ctx.is_runs_on_server():
-                return compute_target
-
-            if compute_target and type(compute_target) is AmlCompute:
-                #scale_settings: {'minimum_node_count': 0, 'maximum_node_count': 4, 'idle_seconds_before_scaledown': 120}
-                ct_status = compute_target.get_status()
-                if ct_status:
-                    if ct_status.vm_size == compute_sku:
-                        params = {}
-                        if ct_status.scale_settings.minimum_node_count != compute_min_nodes:
-                            params['min_nodes'] = compute_min_nodes
-                        if ct_status.scale_settings.maximum_node_count != compute_max_nodes:
-                            params['max_nodes'] = compute_max_nodes
-                        if idle_seconds_before_scaledown is not None and ct_status.scale_settings.idle_seconds_before_scaledown != idle_seconds_before_scaledown:
-                            params['idle_seconds_before_scaledown'] = idle_seconds_before_scaledown
-
-                        if params:
-                            self.ctx.log('Update compute target %s: %s' % (cluster_name, params))
-                            compute_target.update(**params)
-                            try:
-                                compute_target.wait_for_completion(show_output = True)
-                            except Exception as e:
-                                self.ctx.log_debug(str(e))                            
-                        else:    
-                            self.ctx.log('Found compute target %s ...' % cluster_name)
-
-                        return compute_target
-                    else:    
-                        self.ctx.log('Delete existing AML compute context, since cluster type has been changed from %s to %s.'%(ct_def.get('vmSize'),compute_sku))
-                        compute_target.delete()
-
-                try:
-                    compute_target.wait_for_completion(show_output = True)
-                except Exception as e:
-                    self.ctx.log_debug(str(e))    
-        elif self.ctx.is_runs_on_server():
-            raise AzureException("Coumpute target %s does not exist. It should exist when run on Auger Cloud."%cluster_name)
-
-        self.ctx.log('Creating new AML compute context %s...'%cluster_name)
-        provisioning_config = AmlCompute.provisioning_configuration(
-            vm_size=compute_sku, min_nodes=compute_min_nodes,
-            max_nodes=compute_max_nodes, idle_seconds_before_scaledown=idle_seconds_before_scaledown)
-        compute_target = ComputeTarget.create(
-            ws, cluster_name, provisioning_config)
-        compute_target.wait_for_completion(show_output = True)
-
-        return compute_target
+        return ws.compute_targets[remote_cluster['name']], remote_cluster['name']
 
     def _get_leaderboard(self, experiment_run):
         primary_metric = experiment_run.properties['primary_metric']
