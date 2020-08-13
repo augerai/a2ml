@@ -31,7 +31,7 @@ class AugerProjectApi(AugerBaseApi):
         #     self.ctx.log('Project is already running...')
 
         self._update_cluster_settings()
-
+        
     def get_cluster_config(self, local_config = True):
         if local_config:
             return AugerClusterApi.get_cluster_settings(self.ctx)
@@ -47,24 +47,24 @@ class AugerProjectApi(AugerBaseApi):
             return result
                 
     def update_cluster_config(self, params):
-        if params:
-            self.ctx.log('Update project cluster: %s' % params)            
-            params['id'] = self.object_id
-            self._call_update(params, progress=['undeployed', 'deployed', 'scaling', 'zero_scaled', 'deploying'])
-
-        return True
-            
-    def _update_cluster_settings(self):
-        local_cluster = self.get_cluster_config(local_config=True)
         remote_cluster = self.get_cluster_config(local_config=False)
 
         update_properties = {}
         props_to_update = ['worker_type_id', 'workers_count', 'kubernetes_stack']
         for prop in props_to_update:
-            if remote_cluster.get(prop, local_cluster.get(prop)) != local_cluster.get(prop):
-                update_properties[prop] = local_cluster.get(prop)
+            if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
+                update_properties[prop] = params.get(prop)
 
-        self.update_cluster_config(update_properties)
+        if update_properties:
+            self.ctx.log('Update project cluster: %s' % update_properties)            
+            update_properties['id'] = self.object_id
+            self._call_update(update_properties, progress=['undeployed', 'deployed', 'scaling', 'zero_scaled', 'deploying'])
+
+        return True
+            
+    def _update_cluster_settings(self):
+        local_cluster = self.get_cluster_config(local_config=True)
+        self.update_cluster_config(local_cluster)
                 
     def _do_start(self, project_properties):
         self._ensure_object_id()

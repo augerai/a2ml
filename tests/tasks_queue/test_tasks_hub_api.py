@@ -136,9 +136,9 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'cluster': {
                 'name': 'new-test',
                 'min_nodes': 0,
-                'max_nodes': 4,
-                'vm_size': 'STANDARD_D2_V2',
-                'idle_seconds_before_scaledown': 200
+                'max_nodes': 2,
+                'vm_size': 'STANDARD_D3_V2',
+                'idle_seconds_before_scaledown': 100
             }
         }
         res = update_cluster_config_task(params)
