@@ -1,4 +1,3 @@
-import amqp
 import copy
 import logging
 import json
@@ -10,6 +9,7 @@ from urllib.parse import urlparse
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.a2ml_experiment import A2MLExperiment
+from a2ml.api.a2ml_project import A2MLProject
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
@@ -42,6 +42,8 @@ def _exception_traces_chain(e):
 
 @celeryApp.task(ignore_result=True, autoretry_for=(Exception,), retry_backoff=True)
 def send_result_to_hub(json_data):
+    import amqp
+
     _log('Send JSON data to Hub: ' + json_data, level=logging.DEBUG)
 
     o = urlparse(task_config.broker_url)
@@ -369,13 +371,22 @@ def evaluate_start_task(params):
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def stop_evaluate_task(params):
     ctx = _create_provider_context(params)
-    #ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
     res = A2MLExperiment(ctx).stop()
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
+
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
+def update_cluster_config_task(params):
+    ctx = _create_provider_context(params)
+    clusters = params.get('clusters', [])
+    for cluster in clusters:
+        ctx.config.set('cluster/name', cluster.get('name'))
+        res = A2MLProject(ctx).update_cluster_config(name=None, params=cluster)
+
+    return True
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def import_data_task(params):

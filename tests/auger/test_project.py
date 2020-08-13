@@ -66,7 +66,7 @@ class TestProject():
             'get_organization': {'data': {} },
             'get_projects': PROJECTS,
             'get_project': {'data': {'status': 'running'}},
-            # 'update_project': {'data': {}},
+            'update_project': {'data': {}},
             # 'deploy_project': {'data': {}}
         }
         interceptor(PAYLOAD, monkeypatch)

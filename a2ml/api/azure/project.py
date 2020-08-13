@@ -1,4 +1,8 @@
+import re
+
 from azureml.core import Workspace
+from azureml.core.compute import AmlCompute
+from azureml.core.compute import ComputeTarget
 
 from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
@@ -62,6 +66,103 @@ class AzureProject(object):
         self._select(name)
         self.ctx.log('Selected project %s' % name)
         return {'selected': name}
+
+    @error_handler
+    @authenticated    
+    def get_cluster_config(self, name, local_config = True, ws = None):
+        result = {
+            'name': self._fix_cluster_name(self.ctx.config.get('cluster/name', 'cpucluster'))
+        }
+        if local_config:
+            result.update({
+                'min_nodes': int(self.ctx.config.get('cluster/min_nodes',1)),
+                'max_nodes': int(self.ctx.config.get('cluster/max_nodes',4)),
+                'vm_size': self.ctx.config.get('cluster/type','STANDARD_D2_V2')
+            })
+            if self.ctx.config.get('cluster/idle_seconds_before_scaledown'):
+                result['idle_seconds_before_scaledown'] = self.ctx.config.get('cluster/idle_seconds_before_scaledown')
+        else:
+            if ws is None:
+                ws = self._get_ws(name=name)
+
+            if result['name'] in ws.compute_targets:
+                compute_target = ws.compute_targets[result['name']]
+                if compute_target and type(compute_target) is AmlCompute:
+                    #scale_settings: {'minimum_node_count': 0, 'maximum_node_count': 4, 'idle_seconds_before_scaledown': 120}
+                    ct_status = compute_target.get_status()
+                    if ct_status:
+                        result.update({
+                            'min_nodes': ct_status.scale_settings.minimum_node_count,
+                            'max_nodes': ct_status.scale_settings.maximum_node_count,
+                            'vm_size': ct_status.vm_size,
+                            'idle_seconds_before_scaledown': ct_status.scale_settings.idle_seconds_before_scaledown
+                        })
+
+        return result
+                
+    @error_handler
+    @authenticated    
+    def update_cluster_config(self, name, params, ws=None, allow_create=True):
+        cluster_name = self._fix_cluster_name(self.ctx.config.get('cluster/name', 'cpucluster'))
+        if ws is None:
+            ws = self._get_ws(name=name)
+
+        if cluster_name in ws.compute_targets:
+            compute_target = ws.compute_targets[cluster_name]
+            remote_cluster = self.get_cluster_config(name=name, local_config=False, ws=ws)
+            update_properties = {}
+            props_to_update = ['min_nodes', 'max_nodes', 'vm_size', 'idle_seconds_before_scaledown']
+            for prop in props_to_update:
+                if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
+                    update_properties[prop] = params.get(prop)
+
+            if update_properties.get('vm_size'):
+                self.ctx.log('Delete existing AML compute context, since cluster type has been changed to %s.'%(update_properties.get('vm_size')))
+                compute_target.delete()        
+            elif update_properties:
+                self.ctx.log('Update compute target %s: %s' % (cluster_name, update_properties))
+                compute_target.update(**update_properties)
+                
+            try:
+                compute_target.wait_for_completion(show_output = True)
+            except Exception as e:
+                self.ctx.log_debug(str(e))                            
+
+            if not update_properties.get('vm_size'):
+                return cluster_name
+
+        if not allow_create:
+            raise AzureException("Compute target %s does not exist."%cluster_name)
+
+        self.ctx.log('Creating new AML compute context %s...'%cluster_name)
+        provisioning_config = AmlCompute.provisioning_configuration(
+            vm_size=params.get('vm_size'), min_nodes=params.get('min_nodes'),
+            max_nodes=params.get('max_nodes'), idle_seconds_before_scaledown=params.get('idle_seconds_before_scaledown'))
+        compute_target = ComputeTarget.create(
+            ws, cluster_name, provisioning_config)
+        compute_target.wait_for_completion(show_output = True)
+
+        return cluster_name
+
+    @staticmethod    
+    def _fix_cluster_name(name):
+        # Name can include letters, digits and dashes.
+        # It must start with a letter, end with a letter or digit,
+        # and be between 2 and 16 characters in length.
+        #TODO check for all conditions
+
+        name = re.sub(r'\W+', '-', name)
+        name = name.replace('_','-')[:16]
+        if name[0].isdigit():
+            test = list(name)
+            test[0] = 'C'
+            name = ''.join(test)
+        if name[-1].isdigit():
+            test = list(name)
+            test[-1] = 'C'
+            name = ''.join(test)
+
+        return name
 
     def _select(self, name):
         self.ctx.config.set('name', name)

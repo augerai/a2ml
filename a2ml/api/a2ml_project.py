@@ -62,7 +62,7 @@ class A2MLProject(BaseA2ML):
         """Creates a project for the specified providers.
 
         Args:
-            name(str): the name of the project.
+            name(str): name of project. If None - use project name from config.
 
         Returns:
             Results for each provider. ::
@@ -89,7 +89,7 @@ class A2MLProject(BaseA2ML):
         """Deletes a project for the specified providers.
 
         Args:
-            name(str): the name of the project.
+            name(str): name of project. If None - use project name from config.
 
         Returns:
             Results for each provider. ::
@@ -115,7 +115,7 @@ class A2MLProject(BaseA2ML):
         """Sets a Project name in the context.
 
         Args:
-            name(str): name of project.
+            name(str): name of project. name(str): name of project. If None - use project name from config.
 
         Returns:
             Results for each provider. ::
@@ -136,3 +136,78 @@ class A2MLProject(BaseA2ML):
                 DataSet(ctx, 'auger, azure').select(dataset_name)
         """
         return self.runner.execute('select', name)
+
+    @show_result
+    def get_cluster_config(self, name, local_config=True):
+        """Get project cluster configuration for the specified providers.
+
+        Args:
+            name(str): name of project. If None - use project name from config.
+            local_config(bool): If True, return cluster parameters from local config, otherwise from remote cluster
+
+        Returns:
+            Results for each provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': {
+                            'type': 'standard',
+                            'min_nodes': 2,
+                            'max_nodes': 2,
+                            'stack_version': 'stable'
+                        }
+                    },
+                    'azure': {
+                        'result': True,
+                        'data': {
+                            'region': 'eastus2',
+                            'min_nodes': 0,
+                            'max_nodes': 2,
+                            'type': 'STANDARD_D2_V2',
+                            'name': 'a2ml-azure',
+                            'idle_seconds_before_scaledown': 120
+                        }
+                    }                    
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                cluster_config = A2MLProject(ctx, 'auger, azure').get_cluster_config()
+
+        """        
+        return self.runner.execute('get_cluster_config', local_config)
+
+    @show_result
+    def update_cluster_config(self, name, params):
+        """Update project cluster configuration for the specified providers.
+
+        Args:
+            name(str): name of project. If None - use project name from config.
+            params(dict): cluster parameters to update.
+
+        Returns:
+            Results for each provider. ::
+
+                {
+                    'auger': {
+                        'result': True,
+                        'data': None
+                    },
+                    'azure': {
+                        'result': True,
+                        'data': None
+                    }                    
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                params = {'max_nodes': 4}
+                cluster_config = A2MLProject(ctx, 'auger, azure').update_cluster_config(params)
+
+        """                
+        return self.runner.execute('update_cluster_config', name, params)

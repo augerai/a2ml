@@ -100,8 +100,6 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
     @pytest.mark.skip(reason='run it locally')
     def test_stop_evaluate(self):
-        from a2ml.tasks_queue.tasks_hub_api import stop_evaluate_task
-
         params = {
             'provider': "azure",
             'provider_info': {
@@ -120,6 +118,30 @@ class TestTasksHubApiAuger(unittest.TestCase):
         }
         #monitor_evaluate_task(params)
         res = stop_evaluate_task(params)
+        print(res)
+        
+        self.assertTrue(res)
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_update_cluster_config(self):
+        params = {
+            'provider': "azure",
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                }
+            },
+            'clusters': [{
+                'name': 'new-test-2',
+                'min_nodes': 0,
+                'max_nodes': 4,
+                'vm_size': 'STANDARD_D3_V2',
+                'idle_seconds_before_scaledown': 100
+            }]
+        }
+        res = update_cluster_config_task(params)
         print(res)
         
         self.assertTrue(res)
