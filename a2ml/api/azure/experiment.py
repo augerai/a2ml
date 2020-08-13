@@ -289,13 +289,9 @@ class AzureExperiment(object):
         return name
 
     def _get_compute_target(self, ws, project):
-        remote_cluster = project.get_cluster_config(name=None, local_config=False, ws=ws)
-        if self.ctx.is_runs_on_server():
-            if not remote_cluster.get('vm_size'):
-                raise AzureException("Compute target %s does not exist. It should exist when run on Auger Cloud."%remote_cluster['name'])
-        else:        
-            local_cluster = project.get_cluster_config(name=None, local_config=True, ws=ws)
-            project.update_cluster_config(name=None, params=local_cluster, ws=ws)
+        local_cluster = project.get_cluster_config(name=None, local_config=True, ws=ws)
+        project.update_cluster_config(name=None, params=local_cluster, ws=ws,
+            allow_create=not self.ctx.is_runs_on_server())
 
         return ws.compute_targets[remote_cluster['name']], remote_cluster['name']
 

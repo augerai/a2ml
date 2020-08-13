@@ -381,13 +381,12 @@ def stop_evaluate_task(params):
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def update_cluster_config_task(params):
     ctx = _create_provider_context(params)
-    ctx.config.set('cluster/name', params.get('cluster').get('name'))
+    clusters = params.get('clusters', [])
+    for cluster in clusters:
+        ctx.config.set('cluster/name', cluster.get('name'))
+        res = A2MLProject(ctx).update_cluster_config(name=None, params=cluster)
 
-    ctx.config.clean_changes()
-    res = A2MLProject(ctx).update_cluster_config(name=None, params=params.get('cluster'))
-    _update_hub_objects(ctx, params.get('provider'), params)
-
-    return res
+    return True
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
 def import_data_task(params):

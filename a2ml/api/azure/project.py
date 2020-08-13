@@ -102,7 +102,7 @@ class AzureProject(object):
                 
     @error_handler
     @authenticated    
-    def update_cluster_config(self, name, params, ws=None):
+    def update_cluster_config(self, name, params, ws=None, allow_create=True):
         cluster_name = self._fix_cluster_name(self.ctx.config.get('cluster/name', 'cpucluster'))
         if ws is None:
             ws = self._get_ws(name=name)
@@ -122,6 +122,7 @@ class AzureProject(object):
             elif update_properties:
                 self.ctx.log('Update compute target %s: %s' % (cluster_name, update_properties))
                 compute_target.update(**update_properties)
+                
             try:
                 compute_target.wait_for_completion(show_output = True)
             except Exception as e:
@@ -129,6 +130,9 @@ class AzureProject(object):
 
             if not update_properties.get('vm_size'):
                 return cluster_name
+
+        if not allow_create:
+            raise AzureException("Compute target %s does not exist."%cluster_name)
 
         self.ctx.log('Creating new AML compute context %s...'%cluster_name)
         provisioning_config = AmlCompute.provisioning_configuration(

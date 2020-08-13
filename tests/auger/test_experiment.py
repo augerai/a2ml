@@ -70,6 +70,7 @@ class TestExperiment():
             'get_project': PROJECT,
             'get_project_files': PROJECT_FILES,
             'get_project_file': PROJECT_FILE,
+            'update_project': PROJECT,
             'get_experiments': EXPERIMENTS,
             'get_experiment_sessions': EXPERIMENT_SESSIONS,
             'create_experiment_session': EXPERIMENT_SESSION,
@@ -78,6 +79,8 @@ class TestExperiment():
             'get_trials': TRIALS,
         }
         interceptor(PAYLOAD, monkeypatch)
+
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.base.AugerBaseApi.status', lambda *a, **kw: 'started')
 
         result = AugerExperiment(ctx).start()
 
