@@ -1325,7 +1325,7 @@
 <dd><p>Creates a project for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- the name of the project.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of project. If None - use project name from config.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -1353,7 +1353,7 @@
 <dd><p>Deletes a project for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- the name of the project.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of project. If None - use project name from config.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -1381,7 +1381,7 @@
 <dd><p>Sets a Project name in the context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of project.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- name of project. name(str): name of project. If None - use project name from config.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -1401,6 +1401,89 @@
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.get_cluster_config">
+<code class="sig-name descname">get_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">local_config</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.get_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get project cluster configuration for the specified providers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) -- name of project. If None - use project name from config.</p></li>
+<li><p><strong>local_config</strong> (<em>bool</em>) -- If True, return cluster parameters from local config, otherwise from remote cluster</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;standard&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;min_nodes&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;max_nodes&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;stack_version&#39;</span><span class="p">:</span> <span class="s1">&#39;stable&#39;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;eastus2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;min_nodes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;max_nodes&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;STANDARD_D2_V2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;a2ml-azure&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;idle_seconds_before_scaledown&#39;</span><span class="p">:</span> <span class="mi">120</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">cluster_config</span> <span class="o">=</span> <span class="n">A2MLProject</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_cluster_config</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="a2ml.api.a2ml_project.A2MLProject.update_cluster_config">
+<code class="sig-name descname">update_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.update_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update project cluster configuration for the specified providers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) -- name of project. If None - use project name from config.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) -- cluster parameters to update.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Results for each provider.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;azure&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;max_nodes&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">cluster_config</span> <span class="o">=</span> <span class="n">A2MLProject</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">update_cluster_config</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
