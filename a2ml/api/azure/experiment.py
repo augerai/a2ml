@@ -293,7 +293,7 @@ class AzureExperiment(object):
         project.update_cluster_config(name=None, params=local_cluster, ws=ws,
             allow_create=not self.ctx.is_runs_on_server())
 
-        return ws.compute_targets[remote_cluster['name']], remote_cluster['name']
+        return ws.compute_targets[local_cluster['name']], local_cluster['name']
 
     def _get_leaderboard(self, experiment_run):
         primary_metric = experiment_run.properties['primary_metric']
