@@ -44,7 +44,8 @@ class AzureModel(object):
             'scoreNames': [self.ctx.config.get('experiment/metric')],
             'scoring': self.ctx.config.get('experiment/metric'),
             "score_name": self.ctx.config.get('experiment/metric'),
-            "originalFeatureColumns": model_features
+            "originalFeatureColumns": model_features,
+            "model_type": self.ctx.config.get("model_type")
         }
         options.update(self._get_a2ml_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
@@ -181,6 +182,10 @@ def get_df(data):
         ds = DataFrame.create_dataframe(filename, data, columns)
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+
+        if threshold and options.get('model_type', 'classification') != 'classification':
+            self.ctx.info("Threshold only applied to classification and will be ignored.")
+            threshold = None    
 
         results, results_proba, proba_classes, target_categories = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
