@@ -184,7 +184,7 @@ def get_df(data):
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
         if threshold and options.get('model_type', 'classification') != 'classification':
-            self.ctx.info("Threshold only applied to classification and will be ignored.")
+            self.ctx.log("Threshold only applied to classification and will be ignored.")
             threshold = None    
 
         results, results_proba, proba_classes, target_categories = \
