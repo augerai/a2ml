@@ -1,4 +1,5 @@
 import re
+import time
 
 from azureml.core import Workspace
 from azureml.core.compute import AmlCompute
@@ -31,8 +32,7 @@ class AzureProject(object):
     def create(self, name):
         name = self._get_name(name)
         region = self.ctx.config.get('cluster/region', 'eastus2')
-        resource_group = self.ctx.config.get(
-            'resource_group', name+'-resources')
+        resource_group = self._get_resource_group(name)
         self.ctx.log('Creating %s' % name)
 
         self.ws = Workspace.create(
@@ -122,7 +122,7 @@ class AzureProject(object):
             elif update_properties:
                 self.ctx.log('Update compute target %s: %s' % (cluster_name, update_properties))
                 compute_target.update(**update_properties)
-                
+
             try:
                 compute_target.wait_for_completion(show_output = True)
             except Exception as e:
@@ -177,14 +177,36 @@ class AzureProject(object):
 
     def _get_ws(self, name = None, create_if_not_exist = False):
         name = self._get_name(name)
-        try:
-            self.ws = Workspace.get(
-                name, 
-                subscription_id=self.credentials.subscription_id, 
-                auth=self.credentials.get_serviceprincipal_auth())
-        except Exception as e:
-            if create_if_not_exist:
-                self.create(name)
-            else:
-                raise e
+        nTry = 0
+        while nTry < 10:
+            try:
+                self.ws = Workspace.get(
+                    name, 
+                    subscription_id=self.credentials.subscription_id, 
+                    auth=self.credentials.get_serviceprincipal_auth(),
+                    resource_group=self._get_resource_group(name)
+                )
+                break
+            except Exception as e:
+                message = str(e)
+                if 'Workspaces not found' in message and create_if_not_exist:
+                    self.create(name)
+                    break
+                elif 'invalid_client' in message and nTry < 10:
+                    self.ctx.log('Workspace.get failed with authentication error. Retry.')
+                    nTry += 1
+                    time.sleep(10) 
+                else:    
+                    raise e
+
         return self.ws
+
+    def _get_resource_group(self, name):
+        resource_group = self.ctx.config.get('resource_group')
+        if not resource_group:
+            if name == "a2mlworkspacedev":
+                resource_group = "a2mldev"    
+            else:    
+                resource_group = name+'-resources'
+            
+        return resource_group
