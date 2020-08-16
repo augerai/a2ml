@@ -206,6 +206,8 @@ class AzureProject(object):
         if not resource_group:
             if name == "a2mlworkspacedev":
                 resource_group = "a2mldev"    
+            elif name == "a2mlworkspacestaging":
+                resource_group = "a2mlstaging"
             else:    
                 resource_group = name+'-resources'
             
