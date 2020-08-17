@@ -39,9 +39,11 @@ class ModelPredict():
         file_url, file_name = DataSet(self.ctx, project).upload_file(filename)
         return file_url
 
-    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
+    def _process_input(self, filename, data, columns):
         send_records = False
         file_url = None
+        records = None
+        features = None
         if filename:
             if not (filename.startswith("http:") or filename.startswith("https:")) and \
                not fsclient.is_s3_path(filename):
@@ -60,11 +62,10 @@ class ModelPredict():
         else:
             send_records = True
 
-        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-
         if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
-            predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
+            records = ds.get_records()
+            features = ds.columns
         else:
             if not file_url:
                 if not filename:
@@ -75,7 +76,12 @@ class ModelPredict():
                 else:
                     file_url = self._upload_file_to_cloud(filename)
 
-            predictions = pipeline_api.predict(None, None, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
+        return records, features, file_url
+                    
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
+        records, features, file_url = self._process_input(filename, data, columns)
+        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
+        predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
 
         ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
             records=predictions.get('data'), features=predictions.get('columns'))
