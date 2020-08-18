@@ -204,9 +204,13 @@ def get_df(data):
             options.get('targetFeature', self.ctx.config.get('target', None)),
             target_categories)
 
+        gzip_predict_file = False    
+        if ds.count() > options.get('max_predict_records_to_gzip', 1000):
+            gzip_predict_file = True
+
         predicted = ModelHelper.save_prediction(ds, prediction_id,
             options.get('support_review_model', True), json_result, count_in_result, predicted_at,
-            model_path, model_id, output)
+            model_path, model_id, output, gzip_predict_file=gzip_predict_file)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
