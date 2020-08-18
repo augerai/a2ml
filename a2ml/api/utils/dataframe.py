@@ -25,6 +25,7 @@ class DataFrame(object):
         self.df = None
         self.dataset_name = None
         self.loaded_columns = None
+        self.from_pandas = False
 
     def _get_compression(self, extension):
         compression = self.options.get('data_compression', 'infer')
@@ -44,7 +45,11 @@ class DataFrame(object):
         if data_path:
             ds = DataFrame({'data_path': data_path})
             ds.load(features = features)
-        else:
+        elif records is not None and isinstance(records, pd.DataFrame):
+            ds = DataFrame({})
+            ds.df = records
+            ds.from_pandas = True
+        else:    
             ds = DataFrame({})
             ds.load_records(records, features=features)
 
