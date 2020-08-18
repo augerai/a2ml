@@ -1,8 +1,11 @@
+import celery.signals
 import copy
 import logging
 import json
+import time
 import traceback
 
+from celery import current_task
 from celery.utils.log import get_task_logger
 from urllib.parse import urlparse
 
@@ -68,6 +71,10 @@ def send_result_to_hub(json_data):
 def send_result_to_hub_async(json_data):
     send_result_to_hub.apply_async(args=(json_dumps_np(json_data),), priority=0)
 
+@celery.signals.task_prerun.connect
+def celery_task_prerun(**kwargs):
+    current_task.start_time = time.time()
+
 def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
     if args:
         params = args[0]
@@ -78,6 +85,7 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
                 'provider': params['provider'],
                 'hub_info': params['hub_info'],
                 'status': status,
+                'runtime': time.time() - self.start_time,
             }
 
             if isinstance(retval, Exception):
