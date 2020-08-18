@@ -8,11 +8,16 @@ class AugerActualApi(AugerBaseApi):
         super(AugerActualApi, self).__init__(
             ctx, pipeline_api, prediction_id)
 
-    def create(self, records, actuals_at):
+    def create(self, records, actuals_at, actuals_path=None):
         params = {
             'pipeline_id': self.parent_api.object_id,
-            'actuals': records
         }
+
+        if records:
+            params['actuals'] = records
+
+        if actuals_path:
+            params['actuals_path'] = actuals_path
 
         if actuals_at:
             params['actuals_at'] = str(actuals_at)

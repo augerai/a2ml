@@ -261,7 +261,7 @@ class ModelHelper(object):
 
     @staticmethod
     def save_prediction(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None):
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
         # Ids for each row of prediction (predcition row's ids)
         prediction_ids = []
         for i in range(0, ds.count()):
@@ -270,11 +270,11 @@ class ModelHelper(object):
         ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output)
+            json_result, count_in_result, prediction_date, model_path, model_id, output, gzip_predict_file=gzip_predict_file)
 
     @staticmethod
     def save_prediction_result(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None):
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
         if not prediction_id:
@@ -295,7 +295,12 @@ class ModelHelper(object):
                 predict_path = os.path.join(parent_path, "predictions",
                     os.path.splitext(file_name)[0] + "_%s_%s_predicted.csv" % (prediction_id, model_id))
 
-            ds.saveToCsvFile(predict_path, compression=None)
+            compression = None    
+            if gzip_predict_file:
+                predict_path += ".gz"
+                compression = 'gzip'
+                
+            ds.saveToCsvFile(predict_path, compression=compression)
 
             if count_in_result:
                 return {'result_path': predict_path, 'count': ds.count()}

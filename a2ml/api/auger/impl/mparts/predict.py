@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 from zipfile import ZipFile
+import sys
 
 from .deploy import ModelDeploy
 from ..cloud.cluster import AugerClusterApi
@@ -39,15 +40,18 @@ class ModelPredict():
         file_url, file_name = DataSet(self.ctx, project).upload_file(filename)
         return file_url
 
-    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
+    def _process_input(self, filename, data, columns):
         send_records = False
         file_url = None
+        records = None
+        features = None
+        max_records_size = 10*1024
         if filename:
             if not (filename.startswith("http:") or filename.startswith("https:")) and \
                not fsclient.is_s3_path(filename):
                 file_size = fsclient.get_file_size(filename)
-                if file_size <= 10*1024:
-                    self.ctx.log("Local file '%s' with size %s(KB) is smaller 10KB, so send records to hub." % (filename, file_size/1024))
+                if file_size <= max_records_size:
+                    self.ctx.log("Local file '%s' with size %s(KB) is smaller %s KB, so send records to hub." % (filename, file_size/1024, max_records_size/1024))
                     send_records = True
             else:
                 file_url = filename
@@ -55,16 +59,15 @@ class ModelPredict():
                     with fsclient.with_s3_downloaded_or_local_file(file_url) as local_path:
                         file_url = self._upload_file_to_cloud(local_path)
 
-        elif len(data) > 300:
-            self.ctx.log("Number of records %s > 300, so send file to hub." % (len(data)))
+        elif sys.getsizeof(data) > max_records_size:
+            self.ctx.log("Size of data %s KB > %s KB, so send file to hub." % (sys.getsizeof(data)/1024, max_records_size/1024))
         else:
             send_records = True
 
-        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-
         if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
-            predictions = pipeline_api.predict(ds.get_records(), ds.columns, threshold=threshold, predicted_at=predicted_at)
+            records = ds.get_records()
+            features = ds.columns
         else:
             if not file_url:
                 if not filename:
@@ -75,7 +78,12 @@ class ModelPredict():
                 else:
                     file_url = self._upload_file_to_cloud(filename)
 
-            predictions = pipeline_api.predict(None, None, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
+        return records, features, file_url
+                    
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
+        records, features, file_url = self._process_input(filename, data, columns)
+        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
+        predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
 
         ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
             records=predictions.get('data'), features=predictions.get('columns'))
