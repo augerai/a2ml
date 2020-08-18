@@ -116,6 +116,8 @@ class DataFrame(object):
         elif extension.endswith('.feather') or extension.endswith('.feather.gz') or extension.endswith('.feather.zstd') or extension.endswith('.feather.lz4'):
             # Features list is optional for feather file, but it can segfault without it on some files
             return self.loadFromFeatherFile(path, features)
+        elif extension.endswith('.parquet'):
+            return self.loadFromParquetFile(path)
 
         csv_with_header = self.options.get('csv_with_header', True)
         header = 0 if csv_with_header else None
@@ -259,6 +261,10 @@ class DataFrame(object):
 
     def loadFromFeatherFile(self, path, features=None):
         self.df = fsclient.load_db_from_feather_file(path, features)
+        return self.df
+
+    def loadFromParquetFile(self, path, features=None):
+        self.df = fsclient.load_db_from_parquet_file(path, features)    
         return self.df
 
     def saveToFile(self, path):

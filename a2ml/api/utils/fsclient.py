@@ -447,6 +447,19 @@ def load_db_from_feather_file(path, features=None):
 
     return _read_feather(path, features)
 
+def _read_parquet(path, features=None):
+    import pandas as pd
+
+    return pd.read_parquet(path, columns=features)
+
+def load_db_from_parquet_file(path, features=None):
+    if is_s3_path(path):
+        with save_atomic(path, move_file=False) as local_path:
+            download_file(path, local_path)
+            return _read_parquet(local_path, features)
+
+    return _read_parquet(path, features)
+
 def is_abs_path(path):
     import platform
 

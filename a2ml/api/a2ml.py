@@ -1,5 +1,6 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
+from a2ml.api.utils import convert_source
 
 
 class A2ML(BaseA2ML):
@@ -63,7 +64,8 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.import_data()
         """
-        return self.runner.execute('import_data', source=source)
+        with convert_source(source, self.ctx.config.get("name", "source_data")) as data_source:
+            return self.runner.execute('import_data', source=data_source)
 
     @show_result
     def train(self):
