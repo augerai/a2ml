@@ -62,7 +62,7 @@ class A2MLDataset(BaseA2ML):
         """Create a new DataSet for the Project specified in the .yaml.
 
         Args:
-            source(str): path to local or link to remote file.
+            source (str, optional): Local file name or remote url to the data source file or Pandas DataFrame
 
         Returns:
             Results for each provider. ::
