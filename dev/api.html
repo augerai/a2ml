@@ -249,7 +249,7 @@
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file</p>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file or Pandas DataFrame</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -439,7 +439,7 @@
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
-<li><p><strong>data</strong> -- dict or array of records</p></li>
+<li><p><strong>data</strong> -- dict or array of records or Pandas DataFrame</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
 <li><p><strong>output</strong> (<em>str</em>) -- Output csv file path.</p></li>
@@ -529,7 +529,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]]</p></li>
+<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
@@ -672,7 +672,7 @@
 <dd><p>Create a new DataSet for the Project specified in the .yaml.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source</strong> (<em>str</em>) -- path to local or link to remote file.</p>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file or Pandas DataFrame</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -1061,7 +1061,7 @@
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
-<li><p><strong>data</strong> -- dict or array of records</p></li>
+<li><p><strong>data</strong> -- dict or array of records or Pandas DataFrame</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
 <li><p><strong>output</strong> (<em>str</em>) -- Output csv file path.</p></li>
@@ -1150,7 +1150,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]]</p></li>
+<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
