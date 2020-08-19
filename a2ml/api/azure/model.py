@@ -50,8 +50,11 @@ class AzureModel(object):
         options.update(self._get_a2ml_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
+        target_categoricals = {}
+        if target_categories:
+            target_categoricals = {self.ctx.config.get('target'): {"categories": target_categories}}
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"),
-            {self.ctx.config.get('target'): {"categories": target_categories}})
+            target_categoricals )
 
         metric_path = ModelHelper.get_metric_path( options, model_id)
         fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
