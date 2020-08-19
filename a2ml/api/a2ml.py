@@ -334,6 +334,36 @@ class A2ML(BaseA2ML):
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
 
+
+    @show_result
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False, provider=None):
+        """Delete files with actuals and predcitions locally or from specified provider(s).
+
+        Args:
+            model_id (str): Model ID to delete actuals and predictions.
+            with_predictions(bool): 
+            begin_date: Date to begin delete operations 
+            end_date: Date to end delete operations 
+            locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                    'data': None
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                A2MLModel(ctx).delete_actuals(model_id='D881079E1ED14FB')
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('delete_actuals', model_id, with_predictions, begin_date, end_date, locally)
+
+
     @show_result
     def review(self, model_id, locally=False, provider=None):
         """Review the performance of deployed model.
@@ -357,4 +387,3 @@ class A2ML(BaseA2ML):
                 model = A2ML(ctx).review(model_id='D881079E1ED14FB')
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
-

@@ -50,8 +50,11 @@ class AzureModel(object):
         options.update(self._get_a2ml_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
+        target_categoricals = {}
+        if target_categories:
+            target_categoricals = {self.ctx.config.get('target'): {"categories": target_categories}}
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"),
-            {self.ctx.config.get('target'): {"categories": target_categories}})
+            target_categoricals )
 
         metric_path = ModelHelper.get_metric_path( options, model_id)
         fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
@@ -228,6 +231,20 @@ def get_df(data):
 
             return ModelReview({'model_path': model_path}).add_actuals(
                 actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+        else:
+            raise Exception("Not Implemented")
+
+    @error_handler
+    @authenticated
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+
+            return ModelReview({'model_path': model_path}).delete_actuals(
+                with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
         else:
             raise Exception("Not Implemented")
 

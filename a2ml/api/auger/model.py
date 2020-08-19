@@ -40,6 +40,12 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
+    def delete_actuals(self, project, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        return Model(self.ctx, project).delete_actuals(model_id, with_predictions, begin_date, end_date, locally)
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
     def build_review_data(self, project, model_id, locally, output):
         return Model(self.ctx, project).build_review_data(model_id, locally, output)
 
