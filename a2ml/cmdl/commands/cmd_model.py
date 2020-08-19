@@ -73,6 +73,25 @@ def undeploy(ctx, provider, model_id, locally):
     """Undeploy trained model."""
     A2MLModel(ctx, provider).undeploy(model_id, locally)
 
+@click.command('delete_actuals', short_help='Delete files with actuals and predcitions locally or from specified provider(s).')
+@click.option('--model-id', '-m', type=click.STRING, required=True,
+    help='Deployed model id.')
+@click.option('--with-predictions', is_flag=True, default=False,
+    help='Remove predictions.')
+@click.option('--begin-date', '-b', type=click.STRING, required=False,
+    help='Date to begin delete operations.')
+@click.option('--end-date', '-e', type=click.STRING, required=False,
+    help='Date to end delete operations.')
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+help='Cloud AutoML Provider.')
+@click.option('--locally', is_flag=True, default=False,
+    help='Process actuals locally.')
+@pass_context
+def delete_actuals(ctx, model_id, with_predictions, begin_date, end_date, provider, locally):
+    """Predict with deployed model."""
+    A2MLModel(ctx, provider).delete_actuals(model_id, 
+        with_predictions=with_predictions, begin_date=begin_date, end_date=end_date, locally=locally)
+
 @pass_context
 def add_commands(ctx):
     cmdl.add_command(deploy)
@@ -80,5 +99,6 @@ def add_commands(ctx):
     cmdl.add_command(actuals)
     cmdl.add_command(review)
     cmdl.add_command(undeploy)
+    cmdl.add_command(delete_actuals)
 
 add_commands()

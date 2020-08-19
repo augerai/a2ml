@@ -213,7 +213,7 @@ class ModelHelper(object):
         if options.get('timeSeriesFeatures'):
             y_true = np.ravel(ds.df[options.get('targetFeature')].astype(np.float64, copy=False), order='C')
         else:
-            if target_categoricals and options.get('targetFeature') in target_categoricals:
+            if target_categoricals and target_categoricals.get(options.get('targetFeature'), {}).get('categories'):
                 ds.convertToCategorical(options.get('targetFeature'), is_target=True,
                     categories=target_categoricals.get(options.get('targetFeature')).get('categories'))
 
@@ -310,7 +310,9 @@ class ModelHelper(object):
             if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
                 return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
-
+            elif ds.from_pandas:
+                return ds.df
+                
             return ds.df.to_dict('records')
 
     @staticmethod

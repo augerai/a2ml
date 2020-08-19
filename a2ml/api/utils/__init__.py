@@ -5,6 +5,8 @@ from collections.abc import Iterable
 import time
 import os
 import logging
+import pandas as pd
+import contextlib
 
 from a2ml.api.utils import fsclient
 
@@ -202,3 +204,11 @@ def convert_to_date(date):
     else:
         return date
 
+@contextlib.contextmanager
+def convert_source(source, name):
+    if source is not None and isinstance(source, pd.DataFrame):
+        with fsclient.save_atomic("%s.parquet"%name) as local_path:
+            source.to_parquet(local_path, index=False, compression="gzip")
+            yield local_path
+    else:
+        yield source
