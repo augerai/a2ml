@@ -3,6 +3,7 @@ import shutil
 import subprocess
 from zipfile import ZipFile
 import sys
+import pandas as pd
 
 from .deploy import ModelDeploy
 from ..cloud.cluster import AugerClusterApi
@@ -12,6 +13,7 @@ from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_helper import ModelHelper
 from ..decorators import with_project
+
 
 class ModelPredict():
     """Predict using deployed Auger Model."""
@@ -58,7 +60,9 @@ class ModelPredict():
                 if fsclient.is_s3_path(file_url):
                     with fsclient.with_s3_downloaded_or_local_file(file_url) as local_path:
                         file_url = self._upload_file_to_cloud(local_path)
-
+        elif data is not None and isinstance(data, pd.DataFrame):
+            if len(data) < 100:
+                send_records = True
         elif sys.getsizeof(data) > max_records_size:
             self.ctx.log("Size of data %s KB > %s KB, so send file to hub." % (sys.getsizeof(data)/1024, max_records_size/1024))
         else:

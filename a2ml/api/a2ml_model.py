@@ -60,7 +60,7 @@ class A2MLModel(BaseA2ML):
             model_id(str): The deployed model id you want to use.
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            data: dict or array of records
+            data: dict or array of records or Pandas DataFrame
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
             output(str): Output csv file path.
@@ -137,7 +137,7 @@ class A2MLModel(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]]
+            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)
             actuals_at: Actuals date. Use for review of historical data.
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.

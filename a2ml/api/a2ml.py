@@ -1,5 +1,6 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
+from a2ml.api.utils import convert_source
 
 
 class A2ML(BaseA2ML):
@@ -38,7 +39,7 @@ class A2ML(BaseA2ML):
                 source: './dataset.csv'
 
         Args:
-            source (str, optional): Local file name or remote url to the data source file
+            source (str, optional): Local file name or remote url to the data source file or Pandas DataFrame
 
         Returns:
             Results for each provider. ::
@@ -63,7 +64,8 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.import_data()
         """
-        return self.runner.execute('import_data', source=source)
+        with convert_source(source, self.ctx.config.get("name", "source_data")) as data_source:
+            return self.runner.execute('import_data', source=data_source)
 
     @show_result
     def train(self):
@@ -211,7 +213,7 @@ class A2ML(BaseA2ML):
             model_id(str): The deployed model id you want to use.
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            data: dict or array of records
+            data: dict or array of records or Pandas DataFrame
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
             output(str): Output csv file path.
@@ -290,7 +292,7 @@ class A2ML(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]]
+            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)
             actuals_at: Actuals date. Use for review of historical data.
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
