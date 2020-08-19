@@ -185,7 +185,7 @@ class ModelReview(object):
         ds_train.saveToFile(output)
         return output
 
-    def count_actuals_by_prediction_id(self):
+    def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
         res = {}
         features = ['prediction_group_id', 'prediction_id', self.target_feature]
         counter = ProbabilisticCounter()
@@ -197,20 +197,25 @@ class ModelReview(object):
             meta_info=False
         )
 
-        for (file, df) in DataFrame.load_from_files(all_files, features):
-            ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
+        print(all_files)
 
-            agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
-            agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
-            agg = agg.groupby('prediction_group_id').count()
+        for (curr_date, files) in ModelReview._prediction_files_by_day(
+            self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
 
-            for prediction_group_id, row, in agg.iterrows():
-                count = row[0]
+            for (file, df) in DataFrame.load_from_files(files, features):
+                ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
 
-                if prediction_group_id not in res:
-                    res[prediction_group_id] = count
-                else:
-                    res[prediction_group_id] = res[prediction_group_id] + count
+                agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
+                agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
+                agg = agg.groupby('prediction_group_id').count()
+
+                for prediction_group_id, row, in agg.iterrows():
+                    count = row[0]
+
+                    if prediction_group_id not in res:
+                        res[prediction_group_id] = count
+                    else:
+                        res[prediction_group_id] = res[prediction_group_id] + count
 
         return res
 

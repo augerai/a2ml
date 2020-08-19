@@ -25,6 +25,21 @@ def test_count_actuals_by_prediction_id():
       '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
     }
 
+def test_count_actuals_by_prediction_id_with_period():
+    model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
+    date_from = datetime.date(2020, 8, 18)
+    date_to = datetime.date(2020, 8, 18)
+    res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id(date_from, date_to)
+
+    assert type(res) is dict
+    assert len(res) > 0
+
+    assert res == {
+      'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 1,
+      '5d9f640d-529a-42bd-be85-172107249a01': 1,
+      '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
+    }
+
 def test_score_model_performance_daily():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
     date_from = datetime.date(2020, 2, 16)
