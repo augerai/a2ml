@@ -38,3 +38,9 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).actuals(
             model_id, filename, actual_records, actuals_at, locally)
+
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        from a2ml.api.azure.model import AzureModel
+
+        return AzureModel(self.ctx).delete_actuals(
+            model_id, with_predictions, begin_date, end_date, locally)

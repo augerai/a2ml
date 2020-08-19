@@ -160,14 +160,17 @@ class ModelReview(object):
             return result
 
     def delete_actuals(self, with_predictions=False, begin_date=None, end_date=None):
-        path_suffix = "_*_actuals.feather.zstd"
-        if with_predictions:
-            path_suffix = "_*_*.feather.zstd"
+        if with_predictions and not begin_date and not end_date:
+            self.clear_model_results_and_actuals()
+        else:    
+            path_suffix = "_*_actuals.feather.zstd"
+            if with_predictions:
+                path_suffix = "_*_*.feather.zstd"
 
-        for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, begin_date, end_date, path_suffix):
-            for file in files:
-                path = file if type(file) == str else file['path']
-                fsclient.remove_file(path)
+            for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, begin_date, end_date, path_suffix):
+                for file in files:
+                    path = file if type(file) == str else file['path']
+                    fsclient.remove_file(path)
 
     def build_review_data(self, data_path=None, output=None):
         if not data_path:
