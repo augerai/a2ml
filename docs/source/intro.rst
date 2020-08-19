@@ -9,7 +9,7 @@ A2ML - Automation of AutoML
 
   <a href="http://github.com/augerai/a2ml" target="_blank">open source</a>
 
-The A2ML ("Automate AutoML") project is a Python API and set of command line tools to **automate Automated Machine Learning** tools from multiple vendors. 
+The A2ML project is an **Open Source Pipeline for All AutoML**. It consists of a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. 
 
 A2ML provides a common API for all cloud-oriented AutoML vendors. 
 Today that is Microsoft Azure AutoML, Google Cloud AutoML, and Auger AutoML. 
