@@ -213,7 +213,7 @@ class ModelHelper(object):
         if options.get('timeSeriesFeatures'):
             y_true = np.ravel(ds.df[options.get('targetFeature')].astype(np.float64, copy=False), order='C')
         else:
-            if target_categoricals and options.get('targetFeature') in target_categoricals:
+            if target_categoricals and target_categoricals.get(options.get('targetFeature'), {}).get('categories'):
                 ds.convertToCategorical(options.get('targetFeature'), is_target=True,
                     categories=target_categoricals.get(options.get('targetFeature')).get('categories'))
 

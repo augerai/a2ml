@@ -4,6 +4,7 @@ from .mparts.deploy import ModelDeploy
 from .mparts.undeploy import ModelUndeploy
 from .mparts.predict import ModelPredict
 from .mparts.actual import ModelActual
+from .mparts.delete_actual import ModelDeleteActual
 from a2ml.api.model_review.model_review import ModelReview
 
 
@@ -40,6 +41,20 @@ class Model(object):
               actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
         else:    
             return ModelActual(self.ctx).execute(model_id, filename, actual_records, actuals_at)
+
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        if locally:
+            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
+                verify_local_model(model_id)
+
+            if not is_loaded:
+                raise AugerException('Model should be deployed locally.')
+
+            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
+            return ModelReview({'model_path': os.path.join(model_path, "model")}).delete_actuals(
+              with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
+        else:    
+            return ModelDeleteActual(self.ctx).execute(model_id, with_predictions, begin_date, end_date)
 
     def build_review_data(self, model_id, locally, output):
         if locally:
