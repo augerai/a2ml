@@ -27,7 +27,7 @@ class AugerActualApi(AugerBaseApi):
             has_return_object=False)
 
     def delete(self, with_predictions, begin_date, end_date):
-        return self.rest_api.call( 'delete_%s' % self.api_request_path, {
+        return self.rest_api.call( 'delete_%ss' % self.api_request_path, {
                 'pipeline_id': self.parent_api.object_id,
                 'with_predictions': with_predictions,
                 'from': begin_date,
