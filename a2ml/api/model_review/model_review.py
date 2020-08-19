@@ -159,6 +159,16 @@ class ModelReview(object):
         else:
             return result
 
+    def delete_actuals(self, with_predictions=False, begin_date=None, end_date=None):
+        path_suffix = "_*_actuals.feather.zstd"
+        if with_predictions:
+            path_suffix = "_*_*.feather.zstd"
+
+        for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, begin_date, end_date, path_suffix):
+            for file in files:
+                path = file if type(file) == str else file['path']
+                fsclient.remove_file(path)
+
     def build_review_data(self, data_path=None, output=None):
         if not data_path:
             data_path = self.options['data_path']
@@ -363,6 +373,10 @@ class ModelReview(object):
 
     @staticmethod
     def _prediction_files_by_day(model_path, date_from, date_to, path_suffix):
+        if (date_from and not date_to) or (not date_from and date_to):
+            # TODO: list all files by suffix, sort them by prefix date and return range of files
+            raise Exception("Arguments error: please provide both start and end dates or do not pass any.")
+
         if date_from:
             date_from = convert_to_date(date_from)
             date_to = convert_to_date(date_to)

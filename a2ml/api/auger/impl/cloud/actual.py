@@ -25,3 +25,11 @@ class AugerActualApi(AugerBaseApi):
         return self._call_create(
             params=params, 
             has_return_object=False)
+
+    def delete(self, with_predictions, begin_date, end_date):
+        return self.rest_api.call( 'delete_%s' % self.api_request_path, {
+                'id': self.oid, 
+                'with_predictions': with_predictions,
+                'begin_date': begin_date,
+                'end_date': end_date
+            })

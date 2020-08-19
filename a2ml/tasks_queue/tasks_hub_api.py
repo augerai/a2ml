@@ -483,6 +483,14 @@ def score_actuals_by_model_task(params):
     )
 
 @celeryApp.task(ignore_result=True, after_return=process_task_result)
+def delete_actuals_task(params):
+    return ModelReview(params).delete_actuals(
+        with_predictions=params.get('with_predictions'), 
+        begin_date=params.get('begin_date'), 
+        end_date=params.get('end_date'), 
+    )
+
+@celeryApp.task(ignore_result=True, after_return=process_task_result)
 def count_actuals_by_prediction_id_task(params):
     return ModelReview(params).count_actuals_by_prediction_id()
 

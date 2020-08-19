@@ -233,6 +233,20 @@ def get_df(data):
 
     @error_handler
     @authenticated
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+
+            return ModelReview({'model_path': model_path}).delete_actuals(
+                with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
+        else:
+            raise Exception("Not Implemented")
+
+    @error_handler
+    @authenticated
     def build_review_data(self, model_id, locally, output):
         if locally:
             model_path = self.ctx.config.get_model_path(model_id)
