@@ -383,9 +383,9 @@ class S3FSClient:
     def read_text_file(self, path):
         from .local_fsclient import LocalFSClient
 
-        with Localfsclient.save_atomic(path) as local_tmp_path:
+        with LocalFSClient.save_atomic(path) as local_tmp_path:
             self.download_file(path, local_tmp_path)
-            return Localfsclient.read_text_file(local_tmp_path)
+            return LocalFSClient.read_text_file(local_tmp_path)
 
         # obj = self.client.get_object(Bucket=self.s3BucketName, Key=path)
         # return obj['Body'].read()
@@ -464,8 +464,8 @@ class S3FSClient:
 
             uri = urlparse(path)
 
-            with Localfsclient.save_atomic(uri.path) as temp_file:
-                Localfsclient.downloadFile(path, temp_file)
+            with LocalFSClient.save_atomic(uri.path) as temp_file:
+                LocalFSClient.downloadFile(path, temp_file)
                 self._s3_upload_file(temp_file, s3_path)
 
                 #fsclient.waitForFile(local_path, if_wait_for_file=True, num_tries=3000, interval_sec=20)
@@ -473,7 +473,7 @@ class S3FSClient:
             #     self.client.upload_fileobj(fd, Bucket=self.s3BucketName, Key=s3_path)
         else:
             path = self._get_relative_path(path)
-            Localfsclient.create_parent_folder(local_path)
+            LocalFSClient.create_parent_folder(local_path)
             self.client.download_file(
                 Bucket=self.s3BucketName, Key=path, Filename=local_path)
 
@@ -494,4 +494,4 @@ class S3FSClient:
             self.remove_file(path_src)
         else:
             from .local_fsclient import  LocalFSClient
-            Localfsclient.remove_file(path_src)
+            LocalFSClient.remove_file(path_src)
