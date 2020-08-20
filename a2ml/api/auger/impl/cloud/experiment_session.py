@@ -46,7 +46,7 @@ class AugerExperimentSessionApi(AugerBaseApi):
                 return True
         except Exception as e:
             if 'Event \'interrupted\' cannot transition' not in str(e):
-                raise e
+                raise
         return False
 
     def create(self):

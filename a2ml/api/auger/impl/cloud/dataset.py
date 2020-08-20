@@ -54,7 +54,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             if 'en.errors.project_file.url_not_uniq' in str(exc):
                 raise AugerException(
                     'DataSet already exists for %s' % file_url)
-            raise exc
+            raise
 
     def download(self, path_to_download):
         remote_file = self.properties().get('url')
