@@ -78,15 +78,15 @@ class TestFSClient(unittest.TestCase):
             self.assertTrue(res[0]['path'].startswith(path))
             self.assertFalse("*.*" in res[0]['path'])
 
-    def test_list_folder_s3ex(self):
-        if os.environ.get('AWS_ACCESS_KEY_ID'):
-            path = 's3://auger-experiments'
+    # def test_list_folder_s3ex(self):
+    #     if os.environ.get('AWS_ACCESS_KEY_ID_TEST'):
+    #         path = 's3://auger-experiments'
 
-            res = fsclient.list_folder(path+"/datasets/openml/data_xml/datset_99*.*", wild=True, meta_info=True)
-            self.assertEqual(len(res), 10)
-            self.assertEqual(res[0]['path'], 'datset_990.xml')
-            self.assertEqual(res[0]['size'], 1101)
-            self.assertNotEqual(res[0]['last_modified'], 0)
+    #         res = fsclient.list_folder(path+"/datasets/openml/data_xml/datset_99*.*", wild=True, meta_info=True)
+    #         self.assertEqual(len(res), 10)
+    #         self.assertEqual(res[0]['path'], 'datset_990.xml')
+    #         self.assertEqual(res[0]['size'], 1101)
+    #         self.assertNotEqual(res[0]['last_modified'], 0)
 
     # def test_removefile_s3ex(self):
     #     if os.environ.get('AWS_ACCESS_KEY_ID'):
