@@ -25,8 +25,8 @@ class TestFSClient(unittest.TestCase):
     def _get_test_paths(self):
         paths = []
         paths.append(get_tests_temp_localdir())
-        if os.environ.get('AWS_ACCESS_KEY_ID'):
-            paths.append('s3://auger-demo-datasets/auto-test')
+        # if os.environ.get('AWS_ACCESS_KEY_ID'):
+        #     paths.append('s3://auger-demo-datasets/auto-test')
                 
         return paths
 
