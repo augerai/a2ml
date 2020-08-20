@@ -27,7 +27,7 @@ class BaseTest(object):
             if e.response['Error']['Code'] == 'NoSuchBucket':
                 pass
             else:
-                raise e
+                raise
 
     def list_s3_files(self, bucket):
         res = []

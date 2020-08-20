@@ -4,8 +4,95 @@ import datetime
 from dateutil.tz import tzutc
 import mimetypes
 import logging
+import time
 
 
+def retry_handler(decorated):
+    def wrapper(self, *args, **kwargs):
+        nTry = 0
+        while nTry < 10:
+            try:
+                return decorated(self, *args, **kwargs)
+            except Exception as exc:
+                if "InvalidAccessKeyId" in str(exc):
+                    logging.info("BotoClient: InvalidAccessKeyId error.Sleep and try again. Num try: %s"%nTry)
+                    nTry += 1
+                    time.sleep(10*nTry) 
+                else:
+                    raise                
+                
+    return wrapper
+
+class BotoClient:
+    def __init__(self):
+        import boto3
+
+        endpoint_url = os.environ.get('S3_ENDPOINT_URL')
+
+        self.client = None
+        if endpoint_url:
+            self.client = boto3.client(
+                's3',
+                endpoint_url=endpoint_url,
+                config=boto3.session.Config(signature_version='s3v4')
+            )
+        else:
+            self.client = boto3.client(
+                's3',
+                config=boto3.session.Config(signature_version='s3v4')
+            )
+
+    @retry_handler
+    def get_waiter(self, *args, **kwargs):
+        return self.client.get_waiter(*args, **kwargs)
+
+    @retry_handler
+    def list_objects_v2(self, *args, **kwargs):
+        return self.client.list_objects_v2(*args, **kwargs)
+
+    @retry_handler
+    def put_object(self, *args, **kwargs):
+        return self.client.put_object(*args, **kwargs)
+
+    @retry_handler
+    def head_bucket(self, *args, **kwargs):
+        return self.client.head_bucket(*args, **kwargs)
+
+    @retry_handler
+    def create_bucket(self, *args, **kwargs):
+        return self.client.create_bucket(*args, **kwargs)
+
+    @retry_handler
+    def delete_object(self, *args, **kwargs):
+        return self.client.delete_object(*args, **kwargs)
+
+    @retry_handler
+    def copy_object(self, *args, **kwargs):
+        return self.client.copy_object(*args, **kwargs)
+
+    @retry_handler
+    def head_object(self, *args, **kwargs):
+        return self.client.head_object(*args, **kwargs)
+
+    @retry_handler
+    def list_objects(self, *args, **kwargs):
+        return self.client.list_objects(*args, **kwargs)
+
+    @retry_handler
+    def download_file(self, *args, **kwargs):
+        return self.client.download_file(*args, **kwargs)
+
+    @retry_handler
+    def upload_file(self, *args, **kwargs):
+        return self.client.upload_file(*args, **kwargs)
+
+    @retry_handler
+    def copy(self, *args, **kwargs):
+        return self.client.copy(*args, **kwargs)
+
+    def get_waiter_names(self):
+        return self.client.waiter_names
+        
 class S3FSClient:
 
     def _get_relative_path(self, path):
@@ -18,7 +105,7 @@ class S3FSClient:
         uri = urlparse(path)
         self.s3BucketName = uri.netloc
 
-        self.client = self._create_botos3_client()
+        self.client = BotoClient()
         relPath = uri.path[1:]
 
         relPath = relPath.replace("//", "/")
@@ -26,27 +113,6 @@ class S3FSClient:
             relPath = relPath[:-1]
 
         return relPath
-
-    @staticmethod
-    def _create_botos3_client():
-        import boto3
-
-        endpoint_url = os.environ.get('S3_ENDPOINT_URL')
-
-        client = None
-        if endpoint_url:
-            client = boto3.client(
-                's3',
-                endpoint_url=endpoint_url,
-                config=boto3.session.Config(signature_version='s3v4')
-            )
-        else:
-            client = boto3.client(
-                's3',
-                config=boto3.session.Config(signature_version='s3v4')
-            )
-
-        return client
 
     def get_smart_open_transport_params(self):
         transport_params = None
@@ -63,7 +129,7 @@ class S3FSClient:
 
     def wait_for_path(self, path):
         path = self._get_relative_path(path)
-        if 'object_exists' in self.client.waiter_names:
+        if 'object_exists' in self.client.get_waiter_names():
             waiter = self.client.get_waiter('object_exists')
             waiter.config.delay = 2
             waiter.config.max_attempts = 50
@@ -184,7 +250,7 @@ class S3FSClient:
             if e.response['Error']['Code'] == '404':
                 self.client.create_bucket(Bucket=Bucket)
             else:
-                raise e
+                raise
 
     def remove_folder(self, path, remove_self=True):
         path = self._get_relative_path(path)
@@ -207,7 +273,7 @@ class S3FSClient:
                 self.client.delete_object(Bucket=self.s3BucketName, Key=path)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] != 'NoSuchBucket':
-                raise e
+                raise
 
     def _s3_removeFolder(self, path, remove_self=True):
         path = path + "/" if not path.endswith("/") else path
@@ -375,12 +441,12 @@ class S3FSClient:
                 path_src), file), os.path.join(path_dst, file))
 
     def copy_folder(self, path_src, path_dst):
-        from .fsclient import FSClient
+        from  a2ml.api.utils import fsclient
 
-        files = FSClient().list_folder(path_src)
+        files = fsclient.list_folder(path_src)
         for file in files:
             full_src = os.path.join(path_src, file)
-            if FSClient().is_file_exists(full_src):
+            if fsclient.is_file_exists(full_src):
                 self.copy_file(full_src, os.path.join(path_dst, file))
             else:
                 self.copy_folder(full_src, os.path.join(path_dst, file))
@@ -402,8 +468,8 @@ class S3FSClient:
                 LocalFSClient().downloadFile(path, temp_file)
                 self._s3_upload_file(temp_file, s3_path)
 
-                #FSClient().waitForFile(local_path, if_wait_for_file=True, num_tries=3000, interval_sec=20)
-            # with FSClient().open(path, "rb", encoding=None) as fd:
+                #fsclient.waitForFile(local_path, if_wait_for_file=True, num_tries=3000, interval_sec=20)
+            # with fsclient.open(path, "rb", encoding=None) as fd:
             #     self.client.upload_fileobj(fd, Bucket=self.s3BucketName, Key=s3_path)
         else:
             path = self._get_relative_path(path)

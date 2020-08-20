@@ -35,7 +35,7 @@ install_requires = [
     'pyarrow<1.0.0,>=0.17.0', #version for azure    
     'asyncio',
     'boto3',
-    'auger-hub-api-client>=0.6.1',
+    'auger-hub-api-client==0.7.1',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',

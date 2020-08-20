@@ -197,7 +197,7 @@ class AzureProject(object):
                     nTry += 1
                     time.sleep(10) 
                 else:    
-                    raise e
+                    raise
 
         return self.ws
 

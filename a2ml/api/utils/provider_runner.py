@@ -38,7 +38,7 @@ class ProviderRunner(object):
         except Exception as e:
             import traceback
             traceback.print_exc()
-            raise e
+            raise
 
     def execute_one_provider(self, operation_name, *args, **kwargs):
         result = self.execute(operation_name, *args, **kwargs)
