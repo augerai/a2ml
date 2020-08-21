@@ -1,4 +1,5 @@
 from .base import AugerBaseApi
+from .cluster_task import AugerClusterTaskApi
 
 
 class AugerActualApi(AugerBaseApi):
@@ -27,9 +28,14 @@ class AugerActualApi(AugerBaseApi):
             has_return_object=False)
 
     def delete(self, with_predictions, begin_date, end_date):
-        return self.rest_api.call( 'delete_%ss' % self.api_request_path, {
+        res = self.rest_api.call( 'delete_%ss' % self.api_request_path, {
                 'pipeline_id': self.parent_api.object_id,
                 'with_predictions': with_predictions,
                 'from': begin_date,
                 'to': end_date
             })
+
+        cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])
+        cluster_task.wait_for_status(['pending', 'received', 'started', 'retry'])
+
+        return True
