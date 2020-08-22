@@ -14,7 +14,8 @@ def retry_handler(decorated):
             try:
                 return decorated(self, *args, **kwargs)
             except Exception as exc:
-                if "InvalidAccessKeyId" in str(exc):
+                exc_msg = str(exc)
+                if "InvalidAccessKeyId" in exc_msg or 'An error occurred (404)' in exc_msg:
                     logging.info("BotoClient: InvalidAccessKeyId error.Sleep and try again. Num try: %s"%nTry)
                     nTry += 1
                     time.sleep(10*nTry) 
