@@ -183,6 +183,10 @@ def get_df(data):
         predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
         ):
         ds = DataFrame.create_dataframe(filename, data, columns)
+        prediction_id_col = None
+        if 'prediction_id' in ds.columns:
+            prediction_id_col = ds.df['prediction_id']
+
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
@@ -213,7 +217,8 @@ def get_df(data):
 
         predicted = ModelHelper.save_prediction(ds, prediction_id,
             options.get('support_review_model', True), json_result, count_in_result, predicted_at,
-            model_path, model_id, output, gzip_predict_file=gzip_predict_file)
+            model_path, model_id, output, gzip_predict_file=gzip_predict_file,
+            prediction_id_col=prediction_id_col)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)

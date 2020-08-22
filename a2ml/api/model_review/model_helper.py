@@ -223,7 +223,7 @@ class ModelHelper(object):
 
     @staticmethod
     def process_prediction(ds, results, results_proba, proba_classes,
-                           threshold, minority_target_class, targetFeature, target_categories):
+        threshold, minority_target_class, targetFeature, target_categories):
 
         if results_proba is not None:
             proba_classes_orig = None
@@ -261,13 +261,17 @@ class ModelHelper(object):
 
     @staticmethod
     def save_prediction(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
-        # Ids for each row of prediction (predcition row's ids)
-        prediction_ids = []
-        for i in range(0, ds.count()):
-            prediction_ids.append(get_uid4())
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False,
+        prediction_id_col=None):
+        if prediction_id_col is not None:
+            ds.df['prediction_id'] = prediction_id_col
+        else:    
+            # Ids for each row of prediction (prediction row's ids)
+            prediction_ids = []
+            for i in range(0, ds.count()):
+                prediction_ids.append(get_uid4())
 
-        ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
+            ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
             json_result, count_in_result, prediction_date, model_path, model_id, output, gzip_predict_file=gzip_predict_file)
