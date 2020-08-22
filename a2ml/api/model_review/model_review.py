@@ -210,7 +210,7 @@ class ModelReview(object):
             meta_info=False
         )
 
-        print(all_files)
+        #print(all_files)
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
             self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
