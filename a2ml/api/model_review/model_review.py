@@ -120,7 +120,7 @@ class ModelReview(object):
             y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
             y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
-            result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred)
+            result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
         return result
 
