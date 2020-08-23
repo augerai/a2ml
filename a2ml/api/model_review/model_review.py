@@ -56,25 +56,16 @@ class ModelReview(object):
                 # should be only one file
                 break
 
-        origin_dtypes = []
-        origin_columns = []
         prediction_files = ModelReview._get_prediction_files(self.model_path, prediction_group_id)
-        actual_index = False
 
+        combined_df = None
         for (file, df_prediction_results) in DataFrame.load_from_files(prediction_files):
-            origin_dtypes = df_prediction_results.df.dtypes
-            origin_columns = df_prediction_results.df.columns
-
             if primary_ds is not None:
                 ds_actuals.df['prediction_id'] = ModelReview._map_primary_prediction_id_to_candidate(
                     ds_actuals.df['prediction_id'],
                     primary_ds.df['prediction_id'],
                     df_prediction_results.df['prediction_id']
                 )
-
-            if not actual_index:
-                ds_actuals.df.set_index('prediction_id', inplace=True)
-                actual_index = True
 
             underscore_split = os.path.basename(file['path']).split('_')
 
@@ -85,43 +76,33 @@ class ModelReview(object):
 
             df_prediction_results.df['prediction_group_id'] = prediction_group_id
 
-            matched_scope = df_prediction_results.df[
-                df_prediction_results.df['prediction_id'].isin(ds_actuals.df.index)
-            ]
-            matched_scope.set_index('prediction_id', inplace=True)
-            ds_actuals.df = ds_actuals.df.combine_first(matched_scope)
+            intersect_df = ds_actuals.df.merge(df_prediction_results.df, on="prediction_id", how="inner")
+            if combined_df is None:
+                combined_df = intersect_df
+            else:
+                combined_df = combined_df.append(intersect_df)
 
-            match_count = ds_actuals.df.count()[self.target_feature]
+            match_count = combined_df.count()[self.target_feature]
             if actuals_count == match_count or primary_ds is not None:
                 break
 
         if raise_not_found and match_count == 0 and primary_ds is None:
             raise Exception("Actual Prediction IDs not found in model predictions.")
 
-        ds_actuals.df.reset_index(inplace=True)
-        ds_actuals.dropna(columns=[self.target_feature, 'a2ml_actual'])
-
-        # combine_first changes orginal non float64 types to float64 when NaN values appear during merging tables
-        # Good explanations https://stackoverflow.com/a/15353297/898680
-        # Fix: store original datypes and force them after merging
-        for col in origin_columns:
-            if col != 'prediction_id':
-                ds_actuals.df[col] = ds_actuals.df[col].astype(origin_dtypes[col], copy=False)
-
-        ds_actuals.df['a2ml_actual'] = ds_actuals.df['a2ml_actual'].astype(
-            origin_dtypes[self.target_feature], copy=False
-        )
-
         result = True
         if calc_score:
             ds_true = DataFrame({})
-            ds_true.df = ds_actuals.df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+            ds_true.df = combined_df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
 
-            y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
+            ds_predict = DataFrame({})
+            ds_predict.df = combined_df
+
+            y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
             y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
             result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
+        ds_actuals.df = combined_df    
         return result
 
     # prediction_group_id - prediction group for these actuals
@@ -141,10 +122,10 @@ class ModelReview(object):
             ds_actuals.select(['prediction_id', 'actual'])
 
         actuals_count = ds_actuals.count()
-
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
             actual_date, actuals_id, calc_score, raise_not_found=True)
 
+        #print(ds_actuals)
         ds_actuals.drop(self.target_feature)
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 
