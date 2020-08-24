@@ -46,9 +46,55 @@ def test_score_model_performance_daily():
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
+    print(res)
     assert type(res) is dict
     assert type(res[str(date_from)]) is numpy.float64
     assert res[str(date_from)] > 0
+
+# def test_update_actuals():
+#     model_paths = [
+#       #'tests/fixtures/test_score_model_performance_daily/iris',
+#       #'tests/fixtures/test_score_model_performance_daily/iris_no_matches',
+#       'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals',
+#     ]
+#     #iris
+#     # actuals = {
+#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
+#     #   'records':[
+#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','7b7ab6e1-e013-492f-b35c-c536490e7147','versicolor','versicolor'],
+#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','4936b673-b671-4a8f-a7f8-51e2a9a48e8a','virginica','virginica'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','b89b4433-9823-474f-976e-c6cdda94868c','virginica','setosa'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c797a908-d7af-40b7-9a1a-4e94fa85f094','setosa','virginica'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c32f024d-6711-46da-af46-ff8f9439f9e5','setosa','setosa'],
+#     #   ]
+#     # }
+#     #iris_no_matches
+#     # actuals = {
+#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
+#     #   'records':[
+#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','24820f77-0399-4f90-8d61-077f0624c8f5',None,'versicolor'],
+#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','f1d6eea3-529c-4b05-ba7b-db7d65fa73df',None,'versicolor'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','b12cc508-69db-4e7a-b7f7-127c4cee43ab','virginica','setosa'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','6498b0b3-7e16-4a4e-925a-dd844ce5f7f1','setosa','virginica'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','69187c46-cf89-43fc-96cc-15354a975a49','setosa','setosa'],
+#     #   ]
+#     # }
+
+#     #dsNew = DataFrame.create_dataframe(records = actuals['records'], features=actuals['features'])
+#     for model_path in model_paths:
+#       files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"),
+#         wild=True, remove_folder_name=False, meta_info=False)
+#       results = fsclient.list_folder(os.path.join(model_path, "predictions/*_results.feather.zstd"),
+#         wild=True, remove_folder_name=False, meta_info=False)
+
+#       for (file, ds) in DataFrame.load_from_files(files):
+#         print(file)
+#         print(ds.df)
+#         #dsNew.saveToFile(file)
+
+#       for (file, ds) in DataFrame.load_from_files(results):
+#         print(file)
+#         print(ds.df)
 
 # def test_rename_target():
 #     model_paths = [
@@ -66,23 +112,24 @@ def test_score_model_performance_daily():
 #         ds.df.rename(columns={'actual': 'income'}, inplace=True)
 #         ds.saveToFile(file)
 
-def test_score_model_performance_daily_no_matching_actuals_and_predictions():
+def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
     date_from = datetime.date(2020, 2, 16)
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+    print(res)
     assert type(res) is dict
-    assert res[str(date_from)] == 0
+    assert res[str(date_from)] == 0.2
 
-def test_score_model_performance_daily_not_full_actuals():
-    model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
-    date_from = datetime.date(2020, 3, 12)
-    date_to = datetime.date(2020, 3, 13)
+# def test_score_model_performance_daily_not_full_actuals():
+#     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
+#     date_from = datetime.date(2020, 3, 12)
+#     date_to = datetime.date(2020, 3, 13)
 
-    res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
-    assert type(res) is dict
-    assert res[str(date_to)] == 0
+#     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+#     assert type(res) is dict
+#     assert res[str(date_to)] == 0
 
 def load_metric_task_params(model_path):
     path = 'tests/fixtures/test_distribution_chart_stats/metric_task_params.json'
@@ -369,6 +416,30 @@ def test_score_actuals_lucas_case():
     ]
 
     res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
+      calc_score=True)
+
+    assert res == {
+      'accuracy': 1.0,
+      'neg_log_loss': 0,
+      'f1_micro': 1.0,
+      'f1_macro': 1.0,
+      'f1_weighted': 1.0,
+      'precision_micro': 1.0,
+      'precision_macro': 1.0,
+      'precision_weighted': 1.0,
+      'recall_micro': 1.0,
+      'recall_macro': 1.0,
+      'recall_weighted': 1.0
+    }
+
+def test_score_iris_file():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+        os.remove(actuals_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv', 
       calc_score=True)
 
     assert res == {

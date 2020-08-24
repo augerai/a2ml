@@ -82,29 +82,33 @@ class ModelReview(object):
             else:
                 combined_df = combined_df.append(intersect_df)
 
-            match_count = combined_df.count()[self.target_feature]
+            match_count = len(combined_df)
             if actuals_count == match_count or primary_ds is not None:
                 break
 
+        #TODO: report non matching actuals        
         if raise_not_found and match_count == 0 and primary_ds is None:
             raise Exception("Actual Prediction IDs not found in model predictions.")
 
         result = True
         if calc_score:
-            ds_true = DataFrame({})
-            ds_true.df = combined_df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+            result = self._do_score_actual(combined_df)
 
-            ds_predict = DataFrame({})
-            ds_predict.df = combined_df
-
-            y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
-            y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
-
-            result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
-
-        ds_actuals.df = combined_df    
+        ds_actuals.df = combined_df
         return result
 
+    def _do_score_actual(self, df_data):
+        ds_true = DataFrame({})
+        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+
+        ds_predict = DataFrame({})
+        ds_predict.df = df_data
+
+        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
+        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
+
+        return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
+            
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
@@ -126,7 +130,8 @@ class ModelReview(object):
             actual_date, actuals_id, calc_score, raise_not_found=True)
 
         #print(ds_actuals)
-        ds_actuals.drop(self.target_feature)
+        #ds_actuals.drop(self.target_feature)
+        ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 
         if not actuals_id:
@@ -168,7 +173,7 @@ class ModelReview(object):
 
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
-                ds_actuals.drop(['prediction_id', 'prediction_group_id'])
+                ds_actuals.drop(['prediction_id', 'prediction_group_id', 'a2ml_predicted'])
 
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
                 ds_train.drop_duplicates()
@@ -215,7 +220,7 @@ class ModelReview(object):
 
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
-        features = ['prediction_id', self.target_feature]
+        features = ['prediction_id', self.target_feature, 'a2ml_predicted']
         res = {}
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
@@ -225,10 +230,15 @@ class ModelReview(object):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
             if df_actuals.count() > 0:
+                df_actuals.drop_duplicates(['prediction_id'])
+
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
-                scores = self._process_actuals(ds_actuals=df_actuals, calc_score=True)
+                df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
+
+                scores = self._do_score_actual(df_actuals.df)
                 res[str(curr_date)] = scores[self.options.get('score_name')]
 
+                #TODO: return number of actuals: df_actuals.count() 
         return res
 
     def distribution_chart_stats(self, date_from, date_to):
