@@ -207,6 +207,7 @@ class A2ML(BaseA2ML):
         Note:
             Use deployed model_id \n
             This method support only one provider
+            If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.
 
         Args:
             filename(str): The file with data to request predictions for.
@@ -231,14 +232,14 @@ class A2ML(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
+                    'data': {'predicted': [{'prediction_id': 123, col1: value1, col2: value2}, {'prediction_id': 456, col1: value3, col2: value4}]}
                 }
 
             if filename is None and data is not None and columns is not None. ::
 
                 {
                     'result': True,
-                    'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
+                    'data': {'predicted': {'columns': ['prediction_id', 'col1', 'col2'], 'data': [['789', 'value1', 'value2'], ['321', 'value3', 'value4']]}}
                 }
 
         Examples:

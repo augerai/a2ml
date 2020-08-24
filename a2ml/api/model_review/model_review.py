@@ -211,6 +211,37 @@ class ModelReview(object):
 
     #     return res
 
+    def statistic_daily(self, date_from, date_to):
+        features = ['prediction_id', self.target_feature]
+        res = {}
+
+        for (curr_date, files) in ModelReview._prediction_files_by_day(
+                self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
+            df_actuals = DataFrame({})
+            for (file, df) in DataFrame.load_from_files(files, features):
+                df_actuals.df = pd.concat([df_actuals.df, df.df])
+
+            res[str(curr_date)] = {}    
+            res[str(curr_date)]['actuals_count'] = df_actuals.count()
+
+            df_actuals.drop_duplicates(['prediction_id'])
+            res[str(curr_date)]['actuals_count_unique'] = df_actuals.count()
+
+        for (curr_date, files) in ModelReview._prediction_files_by_day(
+                self.model_path, date_from, date_to, "_*_results.feather.zstd"):
+            df_results = DataFrame({})
+            for (file, df) in DataFrame.load_from_files(files, features):
+                df_results.df = pd.concat([df_results.df, df.df])
+
+            if not str(curr_date) in res:
+                res[str(curr_date)] = {}
+                    
+            res[str(curr_date)]['predictions_count'] = df_results.count()
+            df_results.drop_duplicates(['prediction_id'])
+            res[str(curr_date)]['predictions_count_unique'] = df_results.count()
+
+        return res
+            
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
         features = ['prediction_id', self.target_feature, 'a2ml_predicted']

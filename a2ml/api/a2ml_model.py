@@ -55,6 +55,11 @@ class A2MLModel(BaseA2ML):
       model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
+        Note:
+            Use deployed model_id \n
+            This method support only one provider
+            If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.
+
         Args:
             filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
