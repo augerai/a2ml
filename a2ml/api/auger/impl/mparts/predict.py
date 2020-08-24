@@ -96,10 +96,19 @@ class ModelPredict():
         try:
             ds_result.options['data_path'] = filename
             ds_result.loaded_columns = columns
+
+            is_model_loaded, model_path_1, model_name = \
+                ModelDeploy(self.ctx, None).verify_local_model(model_id)
+            support_review_model = False
+            model_path = None    
+            if is_model_loaded:
+                support_review_model = True
+                model_path = os.path.join(model_path_1, "model-%s"%model_id, 'model')
+
             return ModelHelper.save_prediction_result(ds_result,
-                prediction_id = None, support_review_model = False,
+                prediction_id = None, support_review_model = support_review_model,
                 json_result=False, count_in_result=False, prediction_date=predicted_at,
-                model_path=None, model_id=model_id, output=output)
+                model_path=model_path, model_id=model_id, output=output)
         finally:
             if temp_file:
                 fsclient.remove_file(temp_file)

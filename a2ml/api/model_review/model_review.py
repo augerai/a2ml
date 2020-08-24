@@ -25,16 +25,16 @@ class ModelReview(object):
 
         self.target_feature = self.options.get('targetFeature')
 
-    def get_actuals_statistic(self, date_from=None, date_to=None):
-        count_actuals = self.count_actuals_by_prediction_id()
-        performance_daily = self.score_model_performance_daily(date_from, date_to)
-        distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
+    # def get_actuals_statistic(self, date_from=None, date_to=None):
+    #     count_actuals = self.count_actuals_by_prediction_id()
+    #     performance_daily = self.score_model_performance_daily(date_from, date_to)
+    #     distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
 
-        return {
-            'count_actuals': count_actuals,
-            'performance_daily': performance_daily,
-            'distribution_chart_stats': distribution_chart_stats
-        }
+    #     return {
+    #         'count_actuals': count_actuals,
+    #         'performance_daily': performance_daily,
+    #         'distribution_chart_stats': distribution_chart_stats
+    #     }
 
     def get_actuals_score(self):
         #TODO: calc score for the all actuals (use some size or count limit)
@@ -67,15 +67,6 @@ class ModelReview(object):
                     df_prediction_results.df['prediction_id']
                 )
 
-            underscore_split = os.path.basename(file['path']).split('_')
-
-            if len(underscore_split) == 3: # date_group-id_suffix (new file name with date)
-                prediction_group_id = underscore_split[1]
-            else: # group-id_suffix (old file name without date)
-                prediction_group_id = underscore_split[0]
-
-            df_prediction_results.df['prediction_group_id'] = prediction_group_id
-
             intersect_df = ds_actuals.df.merge(df_prediction_results.df, on="prediction_id", how="inner")
             if combined_df is None:
                 combined_df = intersect_df
@@ -83,12 +74,14 @@ class ModelReview(object):
                 combined_df = combined_df.append(intersect_df)
 
             match_count = len(combined_df)
+            #TODO: why we check for primary_ds here?
             if actuals_count == match_count or primary_ds is not None:
                 break
 
-        #TODO: report non matching actuals        
-        if raise_not_found and match_count == 0 and primary_ds is None:
-            raise Exception("Actual Prediction IDs not found in model predictions.")
+        #TODO: report non matching actuals list
+        #TODO: why we check for primary_ds here?
+        if raise_not_found and actuals_count != match_count and primary_ds is None:
+            raise Exception("Actual Prediction ID(s) not found in model predictions.")
 
         result = True
         if calc_score:
@@ -173,7 +166,7 @@ class ModelReview(object):
 
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
-                ds_actuals.drop(['prediction_id', 'prediction_group_id', 'a2ml_predicted'])
+                ds_actuals.drop(['prediction_id', 'a2ml_predicted'])
 
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
                 ds_train.drop_duplicates()
@@ -184,39 +177,39 @@ class ModelReview(object):
         ds_train.saveToFile(output)
         return output
 
-    def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
-        res = {}
-        features = ['prediction_group_id', 'prediction_id', self.target_feature]
-        counter = ProbabilisticCounter()
+    # def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
+    #     res = {}
+    #     features = ['prediction_group_id', 'prediction_id', self.target_feature]
+    #     counter = ProbabilisticCounter()
 
-        all_files = fsclient.list_folder(
-            os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
-            wild=True,
-            remove_folder_name=False,
-            meta_info=False
-        )
+    #     all_files = fsclient.list_folder(
+    #         os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
+    #         wild=True,
+    #         remove_folder_name=False,
+    #         meta_info=False
+    #     )
 
-        #print(all_files)
+    #     #print(all_files)
 
-        for (curr_date, files) in ModelReview._prediction_files_by_day(
-            self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
+    #     for (curr_date, files) in ModelReview._prediction_files_by_day(
+    #         self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
 
-            for (file, df) in DataFrame.load_from_files(files, features):
-                ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
+    #         for (file, df) in DataFrame.load_from_files(files, features):
+    #             ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
 
-                agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
-                agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
-                agg = agg.groupby('prediction_group_id').count()
+    #             agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
+    #             agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
+    #             agg = agg.groupby('prediction_group_id').count()
 
-                for prediction_group_id, row, in agg.iterrows():
-                    count = row[0]
+    #             for prediction_group_id, row, in agg.iterrows():
+    #                 count = row[0]
 
-                    if prediction_group_id not in res:
-                        res[prediction_group_id] = count
-                    else:
-                        res[prediction_group_id] = res[prediction_group_id] + count
+    #                 if prediction_group_id not in res:
+    #                     res[prediction_group_id] = count
+    #                 else:
+    #                     res[prediction_group_id] = res[prediction_group_id] + count
 
-        return res
+    #     return res
 
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
