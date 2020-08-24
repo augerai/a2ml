@@ -157,7 +157,7 @@ def test_distribution_chart_stats():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'cnt': { 'avg': 483.18357849636016, 'std_dev': 0.0, 'imp': 0 },
+      'predicted_cnt': { 'avg': 483.18357849636016, 'std_dev': 0.0, 'imp': 0 },
       'dteday': { 'avg': 0.0,  'std_dev': 0.0, 'imp': 0 },
       'season': { 'dist': { 0: 2 }, 'imp': 0},
       'yr': { 'dist': { 0: 2 }, 'imp': 0 },
@@ -171,7 +171,7 @@ def test_distribution_chart_stats():
       'hum': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'casual': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'registered': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'a2ml_actual': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
+      'actual_cnt': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
     }
 
 def test_distribution_chart_stats_for_categorical_target():
@@ -184,7 +184,7 @@ def test_distribution_chart_stats_for_categorical_target():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'income': {'dist': {' <=50K': 1}, 'imp': 0},
+      'predicted_income': {'dist': {' <=50K': 1}, 'imp': 0},
       'age': {'avg': 0.0, 'std_dev': 0, 'imp': 0.716105},
       'workclass': {'dist': {0: 1}, 'imp': 0.120064},
       'fnlwgt': {'avg': 0.0, 'std_dev': 0, 'imp': 1.0},
@@ -199,7 +199,7 @@ def test_distribution_chart_stats_for_categorical_target():
       'capital-loss': {'avg': 0.0, 'std_dev': 0, 'imp': 0.257126},
       'hours-per-week': {'avg': 0.0, 'std_dev': 0, 'imp': 0.424639},
       'native-country': {'dist': {0: 1}, 'imp': 0.020726},
-      'a2ml_actual': {'dist': {' <=50K': 1}, 'imp': 0},
+      'actual_income': {'dist': {' <=50K': 1}, 'imp': 0},
     }
 
 def test_distribution_chart_stats_with_null_booleans():
@@ -212,7 +212,7 @@ def test_distribution_chart_stats_with_null_booleans():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'target': {'avg': 0.5, 'std_dev': 0.7071067811865476, 'imp': 0},
+      'predicted_target': {'avg': 0.5, 'std_dev': 0.7071067811865476, 'imp': 0},
       'company_id': {'avg': 24.0, 'std_dev': 18.384776310850235, 'imp': 0},
       'gender': {'dist': {'FEMALE': 1}, 'imp': 0},
       'employee_age': {'dist': {}, 'imp': 0},

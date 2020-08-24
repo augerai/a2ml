@@ -262,22 +262,22 @@ class ModelReview(object):
                 scores = self._do_score_actual(df_actuals.df)
                 res[str(curr_date)] = scores[self.options.get('score_name')]
 
-                #TODO: return number of actuals: df_actuals.count() 
         return res
 
     def distribution_chart_stats(self, date_from, date_to):
         features = [self.target_feature]
         categoricalFeatures = self.options.get('categoricalFeatures', [])
         mapper = {}
-        mapper[self.target_feature] = 'a2ml_actual'
+        mapper[self.target_feature] = 'actual_%s'%self.target_feature
 
         actuals_stats = self._distribution_stats(
             date_from, date_to, "_*_actuals.feather.zstd", features, categoricalFeatures, mapper
         )
 
         features += self.options.get('originalFeatureColumns', [])
+        mapper[self.target_feature] = 'predicted_%s'%self.target_feature
         features_stats = self._distribution_stats(
-            date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures
+            date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures, mapper
         )
 
         return merge_dicts(features_stats, actuals_stats)
