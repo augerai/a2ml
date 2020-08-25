@@ -60,8 +60,7 @@ class ConfigParts(object):
 
     def _load(self, name):
         part = SerializableConfigYaml()
-        if fsclient.is_file_exists(name):
-            part.load_from_file(name)
+        part.load_from_file(name)
         return part
 
 class Config(object):

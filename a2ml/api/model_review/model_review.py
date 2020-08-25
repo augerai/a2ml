@@ -25,16 +25,16 @@ class ModelReview(object):
 
         self.target_feature = self.options.get('targetFeature')
 
-    def get_actuals_statistic(self, date_from=None, date_to=None):
-        count_actuals = self.count_actuals_by_prediction_id()
-        performance_daily = self.score_model_performance_daily(date_from, date_to)
-        distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
+    # def get_actuals_statistic(self, date_from=None, date_to=None):
+    #     count_actuals = self.count_actuals_by_prediction_id()
+    #     performance_daily = self.score_model_performance_daily(date_from, date_to)
+    #     distribution_chart_stats = self.distribution_chart_stats(date_from, date_to)
 
-        return {
-            'count_actuals': count_actuals,
-            'performance_daily': performance_daily,
-            'distribution_chart_stats': distribution_chart_stats
-        }
+    #     return {
+    #         'count_actuals': count_actuals,
+    #         'performance_daily': performance_daily,
+    #         'distribution_chart_stats': distribution_chart_stats
+    #     }
 
     def get_actuals_score(self):
         #TODO: calc score for the all actuals (use some size or count limit)
@@ -56,15 +56,10 @@ class ModelReview(object):
                 # should be only one file
                 break
 
-        origin_dtypes = []
-        origin_columns = []
         prediction_files = ModelReview._get_prediction_files(self.model_path, prediction_group_id)
-        actual_index = False
 
+        combined_df = None
         for (file, df_prediction_results) in DataFrame.load_from_files(prediction_files):
-            origin_dtypes = df_prediction_results.df.dtypes
-            origin_columns = df_prediction_results.df.columns
-
             if primary_ds is not None:
                 ds_actuals.df['prediction_id'] = ModelReview._map_primary_prediction_id_to_candidate(
                     ds_actuals.df['prediction_id'],
@@ -72,58 +67,41 @@ class ModelReview(object):
                     df_prediction_results.df['prediction_id']
                 )
 
-            if not actual_index:
-                ds_actuals.df.set_index('prediction_id', inplace=True)
-                actual_index = True
+            intersect_df = ds_actuals.df.merge(df_prediction_results.df, on="prediction_id", how="inner")
+            if combined_df is None:
+                combined_df = intersect_df
+            else:
+                combined_df = combined_df.append(intersect_df)
 
-            underscore_split = os.path.basename(file['path']).split('_')
-
-            if len(underscore_split) == 3: # date_group-id_suffix (new file name with date)
-                prediction_group_id = underscore_split[1]
-            else: # group-id_suffix (old file name without date)
-                prediction_group_id = underscore_split[0]
-
-            df_prediction_results.df['prediction_group_id'] = prediction_group_id
-
-            matched_scope = df_prediction_results.df[
-                df_prediction_results.df['prediction_id'].isin(ds_actuals.df.index)
-            ]
-            matched_scope.set_index('prediction_id', inplace=True)
-            ds_actuals.df = ds_actuals.df.combine_first(matched_scope)
-
-            match_count = ds_actuals.df.count()[self.target_feature]
+            match_count = len(combined_df)
+            #TODO: why we check for primary_ds here?
             if actuals_count == match_count or primary_ds is not None:
                 break
 
-        if raise_not_found and match_count == 0 and primary_ds is None:
-            raise Exception("Actual Prediction IDs not found in model predictions.")
-
-        ds_actuals.df.reset_index(inplace=True)
-        ds_actuals.dropna(columns=[self.target_feature, 'a2ml_actual'])
-
-        # combine_first changes orginal non float64 types to float64 when NaN values appear during merging tables
-        # Good explanations https://stackoverflow.com/a/15353297/898680
-        # Fix: store original datypes and force them after merging
-        for col in origin_columns:
-            if col != 'prediction_id':
-                ds_actuals.df[col] = ds_actuals.df[col].astype(origin_dtypes[col], copy=False)
-
-        ds_actuals.df['a2ml_actual'] = ds_actuals.df['a2ml_actual'].astype(
-            origin_dtypes[self.target_feature], copy=False
-        )
+        #TODO: report non matching actuals list
+        #TODO: why we check for primary_ds here?
+        if raise_not_found and actuals_count != match_count and primary_ds is None:
+            raise Exception("Actual Prediction ID(s) not found in model predictions.")
 
         result = True
         if calc_score:
-            ds_true = DataFrame({})
-            ds_true.df = ds_actuals.df[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+            result = self._do_score_actual(combined_df)
 
-            y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_actuals)
-            y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
-
-            result = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred)
-
+        ds_actuals.df = combined_df
         return result
 
+    def _do_score_actual(self, df_data):
+        ds_true = DataFrame({})
+        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+
+        ds_predict = DataFrame({})
+        ds_predict.df = df_data
+
+        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
+        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
+
+        return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
+            
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
@@ -141,11 +119,12 @@ class ModelReview(object):
             ds_actuals.select(['prediction_id', 'actual'])
 
         actuals_count = ds_actuals.count()
-
         result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
             actual_date, actuals_id, calc_score, raise_not_found=True)
 
-        ds_actuals.drop(self.target_feature)
+        #print(ds_actuals)
+        #ds_actuals.drop(self.target_feature)
+        ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 
         if not actuals_id:
@@ -187,7 +166,7 @@ class ModelReview(object):
 
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
-                ds_actuals.drop(['prediction_id', 'prediction_group_id'])
+                ds_actuals.drop(['prediction_id', 'a2ml_predicted'])
 
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
                 ds_train.drop_duplicates()
@@ -198,42 +177,41 @@ class ModelReview(object):
         ds_train.saveToFile(output)
         return output
 
-    def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
-        res = {}
-        features = ['prediction_group_id', 'prediction_id', self.target_feature]
-        counter = ProbabilisticCounter()
+    # def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
+    #     res = {}
+    #     features = ['prediction_group_id', 'prediction_id', self.target_feature]
+    #     counter = ProbabilisticCounter()
 
-        all_files = fsclient.list_folder(
-            os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
-            wild=True,
-            remove_folder_name=False,
-            meta_info=False
-        )
+    #     all_files = fsclient.list_folder(
+    #         os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
+    #         wild=True,
+    #         remove_folder_name=False,
+    #         meta_info=False
+    #     )
 
-        #print(all_files)
+    #     #print(all_files)
 
-        for (curr_date, files) in ModelReview._prediction_files_by_day(
-            self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
+    #     for (curr_date, files) in ModelReview._prediction_files_by_day(
+    #         self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
 
-            for (file, df) in DataFrame.load_from_files(files, features):
-                ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
+    #         for (file, df) in DataFrame.load_from_files(files, features):
+    #             ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
 
-                agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
-                agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
-                agg = agg.groupby('prediction_group_id').count()
+    #             agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
+    #             agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
+    #             agg = agg.groupby('prediction_group_id').count()
 
-                for prediction_group_id, row, in agg.iterrows():
-                    count = row[0]
+    #             for prediction_group_id, row, in agg.iterrows():
+    #                 count = row[0]
 
-                    if prediction_group_id not in res:
-                        res[prediction_group_id] = count
-                    else:
-                        res[prediction_group_id] = res[prediction_group_id] + count
+    #                 if prediction_group_id not in res:
+    #                     res[prediction_group_id] = count
+    #                 else:
+    #                     res[prediction_group_id] = res[prediction_group_id] + count
 
-        return res
+    #     return res
 
-    # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to):
+    def statistic_daily(self, date_from, date_to):
         features = ['prediction_id', self.target_feature]
         res = {}
 
@@ -243,9 +221,47 @@ class ModelReview(object):
             for (file, df) in DataFrame.load_from_files(files, features):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
+            res[str(curr_date)] = {}    
+            res[str(curr_date)]['actuals_count'] = df_actuals.count()
+
+            if df_actuals.count()>0:
+                df_actuals.drop_duplicates(['prediction_id'])
+            res[str(curr_date)]['actuals_count_unique'] = df_actuals.count()
+
+        for (curr_date, files) in ModelReview._prediction_files_by_day(
+                self.model_path, date_from, date_to, "_*_results.feather.zstd"):
+            df_results = DataFrame({})
+            for (file, df) in DataFrame.load_from_files(files, features):
+                df_results.df = pd.concat([df_results.df, df.df])
+
+            if not str(curr_date) in res:
+                res[str(curr_date)] = {}
+                    
+            res[str(curr_date)]['predictions_count'] = df_results.count()
+            if df_results.count()>0:
+                df_results.drop_duplicates(['prediction_id'])
+            res[str(curr_date)]['predictions_count_unique'] = df_results.count()
+
+        return res
+            
+    # date_from..date_to inclusive
+    def score_model_performance_daily(self, date_from, date_to):
+        features = ['prediction_id', self.target_feature, 'a2ml_predicted']
+        res = {}
+
+        for (curr_date, files) in ModelReview._prediction_files_by_day(
+                self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
+            df_actuals = DataFrame({})
+            for (file, df) in DataFrame.load_from_files(files, features):
+                df_actuals.df = pd.concat([df_actuals.df, df.df])
+
             if df_actuals.count() > 0:
+                df_actuals.drop_duplicates(['prediction_id'])
+
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
-                scores = self._process_actuals(ds_actuals=df_actuals, calc_score=True)
+                df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
+
+                scores = self._do_score_actual(df_actuals.df)
                 res[str(curr_date)] = scores[self.options.get('score_name')]
 
         return res
@@ -254,15 +270,16 @@ class ModelReview(object):
         features = [self.target_feature]
         categoricalFeatures = self.options.get('categoricalFeatures', [])
         mapper = {}
-        mapper[self.target_feature] = 'a2ml_actual'
+        mapper[self.target_feature] = 'actual_%s'%self.target_feature
 
         actuals_stats = self._distribution_stats(
             date_from, date_to, "_*_actuals.feather.zstd", features, categoricalFeatures, mapper
         )
 
         features += self.options.get('originalFeatureColumns', [])
+        mapper[self.target_feature] = 'predicted_%s'%self.target_feature
         features_stats = self._distribution_stats(
-            date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures
+            date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures, mapper
         )
 
         return merge_dicts(features_stats, actuals_stats)

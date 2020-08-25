@@ -7,6 +7,10 @@ import json
 from a2ml.api.utils import get_uid, get_uid4, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
+# For calculate_scores
+from .scores.regression import *
+from .scores.classification import *
+
 
 class ModelHelper(object):
 
@@ -122,11 +126,11 @@ class ModelHelper(object):
         elif scoring.startswith("r2_score"):
             scorer = get_scorer("r2")
         elif "mean_absolute_error" in scoring:
-            scorer = get_scorer("mean_absolute_error")
+            scorer = get_scorer("neg_mean_absolute_error")
         elif "root_mean_squared" in scoring:
             scorer = get_scorer("mean_squared_error")
         elif "median_absolute_error" in scoring:
-            scorer = get_scorer("median_absolute_error")
+            scorer = get_scorer("neg_median_absolute_error")
 
         if scorer is None:
             scorer = get_scorer(scoring)

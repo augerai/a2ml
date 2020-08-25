@@ -6,7 +6,7 @@ from .mparts.predict import ModelPredict
 from .mparts.actual import ModelActual
 from .mparts.delete_actual import ModelDeleteActual
 from a2ml.api.model_review.model_review import ModelReview
-
+from .exceptions import AugerException
 
 class Model(object):
     """Auger Cloud Model(s) management."""
