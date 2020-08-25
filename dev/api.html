@@ -430,7 +430,8 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Use deployed model_id</p>
-<p>This method support only one provider</p>
+<p>This method support only one provider
+If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -457,14 +458,14 @@
 <p>if filename is None and data is not None and columns is None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">:</span> <span class="mi">456</span><span class="p">,</span> <span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>if filename is None and data is not None and columns is not None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;789&#39;</span><span class="p">,</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;321&#39;</span><span class="p">,</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1086,6 +1087,12 @@
 <dt id="a2ml.api.a2ml_model.A2MLModel.predict">
 <code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use deployed model_id</p>
+<p>This method support only one provider
+If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
