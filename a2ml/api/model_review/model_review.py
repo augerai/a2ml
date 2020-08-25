@@ -224,7 +224,8 @@ class ModelReview(object):
             res[str(curr_date)] = {}    
             res[str(curr_date)]['actuals_count'] = df_actuals.count()
 
-            df_actuals.drop_duplicates(['prediction_id'])
+            if df_actuals.count()>0:
+                df_actuals.drop_duplicates(['prediction_id'])
             res[str(curr_date)]['actuals_count_unique'] = df_actuals.count()
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
@@ -237,7 +238,8 @@ class ModelReview(object):
                 res[str(curr_date)] = {}
                     
             res[str(curr_date)]['predictions_count'] = df_results.count()
-            df_results.drop_duplicates(['prediction_id'])
+            if df_results.count()>0:
+                df_results.drop_duplicates(['prediction_id'])
             res[str(curr_date)]['predictions_count_unique'] = df_results.count()
 
         return res
