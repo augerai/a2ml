@@ -47,7 +47,7 @@ class AzureModel(object):
             "originalFeatureColumns": model_features,
             "model_type": self.ctx.config.get("model_type")
         }
-        options.update(self._get_a2ml_info())
+        options.update(self._get_hub_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
         target_categoricals = {}
@@ -65,11 +65,11 @@ class AzureModel(object):
 
         return result
 
-    def _get_a2ml_info(self):
+    def _get_hub_info(self):
         return {'hub_info':{
                 'project_path': self.ctx.config.get_path(),
                 'experiment_id': self.ctx.config.get('experiment/name', None),
-                'experiment_session_id':self.ctx.config.get('experiment/run_id', None),
+                'experiment_session_id':self.ctx.config.get('experiment/hub_session_id', None),
             }};
 
     def _deploy_remotly(self, model_id, model_run, ws, experiment):
