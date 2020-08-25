@@ -288,8 +288,10 @@ def _create_provider_context(params):
         ctx.config.set('name', project_name, provider)
     if experiment_name:
         ctx.config.set('experiment/name', experiment_name, provider)
+    if provider_info.get('experiment_session', {}).get('id'):
+        ctx.config.set('experiment/run_id', provider_info['experiment_session']['id'], provider)
     if hub_info.get('experiment_session', {}).get('id'):
-        ctx.config.set('experiment/run_id', hub_info['experiment_session']['id'], provider)
+        ctx.config.set('experiment/hub_session_id', hub_info['experiment_session']['id'], provider)
 
     return ctx
 
