@@ -68,7 +68,7 @@ class AzureModel(object):
     def _get_hub_info(self):
         return {'hub_info':{
                 'project_path': self.ctx.config.get_path(),
-                'experiment_id': self.ctx.config.get('experiment/name', None),
+                'experiment_id': self.ctx.config.get('experiment/hub_experiment_id', None),
                 'experiment_session_id':self.ctx.config.get('experiment/hub_session_id', None),
             }};
 
