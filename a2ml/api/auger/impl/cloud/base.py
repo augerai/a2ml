@@ -73,8 +73,9 @@ class AugerBaseApi(object):
                 status_value = self.status()
 
         if status_value == 'processed_with_error':
+            props = self.properties()
             raise AugerException(
-                '%s processed with error' % object_readable_name)
+                '%s processed with error: %s' % (object_readable_name, props.get('error_message', '')))
         elif status_value == 'error' or status_value == "failure":
             props = self.properties()
             raise AugerException('Auger Cloud return error: %s. Error details: %s'%(props.get('result', ''), props.get('error_message', '')))
