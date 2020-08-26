@@ -426,6 +426,7 @@ def test_build_review_data():
 
     res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class.csv")
     assert res
+    assert res.endswith(".parquet")
 
 def test_score_actuals_lucas_case():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
