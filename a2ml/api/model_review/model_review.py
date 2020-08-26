@@ -172,7 +172,7 @@ class ModelReview(object):
                 ds_train.drop_duplicates()
 
         if not output:
-            output = os.path.splitext(data_path)[0] + "_review_%s.feather.zstd"%(get_uid())
+            output = os.path.splitext(data_path)[0] + "_review_%s.parquet"%(get_uid())
 
         ds_train.saveToFile(output)
         return output

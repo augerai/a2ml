@@ -264,6 +264,13 @@ class DataFrame(object):
     def saveToFeatherFile(self, path):
         fsclient.save_object_to_file(self.df, path, fmt="feather")
 
+    def saveToParquetFile(self, path, compression="gzip"):
+        fsclient.remove_file(path)
+        fsclient.create_parent_folder(path)
+
+        with fsclient.save_local(path) as local_path:
+            self.df.to_parquet(local_path, index=False, compression=compression)
+
     def loadFromFeatherFile(self, path, features=None):
         self.df = fsclient.load_db_from_feather_file(path, features)
         return self.df
@@ -275,6 +282,8 @@ class DataFrame(object):
     def saveToFile(self, path):
         if path.endswith('.feather') or path.endswith('.feather.gz') or path.endswith('.feather.zstd') or path.endswith('.feather.lz4'):
             self.saveToFeatherFile(path)
+        elif path.endswith('.parquet'):
+            self.saveToParquetFile(path)
         else:
             compression = None
             if path.endswith('.gz'):
