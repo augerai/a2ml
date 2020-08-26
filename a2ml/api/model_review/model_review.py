@@ -95,13 +95,13 @@ class ModelReview(object):
         ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
 
         ds_predict = DataFrame({})
-        ds_predict.df = df_data
+        ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
 
         y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
         y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
-            
+
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
@@ -141,7 +141,7 @@ class ModelReview(object):
     def delete_actuals(self, with_predictions=False, begin_date=None, end_date=None):
         if with_predictions and not begin_date and not end_date:
             self.clear_model_results_and_actuals()
-        else:    
+        else:
             path_suffix = "_*_actuals.feather.zstd"
             if with_predictions:
                 path_suffix = "_*_*.feather.zstd"
@@ -221,7 +221,7 @@ class ModelReview(object):
             for (file, df) in DataFrame.load_from_files(files, features):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
-            res[str(curr_date)] = {}    
+            res[str(curr_date)] = {}
             res[str(curr_date)]['actuals_count'] = df_actuals.count()
 
             if df_actuals.count()>0:
@@ -236,14 +236,14 @@ class ModelReview(object):
 
             if not str(curr_date) in res:
                 res[str(curr_date)] = {}
-                    
+
             res[str(curr_date)]['predictions_count'] = df_results.count()
             if df_results.count()>0:
                 df_results.drop_duplicates(['prediction_id'])
             res[str(curr_date)]['predictions_count_unique'] = df_results.count()
 
         return res
-            
+
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
         features = ['prediction_id', self.target_feature, 'a2ml_predicted']

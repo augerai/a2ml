@@ -307,6 +307,36 @@ def test_clear_model_results_and_actuals():
     assert os.path.exists(os.path.join(model_path, 'options.json')) == True
     assert os.path.exists(os.path.join(model_path, 'predictions')) == False
 
+def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actuals_file():
+    model_path = 'tests/fixtures/test_score_actuals/categorical_convert'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {'prediction_id': '0551c7c7-d771-4973-809d-899418421004', 'actual': 'good' },
+    ]
+
+    actual_date = datetime.date(2020, 8, 3)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
+    )
+
+    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
+    assert len(actual_files) > 0
+    assert str(actual_date) in actual_files[0]
+
+    stored_actuals = DataFrame({})
+    stored_actuals.loadFromFeatherFile(actual_files[0])
+
+    stored_actuals = json.loads(
+      stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
+    )
+
+    assert stored_actuals[0]['class'] == 'good'
+    assert stored_actuals[0]['a2ml_predicted'] == 'good'
+
 def test_score_actuals_with_not_full_actuals():
     model_path = 'tests/fixtures/test_score_actuals'
 
@@ -439,7 +469,7 @@ def test_score_iris_file():
         os.remove(actuals_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv', 
+      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv',
       calc_score=True)
 
     assert res == {

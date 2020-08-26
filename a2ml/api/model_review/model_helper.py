@@ -269,7 +269,7 @@ class ModelHelper(object):
         prediction_id_col=None):
         if prediction_id_col is not None:
             ds.df['prediction_id'] = prediction_id_col
-        else:    
+        else:
             # Ids for each row of prediction (prediction row's ids)
             prediction_ids = []
             for i in range(0, ds.count()):
@@ -303,11 +303,11 @@ class ModelHelper(object):
                 predict_path = os.path.join(parent_path, "predictions",
                     os.path.splitext(file_name)[0] + "_%s_%s_predicted.csv" % (prediction_id, model_id))
 
-            compression = None    
+            compression = None
             if gzip_predict_file:
                 predict_path += ".gz"
                 compression = 'gzip'
-                
+
             ds.saveToCsvFile(predict_path, compression=compression)
 
             if count_in_result:
@@ -320,7 +320,7 @@ class ModelHelper(object):
                 return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
             elif ds.from_pandas:
                 return ds.df
-                
+
             return ds.df.to_dict('records')
 
     @staticmethod
