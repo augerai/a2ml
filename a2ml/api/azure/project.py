@@ -113,8 +113,12 @@ class AzureProject(object):
             update_properties = {}
             props_to_update = ['min_nodes', 'max_nodes', 'vm_size', 'idle_seconds_before_scaledown']
             for prop in props_to_update:
-                if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
-                    update_properties[prop] = params.get(prop)
+                if prop == 'vm_size' and 'type' in params:
+                    if remote_cluster.get(prop, params.get('type')) != params.get('type'):
+                        update_properties[prop] = params.get('type')
+                else:    
+                    if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
+                        update_properties[prop] = params.get(prop)
 
             if update_properties.get('vm_size'):
                 self.ctx.log('Delete existing AML compute context, since cluster type has been changed to %s.'%(update_properties.get('vm_size')))
