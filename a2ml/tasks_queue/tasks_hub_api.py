@@ -177,12 +177,8 @@ def _read_hub_experiment_session(ctx, params):
         evaluation_options.get('max_n_trials', 100))
     ctx.config.set('experiment/use_ensemble',
         evaluation_options.get('use_ensemble', True))
-    if evaluation_options.get('scoring') == "f1":
-        ctx.config.set('experiment/metric',
-            "accuracy", params.get('provider'))
-    else:
-        ctx.config.set('experiment/metric',
-            evaluation_options.get('scoring'), provider)
+    ctx.config.set('experiment/metric',
+        evaluation_options.get('scoring'), provider)
 
     return ctx
 

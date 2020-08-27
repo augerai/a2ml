@@ -49,8 +49,7 @@ class AzureExperiment(object):
         model_type = self.ctx.config.get('model_type')
         if not model_type:
             raise AzureException('Please specify model type...')
-        primary_metric = self.ctx.config.get(
-            'experiment/metric','spearman_correlation')
+        primary_metric = self.ctx.config.get('experiment/metric')
         if not primary_metric:
             raise AzureException('Please specify primary metric...')
         #TODO: check if primary_metric is constent with model_type
