@@ -94,6 +94,14 @@ class TestFSClient(unittest.TestCase):
 
     #         fsclient.remove_file(path+"/auto-test/channels/test_channel/datacache/advanced_model/traindata*", wild=True)
 
+    # def test_generate_presigned_url(self):
+    #     from  a2ml.api.utils.s3_fsclient import S3FSClient
+
+    #     if os.environ.get('AWS_ACCESS_KEY_ID'):
+    #         path = 's3://auger-demo-datasets/iris_data.feather'
+    #         res = S3FSClient().generate_presigned_url(path)
+    #         print(res)
+
     def test_create_folder(self):
         for path in self._get_test_paths():
             path += "/testdir"

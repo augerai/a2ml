@@ -90,6 +90,16 @@ class BotoClient:
     def copy(self, *args, **kwargs):
         return self.client.copy(*args, **kwargs)
 
+    @retry_handler
+    def generate_presigned_url(self, *args, **kwargs):
+        import boto3
+        
+        #Do not use endpoint here
+        s3_client = boto3.client('s3',
+                config=boto3.session.Config(signature_version='s3v4')
+        )        
+        return s3_client.generate_presigned_url(*args, **kwargs)
+
     def get_waiter_names(self):
         return self.client.waiter_names
         
@@ -127,6 +137,23 @@ class S3FSClient:
 
         return transport_params
 
+    def generate_presigned_url(self, path):
+        try:
+            path = self._get_relative_path(path)
+            presigned_url = self.client.generate_presigned_url(
+                ClientMethod='get_object',
+                Params={
+                    'Bucket': self.s3BucketName,
+                    'Key': path
+                }
+            )
+
+            return presigned_url
+        except Exception as e:
+            logging.error("generate_presigned_url failed: %s"%e)
+
+        return None
+            
     def wait_for_path(self, path):
         path = self._get_relative_path(path)
         if 'object_exists' in self.client.get_waiter_names():
