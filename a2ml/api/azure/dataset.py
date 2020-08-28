@@ -6,7 +6,7 @@ from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
 from .credentials import Credentials
-
+from  a2ml.api.utils.s3_fsclient import S3FSClient
 
 class AzureDataset(object):
 
@@ -36,6 +36,11 @@ class AzureDataset(object):
             source = self.ctx.config.get('source', None)
         if source is None:
             raise AzureException('Please specify data source file...')
+
+        if fsclient.is_s3_path(source):
+            source_url = S3FSClient().generate_presigned_url(source)
+            if source_url:
+                source = source_url
 
         if source.startswith("http:") or source.startswith("https:"):
             url_info = get_remote_file_info(source)
