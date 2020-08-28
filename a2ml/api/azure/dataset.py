@@ -40,6 +40,7 @@ class AzureDataset(object):
         if fsclient.is_s3_path(source):
             source_url = S3FSClient().generate_presigned_url(source)
             if source_url:
+                logging.info("Use presigned url: %s"%source_url)
                 source = source_url
 
         if source.startswith("http:") or source.startswith("https:"):
