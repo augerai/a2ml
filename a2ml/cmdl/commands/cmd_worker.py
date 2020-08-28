@@ -10,5 +10,5 @@ from a2ml.api.utils.context import pass_context
     show_default=True, help='port to bind server')
 @pass_context
 def cmdl(ctx, pool, concurrency):
-    cmd_line = f'celery -A a2ml.tasks_queue.celery_app worker --loglevel=info --pool={pool} -c {concurrency}'
+    cmd_line = f'celery -A a2ml.tasks_queue.celery_app worker --loglevel=info --pool={pool} -c {concurrency} --max-tasks-per-child=1'
     os.system(cmd_line)
