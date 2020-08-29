@@ -60,7 +60,7 @@ class DataFrame(object):
         for file in files:
             path = file if type(file) == str else file['path']
 
-            fsclient.wait_for_file(path, True):
+            fsclient.wait_for_file(path, True)
             try:
                 df = DataFrame.create_dataframe(path, None, features)
                 yield (file, df)
