@@ -37,11 +37,11 @@ class AzureDataset(object):
         if source is None:
             raise AzureException('Please specify data source file...')
 
-        if fsclient.is_s3_path(source):
-            source_url = S3FSClient().generate_presigned_url(source)
-            if source_url:
-                self.ctx.log("Use presigned url: %s"%source_url)
-                source = source_url
+        # if fsclient.is_s3_path(source):
+        #     source_url = S3FSClient().generate_presigned_url(source)
+        #     if source_url:
+        #         self.ctx.log("Use presigned url: %s"%source_url)
+        #         source = source_url
 
         if source.startswith("http:") or source.startswith("https:"):
             url_info = get_remote_file_info(source)
