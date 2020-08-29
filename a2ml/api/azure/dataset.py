@@ -7,6 +7,8 @@ from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
 from .credentials import Credentials
 from  a2ml.api.utils.s3_fsclient import S3FSClient
+from a2ml.api.utils.dataframe import DataFrame
+
 
 class AzureDataset(object):
 
@@ -58,6 +60,14 @@ class AzureDataset(object):
 
                 if self.ctx.config.path and not local_path.startswith("/"):
                     local_path = os.path.join(self.ctx.config.path, local_path)
+
+                # Do it on Auger Cloud only
+                if fsclient.is_s3_path(source) and \
+                    not (source.endswith(".csv") or source.endswith(".parquet")):
+                    self.ctx.log("Convert file %s to parquet format."%source)
+                    df = DataFrame.create_dataframe(local_path)
+                    df.saveToFile(local_path+".parquet")
+                    local_path = local_path+".parquet"
 
                 ds.upload_files(files=[local_path], relative_root=None,
                     target_path=None, overwrite=True, show_progress=True)
