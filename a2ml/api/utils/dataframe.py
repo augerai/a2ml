@@ -59,8 +59,13 @@ class DataFrame(object):
     def load_from_files(files, features=None):
         for file in files:
             path = file if type(file) == str else file['path']
-            df = DataFrame.create_dataframe(path, None, features)
-            yield (file, df)
+
+            fsclient.wait_for_file(path, True):
+            try:
+                df = DataFrame.create_dataframe(path, None, features)
+                yield (file, df)
+            except:
+                logging.exception("load_from_files failed for: %s"%path)    
 
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
