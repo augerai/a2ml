@@ -57,11 +57,12 @@ class AzureModel(object):
             target_categoricals )
 
         metric_path = ModelHelper.get_metric_path( options, model_id)
-        fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
-            {'feature_importance_data': {
-                'features': list(feature_importance.keys()),
-                'scores': list(feature_importance.values())
-            }})
+        if metric_path:
+            fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
+                {'feature_importance_data': {
+                    'features': list(feature_importance.keys()),
+                    'scores': list(feature_importance.values())
+                }})
 
         return result
 
