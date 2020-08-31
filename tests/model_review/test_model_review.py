@@ -402,6 +402,32 @@ def test_score_actuals_return_count():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 1.0
 
+def test_score_actuals_not_found_id():
+    model_path = 'tests/fixtures/test_score_actuals'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': True },
+      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1', 'actual': False },
+    ]
+
+    try:
+      res = ModelReview({'model_path': model_path}).add_actuals(
+        actuals_path=None, actual_records=actuals, return_count=True
+      )
+    except Exception as e:
+      assert 'Actual Prediction ID(s) not found in model predictions:' in str(e)
+      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2' in str(e)
+      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1' in str(e)
+      assert 'b1bf9ebf-0277-4771-9bc5-236690a21194' not in str(e)
+    else:
+      fail('No exception was raised')
+
 def test_score_actuals_return_count_nones():
     model_path = 'tests/fixtures/test_score_actuals'
 

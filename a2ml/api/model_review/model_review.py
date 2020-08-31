@@ -78,10 +78,12 @@ class ModelReview(object):
             if actuals_count == match_count or primary_ds is not None:
                 break
 
-        #TODO: report non matching actuals list
         #TODO: why we check for primary_ds here?
         if raise_not_found and actuals_count != match_count and primary_ds is None:
-            raise Exception("Actual Prediction ID(s) not found in model predictions.")
+            df_diff = ds_actuals.df[['prediction_id']].merge(combined_df[['prediction_id']], 
+                on="prediction_id", how="left", indicator=True)
+            diff_ids = df_diff[df_diff._merge=='left_only']['prediction_id'].head(100).values.tolist()
+            raise Exception("Actual Prediction ID(s) not found in model predictions: %s"%diff_ids)
 
         result = True
         if calc_score:
