@@ -182,7 +182,7 @@ class AzureProject(object):
     def _get_ws(self, name = None, create_if_not_exist = False):
         name = self._get_name(name)
         nTry = 0
-        while nTry < 10:
+        while nTry < 20:
             try:
                 self.ws = Workspace.get(
                     name, 
@@ -196,10 +196,10 @@ class AzureProject(object):
                 if 'Workspaces not found' in message and create_if_not_exist:
                     self.create(name)
                     break
-                elif 'invalid_client' in message and nTry < 10:
+                elif 'invalid_client' in message and nTry < 20:
                     self.ctx.log('Workspace.get failed with authentication error. Retry.')
                     nTry += 1
-                    time.sleep(10) 
+                    time.sleep(20) 
                 else:    
                     raise
 
