@@ -82,10 +82,10 @@ class ModelPredict():
                 else:
                     file_url = self._upload_file_to_cloud(filename)
 
-        return records, features, file_url
+        return records, features, file_url, data is not None and isinstance(data, pd.DataFrame)
                     
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
-        records, features, file_url = self._process_input(filename, data, columns)
+        records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
         predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
 
@@ -96,6 +96,7 @@ class ModelPredict():
         try:
             ds_result.options['data_path'] = filename
             ds_result.loaded_columns = columns
+            ds_result.from_pandas = is_pandas_df
 
             is_model_loaded, model_path_1, model_name = \
                 ModelDeploy(self.ctx, None).verify_local_model(model_id)

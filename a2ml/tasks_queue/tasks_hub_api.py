@@ -501,7 +501,7 @@ def score_actuals_by_model_task(params):
             params.get('hub_info', {}).get('project_path')),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id'),
-        calc_score=params.get('calc_score', False),
+        calc_score=params.get('calc_score', True),
         return_count=params.get('return_count', False)
     )
 

@@ -13,7 +13,7 @@ class ModelActual():
         self.ctx = ctx
 
     def execute(self, model_id, filename, actual_records, actuals_at):
-        records, features, file_url = ModelPredict(self.ctx)._process_input(filename, actual_records, 
+        records, features, file_url, is_pandas_df = ModelPredict(self.ctx)._process_input(filename, actual_records, 
             columns=['prediction_id', 'actual'])
         pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
 
