@@ -44,7 +44,7 @@ $ SKLEARN_NO_OPENMP=1 pip install "scikit-learn==0.21.3"
 $ pip install "a2ml[azure]" --ignore-installed onnxruntime onnx nimbusml
 ```
 
-### Linix:
+### Linux:
 ```sh
 $ apt-get update && apt-get -y install gcc g++ libgomp1
 ```
@@ -67,7 +67,7 @@ $ pip install "a2ml[all]"
 
 ## Development
 To release a new version the flow should be:
-1. Change `VERSION` variable in `setup.py`  to match what you want to release, minus the “v”. By default it would be “<current-milestone>.dev0", for example “0.3.0.dev0”. This ensures we don’t accidentally release a dev version to pypi.org. So for when we’re ready to release 0.3.0, the  `VERSION` variable should simply be “0.3.0".
+1. Change the `__version__` variable in `a2ml/__init__.py` to match what you want to release, minus the "v". By default it would be "<current-milestone>.dev0", for example "0.3.0.dev0". This ensures we don’t accidentally release a dev version to pypi.org. So for when we’re ready to release 0.3.0, the   `__version__` variable should simply be "0.3.0".
 
 2. Commit and push the changes above.
 
@@ -83,4 +83,4 @@ pip install -U a2ml==0.3.0
 docker pull augerai/a2ml:v0.3.0
 ```
 
-4. Increment `VERSION` variable to the next version in the current milestone. For example, "0.3.1.dev0"
+4. Increment the `__version__` variable in `a2ml/__init__.py` to the next version in the current milestone. For example, "0.3.1.dev0"

@@ -1,14 +1,14 @@
 ---
 version: '3'
-
 services:
   a2ml:
-    build: .
+    build:
+      context: .
+      cache_from:
+        - augerai/a2ml:latest
     image: augerai/a2ml
     command: python -m py.test tests
     env_file: develop.env
-    ports:
-      - 8000:8000
     depends_on:
       - createbucket
       - minio

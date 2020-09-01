@@ -4,6 +4,8 @@
 *.egg-info/
 .circleci/
 *.coverage*
+*.tar
+*.tar.gz
 .env/
 .git/
 .pytest_cache/
