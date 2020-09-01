@@ -180,6 +180,7 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s-master
+          cluster-name: ${STAGING_CLUSTER_NAME}
           values-to-override: "image.tag=latest"
           release-name: a2ml
           namespace: a2ml
@@ -192,19 +193,20 @@ workflows:
                 - master
             tags:
               ignore: /^v.*/
-      # - deploy-to-k8s-prod:
-      #     name: deploy-to-k8s-prod
-      #     namespace: a2ml
-      #     release-name: a2ml
-      #     values-to-override: "image.tag=$CIRCLE_TAG"
-      #     context: eks
-      #     requires:
-      #       - docker-publish-tag
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
+      - deploy-to-k8s:
+          name: deploy-to-k8s
+          cluster-name: ${PROD_CLUSTER_NAME}
+          namespace: a2ml
+          release-name: a2ml
+          values-to-override: "image.tag=$CIRCLE_TAG"
+          context: eks
+          requires:
+            - docker-publish-tag
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - publish-pip:
           filters:
             tags:
