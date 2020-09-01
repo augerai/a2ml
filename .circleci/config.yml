@@ -96,12 +96,12 @@ jobs:
         description: |
           a2ml namespace
         type: string
-        default: "a2ml-latest"
+        default: a2ml
       release-name:
         description: |
           a2ml helm release-name
         type: string
-        default: "a2ml-latest"
+        default: a2ml
       reuse-values:
         description: |
           Reuse last release's values and merge in any overrides
@@ -181,8 +181,8 @@ workflows:
       - deploy-to-k8s:
           name: deploy-to-k8s-master
           values-to-override: "image.tag=latest"
-          release-name: "a2ml-latest"
-          namespace: a2ml-latest
+          release-name: a2ml
+          namespace: a2ml
           context: eks
           requires:
             - docker-publish-master
@@ -192,17 +192,14 @@ workflows:
                 - master
             tags:
               ignore: /^v.*/
-      # TODO: Test separately first time
-      # - deploy-to-k8s:
-      #     name: deploy-to-k8s-tag
-      #     namespace: a2ml-stable
-      #     release-name: "a2ml-stable"
+      # - deploy-to-k8s-prod:
+      #     name: deploy-to-k8s-prod
+      #     namespace: a2ml
+      #     release-name: a2ml
       #     values-to-override: "image.tag=$CIRCLE_TAG"
       #     context: eks
       #     requires:
-      #       - publish-docs
       #       - docker-publish-tag
-      #       - publish-pip
       #     filters:
       #       tags:
       #         only: /^v.*/
