@@ -1,6 +1,9 @@
 import re
+import time
+
 from ..exceptions import AugerException
 
+STATE_POLL_INTERVAL = 10
 
 class AugerBaseApi(object):
     """Auger API base class implements common business object calls."""
@@ -56,11 +59,29 @@ class AugerBaseApi(object):
                 get('data').get(self._get_status_name())
 
     def wait_for_status(self, progress):
-        return self.rest_api.wait_for_object_status(
-            get_status=self.status, progress=progress,
-            object_readable_name=self._get_readable_name(),
-            post_check_status=self._post_check_status,
-            log_status=self._log_status)
+        object_readable_name=self._get_readable_name()
+        status_value = self.status()
+        last_status = ''
+
+        while status_value in progress:
+            if status_value != last_status:
+                last_status = status_value
+                self._log_status(status_value)
+
+            while status_value == last_status:
+                time.sleep(STATE_POLL_INTERVAL)
+                status_value = self.status()
+
+        if status_value == 'processed_with_error':
+            props = self.properties()
+            raise AugerException(
+                '%s processed with error: %s' % (object_readable_name, props.get('error_message', '')))
+        elif status_value == 'error' or status_value == "failure":
+            props = self.properties()
+            raise AugerException('Auger Cloud return error: %s. Error details: %s'%(props.get('result', ''), props.get('error_message', '')))
+
+        self._log_status(status_value)
+        return status_value
 
     def delete(self):
         self.rest_api.call(
@@ -96,9 +117,6 @@ class AugerBaseApi(object):
         self.ctx.log(
             '%s %s is %s...' % \
             (self._get_readable_name(), self._get_status_name(), status))
-
-    def _post_check_status(self, status):
-        self._log_status(status)
 
     def _call_create(self, params=None, progress=None,has_return_object=True):
         if self.ctx.provider_info:

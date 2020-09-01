@@ -60,7 +60,10 @@ class ModelDeploy(object):
     def verify_local_model(self, model_id):
         model_path = os.path.join(self.ctx.config.get_path(), 'models')
         model_name = os.path.join(model_path, 'model-%s.zip' % model_id)
-        return fsclient.is_file_exists(model_name), model_path, model_name
+        is_exists = fsclient.is_folder_exists(os.path.join(model_path,"model-%s"%model_id))
+        if not is_exists:
+            is_exists = fsclient.is_file_exists(model_name)
+        return is_exists, model_path, model_name
 
     def _docker_pull_image(self):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)

@@ -25,6 +25,7 @@ class DataFrame(object):
         self.df = None
         self.dataset_name = None
         self.loaded_columns = None
+        self.from_pandas = False
 
     def _get_compression(self, extension):
         compression = self.options.get('data_compression', 'infer')
@@ -44,7 +45,11 @@ class DataFrame(object):
         if data_path:
             ds = DataFrame({'data_path': data_path})
             ds.load(features = features)
-        else:
+        elif records is not None and isinstance(records, pd.DataFrame):
+            ds = DataFrame({})
+            ds.df = records
+            ds.from_pandas = True
+        else:    
             ds = DataFrame({})
             ds.load_records(records, features=features)
 
@@ -54,8 +59,13 @@ class DataFrame(object):
     def load_from_files(files, features=None):
         for file in files:
             path = file if type(file) == str else file['path']
-            df = DataFrame.create_dataframe(path, None, features)
-            yield (file, df)
+
+            fsclient.wait_for_file(path, True)
+            try:
+                df = DataFrame.create_dataframe(path, None, features)
+                yield (file, df)
+            except:
+                logging.exception("load_from_files failed for: %s"%path)    
 
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
@@ -116,6 +126,8 @@ class DataFrame(object):
         elif extension.endswith('.feather') or extension.endswith('.feather.gz') or extension.endswith('.feather.zstd') or extension.endswith('.feather.lz4'):
             # Features list is optional for feather file, but it can segfault without it on some files
             return self.loadFromFeatherFile(path, features)
+        elif extension.endswith('.parquet'):
+            return self.loadFromParquetFile(path)
 
         csv_with_header = self.options.get('csv_with_header', True)
         header = 0 if csv_with_header else None
@@ -257,13 +269,26 @@ class DataFrame(object):
     def saveToFeatherFile(self, path):
         fsclient.save_object_to_file(self.df, path, fmt="feather")
 
+    def saveToParquetFile(self, path, compression="gzip"):
+        fsclient.remove_file(path)
+        fsclient.create_parent_folder(path)
+
+        with fsclient.save_local(path) as local_path:
+            self.df.to_parquet(local_path, index=False, compression=compression)
+
     def loadFromFeatherFile(self, path, features=None):
         self.df = fsclient.load_db_from_feather_file(path, features)
+        return self.df
+
+    def loadFromParquetFile(self, path, features=None):
+        self.df = fsclient.load_db_from_parquet_file(path, features)    
         return self.df
 
     def saveToFile(self, path):
         if path.endswith('.feather') or path.endswith('.feather.gz') or path.endswith('.feather.zstd') or path.endswith('.feather.lz4'):
             self.saveToFeatherFile(path)
+        elif path.endswith('.parquet'):
+            self.saveToParquetFile(path)
         else:
             compression = None
             if path.endswith('.gz'):
@@ -279,7 +304,7 @@ class DataFrame(object):
 
     @property
     def columns(self):
-        return self.df.columns.get_values().tolist()
+        return self.df.columns.tolist()
 
     def _map_dtypes(self, dtype):
         dtype_map = {'int64': 'integer', 'float64':'double', 'object': 'string',

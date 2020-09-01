@@ -12,18 +12,33 @@ from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_review import ModelReview
 
 
-def test_count_actuals_by_prediction_id():
-    model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
-    res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id()
+# def test_count_actuals_by_prediction_id():
+#     model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
+#     res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id()
 
-    assert type(res) is dict
-    assert len(res) > 0
+#     assert type(res) is dict
+#     assert len(res) > 0
 
-    assert res == {
-      'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 2,
-      '5d9f640d-529a-42bd-be85-172107249a01': 1,
-      '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
-    }
+#     assert res == {
+#       'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 2,
+#       '5d9f640d-529a-42bd-be85-172107249a01': 1,
+#       '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
+#     }
+
+# def test_count_actuals_by_prediction_id_with_period():
+#     model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
+#     date_from = datetime.date(2020, 8, 18)
+#     date_to = datetime.date(2020, 8, 18)
+#     res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id(date_from, date_to)
+
+#     assert type(res) is dict
+#     assert len(res) > 0
+
+#     assert res == {
+#       'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 1,
+#       '5d9f640d-529a-42bd-be85-172107249a01': 1,
+#       '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
+#     }
 
 def test_score_model_performance_daily():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
@@ -31,9 +46,55 @@ def test_score_model_performance_daily():
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
+    print(res)
     assert type(res) is dict
     assert type(res[str(date_from)]) is numpy.float64
     assert res[str(date_from)] > 0
+
+# def test_update_actuals():
+#     model_paths = [
+#       #'tests/fixtures/test_score_model_performance_daily/iris',
+#       #'tests/fixtures/test_score_model_performance_daily/iris_no_matches',
+#       'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals',
+#     ]
+#     #iris
+#     # actuals = {
+#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
+#     #   'records':[
+#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','7b7ab6e1-e013-492f-b35c-c536490e7147','versicolor','versicolor'],
+#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','4936b673-b671-4a8f-a7f8-51e2a9a48e8a','virginica','virginica'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','b89b4433-9823-474f-976e-c6cdda94868c','virginica','setosa'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c797a908-d7af-40b7-9a1a-4e94fa85f094','setosa','virginica'],
+#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c32f024d-6711-46da-af46-ff8f9439f9e5','setosa','setosa'],
+#     #   ]
+#     # }
+#     #iris_no_matches
+#     # actuals = {
+#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
+#     #   'records':[
+#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','24820f77-0399-4f90-8d61-077f0624c8f5',None,'versicolor'],
+#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','f1d6eea3-529c-4b05-ba7b-db7d65fa73df',None,'versicolor'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','b12cc508-69db-4e7a-b7f7-127c4cee43ab','virginica','setosa'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','6498b0b3-7e16-4a4e-925a-dd844ce5f7f1','setosa','virginica'],
+#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','69187c46-cf89-43fc-96cc-15354a975a49','setosa','setosa'],
+#     #   ]
+#     # }
+
+#     #dsNew = DataFrame.create_dataframe(records = actuals['records'], features=actuals['features'])
+#     for model_path in model_paths:
+#       files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"),
+#         wild=True, remove_folder_name=False, meta_info=False)
+#       results = fsclient.list_folder(os.path.join(model_path, "predictions/*_results.feather.zstd"),
+#         wild=True, remove_folder_name=False, meta_info=False)
+
+#       for (file, ds) in DataFrame.load_from_files(files):
+#         print(file)
+#         print(ds.df)
+#         #dsNew.saveToFile(file)
+
+#       for (file, ds) in DataFrame.load_from_files(results):
+#         print(file)
+#         print(ds.df)
 
 # def test_rename_target():
 #     model_paths = [
@@ -51,23 +112,24 @@ def test_score_model_performance_daily():
 #         ds.df.rename(columns={'actual': 'income'}, inplace=True)
 #         ds.saveToFile(file)
 
-def test_score_model_performance_daily_no_matching_actuals_and_predictions():
+def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
     date_from = datetime.date(2020, 2, 16)
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+    print(res)
     assert type(res) is dict
-    assert res[str(date_from)] == 0
+    assert res[str(date_from)] == 0.2
 
-def test_score_model_performance_daily_not_full_actuals():
-    model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
-    date_from = datetime.date(2020, 3, 12)
-    date_to = datetime.date(2020, 3, 13)
+# def test_score_model_performance_daily_not_full_actuals():
+#     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
+#     date_from = datetime.date(2020, 3, 12)
+#     date_to = datetime.date(2020, 3, 13)
 
-    res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
-    assert type(res) is dict
-    assert res[str(date_to)] == 0
+#     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+#     assert type(res) is dict
+#     assert res[str(date_to)] == 0
 
 def load_metric_task_params(model_path):
     path = 'tests/fixtures/test_distribution_chart_stats/metric_task_params.json'
@@ -95,7 +157,7 @@ def test_distribution_chart_stats():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'cnt': { 'avg': 483.18357849636016, 'std_dev': 0.0, 'imp': 0 },
+      'predicted_cnt': { 'avg': 483.18357849636016, 'std_dev': 0.0, 'imp': 0 },
       'dteday': { 'avg': 0.0,  'std_dev': 0.0, 'imp': 0 },
       'season': { 'dist': { 0: 2 }, 'imp': 0},
       'yr': { 'dist': { 0: 2 }, 'imp': 0 },
@@ -109,7 +171,7 @@ def test_distribution_chart_stats():
       'hum': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'casual': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
       'registered': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'a2ml_actual': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
+      'actual_cnt': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
     }
 
 def test_distribution_chart_stats_for_categorical_target():
@@ -122,7 +184,7 @@ def test_distribution_chart_stats_for_categorical_target():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'income': {'dist': {' <=50K': 1}, 'imp': 0},
+      'predicted_income': {'dist': {' <=50K': 1}, 'imp': 0},
       'age': {'avg': 0.0, 'std_dev': 0, 'imp': 0.716105},
       'workclass': {'dist': {0: 1}, 'imp': 0.120064},
       'fnlwgt': {'avg': 0.0, 'std_dev': 0, 'imp': 1.0},
@@ -137,7 +199,7 @@ def test_distribution_chart_stats_for_categorical_target():
       'capital-loss': {'avg': 0.0, 'std_dev': 0, 'imp': 0.257126},
       'hours-per-week': {'avg': 0.0, 'std_dev': 0, 'imp': 0.424639},
       'native-country': {'dist': {0: 1}, 'imp': 0.020726},
-      'a2ml_actual': {'dist': {' <=50K': 1}, 'imp': 0},
+      'actual_income': {'dist': {' <=50K': 1}, 'imp': 0},
     }
 
 def test_distribution_chart_stats_with_null_booleans():
@@ -150,7 +212,7 @@ def test_distribution_chart_stats_with_null_booleans():
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'target': {'avg': 0.5, 'std_dev': 0.7071067811865476, 'imp': 0},
+      'predicted_target': {'avg': 0.5, 'std_dev': 0.7071067811865476, 'imp': 0},
       'company_id': {'avg': 24.0, 'std_dev': 18.384776310850235, 'imp': 0},
       'gender': {'dist': {'FEMALE': 1}, 'imp': 0},
       'employee_age': {'dist': {}, 'imp': 0},
@@ -245,6 +307,36 @@ def test_clear_model_results_and_actuals():
     assert os.path.exists(os.path.join(model_path, 'options.json')) == True
     assert os.path.exists(os.path.join(model_path, 'predictions')) == False
 
+def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actuals_file():
+    model_path = 'tests/fixtures/test_score_actuals/categorical_convert'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {'prediction_id': '0551c7c7-d771-4973-809d-899418421004', 'actual': 'good' },
+    ]
+
+    actual_date = datetime.date(2020, 8, 3)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
+    )
+
+    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
+    assert len(actual_files) > 0
+    assert str(actual_date) in actual_files[0]
+
+    stored_actuals = DataFrame({})
+    stored_actuals.loadFromFeatherFile(actual_files[0])
+
+    stored_actuals = json.loads(
+      stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
+    )
+
+    assert stored_actuals[0]['class'] == 'good'
+    assert stored_actuals[0]['a2ml_predicted'] == 'good'
+
 def test_score_actuals_with_not_full_actuals():
     model_path = 'tests/fixtures/test_score_actuals'
 
@@ -268,7 +360,7 @@ def test_score_actuals_with_not_full_actuals():
 
     stored_actuals = DataFrame({})
     stored_actuals.loadFromFeatherFile(actual_files[0])
-    assert 'prediction_group_id' in stored_actuals.columns
+    #assert 'prediction_group_id' in stored_actuals.columns
 
     stored_actuals = json.loads(
       stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
@@ -277,17 +369,17 @@ def test_score_actuals_with_not_full_actuals():
     assert len(stored_actuals) == len(actuals) #+ 1
 
     assert stored_actuals[0]['prediction_id'] == '5c93079c-00c9-497a-8967-53fa0dd02054'
-    assert stored_actuals[0]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
+    #assert stored_actuals[0]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
     assert stored_actuals[0]['feature1'] == 1
     assert stored_actuals[0]['income'] == False
 
     assert stored_actuals[1]['prediction_id'] == 'b1bf9ebf-0277-4771-9bc5-236690a21194'
-    assert stored_actuals[1]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
+    #assert stored_actuals[1]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
     assert stored_actuals[1]['feature1'] == 1.1
     assert stored_actuals[1]['income'] == False
 
     assert stored_actuals[2]['prediction_id'] == 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd'
-    assert stored_actuals[2]['prediction_group_id'] == '03016c26-f69a-416f-817f-4c58cd69d675'
+    #assert stored_actuals[2]['prediction_group_id'] == '03016c26-f69a-416f-817f-4c58cd69d675'
     assert stored_actuals[2]['feature1'] == 1.3
     assert stored_actuals[2]['income'] == True
 
@@ -310,11 +402,57 @@ def test_score_actuals_return_count():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 1.0
 
+def test_score_actuals_not_found_id():
+    model_path = 'tests/fixtures/test_score_actuals'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': True },
+      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2', 'actual': False },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1', 'actual': False },
+    ]
+
+    try:
+      res = ModelReview({'model_path': model_path}).add_actuals(
+        actuals_path=None, actual_records=actuals, return_count=True
+      )
+    except Exception as e:
+      assert 'Actual Prediction ID(s) not found in model predictions:' in str(e)
+      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2' in str(e)
+      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1' in str(e)
+      assert 'b1bf9ebf-0277-4771-9bc5-236690a21194' not in str(e)
+    else:
+      fail('No exception was raised')
+
+def test_score_actuals_return_count_nones():
+    model_path = 'tests/fixtures/test_score_actuals'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': None },
+      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': None },
+      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': None },
+    ]
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      actuals_path=None, actual_records=actuals, return_count=True
+    )
+
+    assert res['count'] == 3
+    assert res['score']['accuracy'] == 0.0
+
 def test_build_review_data():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
     res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class.csv")
     assert res
+    assert res.endswith(".parquet")
 
 def test_score_actuals_lucas_case():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -335,6 +473,30 @@ def test_score_actuals_lucas_case():
     ]
 
     res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
+      calc_score=True)
+
+    assert res == {
+      'accuracy': 1.0,
+      'neg_log_loss': 0,
+      'f1_micro': 1.0,
+      'f1_macro': 1.0,
+      'f1_weighted': 1.0,
+      'precision_micro': 1.0,
+      'precision_macro': 1.0,
+      'precision_weighted': 1.0,
+      'recall_micro': 1.0,
+      'recall_macro': 1.0,
+      'recall_weighted': 1.0
+    }
+
+def test_score_iris_file():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+        os.remove(actuals_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv',
       calc_score=True)
 
     assert res == {
@@ -393,8 +555,8 @@ def test_score_actuals_with_no_predictions_in_model_folder():
       os.remove(actuals_path)
 
     actuals = [
-      { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'species':'versicolor' },
-      { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'species':'virginica' }
+      { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
+      { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
     ]
 
     try:
@@ -444,18 +606,18 @@ def test_score_actuals_for_candidate_prediction():
 
   stored_actuals = DataFrame({})
   stored_actuals.loadFromFeatherFile(actual_file)
-  assert 'prediction_group_id' in stored_actuals.columns
+  #assert 'prediction_group_id' in stored_actuals.columns
 
   stored_actuals = json.loads(
     stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
   )
 
   assert stored_actuals[0]['prediction_id'] == 'bef9be07-5534-434e-ab7c-c379d8fcfe77'
-  assert stored_actuals[0]['prediction_group_id'] == prediction_group_id
+  #assert stored_actuals[0]['prediction_group_id'] == prediction_group_id
   assert stored_actuals[0]['species'] == 'versicolor'
 
   assert stored_actuals[1]['prediction_id'] == 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd'
-  assert stored_actuals[1]['prediction_group_id'] == prediction_group_id
+  #assert stored_actuals[1]['prediction_group_id'] == prediction_group_id
   assert stored_actuals[1]['species'] == 'virginica'
 
 def test_score_actuals_another_result_first():

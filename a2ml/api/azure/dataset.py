@@ -6,6 +6,8 @@ from .project import AzureProject
 from .exceptions import AzureException
 from a2ml.api.utils.decorators import error_handler, authenticated
 from .credentials import Credentials
+from  a2ml.api.utils.s3_fsclient import S3FSClient
+from a2ml.api.utils.dataframe import DataFrame
 
 
 class AzureDataset(object):
@@ -37,6 +39,12 @@ class AzureDataset(object):
         if source is None:
             raise AzureException('Please specify data source file...')
 
+        # if fsclient.is_s3_path(source):
+        #     source_url = S3FSClient().generate_presigned_url(source)
+        #     if source_url:
+        #         self.ctx.log("Use presigned url: %s"%source_url)
+        #         source = source_url
+
         if source.startswith("http:") or source.startswith("https:"):
             url_info = get_remote_file_info(source)
             if self.ctx.config.get('source_format', "") == "parquet" or \
@@ -52,6 +60,14 @@ class AzureDataset(object):
 
                 if self.ctx.config.path and not local_path.startswith("/"):
                     local_path = os.path.join(self.ctx.config.path, local_path)
+
+                # Do it on Auger Cloud only
+                if fsclient.is_s3_path(source) and \
+                    not (source.endswith(".csv") or source.endswith(".parquet")):
+                    self.ctx.log("Convert file %s to parquet format."%source)
+                    df = DataFrame.create_dataframe(local_path)
+                    df.saveToFile(local_path+".parquet")
+                    local_path = local_path+".parquet"
 
                 ds.upload_files(files=[local_path], relative_root=None,
                     target_path=None, overwrite=True, show_progress=True)

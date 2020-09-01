@@ -1,6 +1,6 @@
 
-A2ML - Automation of AutoML
----------------------------
+A2ML - The Open Source Pipeline for AutoML
+------------------------------------------
 .. |augerai| raw:: html
 
    <a href="https://auger.ai" target="_blank">Auger.AI</a>

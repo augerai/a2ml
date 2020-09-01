@@ -1,14 +1,19 @@
-import amqp
+import celery.signals
 import copy
 import logging
 import json
+import time
 import traceback
 
+from celery import current_task
 from celery.utils.log import get_task_logger
+from functools import wraps
 from urllib.parse import urlparse
 
 from a2ml.api.a2ml import A2ML
 from a2ml.api.a2ml_model import A2MLModel
+from a2ml.api.a2ml_experiment import A2MLExperiment
+from a2ml.api.a2ml_project import A2MLProject
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import dict_dig, merge_dicts
@@ -39,8 +44,11 @@ def _exception_traces_chain(e):
     else:
         return ''.join(traceback.format_tb(e.__traceback__))
 
-@celeryApp.task(ignore_result=True, autoretry_for=(Exception,), retry_backoff=True)
 def send_result_to_hub(json_data):
+    import amqp
+
+    json_data = json_dumps_np(json_data)
+
     _log('Send JSON data to Hub: ' + json_data, level=logging.DEBUG)
 
     o = urlparse(task_config.broker_url)
@@ -62,10 +70,7 @@ def send_result_to_hub(json_data):
             routing_key=task_config.task_result_queue
         )
 
-def send_result_to_hub_async(json_data):
-    send_result_to_hub.apply_async(args=(json_dumps_np(json_data),), priority=0)
-
-def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
+def build_and_send_task_result_to_hub(args, status, result, traceback=None):
     if args:
         params = args[0]
 
@@ -75,15 +80,35 @@ def process_task_result(self, status, retval, task_id, args, kwargs, einfo):
                 'provider': params['provider'],
                 'hub_info': params['hub_info'],
                 'status': status,
+                'runtime': time.time() - current_task.start_time,
+                'result': result,
+                'traceback': traceback,
             }
 
-            if isinstance(retval, Exception):
-                response['result'] = _exception_message_chain(retval) + ' ' + str(einfo)
-                response['traceback'] = _exception_traces_chain(retval)
-            else:
-                response['result'] = retval
+            send_result_to_hub(response)
 
-            send_result_to_hub_async(response)
+@celery.signals.task_prerun.connect
+def celery_task_prerun(**kwargs):
+    current_task.start_time = time.time()
+
+def process_task_result(task_func):
+    @wraps(task_func)
+    def func_wrapper(*args, **kwargs):
+        try:
+            result = task_func(*args, **kwargs)
+            build_and_send_task_result_to_hub(args, 'success', result)
+        except Exception as e:
+            build_and_send_task_result_to_hub(
+                args,
+                'failure',
+                _exception_message_chain(e),
+                _exception_traces_chain(e)
+            )
+
+            # Reraise exception to signal that task is failed
+            raise
+
+    return func_wrapper
 
 def _make_hub_provider_info_update(ctx, provider, hub_info):
     #project, project_file, experiment, experiment_session
@@ -140,24 +165,26 @@ def _read_hub_experiment_session(ctx, params):
         evaluation_options.get('crossValidationFolds', 5))
     ctx.config.set('experiment/max_total_time',
         evaluation_options.get('max_total_time_mins', 60))
+
+    ctx.config.set('experiment/max_cores_per_iteration',
+        evaluation_options.get('cpu_per_mt_algorithm', 1))
+    ctx.config.set('experiment/max_concurrent_iterations',
+        evaluation_options.get('max_concurrent_iterations', 1))
+
     ctx.config.set('experiment/max_eval_time',
         evaluation_options.get('max_eval_time_mins', 6))
     ctx.config.set('experiment/max_n_trials',
         evaluation_options.get('max_n_trials', 100))
     ctx.config.set('experiment/use_ensemble',
         evaluation_options.get('use_ensemble', True))
-    if evaluation_options.get('scoring') == "f1":
-        ctx.config.set('experiment/metric',
-            "accuracy", params.get('provider'))
-    else:
-        ctx.config.set('experiment/metric',
-            evaluation_options.get('scoring'), provider)
+    ctx.config.set('experiment/metric',
+        evaluation_options.get('scoring'), provider)
 
     return ctx
 
 def _update_hub_objects(ctx, provider, params):
     hub_objects_update = _make_hub_provider_info_update(ctx, params.get('provider'), params.get('hub_info'))
-    send_result_to_hub_async(hub_objects_update)
+    send_result_to_hub(hub_objects_update)
 
     return hub_objects_update
 
@@ -234,7 +261,7 @@ def _update_hub_leaderboad(params, leaderboard):
         'evaluate_status': leaderboard.get('evaluate_status'),
     }
 
-    send_result_to_hub_async(data)
+    send_result_to_hub(data)
 
 def _create_provider_context(params):
     provider = params.get('provider', 'auger')
@@ -259,6 +286,9 @@ def _create_provider_context(params):
         ctx.config.set('experiment/name', experiment_name, provider)
     if provider_info.get('experiment_session', {}).get('id'):
         ctx.config.set('experiment/run_id', provider_info['experiment_session']['id'], provider)
+    if hub_info.get('experiment_session') and hub_info.get('experiment_session').get('id'):
+        ctx.config.set('experiment/hub_session_id', hub_info['experiment_session']['id'], provider)
+        ctx.config.set('experiment/hub_experiment_id', hub_info['experiment_session'].get('experiment_id'), provider)
 
     return ctx
 
@@ -325,7 +355,8 @@ def _get_leaderboad(params):
             'trials': trials,
         }
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def monitor_evaluate_task(params):
     leaderboard = _get_leaderboad(params)
 
@@ -334,7 +365,8 @@ def monitor_evaluate_task(params):
 
     return True
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def evaluate_start_task(params):
     if not params.get('hub_info', {}).get('experiment_session_id'):
         raise Exception("evaluate_start_task missed experiment_session_id parameter.")
@@ -359,7 +391,30 @@ def evaluate_start_task(params):
 
     return res
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def stop_evaluate_task(params):
+    ctx = _create_provider_context(params)
+
+    ctx.config.clean_changes()
+    res = A2MLExperiment(ctx).stop()
+    _update_hub_objects(ctx, params.get('provider'), params)
+
+    return res
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def update_cluster_config_task(params):
+    ctx = _create_provider_context(params)
+    clusters = params.get('clusters', [])
+    for cluster in clusters:
+        ctx.config.set('cluster/name', cluster.get('name'))
+        res = A2MLProject(ctx).update_cluster_config(name=None, params=cluster)
+
+    return True
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def import_data_task(params):
     if not params.get('hub_info').get('project_file'):
         raise Exception("import_data_task missed project_file parameter.")
@@ -378,7 +433,8 @@ def import_data_task(params):
 
     return res
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def deploy_model_task(params):
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
@@ -389,7 +445,8 @@ def deploy_model_task(params):
 
     return res
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
@@ -407,7 +464,8 @@ def undeploy_model_task(params):
 
     return res
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def predict_by_model_task(params):
     from a2ml.api.utils.crud_runner import CRUDRunner
 
@@ -431,7 +489,8 @@ def predict_by_model_task(params):
 
     return res['predicted']
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def score_actuals_by_model_task(params):
     return ModelReview(params).add_actuals(
         actuals_path = params.get('actuals_path'),
@@ -442,42 +501,62 @@ def score_actuals_by_model_task(params):
             params.get('hub_info', {}).get('project_path')),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id'),
+        calc_score=params.get('calc_score', True),
         return_count=params.get('return_count', False)
     )
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
-def count_actuals_by_prediction_id_task(params):
-    return ModelReview(params).count_actuals_by_prediction_id()
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def delete_actuals_task(params):
+    return ModelReview(params).delete_actuals(
+        with_predictions=params.get('with_predictions'), 
+        begin_date=params.get('begin_date'), 
+        end_date=params.get('end_date'), 
+    )
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+# @celeryApp.task(ignore_result=True)
+# @process_task_result
+# def count_actuals_by_prediction_id_task(params):
+#     return ModelReview(params).count_actuals_by_prediction_id(
+#         date_from=params.get('date_from'),
+#         date_to=params.get('date_to')
+#     )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def score_model_performance_daily_task(params):
     return ModelReview(params).score_model_performance_daily(
         date_from=params.get('date_from'),
         date_to=params.get('date_to')
     )
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def set_support_review_model_flag_task(params):
     return ModelReview(params).set_support_review_model_flag(
         flag_value=params.get('support_review_model')
     )
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def distribution_chart_stats_task(params):
     return ModelReview(params).distribution_chart_stats(
         date_from=params.get('date_from'),
         date_to=params.get('date_to')
     )
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def remove_model_task(params):
     return ModelReview(params).remove_model()
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def clear_model_results_and_actuals(params):
     return ModelReview(params).clear_model_results_and_actuals()
 
-@celeryApp.task(ignore_result=True, after_return=process_task_result)
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def build_review_data_task(params):
     return ModelReview(params).build_review_data(
         data_path=params.get('data_path')

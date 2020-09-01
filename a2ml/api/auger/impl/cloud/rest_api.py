@@ -1,13 +1,11 @@
 import re
 import sys
-import time
 
 from auger.hub_api_client import HubApiClient
 from ..exceptions import AugerException
 
 
 REQUEST_LIMIT = 100
-STATE_POLL_INTERVAL = 10
 
 class RestApi(object):
     """Warapper around Auger Cloud Rest Api."""
@@ -61,33 +59,3 @@ class RestApi(object):
                     break
             except Exception as e:
                     import traceback; traceback.print_exc()
-
-    def wait_for_object_status(self,
-        get_status, progress, object_readable_name,
-        post_check_status=None, log_status=None):
-
-        def _log_status(obj_status): pass
-        log_status  = log_status if log_status else _log_status
-
-        status = get_status()
-        last_status = ''
-
-        while status in progress:
-            if status != last_status:
-                last_status = status
-                log_status(status)
-
-            while status == last_status:
-                time.sleep(STATE_POLL_INTERVAL)
-                status = get_status()
-
-        if status == 'processed_with_error':
-            raise AugerException(
-                '%s processed with error' % object_readable_name)
-        elif status == 'error' or status == "failure":
-            raise AugerException('Auger Cloud return error...')
-
-        if post_check_status:
-            post_check_status(status)
-
-        return status

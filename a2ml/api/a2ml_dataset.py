@@ -1,5 +1,7 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
+from a2ml.api.utils import convert_source
+
 
 class A2MLDataset(BaseA2ML):
     """Contains the dataset CRUD operations that interact with provider."""
@@ -60,7 +62,7 @@ class A2MLDataset(BaseA2ML):
         """Create a new DataSet for the Project specified in the .yaml.
 
         Args:
-            source(str): path to local or link to remote file.
+            source (str, optional): Local file name or remote url to the data source file or Pandas DataFrame
 
         Returns:
             Results for each provider. ::
@@ -80,7 +82,8 @@ class A2MLDataset(BaseA2ML):
                 ctx = Context()
                 dataset = DataSet(ctx, 'auger, azure').create('../dataset.csv')
         """
-        return self.runner.execute('create', source)
+        with convert_source(source, self.ctx.config.get("name", "source_data")) as data_source:
+            return self.runner.execute('create', data_source)
 
     @show_result
     def delete(self, name = None):

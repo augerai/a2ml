@@ -31,25 +31,40 @@ class AugerProjectApi(AugerBaseApi):
         #     self.ctx.log('Project is already running...')
 
         self._update_cluster_settings()
-
-    def _update_cluster_settings(self):
-        project_properties = self.properties()
-
-        cluster_id = project_properties.get('cluster_id')
-        cluster_api = AugerClusterApi(self.ctx, self, cluster_id)
-        cluster_settings = cluster_api.get_cluster_settings(self.ctx)
+        
+    def get_cluster_config(self, local_config = True):
+        if local_config:
+            return AugerClusterApi.get_cluster_settings(self.ctx)
+        else:
+            project_properties = self.properties()
+            result = {
+                'worker_type_id': project_properties.get('worker_type_id'),
+                'workers_count': project_properties.get('workers_count')
+            }
+            if 'kubernetes_stack' in project_properties:
+                result['kubernetes_stack'] = project_properties.get('kubernetes_stack')
+                
+            return result
+                
+    def update_cluster_config(self, params):
+        remote_cluster = self.get_cluster_config(local_config=False)
 
         update_properties = {}
         props_to_update = ['worker_type_id', 'workers_count', 'kubernetes_stack']
         for prop in props_to_update:
-            if project_properties.get(prop, cluster_settings.get(prop)) != cluster_settings.get(prop):
-                update_properties[prop] = cluster_settings.get(prop)
+            if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
+                update_properties[prop] = params.get(prop)
 
         if update_properties:
-            self.ctx.log('Update project cluster: %s' % update_properties)
-
+            self.ctx.log('Update project cluster: %s' % update_properties)            
             update_properties['id'] = self.object_id
             self._call_update(update_properties, progress=['undeployed', 'deployed', 'scaling', 'zero_scaled', 'deploying'])
+
+        return True
+            
+    def _update_cluster_settings(self):
+        local_cluster = self.get_cluster_config(local_config=True)
+        self.update_cluster_config(local_cluster)
                 
     def _do_start(self, project_properties):
         self._ensure_object_id()
@@ -62,27 +77,23 @@ class AugerProjectApi(AugerBaseApi):
         cluster_id = project_properties.get('cluster_id')
         cluster_api = AugerClusterApi(self.ctx, self, cluster_id)
 
-        if self.parent_api.get_cluster_mode() == 'single_tenant':
-            if not cluster_api.is_running():
-                cluster_api.create()
-        else:
-            cluster_settings = cluster_api.get_cluster_settings(self.ctx)
-            # self.rest_api.call('update_project', {
-            #     'id': self.object_id,
-            #     'cluster_autoterminate_minutes':
-            #         cluster_settings.get('autoterminate_minutes')})
-            try:
-                self.rest_api.call('deploy_project', {
-                    'id': self.object_id,
-                    'worker_type_id': cluster_settings.get('worker_type_id'),
-                    'workers_count' : cluster_settings.get('workers_count'),
-                    'kubernetes_stack': cluster_settings.get('kubernetes_stack')})
-            except:
-                project_properties = self.properties()
-                status = project_properties.get('status')
-                project_status = ['deployed', 'deploying', 'running']
-                if not status in project_status:
-                    raise                    
+        cluster_settings = cluster_api.get_cluster_settings(self.ctx)
+        # self.rest_api.call('update_project', {
+        #     'id': self.object_id,
+        #     'cluster_autoterminate_minutes':
+        #         cluster_settings.get('autoterminate_minutes')})
+        try:
+            self.rest_api.call('deploy_project', {
+                'id': self.object_id,
+                'worker_type_id': cluster_settings.get('worker_type_id'),
+                'workers_count' : cluster_settings.get('workers_count'),
+                'kubernetes_stack': cluster_settings.get('kubernetes_stack')})
+        except:
+            project_properties = self.properties()
+            status = project_properties.get('status')
+            project_status = ['deployed', 'deploying', 'running']
+            if not status in project_status:
+                raise                    
 
         result = self.wait_for_status(
             ['undeployed', 'deployed', 'scaling', 'zero_scaled', 'deploying'])

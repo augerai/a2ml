@@ -1,5 +1,6 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
+from a2ml.api.utils import convert_source
 
 
 class A2ML(BaseA2ML):
@@ -38,7 +39,7 @@ class A2ML(BaseA2ML):
                 source: './dataset.csv'
 
         Args:
-            source (str, optional): Local file name or remote url to the data source file
+            source (str, optional): Local file name or remote url to the data source file or Pandas DataFrame
 
         Returns:
             Results for each provider. ::
@@ -63,7 +64,8 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.import_data()
         """
-        return self.runner.execute('import_data', source=source)
+        with convert_source(source, self.ctx.config.get("name", "source_data")) as data_source:
+            return self.runner.execute('import_data', source=data_source)
 
     @show_result
     def train(self):
@@ -205,13 +207,14 @@ class A2ML(BaseA2ML):
         Note:
             Use deployed model_id \n
             This method support only one provider
+            If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.
 
         Args:
             filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
             threshold(float): For classification models only. This will return class probabilities with response.
             locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            data: dict or array of records
+            data: dict or array of records or Pandas DataFrame
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
             output(str): Output csv file path.
@@ -229,14 +232,14 @@ class A2ML(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
+                    'data': {'predicted': [{'prediction_id': 123, col1: value1, col2: value2}, {'prediction_id': 456, col1: value3, col2: value4}]}
                 }
 
             if filename is None and data is not None and columns is not None. ::
 
                 {
                     'result': True,
-                    'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
+                    'data': {'predicted': {'columns': ['prediction_id', 'col1', 'col2'], 'data': [['789', 'value1', 'value2'], ['321', 'value3', 'value4']]}}
                 }
 
         Examples:
@@ -290,7 +293,7 @@ class A2ML(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]]
+            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)
             actuals_at: Actuals date. Use for review of historical data.
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
@@ -332,6 +335,36 @@ class A2ML(BaseA2ML):
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
 
+
+    @show_result
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False, provider=None):
+        """Delete files with actuals and predcitions locally or from specified provider(s).
+
+        Args:
+            model_id (str): Model ID to delete actuals and predictions.
+            with_predictions(bool): 
+            begin_date: Date to begin delete operations 
+            end_date: Date to end delete operations 
+            locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                    'data': None
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                A2MLModel(ctx).delete_actuals(model_id='D881079E1ED14FB')
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('delete_actuals', model_id, with_predictions, begin_date, end_date, locally)
+
+
     @show_result
     def review(self, model_id, locally=False, provider=None):
         """Review the performance of deployed model.
@@ -355,4 +388,3 @@ class A2ML(BaseA2ML):
                 model = A2ML(ctx).review(model_id='D881079E1ED14FB')
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
-

@@ -7,6 +7,10 @@ import json
 from a2ml.api.utils import get_uid, get_uid4, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
+# For calculate_scores
+from .scores.regression import *
+from .scores.classification import *
+
 
 class ModelHelper(object):
 
@@ -122,11 +126,11 @@ class ModelHelper(object):
         elif scoring.startswith("r2_score"):
             scorer = get_scorer("r2")
         elif "mean_absolute_error" in scoring:
-            scorer = get_scorer("mean_absolute_error")
+            scorer = get_scorer("neg_mean_absolute_error")
         elif "root_mean_squared" in scoring:
             scorer = get_scorer("mean_squared_error")
         elif "median_absolute_error" in scoring:
-            scorer = get_scorer("median_absolute_error")
+            scorer = get_scorer("neg_median_absolute_error")
 
         if scorer is None:
             scorer = get_scorer(scoring)
@@ -213,7 +217,7 @@ class ModelHelper(object):
         if options.get('timeSeriesFeatures'):
             y_true = np.ravel(ds.df[options.get('targetFeature')].astype(np.float64, copy=False), order='C')
         else:
-            if target_categoricals and options.get('targetFeature') in target_categoricals:
+            if target_categoricals and target_categoricals.get(options.get('targetFeature'), {}).get('categories'):
                 ds.convertToCategorical(options.get('targetFeature'), is_target=True,
                     categories=target_categoricals.get(options.get('targetFeature')).get('categories'))
 
@@ -223,7 +227,7 @@ class ModelHelper(object):
 
     @staticmethod
     def process_prediction(ds, results, results_proba, proba_classes,
-                           threshold, minority_target_class, targetFeature, target_categories):
+        threshold, minority_target_class, targetFeature, target_categories):
 
         if results_proba is not None:
             proba_classes_orig = None
@@ -261,20 +265,24 @@ class ModelHelper(object):
 
     @staticmethod
     def save_prediction(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None):
-        # Ids for each row of prediction (predcition row's ids)
-        prediction_ids = []
-        for i in range(0, ds.count()):
-            prediction_ids.append(get_uid4())
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False,
+        prediction_id_col=None):
+        if prediction_id_col is not None:
+            ds.df['prediction_id'] = prediction_id_col
+        else:
+            # Ids for each row of prediction (prediction row's ids)
+            prediction_ids = []
+            for i in range(0, ds.count()):
+                prediction_ids.append(get_uid4())
 
-        ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
+            ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output)
+            json_result, count_in_result, prediction_date, model_path, model_id, output, gzip_predict_file=gzip_predict_file)
 
     @staticmethod
     def save_prediction_result(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None):
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
         if not prediction_id:
@@ -295,7 +303,12 @@ class ModelHelper(object):
                 predict_path = os.path.join(parent_path, "predictions",
                     os.path.splitext(file_name)[0] + "_%s_%s_predicted.csv" % (prediction_id, model_id))
 
-            ds.saveToCsvFile(predict_path, compression=None)
+            compression = None
+            if gzip_predict_file:
+                predict_path += ".gz"
+                compression = 'gzip'
+
+            ds.saveToCsvFile(predict_path, compression=compression)
 
             if count_in_result:
                 return {'result_path': predict_path, 'count': ds.count()}
@@ -305,6 +318,8 @@ class ModelHelper(object):
             if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
                 return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
+            elif ds.from_pandas:
+                return ds.df
 
             return ds.df.to_dict('records')
 

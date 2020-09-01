@@ -99,6 +99,75 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
 
     @pytest.mark.skip(reason='run it locally')
+    def test_stop_evaluate(self):
+        params = {
+            'provider': "azure",
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                    'experiment': {
+                        'name': '123_adult_data_csv',
+                    },
+                    'experiment_session': {
+                        'id': 'AutoML_54a4538c-b9d7-4f56-91f4-775be7f02c75',
+                    },
+                }
+            }
+        }
+        #monitor_evaluate_task(params)
+        res = stop_evaluate_task(params)
+        print(res)
+        
+        self.assertTrue(res)
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_update_cluster_config(self):
+        params = {
+            'provider': "azure",
+            'provider_info': {
+                'azure' : {
+                    'project':{
+                        'name': 'a2ml_azure_adult_3'
+                    },
+                }
+            },
+            'clusters': [{
+                'name': 'new-test-2',
+                'min_nodes': 0,
+                'max_nodes': 4,
+                #'vm_size': 'STANDARD_D3_V2',
+                'type': 'STANDARD_D2_V2',#'STANDARD_D3_V2',
+                'idle_seconds_before_scaledown': 100
+            }]
+        }
+        res = update_cluster_config_task(params)
+        print(res)
+        
+        #self.assertTrue(res)
+
+    @pytest.mark.skip(reason='run it locally')
+    def test_delete_actuals_task(self):
+        params = {
+            'provider': "azure",
+
+            'with_predictions': True,
+            #'begin_date': "2020-08-18",
+            #'end_date': "2020-08-18",
+
+            'hub_info': {
+                'pipeline_id': 'AutoML_af67d4a6-3feb-4835-82a6-c545a9fea973_2',
+                'project_path': '/Users/evgenyvovchenko/Projects/auger-experiments/a2ml_azure_adult_3',
+            },
+        }
+        res = delete_actuals_task(params)
+        print(res)
+
+        # self.assertTrue("azure" in res)
+        # self.assertTrue(res["azure"]["result"])
+
+    @pytest.mark.skip(reason='run it locally')
     def test_deploy_model(self):
         params = {
             'provider': "azure",

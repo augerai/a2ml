@@ -1,4 +1,5 @@
 from .base import AugerBaseApi
+from .cluster_task import AugerClusterTaskApi
 
 
 class AugerActualApi(AugerBaseApi):
@@ -8,11 +9,16 @@ class AugerActualApi(AugerBaseApi):
         super(AugerActualApi, self).__init__(
             ctx, pipeline_api, prediction_id)
 
-    def create(self, records, actuals_at):
+    def create(self, records, actuals_at, actuals_path=None):
         params = {
             'pipeline_id': self.parent_api.object_id,
-            'actuals': records
         }
+
+        if records:
+            params['actuals'] = records
+
+        if actuals_path:
+            params['actuals_path'] = actuals_path
 
         if actuals_at:
             params['actuals_at'] = str(actuals_at)
@@ -20,3 +26,16 @@ class AugerActualApi(AugerBaseApi):
         return self._call_create(
             params=params, 
             has_return_object=False)
+
+    def delete(self, with_predictions, begin_date, end_date):
+        res = self.rest_api.call( 'delete_%ss' % self.api_request_path, {
+                'pipeline_id': self.parent_api.object_id,
+                'with_predictions': with_predictions,
+                'from': begin_date,
+                'to': end_date
+            })
+
+        cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])
+        cluster_task.wait_for_status(['pending', 'received', 'started', 'retry'])
+
+        return True

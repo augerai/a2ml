@@ -18,7 +18,8 @@ class AugerAuthApi(object):
             if 'Email or password incorrect' in str(e):
                 raise AugerException('Email or password incorrect...')
             else:
-                raise e
+                raise
+                
         self.ctx.rest_api = RestApi(url, res['data']['token'])
         org_api = AugerOrganizationApi(self.ctx, organization)
         if org_api.properties() == None:

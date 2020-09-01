@@ -13,7 +13,7 @@ def error_handler(decorated):
             self.ctx.log(str(exc))
             if not hasattr(self.ctx, 'not_reraise_exceptions')\
                or not self.ctx.not_reraise_exceptions:
-                raise exc
+                raise
                 
     return wrapper
 

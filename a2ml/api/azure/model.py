@@ -44,28 +44,33 @@ class AzureModel(object):
             'scoreNames': [self.ctx.config.get('experiment/metric')],
             'scoring': self.ctx.config.get('experiment/metric'),
             "score_name": self.ctx.config.get('experiment/metric'),
-            "originalFeatureColumns": model_features
+            "originalFeatureColumns": model_features,
+            "model_type": self.ctx.config.get("model_type")
         }
-        options.update(self._get_a2ml_info())
+        options.update(self._get_hub_info())
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"),
             options)
+        target_categoricals = {}
+        if target_categories:
+            target_categoricals = {self.ctx.config.get('target'): {"categories": target_categories}}
         fsclient.write_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "target_categoricals.json"),
-            {self.ctx.config.get('target'): {"categories": target_categories}})
+            target_categoricals )
 
         metric_path = ModelHelper.get_metric_path( options, model_id)
-        fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
-            {'feature_importance_data': {
-                'features': list(feature_importance.keys()),
-                'scores': list(feature_importance.values())
-            }})
+        if metric_path:
+            fsclient.write_json_file(os.path.join(metric_path, "metric_names_feature_importance.json"),
+                {'feature_importance_data': {
+                    'features': list(feature_importance.keys()),
+                    'scores': list(feature_importance.values())
+                }})
 
         return result
 
-    def _get_a2ml_info(self):
+    def _get_hub_info(self):
         return {'hub_info':{
                 'project_path': self.ctx.config.get_path(),
-                'experiment_id': self.ctx.config.get('experiment/name', None),
-                'experiment_session_id':self.ctx.config.get('experiment/run_id', None),
+                'experiment_id': self.ctx.config.get('experiment/hub_experiment_id', None),
+                'experiment_session_id':self.ctx.config.get('experiment/hub_session_id', None),
             }};
 
     def _deploy_remotly(self, model_id, model_run, ws, experiment):
@@ -231,8 +236,16 @@ def get_df(data):
         predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
         ):
         ds = DataFrame.create_dataframe(filename, data, columns)
+        prediction_id_col = None
+        if 'prediction_id' in ds.columns:
+            prediction_id_col = ds.df['prediction_id']
+
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+
+        if threshold and options.get('model_type', 'classification') != 'classification':
+            self.ctx.log("Threshold only applied to classification and will be ignored.")
+            threshold = None    
 
         results, results_proba, proba_classes, target_categories = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
@@ -251,9 +264,14 @@ def get_df(data):
             options.get('targetFeature', self.ctx.config.get('target', None)),
             target_categories)
 
+        gzip_predict_file = False    
+        if ds.count() > options.get('max_predict_records_to_gzip', 1000):
+            gzip_predict_file = True
+
         predicted = ModelHelper.save_prediction(ds, prediction_id,
             options.get('support_review_model', True), json_result, count_in_result, predicted_at,
-            model_path, model_id, output)
+            model_path, model_id, output, gzip_predict_file=gzip_predict_file,
+            prediction_id_col=prediction_id_col)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
@@ -271,6 +289,20 @@ def get_df(data):
 
             return ModelReview({'model_path': model_path}).add_actuals(
                 actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+        else:
+            raise Exception("Not Implemented")
+
+    @error_handler
+    @authenticated
+    def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
+        if locally:
+            model_path = self.ctx.config.get_model_path(model_id)
+
+            if not fsclient.is_folder_exists(model_path):
+                raise Exception('Model should be deployed first.')
+
+            return ModelReview({'model_path': model_path}).delete_actuals(
+                with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
         else:
             raise Exception("Not Implemented")
 

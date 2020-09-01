@@ -42,12 +42,19 @@ class AugerPipelineApi(AugerBaseApi):
             prediction_api.create(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
         return prediction_properties.get('result')
 
-    def actual(self, records, actuals_at):
+    def actual(self, records, actuals_at, actuals_path=None):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
 
         actual_api = AugerActualApi(self.ctx, self)
-        actual_api.create(records, actuals_at)
+        actual_api.create(records, actuals_at, actuals_path)
 
         #TODO: get object actual from cloud
         return True
+
+    def delete_actuals(self, with_predictions, begin_date, end_date):
+        if self.object_id is None:
+            raise AugerException('Please provide Auger Pipeline id')
+
+        actual_api = AugerActualApi(self.ctx, self)
+        return actual_api.delete(with_predictions, begin_date, end_date)

@@ -40,7 +40,7 @@ $ brew install libomp
 ```
 #### For Mac OS High Sierra and below:
 ```sh
-$ pip install "a2ml[azure]" --ignore-installed onnxruntime
+$ pip install "a2ml[azure]" --ignore-installed onnxruntime onnx nimbusml
 ```
 
 ### Linix:
