@@ -86,12 +86,17 @@ class ModelPredict():
                     
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
-        pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
-        predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
+        temp_file = None
+        ds_result = None
+        if records is not None and len(records) == 0:
+            ds_result =  DataFrame.create_dataframe(None, [], features+["prediction_id", self.ctx.config.get('target')])   
+        else:    
+            pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
+            predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
 
-        ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
-            records=predictions.get('data'), features=predictions.get('columns'))
-        temp_file = ds_result.options['data_path'] if predictions.get('signed_prediction_url') else None
+            ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
+                records=predictions.get('data'), features=predictions.get('columns'))
+            temp_file = ds_result.options['data_path'] if predictions.get('signed_prediction_url') else None
 
         try:
             ds_result.options['data_path'] = filename
