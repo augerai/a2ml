@@ -129,18 +129,26 @@ class TestTasksHubApiAuger(unittest.TestCase):
             'provider_info': {
                 'azure' : {
                     'project':{
-                        'name': 'a2ml_azure_adult_3'
+                        'name': 'a2mlworkspacedev'
                     },
                 }
             },
-            'clusters': [{
-                'name': 'new-test-2',
-                'min_nodes': 0,
-                'max_nodes': 4,
-                #'vm_size': 'STANDARD_D3_V2',
-                'type': 'STANDARD_D2_V2',#'STANDARD_D3_V2',
-                'idle_seconds_before_scaledown': 100
-            }]
+            'clusters': [
+                {
+                    "name": "free",
+                    "type": "STANDARD_D3_V2",
+                    "max_nodes": 3,
+                    "min_nodes": 0
+                }            
+                # {
+                #     'name': 'new-test-2',
+                #     'min_nodes': 0,
+                #     'max_nodes': 4,
+                #     #'vm_size': 'STANDARD_D3_V2',
+                #     'type': 'STANDARD_D2_V2',#'STANDARD_D3_V2',
+                #     'idle_seconds_before_scaledown': 100
+                # }
+            ]
         }
         res = update_cluster_config_task(params)
         print(res)
