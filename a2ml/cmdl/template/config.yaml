@@ -1,8 +1,10 @@
 ---
 # Overall project name
 name:
-# List of providers: auger, google, azure
-providers: auger, azure, google
+# List of providers: auger, azure, google(not supported yet)
+providers: auger
+# Use Auger Cloud Use Auger Cloud for all providers
+use_auger_cloud: true
 # Local file name or remote url to the data source file
 source:
 # List of columns to be excluded from the training data
