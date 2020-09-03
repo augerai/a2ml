@@ -83,7 +83,9 @@ class AzureExperiment(object):
             "primary_metric" : primary_metric,
             "verbosity" : logging.INFO,
             "enable_stack_ensemble": self.ctx.config.get(
-                'experiment/use_ensemble', False)
+                'experiment/use_ensemble', False),
+            "enable_voting_ensemble": self.ctx.config.get(
+                'experiment/use_ensemble', False),
         }
 
         validation_data = None
