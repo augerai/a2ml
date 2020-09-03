@@ -192,7 +192,7 @@ class AzureProject(object):
                 break
             except Exception as e:
                 message = str(e)
-                if 'Workspaces not found' in message and create_if_not_exist:
+                if ('Workspaces not found' in message or 'No workspaces found' in message) and create_if_not_exist:
                     self.create(name)
                     break
                 elif 'invalid_client' in message and nTry < 20:
