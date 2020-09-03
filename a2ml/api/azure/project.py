@@ -208,10 +208,12 @@ class AzureProject(object):
         resource_group = self.ctx.config.get('resource_group')
         if not resource_group:
             if name == "a2mlworkspacedev":
-                resource_group = "a2mldev"    
+                resource_group = "a2mldev"
             elif name == "a2mlworkspacestaging":
                 resource_group = "a2mlstaging"
-            else:    
+            elif name == "a2mlworkspaceprod":
+                resource_group = "a2mlprod"
+            else:
                 resource_group = name+'-resources'
-            
+
         return resource_group
