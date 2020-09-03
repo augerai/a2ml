@@ -16,7 +16,8 @@ All Providers
   .. code-block:: YAML
 
     name:
-    providers: 
+    providers:
+    use_auger_cloud: 
     source: 
     exclude: 
     target: 
@@ -33,6 +34,7 @@ All Providers
 
     * **name** The project name.
     * **providers** List of providers: auger, google, azure.
+    * **use_auger_cloud** Use Auger Cloud for all providers
     * **source** Local file name or remote url to the data source file.
     * **exclude** List of columns to be excluded from the training data.
     * **target** Target column name.
