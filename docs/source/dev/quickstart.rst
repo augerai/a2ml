@@ -589,7 +589,7 @@ To deploy a specific model copy the **model id** from the leaderboard.
     print(res)
     {'azure': {'result': True,
     'data': {'model_id': 'AutoML_eda39aa8-ac1d-49b0-bca0-d1d7f622aafb_4',
-    'aci_service_name': 'automleda39aa8a4-service'}}}
+    'service_name': 'automleda39aa8a4-service'}}}
     
 
 .. code-block:: python

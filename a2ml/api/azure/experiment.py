@@ -62,8 +62,6 @@ class AzureExperiment(object):
             raise AzureException('Please specify Dataset name...')
         experiment_name = self._fix_experiment_name(
             self.ctx.config.get('experiment/name', dataset_name))
-        # cluster_name = self._fix_cluster_name(
-        #     self.ctx.config.get('cluster/name', 'cpucluster'))
 
         self.ctx.log("Starting search on %s Dataset..." % dataset_name)
         exclude_columns = self.ctx.config.get_list('exclude', [])
@@ -85,7 +83,9 @@ class AzureExperiment(object):
             "primary_metric" : primary_metric,
             "verbosity" : logging.INFO,
             "enable_stack_ensemble": self.ctx.config.get(
-                'experiment/use_ensemble', False)
+                'experiment/use_ensemble', False),
+            "enable_voting_ensemble": self.ctx.config.get(
+                'experiment/use_ensemble', False),
         }
 
         validation_data = None
