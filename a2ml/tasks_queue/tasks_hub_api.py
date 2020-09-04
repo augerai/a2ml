@@ -437,6 +437,15 @@ def import_data_task(params):
 @process_task_result
 def deploy_model_task(params):
     ctx = _create_provider_context(params)
+    provider = params.get('provider', 'auger')
+    provider_info = params.get('provider_info', {}).get(provider, {})
+
+    deploy_cluster = provider_info.get('project', {}).get('deploy_cluster', {})
+    ctx.config.set('deploy_cluster/type', deploy_cluster.get('type'), provider)
+    ctx.config.set('deploy_cluster/memory_gb', deploy_cluster.get('memory_gb'), provider)
+    ctx.config.set('deploy_cluster/cpu_cores', deploy_cluster.get('cpu_cores'), provider)
+    ctx.config.set('deploy_cluster/compute_target', deploy_cluster.get('compute_target'), provider)
+
     ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()

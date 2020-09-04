@@ -179,25 +179,34 @@ class TestTasksHubApiAuger(unittest.TestCase):
     def test_deploy_model(self):
         params = {
             'provider': "azure",
-            'model_id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b_0',
-            'review': True,
+            'model_id': 'AutoML_2186b1cb-c97b-4a49-9bcf-e98098fdfa22_5',
+            'support_review_model': True,
 
             'hub_info': {
+                'project_name': 'bike_regr',
                 'project_path': 'tests/tmp',
-                'experiment_id': 'bb29d41a246f601b',
-                'experiment_session_id': '010def8e3cb89236'
+                # 'experiment_id': 'bb29d41a246f601b',
+                # 'experiment_session_id': '010def8e3cb89236'
+                'experiment_session': {
+                    'model_settings':{
+                        'evaluation_options': {}
+                    }
+                    # 'id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b',
+                },                
             },
 
             'provider_info': {
                 'azure' : {
                     'project':{
-                        'name': 'a2ml_azure_adult_3'
+                        "deploy_cluster": {
+                            'type': 'aks',
+                            'memory_gb': 2,
+                            'cpu_cores': 1,
+                            'compute_target': 'a2ml_aks'
+                        }                        
                     },
                     'experiment': {
-                        'name': 'adult-data-csv',
-                    },
-                    'experiment_session': {
-                        'id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b',
+                        'name': 'bike-day-sample-',
                     },
                 }
             }
