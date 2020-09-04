@@ -136,6 +136,9 @@ class AzureModel(object):
             aks_compute_target = AzureProject._fix_cluster_name(
                 self.ctx.config.get('deploy_cluster/compute_target', "a2ml_aks_deploy"))
             if not aks_compute_target in ws.compute_targets:
+                if self.ctx.is_runs_on_server():
+                    raise AzureException("Compute target %s does not exist."%aks_compute_target)
+
                 self.ctx.log('Creating AksCompute %s ...' % aks_compute_target)
                 prov_config = AksCompute.provisioning_configuration(
                     agent_count=int(self.ctx.config.get('deploy_cluster/agent_count', 2)), 
