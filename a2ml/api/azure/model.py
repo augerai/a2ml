@@ -115,7 +115,7 @@ class AzureModel(object):
         from azureml.core.webservice import AciWebservice, AksWebservice, Webservice
         from azureml.exceptions import WebserviceException
         from azureml.core.compute import AksCompute, ComputeTarget
-        from .experiment import AzureExperiment
+        from .project import AzureProject
 
         service_type = self.ctx.config.get('deploy_cluster/type', 'aci').lower()
         cpu_cores = int(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
@@ -133,7 +133,7 @@ class AzureModel(object):
                 description = "inference-%s" % service_name)
         elif service_type == "aks":
             self.ctx.log('Deploying AksWebservice %s ...' % service_name)
-            aks_compute_target = AzureExperiment.fix_cluster_name(
+            aks_compute_target = AzureProject._fix_cluster_name(
                 self.ctx.config.get('deploy_cluster/compute_target', "a2ml_aks_deploy"))
             if not aks_compute_target in ws.compute_targets:
                 self.ctx.log('Creating AksCompute %s ...' % aks_compute_target)
