@@ -273,8 +273,8 @@ def get_df(data):
             gzip_predict_file = True
 
         if model_features:
-            model_features += [target_feature]
-            
+            model_features += [target_feature, 'prediction_id']
+
         predicted = ModelHelper.save_prediction(ds, prediction_id,
             options.get('support_review_model', True), json_result, count_in_result, predicted_at,
             model_path, model_id, output, gzip_predict_file=gzip_predict_file,

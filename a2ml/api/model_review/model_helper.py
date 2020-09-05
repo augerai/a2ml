@@ -323,7 +323,7 @@ class ModelHelper(object):
         if support_review_model:
             file_name = str(prediction_date or datetime.date.today()) + \
                 '_' + prediction_id + "_results.feather.zstd"
-            #Save only model features, they should contain target    
+            #Save only model features, they should contain target and prediction_id    
             if model_features:
                 ds.select(model_features)
 
