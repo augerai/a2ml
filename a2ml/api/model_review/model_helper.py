@@ -266,7 +266,7 @@ class ModelHelper(object):
     @staticmethod
     def save_prediction(ds, prediction_id, support_review_model,
         json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False,
-        prediction_id_col=None):
+        prediction_id_col=None,model_features=None):
         if prediction_id_col is not None:
             ds.df['prediction_id'] = prediction_id_col
         else:
@@ -278,22 +278,19 @@ class ModelHelper(object):
             ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output, gzip_predict_file=gzip_predict_file)
+            json_result, count_in_result, prediction_date, model_path, model_id, output, 
+            gzip_predict_file=gzip_predict_file, model_features=model_features)
 
     @staticmethod
     def save_prediction_result(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, 
+        gzip_predict_file=False, model_features=None):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
         if not prediction_id:
             prediction_id = get_uid()
 
-        if support_review_model:
-            file_name = str(prediction_date or datetime.date.today()) + \
-                '_' + prediction_id + "_results.feather.zstd"
-            ds.saveToFeatherFile(os.path.join(
-                model_path, "predictions", file_name))
-
+        result = {}    
         if path_to_predict and not json_result:
             if output:
                 predict_path = output
@@ -311,18 +308,30 @@ class ModelHelper(object):
             ds.saveToCsvFile(predict_path, compression=compression)
 
             if count_in_result:
-                return {'result_path': predict_path, 'count': ds.count()}
+                result = {'result_path': predict_path, 'count': ds.count()}
             else:
-                return predict_path
+                result = predict_path
         else:
             if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
-                return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
+                result = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
             elif ds.from_pandas:
-                return ds.df
+                result = ds.df
+            else:    
+                result = ds.df.to_dict('records')
 
-            return ds.df.to_dict('records')
+        if support_review_model:
+            file_name = str(prediction_date or datetime.date.today()) + \
+                '_' + prediction_id + "_results.feather.zstd"
+            #Save only model features, they should contain target    
+            if model_features:
+                ds.select(model_features)
 
+            ds.saveToFeatherFile(os.path.join(
+                model_path, "predictions", file_name))
+
+        return result
+            
     @staticmethod
     def revertCategories(results, categories):
         return list(map(lambda x: categories[int(x)], results))

@@ -250,7 +250,7 @@ def get_df(data):
             self.ctx.log("Threshold only applied to classification and will be ignored.")
             threshold = None    
 
-        results, results_proba, proba_classes, target_categories = \
+        results, results_proba, proba_classes, target_categories, model_features = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
 
         if target_categories and len(target_categories) == 2:
@@ -260,21 +260,25 @@ def get_df(data):
                 if item == "True":
                     target_categories[idx] = True
 
+        target_feature = options.get('targetFeature', self.ctx.config.get('target', None))
         ModelHelper.process_prediction(ds,
             results, results_proba, proba_classes,
             threshold,
             options.get('minority_target_class', self.ctx.config.get('minority_target_class')),
-            options.get('targetFeature', self.ctx.config.get('target', None)),
+            target_feature,
             target_categories)
 
         gzip_predict_file = False    
         if ds.count() > options.get('max_predict_records_to_gzip', 1000):
             gzip_predict_file = True
 
+        if model_features:
+            model_features += [target_feature]
+            
         predicted = ModelHelper.save_prediction(ds, prediction_id,
             options.get('support_review_model', True), json_result, count_in_result, predicted_at,
             model_path, model_id, output, gzip_predict_file=gzip_predict_file,
-            prediction_id_col=prediction_id_col)
+            prediction_id_col=prediction_id_col, model_features=model_features)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
@@ -460,7 +464,7 @@ def get_df(data):
             proba_classes = response['proba_classes']
             results_proba = np.array(results_proba)
 
-        return results, results_proba, proba_classes, target_categories
+        return results, results_proba, proba_classes, target_categories, model_features
 
     def verify_local_model(self, model_id):
         model_path = os.path.join(self.ctx.config.get_model_path(model_id),
@@ -488,6 +492,7 @@ def get_df(data):
             raise Exception("Model should be deployed before predict.")
 
         fitted_model = fsclient.load_object_from_file(model_path)
+        model_features = None
         try:
             options = fsclient.read_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"))
 
@@ -510,7 +515,7 @@ def get_df(data):
                 self.ctx.config.get_model_path(model_id), "target_categoricals.json"))
         target_categories = target_categoricals.get(self.ctx.config.get('target'), {}).get("categories")
 
-        return results, results_proba, proba_classes, target_categories
+        return results, results_proba, proba_classes, target_categories, model_features
 
     @error_handler
     @authenticated
