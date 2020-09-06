@@ -447,6 +447,15 @@ def test_score_actuals_return_count_nones():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
+# def test_score_actuals_custom():
+#     model_path = 'tests/fixtures/test_score_actuals/custom'
+
+#     res = ModelReview({'model_path': model_path}).add_actuals(
+#       actuals_path=os.path.join(model_path,
+#         "predictions/ACvFZgFJu4SJvpZe4fqRSL-temp_predict-b7280a.csv_cf1b3cd9-d3b1-4bed-8296-aa59ebe60124_AutoML_3adce96a-b0ad-42e8-9e48-559ffa5b9b37_9_predicted.csv.gz"), return_count=True
+#     )
+#     print(res)
+
 def test_build_review_data():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 

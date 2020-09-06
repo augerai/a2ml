@@ -49,7 +49,7 @@ def send_result_to_hub(json_data):
 
     json_data = json_dumps_np(json_data)
 
-    _log('Send JSON data to Hub: ' + json_data, level=logging.DEBUG)
+    # _log('Send JSON data to Hub: ' + json_data, level=logging.DEBUG)
 
     o = urlparse(task_config.broker_url)
 
