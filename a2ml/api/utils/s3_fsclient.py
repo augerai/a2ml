@@ -414,7 +414,7 @@ class S3FSClient:
     def read_text_file(self, path):
         from .local_fsclient import LocalFSClient
 
-        with LocalFSClient().save_atomic(path) as local_tmp_path:
+        with LocalFSClient().save_atomic(path, move_file=False) as local_tmp_path:
             self.download_file(path, local_tmp_path)
             return LocalFSClient().read_text_file(local_tmp_path)
 
@@ -495,7 +495,7 @@ class S3FSClient:
 
             uri = urlparse(path)
 
-            with LocalFSClient().save_atomic(uri.path) as temp_file:
+            with LocalFSClient().save_atomic(uri.path, move_file=False) as temp_file:
                 LocalFSClient().downloadFile(path, temp_file)
                 self._s3_upload_file(temp_file, s3_path)
 
