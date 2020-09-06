@@ -242,7 +242,7 @@ def archive_folder(path_src, fmt='zip'):
     if is_s3_path(path_src):
         localClient = LocalFSClient()
 
-        with localClient.save_atomic(path_src) as local_path:
+        with localClient.save_atomic(path_src, move_file=False) as local_path:
             logging.info("archiveDir local path:%s" % local_path)
 
             clientS3 = _get_fsclient_bypath(path_src)

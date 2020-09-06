@@ -207,7 +207,7 @@ def convert_to_date(date):
 @contextlib.contextmanager
 def convert_source(source, name):
     if source is not None and isinstance(source, pd.DataFrame):
-        with fsclient.save_atomic("%s.parquet"%name) as local_path:
+        with fsclient.save_atomic("%s.parquet"%name, move_file=False) as local_path:
             source.to_parquet(local_path, index=False, compression="gzip")
             yield local_path
     else:
