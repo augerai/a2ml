@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
@@ -8,6 +9,28 @@ from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from .credentials import Credentials
+
+
+def retry_connection_handler(decorated):
+    retry_errors = ['Connection aborted']
+    num_try=10 
+    delay=10
+    def wrapper(self, *args, **kwargs):
+        nTry = 0
+        while nTry < num_try:
+            try:
+                return decorated(self, *args, **kwargs)
+            except Exception as exc:
+                for retry_error in retry_errors:
+                    if retry_error in str(exc):
+                        self.ctx.log("Retry '%s' error. Sleep and try again. Num try: %s"%(str(exc), nTry))
+                        nTry += 1
+                        time.sleep(delay*nTry)
+                        break
+                    else:
+                        raise                
+                
+    return wrapper
 
 class AzureModel(object):
 
@@ -242,6 +265,8 @@ def get_df(data):
         prediction_id_col = None
         if 'prediction_id' in ds.columns:
             prediction_id_col = ds.df['prediction_id']
+            if prediction_id_col.isna().sum() > 0:
+                raise Exception("Prediction input contain prediction_id with nan values.")
 
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
@@ -411,6 +436,10 @@ def get_df(data):
 
         return {}
 
+    @retry_connection_handler
+    def call_service_run(self, deploy_service, input_data):
+        return deploy_service.run(input_data = input_data)
+
     def _predict_remotely(self, predict_data, model_id, predict_proba):
         from azureml.train.automl.run import AutoMLRun
         from azureml.core.run import Run
@@ -446,7 +475,7 @@ def get_df(data):
         deploy_service = self._get_deploy_service(model_name, ws)
 
         try:
-            response = deploy_service.run(input_data = input_payload)
+            response = self.call_service_run(deploy_service, input_payload)
         except Exception as e:
             log_file = 'automl_errors.log'
             fsclient.write_text_file(log_file, deploy_service.get_logs(), mode="a")
