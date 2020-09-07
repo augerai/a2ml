@@ -12,7 +12,7 @@ from .credentials import Credentials
 
 
 def retry_connection_handler(decorated):
-    retry_errors = ['Connection aborted','Too many requests for service']
+    retry_errors = ['Connection aborted','Too many requests for service','WebserviceException']
     num_try=10 
     delay=10
     def wrapper(self, *args, **kwargs):
