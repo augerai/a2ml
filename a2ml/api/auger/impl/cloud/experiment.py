@@ -95,10 +95,10 @@ class AugerExperimentApi(AugerBaseApi):
             options['oversampling'] = config.get('experiment/oversampling')
         if config.get('experiment/estimate_trial_time'):
             options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
-        if config.get('experiment/max_cores_per_iteration'):
-            options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_iteration')
-        if config.get('experiment/max_concurrent_iterations'):
-            options['max_concurrent_iterations'] = config.get('experiment/max_concurrent_iterations')
+        if config.get('experiment/max_cores_per_trial'):
+            options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_trial')
+        if config.get('experiment/max_concurrent_trials'):
+            options['trials_per_worker'] = config.get('experiment/max_concurrent_trials')
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(

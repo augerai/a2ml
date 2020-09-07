@@ -17,6 +17,10 @@ model_type: classification
 experiment:
   # Number of folds used for k-folds validation of individual trial
   cross_validation_folds: 5
+
+  # Size in percent(0.0-1.0): to hold out a portion of the training data for validation
+  #validation_size: 0.2
+
   # Maximum time to run experiment in minutes
   max_total_time: 60
   # Maximum time to run individual trial in minutes
@@ -25,6 +29,11 @@ experiment:
   max_n_trials: 10
   # Try to improve model performance by creating ensembles from the trial models
   use_ensemble: true
+
+  # The maximum number of threads to use for a given training trial
+  #max_cores_per_trial: 4
+  # Represents the maximum number of trials that would be executed in parallel on one node  
+  #max_concurrent_trials: 4
 
   # Path to validation dataset
   #validation_data: 
