@@ -10,11 +10,11 @@ import time
 def retry_handler(decorated):
     def wrapper(self, *args, **kwargs):
         nTry = 0
-        while nTry < 10:
+        while True:
             try:
                 return decorated(self, *args, **kwargs)
             except Exception as exc:
-                if "InvalidAccessKeyId" in str(exc):
+                if "InvalidAccessKeyId" in str(exc) and nTry < 10:
                     logging.info("BotoClient: InvalidAccessKeyId error.Sleep and try again. Num try: %s"%nTry)
                     nTry += 1
                     time.sleep(10*nTry) 

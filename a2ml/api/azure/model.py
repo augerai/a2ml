@@ -13,22 +13,26 @@ from .credentials import Credentials
 
 def retry_connection_handler(decorated):
     retry_errors = ['Connection aborted','Too many requests for service','WebserviceException']
-    num_try=10 
+    num_try=10
     delay=10
     def wrapper(self, *args, **kwargs):
         nTry = 0
-        while nTry < num_try:
+        while True:
             try:
                 return decorated(self, *args, **kwargs)
             except Exception as exc:
+                retry_exc = False
                 for retry_error in retry_errors:
                     if retry_error in str(exc):
                         self.ctx.log("Retry '%s' error. Sleep and try again. Num try: %s"%(str(exc), nTry))
-                        nTry += 1
-                        time.sleep(delay*nTry)
+                        retry_exc = True
                         break
-                    else:
-                        raise                
+
+                if retry_exc and nTry < num_try:         
+                    nTry += 1
+                    time.sleep(delay*nTry)
+                else:
+                    raise                
                 
     return wrapper
 
