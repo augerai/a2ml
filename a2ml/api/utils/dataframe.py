@@ -8,8 +8,9 @@ import warnings
 
 from functools import wraps
 
-from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line, download_file
+from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line, download_file, retry_helper
 from a2ml.api.utils.local_fsclient import LocalFSClient
+
 
 # To avoid warnings for inplace operation on datasets
 pd.options.mode.chained_assignment = None
@@ -62,10 +63,10 @@ class DataFrame(object):
 
             fsclient.wait_for_file(path, True)
             try:
-                df = DataFrame.create_dataframe(path, None, features)
+                df = retry_helper(lambda: DataFrame.create_dataframe(path, None, features))
                 yield (file, df)
-            except:
-                logging.exception("load_from_files failed for: %s"%path)    
+            except Exception as exc:
+                logging.exception("load_from_files failed for: %s. Error: %s"%(path, exc))
 
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
