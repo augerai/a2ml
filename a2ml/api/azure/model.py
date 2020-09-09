@@ -4,37 +4,12 @@ import time
 
 from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, retry_helper
 from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from .credentials import Credentials
 
-
-def retry_connection_handler(decorated):
-    retry_errors = ['Connection aborted','Too many requests for service','WebserviceException']
-    num_try=10
-    delay=10
-    def wrapper(self, *args, **kwargs):
-        nTry = 0
-        while True:
-            try:
-                return decorated(self, *args, **kwargs)
-            except Exception as exc:
-                retry_exc = False
-                for retry_error in retry_errors:
-                    if retry_error in str(exc):
-                        self.ctx.log("Retry '%s' error. Sleep and try again. Num try: %s"%(str(exc), nTry))
-                        retry_exc = True
-                        break
-
-                if retry_exc and nTry < num_try:         
-                    nTry += 1
-                    time.sleep(delay*nTry)
-                else:
-                    raise                
-                
-    return wrapper
 
 class AzureModel(object):
 
@@ -440,8 +415,7 @@ def get_df(data):
 
         return {}
 
-    @retry_connection_handler
-    def call_service_run(self, deploy_service, input_data):
+    def _call_service_run(self, deploy_service, input_data):
         return deploy_service.run(input_data = input_data)
 
     def _predict_remotely(self, predict_data, model_id, predict_proba):
@@ -479,7 +453,8 @@ def get_df(data):
         deploy_service = self._get_deploy_service(model_name, ws)
 
         try:
-            response = self.call_service_run(deploy_service, input_payload)
+            response = retry_helper(lambda: self._call_service_run(deploy_service, input_payload),
+                ['Connection aborted','Too many requests for service','WebserviceException'], ctx=self.ctx)
         except Exception as e:
             log_file = 'automl_errors.log'
             fsclient.write_text_file(log_file, deploy_service.get_logs(), mode="a")
