@@ -58,7 +58,7 @@ class DataFrame(object):
 
     @staticmethod
     def load_from_files(files, features=None):
-        for file in files:
+        for file in files: 
             path = file if type(file) == str else file['path']
 
             fsclient.wait_for_file(path, True)
