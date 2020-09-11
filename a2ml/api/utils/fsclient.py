@@ -64,7 +64,7 @@ def open_file(path, mode, num_tries=20, encoding='utf-8', auto_decompression=Tru
         import smart_open
 
         nTry = 0
-        while nTry <= num_tries:
+        while True:
             try:
                 # TODO: support append mode for s3
                 return smart_open.open(
@@ -167,13 +167,16 @@ def read_json_file(path, check_if_exist=True, if_wait_for_file=False):
         return {}
 
     nTry = 0
-    while nTry < 10:
+    while True:
         json_text = read_text_file(path)
         try:
             return json.loads(json_text)
         except Exception as e:
             logging.error("Load json failed: %s.Text: %s" %
                           (repr(e), json_text))
+            if nTry > 10:
+                raise
+
             nTry += 1
             time.sleep(2)
 
