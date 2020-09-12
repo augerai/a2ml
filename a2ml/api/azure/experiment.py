@@ -43,13 +43,35 @@ class AzureExperiment(object):
         self.ctx.log('%s Experiment(s) listed' % str(nexperiments))
         return {'experiments': experiments}
 
+    @staticmethod    
+    def _map_metric_a2ml_to_azure(metric):
+        if metric == "r2":
+            metric = "r2_score"
+        elif metric == "precision_weighted":
+            metric == "precision_score_weighted"
+        elif metric == "roc_auc_ovr_weighted":
+            metric == "AUC_weighted"
+
+        return metric
+
+    @staticmethod    
+    def _map_metric_azure_to_a2ml(metric):
+        if metric == "r2_score":
+            metric = "r2"
+        elif metric == "precision_score_weighted":
+            metric == "precision_weighted"
+        elif metric == "AUC_weighted":
+            metric == "roc_auc_ovr_weighted"
+
+        return metric
+
     @error_handler
     @authenticated    
     def start(self):
         model_type = self.ctx.config.get('model_type')
         if not model_type:
             raise AzureException('Please specify model type...')
-        primary_metric = self.ctx.config.get('experiment/metric')
+        primary_metric = self._map_metric_a2ml_to_azure(self.ctx.config.get('experiment/metric'))
         if not primary_metric:
             raise AzureException('Please specify primary metric...')
         #TODO: check if primary_metric is constent with model_type
@@ -295,7 +317,7 @@ class AzureExperiment(object):
         return ws.compute_targets[local_cluster['name']], local_cluster['name']
 
     def _get_leaderboard(self, experiment_run):
-        primary_metric = experiment_run.properties['primary_metric']
+        primary_metric = self._map_metric_azure_to_a2ml(experiment_run.properties['primary_metric'])
         task_type = ""
         if experiment_run.properties.get("AMLSettingsJsonString"):
             settings = json.loads(experiment_run.properties.get("AMLSettingsJsonString"))
@@ -305,41 +327,46 @@ class AzureExperiment(object):
         leaderboard = pd.DataFrame(index=['model id', 'algorithm', 'score', 'fit_time', 'algorithm_name', 'algorithm_params', 'preprocessor', 'primary_metric', "all_scores", 'task_type'])
         goal_minimize = False
         for run in children:
-            if('run_algorithm' in run.properties and 'score' in run.properties):
-                if run.properties['run_preprocessor']:
-                    run_algorithm = '%s,%s' % (run.properties['run_preprocessor'],
-                        run.properties['run_algorithm'])
+            run_props = run.properties
+            if('run_algorithm' in run_props and 'score' in run_props):
+                if run_props['run_preprocessor']:
+                    run_algorithm = '%s,%s' % (run_props['run_preprocessor'],
+                        run_props['run_algorithm'])
                 else:
-                    run_algorithm = run.properties['run_algorithm']
+                    run_algorithm = run_props['run_algorithm']
 
                 algorithm_params = {}    
-                if run.properties.get('pipeline_spec'):
-                    pipeline_spec = json.loads(run.properties.get('pipeline_spec'))
+                if run_props.get('pipeline_spec'):
+                    pipeline_spec = json.loads(run_props.get('pipeline_spec'))
                     for item in pipeline_spec.get('objects', []):
                         if item.get('spec_class') and item.get('spec_class') != "preproc" and \
                             not "Ensemble" in item.get('class_name', ""):
                             algorithm_params = item.get('param_kwargs')
                             break
 
-                all_scores = run.get_metrics()
+                all_scores_azure = run.get_metrics()
+                all_scores = {}
                 scores_to_remove = ['confusion_matrix', 'accuracy_table', 'predicted_true', 'residuals']
-                for item in scores_to_remove:
-                    if item in all_scores:
-                        del all_scores[item]
+                for key, value in all_scores_azure.items():
+                    if key in scores_to_remove:
+                        continue
 
-                leaderboard[run.id] = [run.id,
-                                      run_algorithm,
-                                      float(run.properties['score']),
-                                      run.properties['fit_time'],
-                                      run.properties['run_algorithm'],
-                                      algorithm_params,
-                                      run.properties['run_preprocessor'],
-                                      primary_metric,
-                                      all_scores,
-                                      task_type
-                                      ]
-                if('goal' in run.properties):
-                    goal_minimize = run.properties['goal'].split('_')[-1] == 'min'
+                    all_scores[self._map_metric_azure_to_a2ml(key)] = value    
+
+                leaderboard[run.id] = [
+                    run.id,
+                    run_algorithm,
+                    float(run_props['score']),
+                    run_props['fit_time'],
+                    run_props['run_algorithm'],
+                    algorithm_params,
+                    run_props['run_preprocessor'],
+                    primary_metric,
+                    all_scores,
+                    task_type
+                ]
+                if('goal' in run_props):
+                    goal_minimize = run_props['goal'].split('_')[-1] == 'min'
                     
         leaderboard = leaderboard.T.sort_values(
             'score', ascending = goal_minimize)
