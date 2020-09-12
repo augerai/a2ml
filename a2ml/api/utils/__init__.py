@@ -212,3 +212,30 @@ def convert_source(source, name):
             yield local_path
     else:
         yield source
+
+def retry_helper(func, retry_errors=[], num_try=10, delay=10, ctx=None):
+    nTry = 0
+    while True:
+        try:
+            return func()
+        except Exception as exc:
+            retry_exc = False
+            if not retry_errors:
+                retry_exc = True
+            else:    
+                for retry_error in retry_errors:
+                    if retry_error in str(exc):
+                        retry_exc = True
+                        break
+
+            if retry_exc and nTry < num_try:
+                if ctx:
+                    ctx.log("Retry '%s', error: '%s'. Sleep and try again. Num try: %s"%(func, str(exc), nTry))
+                else:
+                    logging.error("Retry '%s', error: '%s'. Sleep and try again. Num try: %s"%(func, str(exc), nTry))
+
+                nTry += 1
+                time.sleep(delay*nTry)
+            else:
+                raise                
+                
