@@ -42,7 +42,7 @@ All Providers
     * **model_type**  Model type: classification|regression|timeseries.
     * **experiment.metric**  Score used to optimize ML model.
 
-      * **Classification** accuracy, precision_weighted, roc_auc_ovr_weighted, norm_macro_recall, average_precision_score_weighted
+      * **Classification** accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
       * **Auger only: Classification** f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, recall_macro, recall_micro, recall_weighted
       * **Auger only: Binary Classification** average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
       * **Regression and/or Time Series** spearman_correlation, r2, normalized_mean_absolute_error, normalized_root_mean_squared_error

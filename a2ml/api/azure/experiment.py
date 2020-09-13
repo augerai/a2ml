@@ -49,8 +49,6 @@ class AzureExperiment(object):
             metric = "r2_score"
         elif metric == "precision_weighted":
             metric == "precision_score_weighted"
-        elif metric == "roc_auc_ovr_weighted":
-            metric == "AUC_weighted"
 
         return metric
 
@@ -60,8 +58,6 @@ class AzureExperiment(object):
             metric = "r2"
         elif metric == "precision_score_weighted":
             metric == "precision_weighted"
-        elif metric == "AUC_weighted":
-            metric == "roc_auc_ovr_weighted"
 
         return metric
 

@@ -17,7 +17,7 @@ model_type: classification
 experiment:
   ### Metric used to build Model
   # Score used to optimize ML model.
-  # Supported scores for classification: accuracy, precision_weighted, roc_auc_ovr_weighted, norm_macro_recall, average_precision_score_weighted
+  # Supported scores for classification: accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
   # Auger only: Supported scores for classification:  f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, recall_macro, recall_micro, recall_weighted   
   # Auger only: Supported scores for binary classification: average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
 
