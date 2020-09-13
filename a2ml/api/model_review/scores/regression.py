@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import make_scorer, mean_squared_error, mean_squared_log_error
+from sklearn.metrics import make_scorer, mean_squared_error, mean_squared_log_error, mean_absolute_error
 from sklearn.metrics.scorer import SCORERS
 
 
@@ -49,15 +49,33 @@ def mda_score(y_true, y_pred, above_percent=0.2):
     match = np.sum(true_sign == pred_sign)
     return match / float(idx.shape[0])
 
+def nmae_score(y_true, y_pred):
+    """ Normalized Root Mean Squared Error """
+    return mean_absolute_error(y_true, y_pred) / (y_true.max() - y_true.min())
+
+def nrmse_score(y_true, y_pred):
+    """ Normalized Root Mean Squared Error """
+    return np.sqrt(mean_squared_error(y_true, y_pred)) / (y_true.max() - y_true.min())
+
+def spearman_correlation_score(y_true, y_pred):
+    from scipy import stats
+
+    return stats.spearmanr(y_true, y_pred)[0]
 
 neg_rmsle_scorer = make_scorer(neg_rmsle_score)
 neg_mase_scorer = make_scorer(neg_mase_score)
 neg_mape_scorer = make_scorer(neg_mape_score)
 mda_scorer = make_scorer(mda_score)
 neg_rmse_scorer = make_scorer(neg_rmse_score)
+nmae_scorer = make_scorer(nmae_score)
+nrmse_scorer = make_scorer(nrmse_score)
+spearman_correlation_scorer = make_scorer(spearman_correlation_score)
 
 SCORERS['neg_rmsle'] = neg_rmsle_scorer
 SCORERS['neg_mase'] = neg_mase_scorer
 SCORERS['neg_mape'] = neg_mape_scorer
 SCORERS['mda'] = mda_scorer
 SCORERS['neg_rmse'] = neg_rmse_scorer
+SCORERS['normalized_mean_absolute_error'] = nmae_scorer
+SCORERS['normalized_root_mean_squared_error'] = nrmse_scorer
+SCORERS['spearman_correlation'] = spearman_correlation_scorer
