@@ -139,6 +139,7 @@ class ModelHelper(object):
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
+        from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
         import inspect
 

@@ -104,3 +104,4 @@ SCORERS['matthews_corrcoef'] = matthews_corrcoef
 SCORERS['gini'] = gini_score
 SCORERS['norm_macro_recall'] = norm_macro_recall_scorer
 SCORERS['average_precision_score_weighted'] = average_precision_score_weighted_scorer
+SCORERS['AUC_weighted'] = SCORERS['roc_auc_ovr_weighted']
