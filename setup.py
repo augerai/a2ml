@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.5.2'
+VERSION = '0.5.3'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))

@@ -120,8 +120,8 @@ class AzureModel(object):
         from .project import AzureProject
 
         service_type = self.ctx.config.get('deploy_cluster/type', 'aci').lower()
-        cpu_cores = int(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
-        memory_gb = int(self.ctx.config.get('deploy_cluster/memory_gb', 2))
+        cpu_cores = float(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
+        memory_gb = float(self.ctx.config.get('deploy_cluster/memory_gb', 2))
         service_name = self._deploy_service_name(model_name)
         service_target = None
 
