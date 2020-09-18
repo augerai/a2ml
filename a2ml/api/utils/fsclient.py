@@ -382,13 +382,17 @@ def with_s3_downloaded_or_local_file(source_path):
 
 def load_object_from_file(path, use_local_cache=False):
     import joblib
+    import urllib.parse
 
     path_to_load = None
     if is_s3_path(path):
         if use_local_cache:
-            local_path = path.replace(
-                "s3://"+os.environ.get('S3_DATA_PATH'), os.environ.get("AUGER_LOCAL_TMP_DIR", ''))
-            #logging.info("Local cache path: %s"%local_path)
+            temp_path = "/temp"
+            if os.environ.get("AUGER_LOCAL_TMP_DIR", ''):
+                temp_path = os.environ.get("AUGER_LOCAL_TMP_DIR", '')
+
+            local_path = os.path.join(temp_path, urllib.parse.urlparse(path).path )
+            logging.info("Local cache path: %s"%local_path)
             if not is_file_exists(local_path):
                 local_lock_path = local_path + '.lock'
                 create_parent_folder(local_lock_path)

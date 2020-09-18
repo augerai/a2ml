@@ -457,7 +457,9 @@ def deploy_model_task(params):
     ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
-    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'))
+    locally = params.get('locally', params.get('provider')=='azure')
+    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'),
+        locally=locally)
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
@@ -476,7 +478,8 @@ def undeploy_model_task(params):
         raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
     ctx.config.clean_changes()
-    res = A2MLModel(ctx).undeploy(model_id = model_id)
+    locally = params.get('locally', params.get('provider')=='azure')
+    res = A2MLModel(ctx).undeploy(model_id = model_id, locally=locally)
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
@@ -491,6 +494,7 @@ def predict_by_model_task(params):
 
     ctx.config.clean_changes()
     runner = CRUDRunner(ctx, "%s"%params.get('provider'), 'model')
+    locally = params.get('locally', params.get('provider')=='azure')
     res = list(runner.providers.values())[0].predict(
         filename=params.get('path_to_predict'),
         model_id=params.get('model_id'),
@@ -500,7 +504,8 @@ def predict_by_model_task(params):
         json_result=params.get('json_result'),
         count_in_result=params.get('count_in_result'),
         predicted_at=params.get('prediction_date'),
-        prediction_id = params.get('prediction_id')
+        prediction_id = params.get('prediction_id'),
+        locally = locally
     )
     _update_hub_objects(ctx, params.get('provider'), params)
 
