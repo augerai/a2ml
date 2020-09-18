@@ -9,6 +9,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN pip install "numpy==1.19.2"
+RUN pip install Cython
 
 FROM base as builder
 
