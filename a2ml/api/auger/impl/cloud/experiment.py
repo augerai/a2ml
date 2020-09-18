@@ -99,6 +99,10 @@ class AugerExperimentApi(AugerBaseApi):
             options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_trial')
         if config.get('experiment/max_concurrent_trials'):
             options['trials_per_worker'] = config.get('experiment/max_concurrent_trials')
+        if self.ctx.config.get('experiment/blocked_models'):
+            options["algorithms_to_exlude"] = self.ctx.config.get_list('experiment/blocked_models')
+        if self.ctx.config.get('experiment/allowed_models'):
+            options["allowed_algorithms"] = self.ctx.config.get_list('experiment/allowed_models')
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(

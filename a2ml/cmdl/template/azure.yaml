@@ -9,6 +9,23 @@ experiment:
   # Latest experiment run
   run_id:
 
+  # List of all supported model names:
+  # *Classification: AveragedPerceptronClassifier,BernoulliNB,DecisionTree,ExtraTrees,
+  # GradientBoosting,KNearestNeighborsClassifier,LightGBMClassifier,LinearSupportVectorMachine,
+  # LogisticRegression,MultinomialNB,SGDClassifier,RandomForest,
+  # SupportVectorMachine,XGBoostClassifier
+  # *Regression: DecisionTreeRegressor,ElasticNet,ExtraTreesRegressor,FastLinearRegressor,
+  # GradientBoostingRegressor,KNearestNeighborsRegressor,LassoLars,LightGBMRegressor,
+  # OnlineGradientDescentRegressor,RandomForestRegressor,SGDRegressor,XGBoostRegressor
+  # *Timeseries: AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
+
+  # A list of model names to ignore for an experiment  
+  #blocked_models:  
+
+  # A list of model names to search for an experiment. 
+  # If not specified, then all models supported for the task are used minus any specified in blocked_models
+  #allowed_models:
+
 cluster:
   region: eastus2
   min_nodes: 0

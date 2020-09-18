@@ -13,6 +13,25 @@ experiment:
   # List of columns which should be used as label encoded features
   label_encoded: []
 
+  # List of all supported model names:
+  # *Classification: XGBClassifier,LGBMClassifier,SVC,SGDClassifier,
+  # AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,
+  # GradientBoostingClassifier,CatBoostClassifier
+  # *Regression: SVR,XGBRegressor,LGBMRegressor,ElasticNet,
+  # SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,
+  # RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
+  # *Timeseries: SVR,XGBRegressor,LGBMRegressor,ElasticNet,
+  # SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,
+  # RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,
+  # TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
+
+  # A list of model names to ignore for an experiment  
+  #blocked_models:  
+
+  # A list of model names to search for an experiment. 
+  # If not specified, then all models supported for the task are used minus any specified in blocked_models
+  #allowed_models:
+
   # Optional. Default: False. 
   # Estimate Trial Time Predict the training time of each individual model to avoid timeouts.
   #estimate_trial_time: False
