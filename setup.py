@@ -28,7 +28,7 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy>=1.16.6', #version for azure
+    'numpy<1.19.0,>=1.16.0', #version for azure
     'pandas>=0.22', #version for azure
     'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
