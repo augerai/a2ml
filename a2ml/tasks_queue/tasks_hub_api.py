@@ -183,6 +183,11 @@ def _read_hub_experiment_session(ctx, params):
     ctx.config.set('experiment/metric',
         evaluation_options.get('scoring'), provider)
 
+    if evaluation_options.get('algorithms_to_exlude'):
+        ctx.config.set('experiment/blocked_models', evaluation_options.get('algorithms_to_exlude'))
+    if evaluation_options.get('allowed_algorithms'):
+        ctx.config.set('experiment/allowed_models', evaluation_options.get('allowed_algorithms'))
+
     return ctx
 
 def _update_hub_objects(ctx, provider, params):

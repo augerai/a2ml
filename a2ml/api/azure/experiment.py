@@ -67,6 +67,10 @@ class AzureExperiment(object):
         model_type = self.ctx.config.get('model_type')
         if not model_type:
             raise AzureException('Please specify model type...')
+
+        if model_type == 'timeseries':
+            model_type = 'forecasting'
+
         primary_metric = self._map_metric_a2ml_to_azure(self.ctx.config.get('experiment/metric'))
         if not primary_metric:
             raise AzureException('Please specify primary metric...')
@@ -135,6 +139,10 @@ class AzureExperiment(object):
             automl_settings["max_cores_per_iteration"] = self.ctx.config.get('experiment/max_cores_per_trial')
         if self.ctx.config.get('experiment/max_concurrent_trials'):
             automl_settings["max_concurrent_iterations"] = self.ctx.config.get('experiment/max_concurrent_trials')
+        if self.ctx.config.get('experiment/blocked_models'):
+            automl_settings["blocked_models"] = self.ctx.config.get_list('experiment/blocked_models')
+        if self.ctx.config.get('experiment/allowed_models'):
+            automl_settings["allowed_models"] = self.ctx.config.get_list('experiment/allowed_models')
 
         # if self.ctx.config.get('exclude'):
         #     fc = FeaturizationConfig()

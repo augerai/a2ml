@@ -4,7 +4,7 @@ import csv
 import sys
 import inspect
 from google.cloud.automl_v1 import AutoMlClient, PredictionServiceClient
-from google.cloud.automl_v1 import enums
+#from google.cloud.automl_v1 import enums
 import google.auth
 from a2ml.api.utils.config import Config
 from google.auth.transport.requests import AuthorizedSession
