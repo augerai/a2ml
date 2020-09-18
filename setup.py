@@ -33,7 +33,6 @@ install_requires = [
     'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
     'pyarrow<2.0.0,>=0.17.0', #version for azure
-    'scikit-learn==0.21.3', #version for azure
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.1',
@@ -74,6 +73,8 @@ extras = {
         'uvicorn',
     ],
     'azure': [
+        'onnx==1.7.0',
+        'scikit-learn==0.21.3',
         'azureml-sdk[automl]~=1.13.0'
     ],
     'google': [
