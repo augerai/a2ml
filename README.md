@@ -40,6 +40,7 @@ $ brew install libomp
 ```
 #### For Mac OS High Sierra and below:
 ```sh
+$ SKLEARN_NO_OPENMP=1 pip install "scikit-learn==0.21.3"
 $ pip install "a2ml[azure]" --ignore-installed onnxruntime onnx nimbusml
 ```
 

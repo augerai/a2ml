@@ -28,11 +28,12 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy<1.17.0,>=1.16.0', #version for azure
+    'numpy>=1.16.6', #version for azure
     'pandas>=0.22', #version for azure
     'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
-    'pyarrow<1.0.0,>=0.17.0', #version for azure    
+    'pyarrow<2.0.0,>=0.17.0', #version for azure
+    'scikit-learn==0.21.3', #version for azure
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.1',
@@ -73,7 +74,7 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]~=1.11.0'
+        'azureml-sdk[automl]~=1.13.0'
     ],
     'google': [
         'google-cloud-automl'

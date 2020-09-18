@@ -1,4 +1,4 @@
-FROM python:3.7-slim-stretch as base
+FROM python:3.8.5-slim-stretch as base
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
