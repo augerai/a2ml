@@ -8,6 +8,8 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN pip install "numpy==1.19.2"
+
 FROM base as builder
 
 ENV WORKDIR=/app
