@@ -80,6 +80,8 @@ Auger
       experiment_session_id:
       time_series:
       label_encoded: []
+      blocked_models: []
+      allowed_models: []
       estimate_trial_time: False
       trials_per_worker: 2
       class_weight:
@@ -97,6 +99,14 @@ Auger
     * **experiment.experiment_session_id** Latest experiment session.
     * **experiment.time_series** Time series feature. If Data Source contains more then one DATETIME feature you will have to explicitly specify feature to use as time series.
     * **experiment.label_encoded** List of columns which should be used as label encoded features.
+    * **experiment.blocked_models** A list of model names to ignore for an experiment
+    * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
+
+      * **Supported models**
+      * **Classification** XGBClassifier,LGBMClassifier,SVC,SGDClassifier,AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,GradientBoostingClassifier,CatBoostClassifier
+      * **Regression** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
+      * **Timeseries** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
+
     * **estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
     * **trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
     * **class_weight** Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.
@@ -119,6 +129,8 @@ Azure
     experiment:
       name:
       run_id:
+      blocked_models: []
+      allowed_models: []
 
     cluster:
       region:
@@ -132,6 +144,14 @@ Azure
     * **dataset** Name of the DataSet on Azure Cloud.
     * **experiment.name** Latest experiment name.
     * **experiment.run_id** Latest experiment run.
+    * **experiment.blocked_models** A list of model names to ignore for an experiment
+    * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
+
+      * **Supported models**
+      * **Classification** AveragedPerceptronClassifier,BernoulliNB,DecisionTree,ExtraTrees,GradientBoosting,KNearestNeighborsClassifier,LightGBMClassifier,LinearSupportVectorMachine,LogisticRegression,MultinomialNB,SGDClassifier,RandomForest,SupportVectorMachine,XGBoostClassifier
+      * **Regression** DecisionTreeRegressor,ElasticNet,ExtraTreesRegressor,FastLinearRegressor,GradientBoostingRegressor,KNearestNeighborsRegressor,LassoLars,LightGBMRegressor,OnlineGradientDescentRegressor,RandomForestRegressor,SGDRegressor,XGBoostRegressor
+      * **Timeseries** AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
+
     * **cluster.region** Name of cluster region. For example: eastus2
     * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 
     * **cluster.max_nodes** Maximum number of nodes allocated for cluster.
