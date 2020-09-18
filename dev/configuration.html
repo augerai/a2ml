@@ -285,6 +285,8 @@
   <span class="nt">experiment_session_id</span><span class="p">:</span>
   <span class="nt">time_series</span><span class="p">:</span>
   <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+  <span class="nt">blocked_models</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+  <span class="nt">allowed_models</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
   <span class="nt">estimate_trial_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
   <span class="nt">trials_per_worker</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
   <span class="nt">class_weight</span><span class="p">:</span>
@@ -303,6 +305,15 @@
 <li><p><strong>experiment.experiment_session_id</strong> Latest experiment session.</p></li>
 <li><p><strong>experiment.time_series</strong> Time series feature. If Data Source contains more then one DATETIME feature you will have to explicitly specify feature to use as time series.</p></li>
 <li><p><strong>experiment.label_encoded</strong> List of columns which should be used as label encoded features.</p></li>
+<li><p><strong>experiment.blocked_models</strong> A list of model names to ignore for an experiment</p></li>
+<li><p><strong>experiment.allowed_models</strong> A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models</p>
+<ul>
+<li><p><strong>Supported models</strong></p></li>
+<li><p><strong>Classification</strong> XGBClassifier,LGBMClassifier,SVC,SGDClassifier,AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,GradientBoostingClassifier,CatBoostClassifier</p></li>
+<li><p><strong>Regression</strong> SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor</p></li>
+<li><p><strong>Timeseries</strong> SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor</p></li>
+</ul>
+</li>
 <li><p><strong>estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
 <li><p><strong>trials_per_worker</strong> Use it if you have a lot of failed trials. Set it to value &lt; 8 to give trial fit process more memory. Default is None.</p></li>
 <li><p><strong>class_weight</strong> Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.</p></li>
@@ -327,6 +338,8 @@
 <span class="nt">experiment</span><span class="p">:</span>
   <span class="nt">name</span><span class="p">:</span>
   <span class="nt">run_id</span><span class="p">:</span>
+  <span class="nt">blocked_models</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
+  <span class="nt">allowed_models</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
 
 <span class="nt">cluster</span><span class="p">:</span>
   <span class="nt">region</span><span class="p">:</span>
@@ -342,6 +355,15 @@
 <li><p><strong>dataset</strong> Name of the DataSet on Azure Cloud.</p></li>
 <li><p><strong>experiment.name</strong> Latest experiment name.</p></li>
 <li><p><strong>experiment.run_id</strong> Latest experiment run.</p></li>
+<li><p><strong>experiment.blocked_models</strong> A list of model names to ignore for an experiment</p></li>
+<li><p><strong>experiment.allowed_models</strong> A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models</p>
+<ul>
+<li><p><strong>Supported models</strong></p></li>
+<li><p><strong>Classification</strong> AveragedPerceptronClassifier,BernoulliNB,DecisionTree,ExtraTrees,GradientBoosting,KNearestNeighborsClassifier,LightGBMClassifier,LinearSupportVectorMachine,LogisticRegression,MultinomialNB,SGDClassifier,RandomForest,SupportVectorMachine,XGBoostClassifier</p></li>
+<li><p><strong>Regression</strong> DecisionTreeRegressor,ElasticNet,ExtraTreesRegressor,FastLinearRegressor,GradientBoostingRegressor,KNearestNeighborsRegressor,LassoLars,LightGBMRegressor,OnlineGradientDescentRegressor,RandomForestRegressor,SGDRegressor,XGBoostRegressor</p></li>
+<li><p><strong>Timeseries</strong> AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster</p></li>
+</ul>
+</li>
 <li><p><strong>cluster.region</strong> Name of cluster region. For example: eastus2</p></li>
 <li><p><strong>cluster.min_nodes</strong> Minimum number of nodes allocated for cluster. Minimum is 0.</p></li>
 <li><p><strong>cluster.max_nodes</strong> Maximum number of nodes allocated for cluster.</p></li>
