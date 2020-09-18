@@ -73,9 +73,6 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'onnxruntime==1.4.0',
-        'onnx==1.7.0',
-        'nimbusml==1.8.0',
         'scikit-learn==0.21.3',
         'azureml-sdk[automl]~=1.13.0'
     ],
