@@ -10,13 +10,11 @@ experiment:
   run_id:
 
   # List of all supported model names:
-  # *Classification: AveragedPerceptronClassifier,BernoulliNB,DecisionTree,ExtraTrees,
-  # GradientBoosting,KNearestNeighborsClassifier,LightGBMClassifier,LinearSupportVectorMachine,
-  # LogisticRegression,MultinomialNB,SGDClassifier,RandomForest,
-  # SupportVectorMachine,XGBoostClassifier
-  # *Regression: DecisionTreeRegressor,ElasticNet,ExtraTreesRegressor,FastLinearRegressor,
-  # GradientBoostingRegressor,KNearestNeighborsRegressor,LassoLars,LightGBMRegressor,
-  # OnlineGradientDescentRegressor,RandomForestRegressor,SGDRegressor,XGBoostRegressor
+  # *Classification: AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,
+  # GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,
+  # MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
+  # *Regression: DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,
+  # GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
   # *Timeseries: AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
 
   # A list of model names to ignore for an experiment  
