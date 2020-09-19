@@ -476,7 +476,7 @@ def get_df(data):
 
     def verify_local_model(self, model_id):
         model_path = os.path.join(self.ctx.config.get_model_path(model_id),
-            'model.pkl')
+            'model.pkl.gz')
         return fsclient.is_file_exists(model_path), model_path
 
     def _deploy_locally(self, model_id, model_run, ws, experiment):
@@ -484,16 +484,16 @@ def get_df(data):
 
         self.ctx.log('Downloading model %s' % model_id)
 
-        # iteration, run_id = self._get_iteration(model_id)
-        # remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
-        # model_run = AutoMLRun(experiment = experiment, run_id = model_id)
-        #best_run, fitted_model = remote_run.get_output(iteration=iteration)
+        iteration, run_id = self._get_iteration(model_id)
+        remote_run = AutoMLRun(experiment = experiment, run_id = run_id)
+        best_run, fitted_model = remote_run.get_output(iteration=iteration)
 
-        # is_loaded, model_path = self.verify_local_model(model_id)
-        # fsclient.save_object_to_file(fitted_model, model_path)
-        model_path = self.ctx.config.get_model_path(model_id)
-        with fsclient.save_local(os.path.join(model_path, 'model.pkl'), move_file=True) as local_path:
-            model_run.download_file("outputs/model.pkl", local_path)
+        is_loaded, model_path = self.verify_local_model(model_id)
+        fsclient.save_object_to_file(fitted_model, model_path)
+
+        # model_path = self.ctx.config.get_model_path(model_id)
+        # with fsclient.save_local(os.path.join(model_path, 'model.pkl'), move_file=True) as local_path:
+        #     model_run.download_file("outputs/model.pkl", local_path)
 
         self.ctx.log('Downloaded model to %s' % model_path)
         return {'model_id': model_id}
