@@ -7,10 +7,6 @@ import json
 from a2ml.api.utils import get_uid, get_uid4, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
-# For calculate_scores
-from .scores.regression import *
-from .scores.classification import *
-
 
 class ModelHelper(object):
 
@@ -141,6 +137,10 @@ class ModelHelper(object):
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
         from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
+        # For calculate_scores
+        from .scores.regression import spearman_correlation_score
+        from .scores.classification import AUC_weighted_score
+
         import inspect
 
         if options.get('fold_group') == 'time_series_standard_model':
@@ -172,6 +172,9 @@ class ModelHelper(object):
                     if scoring != options.get('scoring'):
                         continue
 
+                if scoring == 'r2_score':
+                    scoring = 'r2'
+                            
                 scorer = get_scorer(scoring)
                 if options.get('minority_target_class_pos') is not None:
                     argSpec = inspect.getfullargspec(scorer._score_func)
