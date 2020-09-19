@@ -74,6 +74,7 @@ extras = {
     ],
     'azure': [
         'scikit-learn==0.22.1',
+        'xgboost',
         'azure-mgmt-resource==10.2.0', #https://github.com/Azure/azure-sdk-for-python/issues/13871
         'azureml-sdk[automl]~=1.13.0'
     ],
