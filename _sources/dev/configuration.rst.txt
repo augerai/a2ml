@@ -148,8 +148,8 @@ Azure
     * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
 
       * **Supported models**
-      * **Classification** AveragedPerceptronClassifier,BernoulliNB,DecisionTree,ExtraTrees,GradientBoosting,KNearestNeighborsClassifier,LightGBMClassifier,LinearSupportVectorMachine,LogisticRegression,MultinomialNB,SGDClassifier,RandomForest,SupportVectorMachine,XGBoostClassifier
-      * **Regression** DecisionTreeRegressor,ElasticNet,ExtraTreesRegressor,FastLinearRegressor,GradientBoostingRegressor,KNearestNeighborsRegressor,LassoLars,LightGBMRegressor,OnlineGradientDescentRegressor,RandomForestRegressor,SGDRegressor,XGBoostRegressor
+      * **Classification** AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
+      * **Regression** DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
       * **Timeseries** AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
 
     * **cluster.region** Name of cluster region. For example: eastus2
