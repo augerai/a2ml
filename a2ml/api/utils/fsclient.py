@@ -64,7 +64,7 @@ def open_file(path, mode, num_tries=20, encoding='utf-8', auto_decompression=Tru
         import smart_open
 
         nTry = 0
-        while nTry <= num_tries:
+        while True:
             try:
                 # TODO: support append mode for s3
                 return smart_open.open(
@@ -167,13 +167,16 @@ def read_json_file(path, check_if_exist=True, if_wait_for_file=False):
         return {}
 
     nTry = 0
-    while nTry < 10:
+    while True:
         json_text = read_text_file(path)
         try:
             return json.loads(json_text)
         except Exception as e:
             logging.error("Load json failed: %s.Text: %s" %
                           (repr(e), json_text))
+            if nTry > 10:
+                raise
+
             nTry += 1
             time.sleep(2)
 
@@ -379,13 +382,17 @@ def with_s3_downloaded_or_local_file(source_path):
 
 def load_object_from_file(path, use_local_cache=False):
     import joblib
+    import urllib.parse
 
     path_to_load = None
     if is_s3_path(path):
         if use_local_cache:
-            local_path = path.replace(
-                "s3://"+os.environ.get('S3_DATA_PATH'), os.environ.get("AUGER_LOCAL_TMP_DIR", ''))
-            #logging.info("Local cache path: %s"%local_path)
+            temp_path = "/temp"
+            if os.environ.get("AUGER_LOCAL_TMP_DIR", ''):
+                temp_path = os.environ.get("AUGER_LOCAL_TMP_DIR", '')
+
+            local_path = os.path.join(temp_path, urllib.parse.urlparse(path).path )
+            logging.info("Local cache path: %s"%local_path)
             if not is_file_exists(local_path):
                 local_lock_path = local_path + '.lock'
                 create_parent_folder(local_lock_path)

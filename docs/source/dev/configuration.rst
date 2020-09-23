@@ -23,6 +23,7 @@ All Providers
     target: 
     model_type:
     experiment:
+      metric:    
       cross_validation_folds: 
       max_total_time: 
       max_eval_time: 
@@ -34,11 +35,19 @@ All Providers
 
     * **name** The project name.
     * **providers** List of providers: auger, google, azure.
-    * **use_auger_cloud** Use Auger Cloud for all providers
+    * **use_auger_cloud** Use Auger Cloud for all providers true | false
     * **source** Local file name or remote url to the data source file.
     * **exclude** List of columns to be excluded from the training data.
     * **target** Target column name.
     * **model_type**  Model type: classification|regression|timeseries.
+    * **experiment.metric**  Score used to optimize ML model.
+
+      * **Classification** accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
+      * **Auger only: Classification** f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, recall_macro, recall_micro, recall_weighted
+      * **Auger only: Binary Classification** average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
+      * **Regression and/or Time Series** spearman_correlation, r2, normalized_mean_absolute_error, normalized_root_mean_squared_error
+      * **Auger only: Regression and/or Time Series** explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, neg_rmsle, neg_mase, mda, neg_rmse
+
     * **experiment.cross_validation_folds** Number of folds used for k-folds validation of individual trial.
     * **experiment.max_total_time** Maximum time to run experiment in minutes.
     * **experiment.max_eval_time** Maximum time to run individual trial in minutes.
@@ -71,7 +80,8 @@ Auger
       experiment_session_id:
       time_series:
       label_encoded: []
-      metric: accuracy
+      blocked_models: []
+      allowed_models: []
       estimate_trial_time: False
       trials_per_worker: 2
       class_weight:
@@ -89,11 +99,13 @@ Auger
     * **experiment.experiment_session_id** Latest experiment session.
     * **experiment.time_series** Time series feature. If Data Source contains more then one DATETIME feature you will have to explicitly specify feature to use as time series.
     * **experiment.label_encoded** List of columns which should be used as label encoded features.
-    * **experiment.metric**  Score used to optimize ML model.
+    * **experiment.blocked_models** A list of model names to ignore for an experiment
+    * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
 
-      * **Classification** accuracy, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, precision_weighted, recall_macro, recall_micro, recall_weighted
-      * **Binary Classification** accuracy, average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, precision_weighted, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
-      * **Regression and/or Time Series** explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, r2, neg_rmsle, neg_mase, mda, neg_rmse
+      * **Supported models**
+      * **Classification** XGBClassifier,LGBMClassifier,SVC,SGDClassifier,AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,GradientBoostingClassifier,CatBoostClassifier
+      * **Regression** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
+      * **Timeseries** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
 
     * **estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
     * **trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
@@ -117,7 +129,8 @@ Azure
     experiment:
       name:
       run_id:
-      metric:
+      blocked_models: []
+      allowed_models: []
 
     cluster:
       region:
@@ -131,10 +144,13 @@ Azure
     * **dataset** Name of the DataSet on Azure Cloud.
     * **experiment.name** Latest experiment name.
     * **experiment.run_id** Latest experiment run.
-    * **experiment.metric** Metric used to build Model
+    * **experiment.blocked_models** A list of model names to ignore for an experiment
+    * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
 
-      * **Classification** accuracy, precision_score_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
-      * **Regression and/or Time Series** spearman_correlation, r2_score, normalized_mean_absolute_error, normalized_root_mean_squared_error
+      * **Supported models**
+      * **Classification** AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
+      * **Regression** DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
+      * **Timeseries** AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
 
     * **cluster.region** Name of cluster region. For example: eastus2
     * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 

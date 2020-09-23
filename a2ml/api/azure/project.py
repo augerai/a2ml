@@ -181,7 +181,7 @@ class AzureProject(object):
     def _get_ws(self, name = None, create_if_not_exist = False):
         name = self._get_name(name)
         nTry = 0
-        while nTry < 20:
+        while True:
             try:
                 self.ws = Workspace.get(
                     name, 

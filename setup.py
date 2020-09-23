@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.5.1'
+VERSION = '0.5.3'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -28,11 +28,11 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 install_requires = [
-    'numpy<1.17.0,>=1.16.0', #version for azure
+    'numpy<1.19.0,>=1.16.0', #version for azure
     'pandas>=0.22', #version for azure
     'joblib>=0.11', #version for azure
     'ruamel.yaml>0.16.7', #version for azure
-    'pyarrow<1.0.0,>=0.17.0', #version for azure    
+    'pyarrow<2.0.0,>=0.17.0', #version for azure
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.1',
@@ -73,7 +73,10 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'azureml-sdk[automl]~=1.11.0'
+        'scikit-learn==0.22.1',
+        'xgboost<=0.90',
+        'azure-mgmt-resource==10.2.0', #https://github.com/Azure/azure-sdk-for-python/issues/13871
+        'azureml-sdk[automl]~=1.13.0'
     ],
     'google': [
         'google-cloud-automl'

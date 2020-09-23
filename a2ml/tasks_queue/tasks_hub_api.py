@@ -163,13 +163,16 @@ def _read_hub_experiment_session(ctx, params):
 
     ctx.config.set('experiment/cross_validation_folds',
         evaluation_options.get('crossValidationFolds', 5))
+    if evaluation_options.get('trainRatio'):
+        ctx.config.set('experiment/validation_size', 1.0-float(evaluation_options.get('trainRatio')))
+
     ctx.config.set('experiment/max_total_time',
         evaluation_options.get('max_total_time_mins', 60))
 
-    ctx.config.set('experiment/max_cores_per_iteration',
+    ctx.config.set('experiment/max_cores_per_trial',
         evaluation_options.get('cpu_per_mt_algorithm', 1))
-    ctx.config.set('experiment/max_concurrent_iterations',
-        evaluation_options.get('max_concurrent_iterations', 1))
+    ctx.config.set('experiment/max_concurrent_trials',
+        evaluation_options.get('trials_per_worker', 1))
 
     ctx.config.set('experiment/max_eval_time',
         evaluation_options.get('max_eval_time_mins', 6))
@@ -179,6 +182,11 @@ def _read_hub_experiment_session(ctx, params):
         evaluation_options.get('use_ensemble', True))
     ctx.config.set('experiment/metric',
         evaluation_options.get('scoring'), provider)
+
+    if evaluation_options.get('algorithms_to_exlude'):
+        ctx.config.set('experiment/blocked_models', evaluation_options.get('algorithms_to_exlude'))
+    if evaluation_options.get('allowed_algorithms'):
+        ctx.config.set('experiment/allowed_models', evaluation_options.get('allowed_algorithms'))
 
     return ctx
 
@@ -449,7 +457,8 @@ def deploy_model_task(params):
     ctx = _read_hub_experiment_session(ctx, params)
 
     ctx.config.clean_changes()
-    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'))
+    res = A2ML(ctx).deploy(model_id = params.get('model_id'), review = params.get('support_review_model'),
+        locally=params.get('locally', False))
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
@@ -468,7 +477,7 @@ def undeploy_model_task(params):
         raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
     ctx.config.clean_changes()
-    res = A2MLModel(ctx).undeploy(model_id = model_id)
+    res = A2MLModel(ctx).undeploy(model_id = model_id, locally=params.get('locally', False))
     _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
@@ -492,7 +501,8 @@ def predict_by_model_task(params):
         json_result=params.get('json_result'),
         count_in_result=params.get('count_in_result'),
         predicted_at=params.get('prediction_date'),
-        prediction_id = params.get('prediction_id')
+        prediction_id = params.get('prediction_id'),
+        locally = params.get('locally', False)
     )
     _update_hub_objects(ctx, params.get('provider'), params)
 

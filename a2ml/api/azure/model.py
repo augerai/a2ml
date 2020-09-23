@@ -4,33 +4,12 @@ import time
 
 from .exceptions import AzureException
 from a2ml.api.utils.dataframe import DataFrame
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, retry_helper
 from a2ml.api.utils.decorators import error_handler, authenticated
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
 from .credentials import Credentials
 
-
-def retry_connection_handler(decorated):
-    retry_errors = ['Connection aborted']
-    num_try=10 
-    delay=10
-    def wrapper(self, *args, **kwargs):
-        nTry = 0
-        while nTry < num_try:
-            try:
-                return decorated(self, *args, **kwargs)
-            except Exception as exc:
-                for retry_error in retry_errors:
-                    if retry_error in str(exc):
-                        self.ctx.log("Retry '%s' error. Sleep and try again. Num try: %s"%(str(exc), nTry))
-                        nTry += 1
-                        time.sleep(delay*nTry)
-                        break
-                    else:
-                        raise                
-                
-    return wrapper
 
 class AzureModel(object):
 
@@ -141,8 +120,8 @@ class AzureModel(object):
         from .project import AzureProject
 
         service_type = self.ctx.config.get('deploy_cluster/type', 'aci').lower()
-        cpu_cores = int(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
-        memory_gb = int(self.ctx.config.get('deploy_cluster/memory_gb', 2))
+        cpu_cores = float(self.ctx.config.get('deploy_cluster/cpu_cores', 1))
+        memory_gb = float(self.ctx.config.get('deploy_cluster/memory_gb', 2))
         service_name = self._deploy_service_name(model_name)
         service_target = None
 
@@ -436,8 +415,7 @@ def get_df(data):
 
         return {}
 
-    @retry_connection_handler
-    def call_service_run(self, deploy_service, input_data):
+    def _call_service_run(self, deploy_service, input_data):
         return deploy_service.run(input_data = input_data)
 
     def _predict_remotely(self, predict_data, model_id, predict_proba):
@@ -475,7 +453,8 @@ def get_df(data):
         deploy_service = self._get_deploy_service(model_name, ws)
 
         try:
-            response = self.call_service_run(deploy_service, input_payload)
+            response = retry_helper(lambda: self._call_service_run(deploy_service, input_payload),
+                ['Connection aborted','Too many requests for service','WebserviceException'], ctx=self.ctx)
         except Exception as e:
             log_file = 'automl_errors.log'
             fsclient.write_text_file(log_file, deploy_service.get_logs(), mode="a")
@@ -512,6 +491,10 @@ def get_df(data):
         is_loaded, model_path = self.verify_local_model(model_id)
         fsclient.save_object_to_file(fitted_model, model_path)
 
+        # model_path = self.ctx.config.get_model_path(model_id)
+        # with fsclient.save_local(os.path.join(model_path, 'model.pkl'), move_file=True) as local_path:
+        #     model_run.download_file("outputs/model.pkl", local_path)
+
         self.ctx.log('Downloaded model to %s' % model_path)
         return {'model_id': model_id}
 
@@ -520,7 +503,7 @@ def get_df(data):
         if not is_loaded:
             raise Exception("Model should be deployed before predict.")
 
-        fitted_model = fsclient.load_object_from_file(model_path)
+        fitted_model = fsclient.load_object_from_file(model_path, use_local_cache=True)
         model_features = None
         try:
             options = fsclient.read_json_file(os.path.join(self.ctx.config.get_model_path(model_id), "options.json"))

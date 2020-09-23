@@ -8,10 +8,21 @@ experiment:
   name:
   # Latest experiment run
   run_id:
-  ### Metric used to build Model
-  # Supported metrics for classification: accuracy, precision_score_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
-  # Supported metrics for regression: spearman_correlation, r2_score, normalized_mean_absolute_error, normalized_root_mean_squared_error
-  metric: accuracy
+
+  # List of all supported model names:
+  # *Classification: AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,
+  # GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,
+  # MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
+  # *Regression: DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,
+  # GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
+  # *Timeseries: AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
+
+  # A list of model names to ignore for an experiment  
+  #blocked_models:  
+
+  # A list of model names to search for an experiment. 
+  # If not specified, then all models supported for the task are used minus any specified in blocked_models
+  #allowed_models:
 
 cluster:
   region: eastus2
