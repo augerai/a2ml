@@ -17,7 +17,7 @@ All of A2ML is |augerairepo| and free in perpetuity.
 Other AutoML providers can be added as the fundamental stages apply to all them.  
 
 Performing all phases of the model building, training and usage process with those other cloud vendors' products is hundreds of lines of code.
-A short perusal of the source in this repo can validate that.  Also using your the A2ML API 
+A short perusal of the source in this repo can validate that.  Also using the A2ML API 
 in your apps that need predictive models removes vendor lockin to each particular cloud providers' API.
 
 Google and Microsoft do not provide ongoing review and monitoring of deployed model accuracy
