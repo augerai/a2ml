@@ -59,6 +59,7 @@ class TestTasksApiAuger(BaseTest):
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
 
         params = self.params('auger', '390955D2AB984D7')
+        params[0]['review'] = False
         res = deploy_task.apply(params).result
         self.assert_result(res, True, {'model_id': '390955D2AB984D7'}, no_provider_in_result=True)
 
