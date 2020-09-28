@@ -3,6 +3,7 @@ import subprocess
 
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
+from ..cloud.endpoint import AugerEndpointApi
 from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
 from a2ml.api.utils import fsclient
@@ -30,12 +31,17 @@ class ModelDeploy(object):
             self.ctx, None).create(model_id, review)
 
         if pipeline_properties.get('status') == 'ready':
+            if review and not pipeline_properties.get('endpoint_pipelines'):
+                self.ctx.log('Creating review endpoint ...')
+                endpoint_properties = AugerEndpointApi(
+                    self.ctx, None).create(pipeline_properties.get('id'))
+
             self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
-                pipeline_properties.get('id'))
+                pipeline_properties.get('id'))            
         else:
             self.ctx.log('Deployed Model on Auger Cloud failed. Model id is %s.Error: %s' % \
                 (pipeline_properties.get('id'), pipeline_properties.get('error_message', "")))
-                
+
         return pipeline_properties.get('id')
 
     def deploy_model_locally(self, model_id, review):

@@ -25,8 +25,10 @@ class RestApi(object):
         if params.get('id') and not method.startswith('create_'):
             oid = params['id']
             del params['id']
+            #print(method, oid, params)
             return getattr(self.hub_client, method)(oid, **params)
         else:
+            #print(method, params)
             return getattr(self.hub_client, method)(**params)
 
     def call(self, method, params={}):

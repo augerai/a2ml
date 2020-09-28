@@ -3,7 +3,7 @@ import os
 from a2ml.api.utils import fsclient
 from .deploy import ModelDeploy
 from ..cloud.pipeline import AugerPipelineApi
-
+from ..cloud.endpoint import AugerEndpointApi
 
 class ModelUndeploy(object):
     """Undeploy Model locally or from Auger Cloud."""
@@ -25,4 +25,9 @@ class ModelUndeploy(object):
             model_folder = os.path.splitext(model_name)[0]
             fsclient.remove_folder(model_folder)
         else:
-            AugerPipelineApi(self.ctx, None).remove(model_id)
+            pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
+            pipeline_api.remove(model_id)
+
+            if pipeline_api.check_endpoint():
+                AugerEndpointApi(self.ctx, None, pipeline_api.object_id).delete()
+

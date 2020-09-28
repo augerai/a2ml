@@ -13,6 +13,7 @@ class AugerBaseApi(object):
         object_name=None, object_id=None):
         super(AugerBaseApi, self).__init__()
         self.parent_api = parent_api
+        self.parent_id_name = ""
         self.object_id = object_id
         self.object_name = object_name
         self.rest_api = ctx.rest_api
@@ -31,8 +32,11 @@ class AugerBaseApi(object):
 
     def properties(self):
         if self.object_id is not None:
-            return self.rest_api.call(
-                'get_%s' % self.api_request_path, {'id': self.object_id})
+            params = {'id': self.object_id}
+            if self.parent_id_name:
+                params[self.parent_id_name] = self.parent_api.object_id
+
+            return self.rest_api.call('get_%s' % self.api_request_path, params)
 
         if self.object_name is None:
             raise AugerException(
@@ -125,7 +129,6 @@ class AugerBaseApi(object):
             if self.ctx.provider_info[provider].get(self.api_request_path):
                 params['provider_info'] = self.ctx.provider_info[provider][self.api_request_path]
 
-        #print("_call_create %s: %s"%(self.api_request_path,params))
         object_properties = self.rest_api.call(
             'create_%s' % self.api_request_path, params)
         if has_return_object:
