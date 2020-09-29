@@ -2,8 +2,6 @@ from .base import AugerBaseApi
 from ..exceptions import AugerException
 from .review_alert_item import AugerReviewAlertItemApi
 from .review_alert import AugerReviewAlertApi
-from .user import AugerUserApi
-from ...credentials import Credentials
 
 
 class AugerEndpointApi(AugerBaseApi):
