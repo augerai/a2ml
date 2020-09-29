@@ -31,11 +31,15 @@ class ModelDeploy(object):
             self.ctx, None).create(model_id, review)
 
         if pipeline_properties.get('status') == 'ready':
-            if review and not pipeline_properties.get('endpoint_pipelines'):
-                self.ctx.log('Creating review endpoint ...')
-                endpoint_properties = AugerEndpointApi(
-                    self.ctx, None).create(pipeline_properties.get('id'))
+            if review:
+                if not pipeline_properties.get('endpoint_pipelines'):
+                    self.ctx.log('Creating review endpoint ...')
+                    endpoint_properties = AugerEndpointApi(
+                        self.ctx, None).create(pipeline_properties.get('id'))
+                    pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
 
+                AugerEndpointApi(self.ctx, None, 
+                    pipeline_properties['endpoint_pipelines'][0].get('endpoint_id')).create_update_alert()
             self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
                 pipeline_properties.get('id'))            
         else:
