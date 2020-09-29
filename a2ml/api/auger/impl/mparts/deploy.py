@@ -22,6 +22,19 @@ class ModelDeploy(object):
         else:
             return self.deploy_model_in_cloud(model_id, review)
 
+    def create_update_review_endpoint(self, model_id, pipeline_properties=None, parameters=None):
+        if not pipeline_properties:
+            pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
+
+        if not pipeline_properties.get('endpoint_pipelines'):
+            self.ctx.log('Creating review endpoint ...')
+            endpoint_properties = AugerEndpointApi(
+                self.ctx, None).create(pipeline_properties.get('id'))
+            pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
+
+        AugerEndpointApi(self.ctx, None, 
+            pipeline_properties['endpoint_pipelines'][0].get('endpoint_id')).create_update_alert(parameters)
+
     def deploy_model_in_cloud(self, model_id, review):
         self.ctx.log('Deploying model %s' % model_id)
 
@@ -32,14 +45,8 @@ class ModelDeploy(object):
 
         if pipeline_properties.get('status') == 'ready':
             if review:
-                if not pipeline_properties.get('endpoint_pipelines'):
-                    self.ctx.log('Creating review endpoint ...')
-                    endpoint_properties = AugerEndpointApi(
-                        self.ctx, None).create(pipeline_properties.get('id'))
-                    pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
+                self.create_update_review_endpoint(model_id, pipeline_properties)
 
-                AugerEndpointApi(self.ctx, None, 
-                    pipeline_properties['endpoint_pipelines'][0].get('endpoint_id')).create_update_alert()
             self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
                 pipeline_properties.get('id'))            
         else:

@@ -14,18 +14,21 @@ class AugerEndpointApi(AugerBaseApi):
     def create(self, pipeline_id):
         return self._call_create({'pipeline_id': pipeline_id},[])
 
-    def create_update_alert(self):
+    def create_update_alert(self, parameters=None):
         alert_api = AugerReviewAlertApi(self.ctx, self)
         alert_items = alert_api.list()
 
         config = self.ctx.config
+        if not parameters:
+            parameters = {}
+
         params = {
             'endpoint_id': self.object_id,
-            'kind': config.get('review/type'),
-            'threshold': float(config.get('review/threshold')),
-            'sensitivity': int(config.get('review/sensitivity')),
-            'actions': config.get('review/action'),
-            'notifications': config.get('review/notification')
+            'kind': parameters.get('type', config.get('review/type')),
+            'threshold': float(parameters.get('threshold', config.get('review/threshold'))),
+            'sensitivity': int(parameters.get('sensitivity', config.get('review/sensitivity'))),
+            'actions': parameters.get('action', config.get('review/action')),
+            'notifications': parameters.get('notification', config.get('review/notification'))
         }
 
         params['active'] = params['actions'] != 'no' or params['notifications'] != 'no'

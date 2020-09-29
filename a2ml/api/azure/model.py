@@ -554,3 +554,8 @@ def get_df(data):
                 
             self.ctx.log("Model endpoint has been removed.")
 
+    @error_handler
+    @authenticated
+    def review_update(self, model_id, parameters):
+        raise AzureException("Not Implemented. Set use_auger_cloud: True in config.yml")
+        

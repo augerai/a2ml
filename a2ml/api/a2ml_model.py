@@ -187,6 +187,31 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
 
     @show_result
+    def review_update(self, model_id, parameters = None, locally=False, provider=None):
+        """Update Review parameters.
+
+        Args:
+            model_id(str): The deployed model id you want to use.
+            parameters(dict): If None, review section from config will be used.
+            locally(bool): Process review locally.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                model = A2MLModel(ctx).review_update(model_id='D881079E1ED14FB')
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('review_update', model_id, parameters)
+
+    @show_result
     def review(self, model_id, locally=False, provider=None):
         """Review the performance of deployed model.
 
