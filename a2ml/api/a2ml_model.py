@@ -187,12 +187,30 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
 
     @show_result
-    def review_update(self, model_id, parameters = None, locally=False, provider=None):
+    def review_alert(self, model_id, parameters = None, locally=False, provider=None):
         """Update Review parameters.
 
         Args:
             model_id(str): The deployed model id you want to use.
             parameters(dict): If None, review section from config will be used.
+
+                * active (True/False): Activate/Deactivate Review Alert
+                * type (model_accuracy/feature_average_range/runtime_errors_burst)
+
+                    - model_accuracy: Decrease in Model Accuracy: the model accuracy threshold allowed before trigger is initiated. Default threshold: 0.7. Default sensitivity: 72
+                    - feature_average_range: Feature Average Out-Of-Range: Trigger an alert if average feature value during time period goes beyond the standard deviation range calculated during training period by the specified number of times or more. Default threshold: 1. Default sensitivity: 168
+                    - runtime_errors_burst: Burst Of Runtime Errors: Trigger an alert if runtime error count exceeds threshold. Default threshold: 5. Default sensitivity: 1
+
+                * threshold (float)
+                * sensitivity (int): The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+                * action (no/retrain/retrain_deploy)
+
+                    - no: no action should be executed
+                    - retrain: Use new predictions and actuals as test set to retrain the model.
+                    - retrain_deploy: Deploy retrained model and make it active model of this endpoint.
+
+                * notification (no/user/organization): Send message via selected notification channel.
+
             locally(bool): Process review locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
@@ -207,9 +225,9 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).review_update(model_id='D881079E1ED14FB')
+                model = A2MLModel(ctx).review_alert(model_id='D881079E1ED14FB')
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('review_update', model_id, parameters)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('review_alert', model_id, parameters)
 
     @show_result
     def review(self, model_id, locally=False, provider=None):

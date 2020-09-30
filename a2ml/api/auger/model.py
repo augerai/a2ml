@@ -46,8 +46,8 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def review_update(self, project, model_id, parameters):
-        return Model(self.ctx, project).review_update(model_id, parameters)
+    def review_alert(self, project, model_id, parameters):
+        return Model(self.ctx, project).review_alert(model_id, parameters)
 
     @error_handler
     @authenticated

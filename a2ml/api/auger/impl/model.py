@@ -21,8 +21,8 @@ class Model(object):
     def deploy(self, model_id, locally=False, review=True):
         return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review)
 
-    def review_update(self, model_id, parameters):
-        return ModelDeploy(self.ctx, self.project).create_update_review_endpoint(model_id, None, parameters)
+    def review_alert(self, model_id, parameters):
+        return ModelDeploy(self.ctx, self.project).create_update_review_alert(model_id, None, parameters)
 
     def undeploy(self, model_id, locally=False):
         return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
