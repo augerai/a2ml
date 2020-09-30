@@ -6,18 +6,27 @@ class AugerPredictionApi(AugerBaseApi):
     """Auger Trial API."""
 
     def __init__(self, ctx, pipeline_api,
-        prediction_name=None, prediction_id=None):
+        prediction_name=None, prediction_id=None, use_endpoint=False):
         super(AugerPredictionApi, self).__init__(
             ctx, pipeline_api, prediction_name, prediction_id)
         assert pipeline_api is not None, 'Pipeline must be set for Prediction'
 
+        self.use_endpoint = use_endpoint
+        if self.use_endpoint:
+            self.parent_id_name = "endpoint_id"
+            self._set_api_request_path("AugerEndpointPredictionApi")
+
     def create(self, records, features, threshold=None, file_url=None, predicted_at=None):
         params = {
-            'pipeline_id': self.parent_api.object_id,
             'records': records, 
             'features': features,
             'threshold': threshold
         }
+        if self.use_endpoint:
+            params['endpoint_id'] = self.parent_api.object_id
+        else:
+            params['pipeline_id'] = self.parent_api.object_id
+
         if file_url:
             params['file_url'] = file_url
                 

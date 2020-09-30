@@ -7,6 +7,8 @@ from .mparts.actual import ModelActual
 from .mparts.delete_actual import ModelDeleteActual
 from a2ml.api.model_review.model_review import ModelReview
 from .exceptions import AugerException
+from .cloud.endpoint import AugerEndpointApi
+from .cloud.pipeline import AugerPipelineApi
 
 class Model(object):
     """Auger Cloud Model(s) management."""
@@ -18,6 +20,9 @@ class Model(object):
 
     def deploy(self, model_id, locally=False, review=True):
         return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review)
+
+    def review_alert(self, model_id, parameters):
+        return ModelDeploy(self.ctx, self.project).create_update_review_alert(model_id, None, parameters)
 
     def undeploy(self, model_id, locally=False):
         return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)

@@ -52,9 +52,17 @@ def actuals(ctx, provider, filename, model_id, locally):
     """Predict with deployed model."""
     A2MLModel(ctx, provider).actuals(model_id, filename=filename, locally=locally)
 
+@click.command('review_alert', short_help='Update Review Alert parameters from config.')
+@click.argument('model-id', required=True, type=click.STRING)
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+    help='Cloud AutoML Provider.')
+@pass_context
+def review_alert(ctx, provider, model_id):
+    """Predict with deployed model."""
+    A2MLModel(ctx, provider).review_alert(model_id)
+
 @click.command('review', short_help='Review the performance of deployed model.')
-@click.option('--model-id', '-m', type=click.STRING, required=True,
-    help='Deployed model id.')
+@click.argument('model-id', required=True, type=click.STRING)
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
@@ -97,6 +105,7 @@ def add_commands(ctx):
     cmdl.add_command(deploy)
     cmdl.add_command(predict)
     cmdl.add_command(actuals)
+    cmdl.add_command(review_alert)
     cmdl.add_command(review)
     cmdl.add_command(undeploy)
     cmdl.add_command(delete_actuals)

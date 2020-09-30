@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_packages
 from setuptools.command.install import install
 
-VERSION = '0.5.3'
+VERSION = '0.5.4'
 
 # Get the long description from the README file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -35,7 +35,7 @@ install_requires = [
     'pyarrow<2.0.0,>=0.17.0', #version for azure
     'asyncio',
     'boto3',
-    'auger-hub-api-client==0.7.1',
+    'auger-hub-api-client==0.7.2',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',

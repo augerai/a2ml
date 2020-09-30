@@ -3,6 +3,8 @@ import subprocess
 
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
+from ..cloud.endpoint import AugerEndpointApi
+from ..cloud.review_alert import AugerReviewAlertApi
 from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
 from a2ml.api.utils import fsclient
@@ -21,6 +23,22 @@ class ModelDeploy(object):
         else:
             return self.deploy_model_in_cloud(model_id, review)
 
+    def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None):
+        if not pipeline_properties:
+            pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
+
+        endpoint_api = None    
+        if not pipeline_properties.get('endpoint_pipelines'):
+            self.ctx.log('Creating review endpoint ...')
+            endpoint_api = AugerEndpointApi(self.ctx, None)
+            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'))
+            pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
+        else:
+            endpoint_api = AugerEndpointApi(self.ctx, None, 
+                pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+
+        AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+
     def deploy_model_in_cloud(self, model_id, review):
         self.ctx.log('Deploying model %s' % model_id)
 
@@ -30,12 +48,15 @@ class ModelDeploy(object):
             self.ctx, None).create(model_id, review)
 
         if pipeline_properties.get('status') == 'ready':
+            if review:
+                self.create_update_review_alert(model_id, pipeline_properties)
+
             self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
-                pipeline_properties.get('id'))
+                pipeline_properties.get('id'))            
         else:
             self.ctx.log('Deployed Model on Auger Cloud failed. Model id is %s.Error: %s' % \
                 (pipeline_properties.get('id'), pipeline_properties.get('error_message', "")))
-                
+
         return pipeline_properties.get('id')
 
     def deploy_model_locally(self, model_id, review):

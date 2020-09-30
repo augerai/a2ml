@@ -91,6 +91,14 @@ Auger
           sampling_strategy:
           k_neighbors:
 
+    review:
+      alert:
+        active: True
+        type: model_accuracy
+        threshold: 0.7
+        sensitivity: 72
+        action: retrain_deploy
+        notification: user
 
   **Attributes**
     
@@ -107,16 +115,35 @@ Auger
       * **Regression** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
       * **Timeseries** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
 
-    * **estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
-    * **trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
-    * **class_weight** Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.
-    * **oversampling.name** SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set
-    * **oversampling.params.sampling_strategy**  auto, minority, majority, not minority, not majority, all
-    * **oversampling.params.k_neighbors**  Integer value of k_neighbors
+    * **experiment.estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
+    * **experiment.trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
+    * **experiment.class_weight** Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.
+    * **experiment.oversampling.name** SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set
+    * **experiment.oversampling.params.sampling_strategy**  auto, minority, majority, not minority, not majority, all
+    * **experiment.oversampling.params.k_neighbors**  Integer value of k_neighbors
 
     .. note::
 
       For more information on |oversampling|
+
+    * **review.alert.active**  Activate/Deactivate Review Alert (True/False)
+    * **review.alert.type** 
+
+      * **Supported Review Alert types**
+      * **model_accuracy** Decrease in Model Accuracy: the model accuracy threshold allowed before trigger is initiated. Default threshold: 0.7. Default sensitivity: 72
+      * **feature_average_range** Feature Average Out-Of-Range: Trigger an alert if average feature value during time period goes beyond the standard deviation range calculated during training period by the specified number of times or more. Default threshold: 1. Default sensitivity: 168
+      * **runtime_errors_burst** Burst Of Runtime Errors: Trigger an alert if runtime error count exceeds threshold. Default threshold: 5. Default sensitivity: 1
+
+    * **review.alert.threshold** Float
+    * **review.alert.sensitivity** The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+    * **review.alert.action** 
+
+      * **Supported Review Alert actions**
+      * **no** no action should be executed
+      * **retrain** Use new predictions and actuals as test set to retrain the model.
+      * **retrain_deploy** Deploy retrained model and make it active model of this endpoint.
+
+    * **review.alert.notification** Send message via selected notification channel. (no/user/organization)
     
 Azure
 ^^^^^
