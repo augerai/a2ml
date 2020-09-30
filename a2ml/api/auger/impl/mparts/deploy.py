@@ -5,6 +5,7 @@ from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
 from ..cloud.endpoint import AugerEndpointApi
 from ..cloud.review_alert import AugerReviewAlertApi
+from ..cloud.review_alert_item import AugerReviewAlertItemApi
 from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
 from a2ml.api.utils import fsclient
@@ -39,6 +40,50 @@ class ModelDeploy(object):
 
         AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
 
+    def review(self, model_id):
+        pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
+
+        result = {}
+        if not pipeline_properties.get('endpoint_pipelines'):
+            return result
+
+        endpoint_api = AugerEndpointApi(self.ctx, None, 
+            pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+
+        alert_items = AugerReviewAlertItemApi(self.ctx, endpoint_api).list()
+        if not alert_items:
+            return result
+
+        alert_item = alert_items[-1]
+        error_states = ['review_data_build_failed', 'project_file_processing_failed', 'experiment_session_failed', 'pipeline_creating_failed']
+
+        alert = AugerReviewAlertApi(self.ctx, None, alert_item['review_alert_id']).properties()
+        status = "started"
+        error = ""
+
+        if alert.get('actions') == 'retrain_deploy':
+            redeploy_status = alert_item.get('action_results', {}).get('redeploy')
+            if redeploy_status in error_states:
+                status = 'error'
+                error = redeploy_status
+            elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
+                status = 'completed'
+        elif alert.get('actions') == 'retrain':
+            retrain_status = alert_item.get('action_results', {}).get('retrain')
+            if retrain_status in error_states:
+                status = 'error'
+                error = retrain_status
+            elif retrain_status == 'experiment_session_done':
+                status = 'completed'
+        else:
+            status = 'completed'
+
+        result = {
+            'status': status,
+            'error': error
+        }
+        return result
+            
     def deploy_model_in_cloud(self, model_id, review):
         self.ctx.log('Deploying model %s' % model_id)
 

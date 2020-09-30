@@ -59,7 +59,7 @@ class AugerModel(object):
     @authenticated
     @with_project(autocreate=False)
     def review(self, project, model_id):
-        pass
+        return Model(self.ctx, project).review(model_id)
 
     @error_handler
     @authenticated

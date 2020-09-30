@@ -61,14 +61,15 @@ def review_alert(ctx, provider, model_id):
     """Predict with deployed model."""
     A2MLModel(ctx, provider).review_alert(model_id)
 
-@click.command('review', short_help='Review the performance of deployed model.')
+@click.command('review', short_help='Review information about deployed model.')
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
-def review(ctx, provider, model_id, output):
-    """Predict with deployed model."""
-    A2MLModel(ctx, provider).review(model_id)
+def review(ctx, provider, model_id):
+    """Review information about deployed model."""
+    result = A2MLModel(ctx, provider).review(model_id)
+    ctx.log('Review information for %s: %s' % (model_id, result))
 
 @click.command('undeploy', short_help='Undeploy trained model.')
 @click.argument('model-id', required=True, type=click.STRING)
