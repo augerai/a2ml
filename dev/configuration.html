@@ -295,6 +295,15 @@
     <span class="nt">params</span><span class="p">:</span>
       <span class="nt">sampling_strategy</span><span class="p">:</span>
       <span class="nt">k_neighbors</span><span class="p">:</span>
+
+<span class="nt">review</span><span class="p">:</span>
+  <span class="nt">alert</span><span class="p">:</span>
+    <span class="nt">active</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">model_accuracy</span>
+    <span class="nt">threshold</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.7</span>
+    <span class="nt">sensitivity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">72</span>
+    <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">retrain_deploy</span>
+    <span class="nt">notification</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">user</span>
 </pre></div>
 </div>
 <p><strong>Attributes</strong></p>
@@ -314,17 +323,39 @@
 <li><p><strong>Timeseries</strong> SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor</p></li>
 </ul>
 </li>
-<li><p><strong>estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
-<li><p><strong>trials_per_worker</strong> Use it if you have a lot of failed trials. Set it to value &lt; 8 to give trial fit process more memory. Default is None.</p></li>
-<li><p><strong>class_weight</strong> Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.</p></li>
-<li><p><strong>oversampling.name</strong> SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set</p></li>
-<li><p><strong>oversampling.params.sampling_strategy</strong>  auto, minority, majority, not minority, not majority, all</p></li>
-<li><p><strong>oversampling.params.k_neighbors</strong>  Integer value of k_neighbors</p></li>
+<li><p><strong>experiment.estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
+<li><p><strong>experiment.trials_per_worker</strong> Use it if you have a lot of failed trials. Set it to value &lt; 8 to give trial fit process more memory. Default is None.</p></li>
+<li><p><strong>experiment.class_weight</strong> Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.</p></li>
+<li><p><strong>experiment.oversampling.name</strong> SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set</p></li>
+<li><p><strong>experiment.oversampling.params.sampling_strategy</strong>  auto, minority, majority, not minority, not majority, all</p></li>
+<li><p><strong>experiment.oversampling.params.k_neighbors</strong>  Integer value of k_neighbors</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more information on <a href="https://imbalanced-learn.readthedocs.io/en/stable/api.html#module-imblearn.over_sampling" target="_blank">oversampling</a></p>
 </div>
+<ul class="simple">
+<li><p><strong>review.alert.active</strong>  Activate/Deactivate Review Alert (True/False)</p></li>
+<li><p><strong>review.alert.type</strong></p>
+<ul>
+<li><p><strong>Supported Review Alert types</strong></p></li>
+<li><p><strong>model_accuracy</strong> Decrease in Model Accuracy: the model accuracy threshold allowed before trigger is initiated. Default threshold: 0.7. Default sensitivity: 72</p></li>
+<li><p><strong>feature_average_range</strong> Feature Average Out-Of-Range: Trigger an alert if average feature value during time period goes beyond the standard deviation range calculated during training period by the specified number of times or more. Default threshold: 1. Default sensitivity: 168</p></li>
+<li><p><strong>runtime_errors_burst</strong> Burst Of Runtime Errors: Trigger an alert if runtime error count exceeds threshold. Default threshold: 5. Default sensitivity: 1</p></li>
+</ul>
+</li>
+<li><p><strong>review.alert.threshold</strong> Float</p></li>
+<li><p><strong>review.alert.sensitivity</strong> The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.</p></li>
+<li><p><strong>review.alert.action</strong></p>
+<ul>
+<li><p><strong>Supported Review Alert actions</strong></p></li>
+<li><p><strong>no</strong> no action should be executed</p></li>
+<li><p><strong>retrain</strong> Use new predictions and actuals as test set to retrain the model.</p></li>
+<li><p><strong>retrain_deploy</strong> Deploy retrained model and make it active model of this endpoint.</p></li>
+</ul>
+</li>
+<li><p><strong>review.alert.notification</strong> Send message via selected notification channel. (no/user/organization)</p></li>
+</ul>
 </div></blockquote>
 </div></blockquote>
 </div>
