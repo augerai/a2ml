@@ -29,9 +29,13 @@ class ModelDeploy(object):
         pipeline_properties = AugerPipelineApi(
             self.ctx, None).create(model_id, review)
 
-        self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
-            pipeline_properties.get('id'))
-
+        if pipeline_properties.get('status') == 'ready':
+            self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
+                pipeline_properties.get('id'))
+        else:
+            self.ctx.log('Deployed Model on Auger Cloud failed. Model id is %s.Error: %s' % \
+                (pipeline_properties.get('id'), pipeline_properties.get('error_message', "")))
+                
         return pipeline_properties.get('id')
 
     def deploy_model_locally(self, model_id, review):

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, recall_score, average_precision_score, roc_auc_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import matthews_corrcoef as mcc
 from sklearn.metrics.scorer import SCORERS
@@ -78,21 +78,34 @@ def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
 
     return k
 
-
 def matthews(y_true, y_pred, sample_weight=None):
     return mcc(y_true, y_pred, sample_weight)
-
 
 def gini(y_true, y_pred_proba, sample_weight=None):
     from sklearn.metrics import roc_auc_score
     roc_auc = roc_auc_score(y_true, y_pred_proba, sample_weight=sample_weight)
     return 2 * roc_auc - 1
 
+def norm_macro_recall_score(y_true, y_pred):
+    R = 0.5 #TODO: support multiclass R=(1/C) for C-class classification problems
+    return (recall_score(y_true, y_pred, average='macro') - R)/(1 - R)
+
+def average_precision_score_weighted_score(y_true, y_pred):
+    return average_precision_score(y_true, y_pred, average='weighted')
+
+def AUC_weighted_score(y_true, y_pred):
+    return roc_auc_score(y_true, y_pred, average='weighted')
 
 cohen_kappa_score = make_scorer(kappa)
 matthews_corrcoef = make_scorer(matthews)
 gini_score = make_scorer(gini, needs_threshold=True)
+norm_macro_recall_scorer = make_scorer(norm_macro_recall_score)
+average_precision_score_weighted_scorer = make_scorer(average_precision_score_weighted_score)
+AUC_weighted_scorer = make_scorer(AUC_weighted_score)
 
 SCORERS['cohen_kappa_score'] = cohen_kappa_score
 SCORERS['matthews_corrcoef'] = matthews_corrcoef
 SCORERS['gini'] = gini_score
+SCORERS['norm_macro_recall'] = norm_macro_recall_scorer
+SCORERS['average_precision_score_weighted'] = average_precision_score_weighted_scorer
+SCORERS['AUC_weighted'] = AUC_weighted_scorer

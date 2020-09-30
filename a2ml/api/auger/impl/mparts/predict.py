@@ -75,7 +75,7 @@ class ModelPredict():
         else:
             if not file_url:
                 if not filename:
-                    with fsclient.save_atomic("temp_predict.csv.gz") as local_path:
+                    with fsclient.save_atomic("temp_predict.csv.gz", move_file=False) as local_path:
                         ds = DataFrame.create_dataframe(filename, data, columns)
                         ds.saveToCsvFile(local_path)
                         file_url = self._upload_file_to_cloud(local_path)

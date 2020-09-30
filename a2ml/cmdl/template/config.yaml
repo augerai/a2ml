@@ -1,8 +1,10 @@
 ---
 # Overall project name
 name:
-# List of providers: auger, google, azure
-providers: auger, azure, google
+# List of providers: auger, azure, google(not supported yet)
+providers: auger
+# Use Auger Cloud Use Auger Cloud for all providers
+use_auger_cloud: true
 # Local file name or remote url to the data source file
 source:
 # List of columns to be excluded from the training data
@@ -13,8 +15,22 @@ target:
 model_type: classification
 # Experiment settings
 experiment:
+  ### Metric used to build Model
+  # Score used to optimize ML model.
+  # Supported scores for classification: accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
+  # Auger only: Supported scores for classification:  f1_macro, f1_micro, f1_weighted, neg_log_loss, precision_macro, precision_micro, recall_macro, recall_micro, recall_weighted   
+  # Auger only: Supported scores for binary classification: average_precision, f1, f1_macro, f1_micro, f1_weighted, neg_log_loss, precision, precision_macro, precision_micro, recall, recall_macro, recall_micro, recall_weighted, roc_auc, cohen_kappa_score, matthews_corrcoef
+
+  # Supported scores for regression and time series: spearman_correlation, r2, normalized_mean_absolute_error, normalized_root_mean_squared_error
+  # Auger only: Supported scores for regression and time series: explained_variance, neg_median_absolute_error, neg_mean_absolute_error, neg_mean_squared_error, neg_mean_squared_log_error, neg_rmsle, neg_mase, mda, neg_rmse
+  metric: accuracy
+  
   # Number of folds used for k-folds validation of individual trial
   cross_validation_folds: 5
+
+  # Size in percent(0.0-1.0): to hold out a portion of the training data for validation
+  #validation_size: 0.2
+
   # Maximum time to run experiment in minutes
   max_total_time: 60
   # Maximum time to run individual trial in minutes
@@ -23,6 +39,11 @@ experiment:
   max_n_trials: 10
   # Try to improve model performance by creating ensembles from the trial models
   use_ensemble: true
+
+  # The maximum number of threads to use for a given training trial
+  #max_cores_per_trial: 4
+  # Represents the maximum number of trials that would be executed in parallel on one node  
+  #max_concurrent_trials: 4
 
   # Path to validation dataset
   #validation_data: 

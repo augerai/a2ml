@@ -80,65 +80,66 @@ class ModelHelper(object):
         fsclient.write_json_file(os.path.join(metric_path,
             "metric_names_feature_importance.json"))
 
-    @staticmethod
-    def _get_score_byname(scoring):
-        from sklearn.metrics.scorer import get_scorer
-        from sklearn.metrics import SCORERS
+    # @staticmethod
+    # def _get_score_byname(scoring):
+    #     from sklearn.metrics.scorer import get_scorer
+    #     from sklearn.metrics import SCORERS
 
-        #TODO: below metrics does not directly map to sklearn:
-        # Classification : weighted_accuracy, accuracy_table, balanced_accuracy, matthews_correlation,norm_macro_recall
-        # Regression,  Time Series Forecasting:
-        #spearman_correlation, normalized_root_mean_squared_error, normalized_mean_absolute_error
-        scorer = None
-        if scoring.startswith("AUC"):
-            scorer = get_scorer("roc_auc")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("log_loss"):
-            scorer = get_scorer("neg_log_loss")
-        # elif scoring.startswith("matthews_correlation"):
-        #     scorer = get_scorer("matthews_corrcoef")
-        elif scoring.startswith("precision_score"):
-            scorer = get_scorer("precision")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("average_precision_score"):
-            scorer = get_scorer("average_precision")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("recall_score"):
-            scorer = get_scorer("recall")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("norm_macro_recall"):
-            scorer = get_scorer("recall")
-            scorer._kwargs['average'] = "macro"
-        elif scoring.startswith("f1_score"):
-            scorer = get_scorer("f1")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("precision_score"):
-            scorer = get_scorer("precision")
-            average = scoring.split("_")[-1]
-            scorer._kwargs['average'] = average
-        elif scoring.startswith("spearman_correlation"):
-            scorer = get_scorer("r2")
-        elif scoring.startswith("r2_score"):
-            scorer = get_scorer("r2")
-        elif "mean_absolute_error" in scoring:
-            scorer = get_scorer("neg_mean_absolute_error")
-        elif "root_mean_squared" in scoring:
-            scorer = get_scorer("mean_squared_error")
-        elif "median_absolute_error" in scoring:
-            scorer = get_scorer("neg_median_absolute_error")
+    #     #TODO: below metrics does not directly map to sklearn:
+    #     # Classification : weighted_accuracy, accuracy_table, balanced_accuracy, matthews_correlation,norm_macro_recall
+    #     # Regression,  Time Series Forecasting:
+    #     #spearman_correlation, normalized_root_mean_squared_error, normalized_mean_absolute_error
+    #     scorer = None
+    #     if scoring.startswith("AUC"):
+    #         scorer = get_scorer("roc_auc")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("log_loss"):
+    #         scorer = get_scorer("neg_log_loss")
+    #     # elif scoring.startswith("matthews_correlation"):
+    #     #     scorer = get_scorer("matthews_corrcoef")
+    #     elif scoring.startswith("precision_score"):
+    #         scorer = get_scorer("precision")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("average_precision_score"):
+    #         scorer = get_scorer("average_precision")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("recall_score"):
+    #         scorer = get_scorer("recall")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("norm_macro_recall"):
+    #         scorer = get_scorer("recall")
+    #         scorer._kwargs['average'] = "macro"
+    #     elif scoring.startswith("f1_score"):
+    #         scorer = get_scorer("f1")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("precision_score"):
+    #         scorer = get_scorer("precision")
+    #         average = scoring.split("_")[-1]
+    #         scorer._kwargs['average'] = average
+    #     elif scoring.startswith("spearman_correlation"):
+    #         scorer = get_scorer("r2")
+    #     elif scoring.startswith("r2_score"):
+    #         scorer = get_scorer("r2")
+    #     elif "mean_absolute_error" in scoring:
+    #         scorer = get_scorer("neg_mean_absolute_error")
+    #     elif "root_mean_squared" in scoring:
+    #         scorer = get_scorer("mean_squared_error")
+    #     elif "median_absolute_error" in scoring:
+    #         scorer = get_scorer("neg_median_absolute_error")
 
-        if scorer is None:
-            scorer = get_scorer(scoring)
+    #     if scorer is None:
+    #         scorer = get_scorer(scoring)
 
-        return scorer
+    #     return scorer
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
+        from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
         import inspect
 
@@ -171,7 +172,7 @@ class ModelHelper(object):
                     if scoring != options.get('scoring'):
                         continue
 
-                scorer = ModelHelper._get_score_byname(scoring)
+                scorer = get_scorer(scoring)
                 if options.get('minority_target_class_pos') is not None:
                     argSpec = inspect.getfullargspec(scorer._score_func)
                     if 'pos_label' in argSpec.args:
@@ -266,7 +267,7 @@ class ModelHelper(object):
     @staticmethod
     def save_prediction(ds, prediction_id, support_review_model,
         json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False,
-        prediction_id_col=None):
+        prediction_id_col=None,model_features=None):
         if prediction_id_col is not None:
             ds.df['prediction_id'] = prediction_id_col
         else:
@@ -278,22 +279,19 @@ class ModelHelper(object):
             ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output, gzip_predict_file=gzip_predict_file)
+            json_result, count_in_result, prediction_date, model_path, model_id, output, 
+            gzip_predict_file=gzip_predict_file, model_features=model_features)
 
     @staticmethod
     def save_prediction_result(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False):
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None, 
+        gzip_predict_file=False, model_features=None):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
         if not prediction_id:
             prediction_id = get_uid()
 
-        if support_review_model:
-            file_name = str(prediction_date or datetime.date.today()) + \
-                '_' + prediction_id + "_results.feather.zstd"
-            ds.saveToFeatherFile(os.path.join(
-                model_path, "predictions", file_name))
-
+        result = {}    
         if path_to_predict and not json_result:
             if output:
                 predict_path = output
@@ -311,18 +309,30 @@ class ModelHelper(object):
             ds.saveToCsvFile(predict_path, compression=compression)
 
             if count_in_result:
-                return {'result_path': predict_path, 'count': ds.count()}
+                result = {'result_path': predict_path, 'count': ds.count()}
             else:
-                return predict_path
+                result = predict_path
         else:
             if ds.loaded_columns or json_result:
                 predicted = ds.df.to_dict('split')
-                return {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
+                result = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
             elif ds.from_pandas:
-                return ds.df
+                result = ds.df
+            else:    
+                result = ds.df.to_dict('records')
 
-            return ds.df.to_dict('records')
+        if support_review_model:
+            file_name = str(prediction_date or datetime.date.today()) + \
+                '_' + prediction_id + "_results.feather.zstd"
+            #Save only model features, they should contain target and prediction_id    
+            if model_features:
+                ds.select(model_features)
 
+            ds.saveToFeatherFile(os.path.join(
+                model_path, "predictions", file_name))
+
+        return result
+            
     @staticmethod
     def revertCategories(results, categories):
         return list(map(lambda x: categories[int(x)], results))

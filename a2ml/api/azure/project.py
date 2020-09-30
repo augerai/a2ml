@@ -107,18 +107,17 @@ class AzureProject(object):
         if ws is None:
             ws = self._get_ws(name=name)
 
+        if 'type' in params:
+            params['vm_size'] = params['type']
+
         if cluster_name in ws.compute_targets:
             compute_target = ws.compute_targets[cluster_name]
             remote_cluster = self.get_cluster_config(name=name, local_config=False, ws=ws)
             update_properties = {}
             props_to_update = ['min_nodes', 'max_nodes', 'vm_size', 'idle_seconds_before_scaledown']
             for prop in props_to_update:
-                if prop == 'vm_size' and 'type' in params:
-                    if remote_cluster.get(prop, params.get('type')) != params.get('type'):
-                        update_properties[prop] = params.get('type')
-                else:    
-                    if remote_cluster.get(prop, params.get(prop)) != params.get(prop):
-                        update_properties[prop] = params.get(prop)
+                if params.get(prop) is not None and remote_cluster.get(prop, params.get(prop)) != params.get(prop):
+                    update_properties[prop] = params.get(prop)
 
             if update_properties.get('vm_size'):
                 self.ctx.log('Delete existing AML compute context, since cluster type has been changed to %s.'%(update_properties.get('vm_size')))
@@ -182,7 +181,7 @@ class AzureProject(object):
     def _get_ws(self, name = None, create_if_not_exist = False):
         name = self._get_name(name)
         nTry = 0
-        while nTry < 20:
+        while True:
             try:
                 self.ws = Workspace.get(
                     name, 
@@ -193,7 +192,7 @@ class AzureProject(object):
                 break
             except Exception as e:
                 message = str(e)
-                if 'Workspaces not found' in message and create_if_not_exist:
+                if ('Workspaces not found' in message or 'No workspaces found' in message) and create_if_not_exist:
                     self.create(name)
                     break
                 elif 'invalid_client' in message and nTry < 20:
@@ -209,10 +208,12 @@ class AzureProject(object):
         resource_group = self.ctx.config.get('resource_group')
         if not resource_group:
             if name == "a2mlworkspacedev":
-                resource_group = "a2mldev"    
+                resource_group = "a2mldev"
             elif name == "a2mlworkspacestaging":
                 resource_group = "a2mlstaging"
-            else:    
+            elif name == "a2mlworkspaceprod":
+                resource_group = "a2mlprod"
+            else:
                 resource_group = name+'-resources'
-            
+
         return resource_group

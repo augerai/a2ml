@@ -107,7 +107,10 @@ class ProviderRunner(object):
             new_ctx = self.ctx.copy(p)
             
             if self.ctx.use_auger_cloud() and p != 'auger':
-                new_ctx.provider_info = {p: {"project": {"cluster": self.ctx.config.get("cluster", config_name=p)}}}
+                new_ctx.provider_info = {p: {"project": {
+                    "cluster": self.ctx.config.get("cluster", config_name=p),
+                    "deploy_cluster": self.ctx.config.get("deploy_cluster", config_name=p)
+                }}}
                 provider_class = get_provider_class("auger")
             else:
                 provider_class = get_provider_class(p)
