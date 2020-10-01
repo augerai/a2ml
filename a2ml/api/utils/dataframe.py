@@ -128,7 +128,7 @@ class DataFrame(object):
             # Features list is optional for feather file, but it can segfault without it on some files
             return self.loadFromFeatherFile(path, features)
         elif extension.endswith('.parquet'):
-            return self.loadFromParquetFile(path)
+            return self.loadFromParquetFile(path, features)
 
         csv_with_header = self.options.get('csv_with_header', True)
         header = 0 if csv_with_header else None
