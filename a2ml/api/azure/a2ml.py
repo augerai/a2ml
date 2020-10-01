@@ -44,3 +44,9 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).delete_actuals(
             model_id, with_predictions, begin_date, end_date, locally)
+
+    def review(self, model_id):
+        from a2ml.api.azure.model import AzureModel
+
+        return AzureModel(self.ctx).review(model_id)
+

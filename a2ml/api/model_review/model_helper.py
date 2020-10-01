@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import json
 
-from a2ml.api.utils import get_uid, get_uid4, fsclient
+from a2ml.api.utils import get_uid, get_uid4, fsclient, remove_dups_from_list
 from a2ml.api.utils.dataframe import DataFrame
 
 
@@ -174,7 +174,7 @@ class ModelHelper(object):
 
                 if scoring == 'r2_score':
                     scoring = 'r2'
-                            
+
                 scorer = get_scorer(scoring)
                 if options.get('minority_target_class_pos') is not None:
                     argSpec = inspect.getfullargspec(scorer._score_func)
@@ -405,3 +405,17 @@ class ModelHelper(object):
             results.append(proba_classes[proba_idx])
 
         return results
+
+    @staticmethod
+    def get_train_features(options):
+        selected_cols = []
+        for item in options.get('originalFeatureColumns', []):
+            selected_cols.append(str(item))
+
+        if options.get('targetFeature') is not None:
+            selected_cols.append(options.get('targetFeature'))
+        if options.get('timeSeriesFeatures'):
+            selected_cols.extend(options.get('timeSeriesFeatures'))
+
+        return remove_dups_from_list(selected_cols)
+

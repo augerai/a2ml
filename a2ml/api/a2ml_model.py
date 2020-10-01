@@ -243,7 +243,7 @@ class A2MLModel(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'score': {'accuracy': 0.8}}
+                    'data': {'status': 'completed', 'error': ''}
                 }
 
         Examples:

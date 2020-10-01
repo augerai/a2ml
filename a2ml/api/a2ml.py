@@ -367,7 +367,7 @@ class A2ML(BaseA2ML):
 
     @show_result
     def review(self, model_id, locally=False, provider=None):
-        """Review the performance of deployed model.
+        """Review information about deployed model.
 
         Args:
             model_id(str): The deployed model id you want to use.
@@ -378,7 +378,7 @@ class A2ML(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'score': {'accuracy': 0.8}}
+                    'data': {'status': 'completed', 'error': ''}
                 }
 
         Examples:

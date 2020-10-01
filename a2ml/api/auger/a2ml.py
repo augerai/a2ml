@@ -32,3 +32,6 @@ class AugerA2ML(object):
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         return AugerModel(self.ctx).delete_actuals(
             model_id, with_predictions, begin_date, end_date, locally)
+
+    def review(self, model_id):
+        return AugerModel(self.ctx).review(model_id)
