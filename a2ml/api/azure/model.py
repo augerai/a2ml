@@ -331,11 +331,6 @@ def get_df(data):
         else:
             raise Exception("Not Implemented.")
 
-    @error_handler
-    @authenticated
-    def review(self, model_id):
-        pass
-
     def _get_iteration(self, model_id):
         iteration = None
         run_id = model_id
@@ -558,4 +553,8 @@ def get_df(data):
     @authenticated
     def review_alert(self, model_id, parameters):
         raise AzureException("Not Implemented. Set use_auger_cloud: True in config.yml")
-        
+
+    @error_handler
+    @authenticated
+    def review(self, model_id):
+        raise Exception("Not Implemented. Set use_auger_cloud: True in config.yml")

@@ -157,7 +157,8 @@ class ModelReview(object):
         if not data_path:
             data_path = self.options['data_path']
 
-        ds_train = DataFrame.create_dataframe(data_path)
+        ds_train = DataFrame.create_dataframe(data_path, 
+            features=ModelHelper.get_train_features(self.options))
 
         all_files = fsclient.list_folder(os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
             wild=True, remove_folder_name=False, meta_info=True)
