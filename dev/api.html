@@ -606,7 +606,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.review">
 <code class="sig-name descname">review</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.review" title="Permalink to this definition">¶</a></dt>
-<dd><p>Review the performance of deployed model.</p>
+<dd><p>Review information about deployed model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -617,7 +617,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1289,7 +1289,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.review">
 <code class="sig-name descname">review</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.review" title="Permalink to this definition">¶</a></dt>
-<dd><p>Review the performance of deployed model.</p>
+<dd><p>Review information about deployed model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1301,7 +1301,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
