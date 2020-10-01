@@ -62,12 +62,17 @@ class ModelDeploy(object):
         error = ""
 
         if alert.get('actions') == 'retrain_deploy':
-            redeploy_status = alert_item.get('action_results', {}).get('redeploy')
-            if redeploy_status in error_states:
+            retrain_status = alert_item.get('action_results', {}).get('retrain')
+            if retrain_status in error_states:
                 status = 'error'
-                error = redeploy_status
-            elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
-                status = 'completed'
+                error = retrain_status
+            else:            
+                redeploy_status = alert_item.get('action_results', {}).get('redeploy')
+                if redeploy_status in error_states:
+                    status = 'error'
+                    error = redeploy_status
+                elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
+                    status = 'completed'
         elif alert.get('actions') == 'retrain':
             retrain_status = alert_item.get('action_results', {}).get('retrain')
             if retrain_status in error_states:
