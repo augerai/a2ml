@@ -157,8 +157,9 @@ class ModelReview(object):
         if not data_path:
             data_path = self.options['data_path']
 
-        ds_train = DataFrame.create_dataframe(data_path, 
-            features=ModelHelper.get_train_features(self.options))
+        train_features = ModelHelper.get_train_features(self.options)
+        logging.info("train_features: %s"%train_features)
+        ds_train = DataFrame.create_dataframe(data_path, features=train_features)
 
         all_files = fsclient.list_folder(os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
             wild=True, remove_folder_name=False, meta_info=True)
@@ -171,6 +172,7 @@ class ModelReview(object):
             if not ds_actuals.df.empty:
                 ds_actuals.drop(['prediction_id', 'a2ml_predicted'])
 
+                logging.info("ds_train.columns: %s"%list(ds_train.columns))
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
                 ds_train.drop_duplicates()
 
