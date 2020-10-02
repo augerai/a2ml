@@ -577,6 +577,7 @@ def clear_model_results_and_actuals(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def build_review_data_task(params):
+    #TODO: fix data_path in rpoject file
     return ModelReview(params).build_review_data(
-        data_path=params.get('data_path')
+        data_path=None, #params.get('data_path')
     )
