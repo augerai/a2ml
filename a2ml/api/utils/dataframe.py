@@ -120,10 +120,13 @@ class DataFrame(object):
             return self.loadFromBinFile(path, features)
         elif extension.endswith('.json') or extension.endswith('.json.gz'):
             path = fsclient.s3fs_open(path)
-            return pd.read_json(path, orient=self.options.get('json_orient',None))
+            res = pd.read_json(path, orient=self.options.get('json_orient',None))
+            if features:
+                res = res[features]
+            return res
         elif extension.endswith('.xlsx') or extension.endswith('.xls'):
             path = fsclient.s3fs_open(path)
-            return pd.read_excel(path)
+            return pd.read_excel(path, usecols=features)
         elif extension.endswith('.feather') or extension.endswith('.feather.gz') or extension.endswith('.feather.zstd') or extension.endswith('.feather.lz4'):
             # Features list is optional for feather file, but it can segfault without it on some files
             return self.loadFromFeatherFile(path, features)
