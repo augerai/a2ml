@@ -73,10 +73,10 @@ class AzureDataset(object):
                     target_path=None, overwrite=True, show_progress=True)
                 dataset_name = os.path.basename(local_path)
                 if dataset_name.endswith(".parquet") or self.ctx.config.get('source_format', "") == "parquet":
-                    dataset = Dataset.Tabular.from_parquet_files(path=ds.path(dataset_name))
+                    dataset = Dataset.Tabular.from_parquet_files(path=ds.path(dataset_name), validate=False)
                 else:    
                     dataset = Dataset.Tabular.from_delimited_files(
-                        path=ds.path(dataset_name))
+                        path=ds.path(dataset_name), validate=False)
 
         dataset.register(workspace = ws, name = dataset_name,
             create_new_version = True)
