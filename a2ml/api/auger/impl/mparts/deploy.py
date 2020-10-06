@@ -1,5 +1,6 @@
 import os
 import subprocess
+import numpy as np
 
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
@@ -9,6 +10,7 @@ from ..cloud.review_alert_item import AugerReviewAlertItemApi
 from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
 from a2ml.api.utils import fsclient
+
 
 class ModelDeploy(object):
     """Deploy Model on locally or on Auger Cloud."""
@@ -83,9 +85,13 @@ class ModelDeploy(object):
         else:
             status = 'completed'
 
+        accuracy = 0
+        if alert_item.get('values'):
+            accuracy = np.mean(alert_item['values'])
         result = {
             'status': status,
-            'error': error
+            'error': error,
+            'accuracy': accuracy
         }
         return result
             
