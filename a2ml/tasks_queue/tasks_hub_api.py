@@ -467,6 +467,7 @@ def deploy_model_task(params):
 @process_task_result
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
+    provider = params.get('provider', 'auger')
     ctx = _read_hub_experiment_session(ctx, params)
 
     model_id = params.get('hub_info', {}).get('pipeline_id')
@@ -476,6 +477,7 @@ def undeploy_model_task(params):
     if not model_id:
         raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
+    ctx.config.set('undeploy/service_only', params.get('service_only', False), provider)    
     ctx.config.clean_changes()
     res = A2MLModel(ctx).undeploy(model_id = model_id, locally=params.get('locally', False))
     _update_hub_objects(ctx, params.get('provider'), params)
