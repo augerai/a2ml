@@ -24,6 +24,8 @@ class AugerPredictionApi(AugerBaseApi):
         }
         if self.use_endpoint:
             params['endpoint_id'] = self.parent_api.object_id
+            if not self.ctx.config.get('support_model_history'):
+                params['primary_only'] = True
         else:
             params['pipeline_id'] = self.parent_api.object_id
 
