@@ -56,7 +56,8 @@ class ModelDeploy(object):
         if not alert_items:
             return result
 
-        alert_item = alert_items[-1]
+        alert_items = sorted(alert_items, key=lambda k: k['id'], reverse=True)
+        alert_item = alert_items[0]
         error_states = ['review_data_build_failed', 'project_file_processing_failed', 'experiment_session_failed', 'pipeline_creating_failed']
 
         alert = AugerReviewAlertApi(self.ctx, None, alert_item['review_alert_id']).properties()

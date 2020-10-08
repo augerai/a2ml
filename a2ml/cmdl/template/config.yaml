@@ -66,4 +66,7 @@ review:
     #Send message via selected notification channel.
     #no, user, organization
     notification: user
-  
+
+    # Should prediction be called for each historical model or just latest one(default)
+    support_model_history: false
+    
