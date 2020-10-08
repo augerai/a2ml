@@ -26,8 +26,13 @@ class ModelUndeploy(object):
             fsclient.remove_folder(model_folder)
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-            pipeline_api.remove(model_id)
-
             if pipeline_api.check_endpoint():
-                AugerEndpointApi(self.ctx, None, pipeline_api.object_id).delete()
+                endpoint_api = AugerEndpointApi(self.ctx, None, pipeline_api.object_id)
+                endpoint_props = endpoint_api.properties()
+                for pipeline in endpoint_props.get('endpoint_pipelines', []):
+                    AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
+
+                endpoint_api.delete()
+            else:
+                pipeline_api.remove(model_id)                    
 
