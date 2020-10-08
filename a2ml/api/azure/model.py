@@ -527,9 +527,10 @@ def get_df(data):
     @error_handler
     @authenticated
     def undeploy(self, model_id, locally):
-        model_path = self.ctx.config.get_model_path(model_id)
-        self.ctx.log("Undeploy model. Remove model folder: %s"%model_path)
-        fsclient.remove_folder(model_path)
+        if not self.ctx.config.get('undeploy/service_only'):
+            model_path = self.ctx.config.get_model_path(model_id)
+            self.ctx.log("Undeploy model. Remove model folder: %s"%model_path)
+            fsclient.remove_folder(model_path)
 
         if not locally:
             from azureml.train.automl.run import AutoMLRun
