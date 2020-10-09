@@ -27,10 +27,17 @@ class ModelUndeploy(object):
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
             if pipeline_api.check_endpoint():
+                self.ctx.log("Undeploy Review endpoint and all models.")
                 endpoint_api = AugerEndpointApi(self.ctx, None, pipeline_api.object_id)
                 endpoint_props = endpoint_api.properties()
                 for pipeline in endpoint_props.get('endpoint_pipelines', []):
-                    AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
+                    try:
+                        AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
+                    except Exception as e:
+                        if "transition to this status impossible" in str(e):
+                            self.ctx.log("Model %s already undeployed."%pipeline.get('pipeline_id'))
+                        else:
+                            self.ctx.error("Model %s undeploy error: %s"%(pipeline.get('pipeline_id'),e))
 
                 endpoint_api.delete()
             else:
