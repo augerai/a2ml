@@ -49,12 +49,15 @@ class FeatureDivergence:
 
             return np.sum(np.log(res), axis=1)
 
-    class DensityEstimation:
+    class DensityEstimator:
         def __init__(self, num_cols: list = None, cat_cols: list = None):
             self.num_cols = [] if num_cols is None else num_cols
             self.cat_cols = [] if cat_cols is None else cat_cols
 
         def fit(self, X, y=None):
+            self.cont_ = None
+            self.cat_ = None
+
             if self.num_cols:
                 self.cont_ = GaussianMixture(n_components=3, covariance_type="diag").fit(X[self.num_cols])
 
@@ -69,6 +72,33 @@ class FeatureDivergence:
 
             return np.mean(num_score + cat_score)
 
+    class DensityEstimatorPerFeature:
+        def __init__(self, features, numerical_features, categorical_features):
+            self.features = features
+            self.numerical_features = set(numerical_features)
+            self.categorical_features = set(categorical_features)
+            self.models = {}
+
+        def fit(self, df):
+            for feature in self.features:
+                model = None
+
+                if feature in self.numerical_features:
+                    model = FeatureDivergence.DensityEstimator([feature], [])
+
+                if feature in self.categorical_features:
+                    model = FeatureDivergence.DensityEstimator([], [feature])
+
+                if model:
+                    model.fit(df)
+                    self.models[feature] = model
+
+        def score(self, feature, df):
+            if feature in self.models:
+                return self.models[feature].score(df)
+            else:
+                raise KeyError("Feature: '" + feature + "'' is not in the model")
+
     def __init__(self, params):
         self.params = params
         self.experiment_session = params['hub_info']['experiment_session']
@@ -79,7 +109,12 @@ class FeatureDivergence:
         data_path = evaluation_options['data_path']
 
         df = DataFrame.create_dataframe(data_path=data_path, features=self._get_density_features())
-        model = self.DensityEstimation(self._get_numerical_features(), self._get_categorical_features())
+
+        model = self.DensityEstimatorPerFeature(
+            self._get_density_features(),
+            self._get_numerical_features(),
+            self._get_categorical_features()
+        )
         model.fit(df.df)
 
         path = self._get_divergence_model_path()
@@ -105,7 +140,12 @@ class FeatureDivergence:
                     daily_df = df
 
             if daily_df != None:
-                res[str(curr_date)] = model.score(daily_df.df)
+                sub_res = {}
+
+                for feature in features:
+                    sub_res[feature] = model.score(feature, daily_df.df)
+
+                res[str(curr_date)] = sub_res
 
         return res
 

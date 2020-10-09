@@ -13,7 +13,7 @@ class TestFeatureDivergence(unittest.TestCase):
         self.assertIsInstance(res, str)
 
         model = fsclient.load_object_from_file(res)
-        self.assertIsInstance(model, FeatureDivergence.DensityEstimation)
+        self.assertIsInstance(model, FeatureDivergence.DensityEstimatorPerFeature)
 
     def test_score_divergence_daily(self):
         fd = FeatureDivergence(self._load_metric_task_params())
@@ -23,9 +23,19 @@ class TestFeatureDivergence(unittest.TestCase):
         date_to = datetime.date(2020, 10, 8) # divergence should be lesser than day before
         res = fd.score_divergence_daily(model_path, date_from, date_to, divergence_model_name='test_density_model.pkl')
 
-        self.assertTrue(str(date_from) in res)
-        self.assertTrue(str(date_to) in res)
-        self.assertGreater(res[str(date_to)], res[str(date_from)])
+        self.assertIsInstance(res, dict)
+        self.assertIn(str(date_from), res)
+        self.assertIn(str(date_to), res)
+
+        self.assertIsInstance(res[str(date_to)], dict)
+        self.assertIn('sepal_length', res[str(date_to)])
+        self.assertIn('sepal_width', res[str(date_to)])
+        self.assertIn('petal_length', res[str(date_to)])
+        self.assertIn('petal_width', res[str(date_to)])
+        self.assertIn('species', res[str(date_to)])
+
+        self.assertIsInstance(res[str(date_to)]['petal_width'], float)
+        self.assertGreater(res[str(date_to)]['petal_width'], res[str(date_from)]['petal_width'])
 
     def _project_path(self):
         return 'tests/fixtures/test_feature_divergence'
