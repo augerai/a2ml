@@ -34,21 +34,22 @@ class AugerPipelineApi(AugerBaseApi):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
 
-        props = self.properties()            
-        status = props.get('status')
-        if status != 'ready':
-            if 'error' in status:
-                # there are following options currently:
-                # [created_files_with_error, packaged_with_error,
-                # deployed_with_error undeployed_with_error]
-                error_message = props.get('error_message')
-                raise AugerException(
-                    """Pipeline %s deployment has failed with following """
-                    """error on Auger Cloud: `%s`""" % (
-                        self.object_id, error_message))
-            else:
-                raise AugerException(
-                    "Pipeline %s is not ready..." % self.object_id)
+        props = self.properties()
+        if not self.check_endpoint(props):
+            status = props.get('status')
+            if status != 'ready':
+                if 'error' in status:
+                    # there are following options currently:
+                    # [created_files_with_error, packaged_with_error,
+                    # deployed_with_error undeployed_with_error]
+                    error_message = props.get('error_message')
+                    raise AugerException(
+                        """Pipeline %s deployment has failed with following """
+                        """error on Auger Cloud: `%s`""" % (
+                            self.object_id, error_message))
+                else:
+                    raise AugerException(
+                        "Pipeline %s is not ready..." % self.object_id)
 
         prediction_api = AugerPredictionApi(self.ctx, self, use_endpoint=self.check_endpoint(props))
         prediction_properties = \
