@@ -51,8 +51,8 @@ class FeatureDivergence:
 
     class DensityEstimator:
         def __init__(self, num_cols: list = None, cat_cols: list = None):
-            self.num_cols = [] if num_cols is None else num_cols
-            self.cat_cols = [] if cat_cols is None else cat_cols
+            self.num_cols = num_cols or []
+            self.cat_cols = cat_cols or []
 
         def fit(self, X, y=None):
             self.cont_ = None
@@ -78,6 +78,7 @@ class FeatureDivergence:
             self.numerical_features = set(numerical_features)
             self.categorical_features = set(categorical_features)
             self.models = {}
+            self.base_values = {}
 
         def fit(self, df):
             for feature in self.features:
@@ -92,10 +93,12 @@ class FeatureDivergence:
                 if model:
                     model.fit(df)
                     self.models[feature] = model
+                    self.base_values[feature] = model.score(df)
 
         def score(self, feature, df):
             if feature in self.models:
-                return self.models[feature].score(df)
+                # print(feature, self.models[feature].score(df), '/', self.base_values[feature], '=', self.models[feature].score(df) / self.base_values[feature])
+                return self.models[feature].score(df) / self.base_values[feature]
             else:
                 raise KeyError("Feature: '" + feature + "'' is not in the model")
 
@@ -104,7 +107,7 @@ class FeatureDivergence:
         self.experiment_session = params['hub_info']['experiment_session']
         self.stat_data = self.experiment_session.get('dataset_statistics', {}).get('stat_data', [])
 
-    def build_and_save_model(self):
+    def build_and_save_model(self, divergence_model_name=None):
         evaluation_options = self.experiment_session.get('model_settings', {}).get('evaluation_options')
         data_path = evaluation_options['data_path']
 
@@ -117,13 +120,22 @@ class FeatureDivergence:
         )
         model.fit(df.df)
 
-        path = self._get_divergence_model_path()
+        path = self._get_divergence_model_path(divergence_model_name)
         fsclient.save_object_to_file(model, path)
         return path
 
-    def score_divergence_daily(self, model_path, date_from=None, date_to=None, divergence_model_name=None):
+    def score_divergence_daily(
+        self, model_path, date_from=None, date_to=None, divergence_model_name=None, top_n=None
+    ):
         model = fsclient.load_object_from_file(self._get_divergence_model_path(divergence_model_name))
         features = self._get_density_features()
+
+        features_source = features
+        feature_importances = self._get_most_important_features(features, top_n)
+
+        if top_n:
+            features_source = feature_importances.keys()
+
         res = {}
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
@@ -142,12 +154,26 @@ class FeatureDivergence:
             if daily_df != None:
                 sub_res = {}
 
-                for feature in features:
+                for feature in features_source:
                     sub_res[feature] = model.score(feature, daily_df.df)
 
                 res[str(curr_date)] = sub_res
 
-        return res
+        return {
+            'divergence': res,
+            'importance': feature_importances,
+        }
+
+    def _get_most_important_features(self, features, top_n):
+        features_set = set(features)
+        res = ModelReview(self.params).get_feature_importances()
+        # Get feature importance for our features
+        res = { key: res.get(key) for key in features_set }
+        res = [[res[k], k] for k in res if res.get(k) != None]
+        # Sort by importance desc
+        res.sort(reverse=True)
+        # Return top features by importance dict(feature => importance)
+        return dict(map(lambda x: [x[1], x[0]], res[0:top_n]))
 
     def _get_divergence_model_path(self, divergence_model_name=None):
         experiment_session_path = ModelHelper.get_experiment_session_path(self.params)
