@@ -28,7 +28,12 @@ class ModelHelper(object):
         return root_dir, root_tmp_dir
 
     @staticmethod
-    def get_project_path():
+    def get_project_path(params=None):
+        if params:
+            project_path = params.get('hub_info', {}).get('project_path')
+            if project_path:
+                return project_path
+
         root_dir, root_tmp_dir = ModelHelper.get_root_paths()
         return os.path.join(root_dir, os.environ.get('AUGER_PROJECT_PATH', ''))
 
@@ -39,15 +44,17 @@ class ModelHelper(object):
         return os.path.join(project_path, "models")
 
     @staticmethod
-    def get_model_path(model_id, project_path=None):
-        if model_id:
-            return os.path.join(ModelHelper.get_models_path(project_path), model_id)
+    def get_model_path(model_id=None, project_path=None, params=None):
+        project_path = project_path or ModelHelper.get_project_path(params)
+        if project_path:
+            model_id = model_id or params.get('hub_info', {}).get('pipeline_id')
+
+            if model_id:
+                return os.path.join(ModelHelper.get_models_path(project_path), model_id)
 
     @staticmethod
     def get_experiment_session_path(params):
-        project_path = params.get('hub_info', {}).get('project_path')
-        if not project_path:
-            project_path = ModelHelper.get_project_path()
+        project_path = ModelHelper.get_project_path(params)
 
         if params.get('hub_info', {}).get('experiment_id') and params.get('hub_info', {}).get('experiment_session_id'):
             return os.path.join(

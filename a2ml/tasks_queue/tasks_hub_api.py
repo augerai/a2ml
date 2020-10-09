@@ -532,9 +532,9 @@ def score_actuals_by_model_task(params):
 @process_task_result
 def delete_actuals_task(params):
     return ModelReview(params).delete_actuals(
-        with_predictions=params.get('with_predictions'), 
-        begin_date=params.get('begin_date'), 
-        end_date=params.get('end_date'), 
+        with_predictions=params.get('with_predictions'),
+        begin_date=params.get('begin_date'),
+        end_date=params.get('end_date'),
     )
 
 # @celeryApp.task(ignore_result=True)
@@ -591,4 +591,18 @@ def build_review_data_task(params):
     return ModelReview(params).build_review_data(
         data_path=params.get('data_path'),
         date_col = date_col
+    )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def build_divergence_model_task(params):
+    return DivergenceHelper(params).build_and_save_model()
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def calc_divergence_daily_task(params):
+    return DivergenceHelper(params).score_divergence_daily(
+        date_from=params.get('date_from'),
+        date_to=params.get('date_to'),
+        top_n=params.get('top_n'),
     )

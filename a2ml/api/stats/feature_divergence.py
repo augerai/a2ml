@@ -97,7 +97,6 @@ class FeatureDivergence:
 
         def score(self, feature, df):
             if feature in self.models:
-                # print(feature, self.models[feature].score(df), '/', self.base_values[feature], '=', self.models[feature].score(df) / self.base_values[feature])
                 return self.models[feature].score(df) / self.base_values[feature]
             else:
                 raise KeyError("Feature: '" + feature + "'' is not in the model")
@@ -124,10 +123,9 @@ class FeatureDivergence:
         fsclient.save_object_to_file(model, path)
         return path
 
-    def score_divergence_daily(
-        self, model_path, date_from=None, date_to=None, divergence_model_name=None, top_n=None
-    ):
-        model = fsclient.load_object_from_file(self._get_divergence_model_path(divergence_model_name))
+    def score_divergence_daily(self, date_from=None, date_to=None, divergence_model_name=None, top_n=None):
+        model_path = ModelHelper.get_model_path(params=self.params)
+        divergence_model = fsclient.load_object_from_file(self._get_divergence_model_path(divergence_model_name))
         features = self._get_density_features()
 
         features_source = features
@@ -155,7 +153,7 @@ class FeatureDivergence:
                 sub_res = {}
 
                 for feature in features_source:
-                    sub_res[feature] = model.score(feature, daily_df.df)
+                    sub_res[feature] = divergence_model.score(feature, daily_df.df)
 
                 res[str(curr_date)] = sub_res
 

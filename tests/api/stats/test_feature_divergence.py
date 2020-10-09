@@ -18,10 +18,9 @@ class TestFeatureDivergence(unittest.TestCase):
     def test_score_divergence_daily(self):
         fd = FeatureDivergence(self._load_task_params())
 
-        model_path = self._project_path() + '/models/F6F741544E9A468'
         date_from = datetime.date(2020, 10, 7)
         date_to = datetime.date(2020, 10, 8) # divergence should be lesser than day before
-        res = fd.score_divergence_daily(model_path, date_from, date_to, divergence_model_name='test_density_model.pkl')
+        res = fd.score_divergence_daily(date_from, date_to, divergence_model_name='test_density_model.pkl')
 
         self.assertIsInstance(res, dict)
         self.assertIn('divergence', res)
@@ -48,17 +47,14 @@ class TestFeatureDivergence(unittest.TestCase):
         self.assertIn('species', divergence[str(date_to)])
 
         self.assertIsInstance(divergence[str(date_to)]['petal_width'], float)
-        # TODO: self.assertGreater(divergence[str(date_to)]['petal_width'], divergence[str(date_from)]['petal_width'])
+        self.assertTrue(divergence[str(date_to)]['petal_width'] < divergence[str(date_from)]['petal_width'])
 
     def test_score_divergence_daily_top_n(self):
         fd = FeatureDivergence(self._load_task_params())
 
-        model_path = self._project_path() + '/models/F6F741544E9A468'
         date_from = datetime.date(2020, 10, 7)
         date_to = datetime.date(2020, 10, 8) # divergence should be lesser than day before
-        res = fd.score_divergence_daily(
-            model_path, date_from, date_to, divergence_model_name='test_density_model.pkl', top_n=2
-        )
+        res = fd.score_divergence_daily(date_from, date_to, divergence_model_name='test_density_model.pkl', top_n=2)
 
         self.assertIsInstance(res, dict)
         self.assertIn('divergence', res)
@@ -85,7 +81,7 @@ class TestFeatureDivergence(unittest.TestCase):
         self.assertNotIn('species', divergence[str(date_to)])
 
         self.assertIsInstance(divergence[str(date_to)]['petal_width'], float)
-        # TODO: self.assertGreater(divergence[str(date_to)]['petal_width'], divergence[str(date_from)]['petal_width'])
+        self.assertTrue(divergence[str(date_to)]['petal_width'] < divergence[str(date_from)]['petal_width'])
 
     def _project_path(self):
         return 'tests/fixtures/test_feature_divergence'
