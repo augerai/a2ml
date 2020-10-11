@@ -583,8 +583,8 @@ def build_review_data_task(params):
     ctx = _read_hub_experiment_session(ctx, params)
 
     date_col = None
-    if config.get_list('experiment/date_time'):
-        date_col = config.get_list('experiment/date_time')[0]
+    if ctx.config.get_list('experiment/date_time'):
+        date_col = ctx.config.get_list('experiment/date_time')[0]
 
     return ModelReview(params).build_review_data(
         data_path=params.get('data_path'),
