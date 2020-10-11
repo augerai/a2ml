@@ -166,17 +166,20 @@ class ModelReview(object):
             key=lambda f: f['last_modified'],
             reverse=True
         )
-        logging.info("build_review_data with date_col: %s"%date_col)
         if date_col and date_col in train_features:
+            new_files = []
             try:
                 start_date = convert_to_date(ds_train.df[date_col].max())
+                logging.info("build_review_data with date_col: %s = %s"%(date_col,start_date))
+
                 for idx, file in enumerate(all_files):
                     file_date = os.path.basename(file['path']).split("_")[0]
                     if convert_to_date(file_date) <= start_date:
                         continue
 
-                    all_files = all_files[idx:]
-                    break
+                    new_files.append(file)
+
+                all_files = new_files    
             except Exception as e:
                 logging.error("Getting latest date from data path %s failed: %s"%(data_path,e))
 
