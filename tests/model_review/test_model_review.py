@@ -463,6 +463,14 @@ def test_build_review_data():
     assert res
     assert res.endswith(".parquet")
 
+# def test_build_review_data_2():
+#     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
+
+#     res = ModelReview({'model_path': model_path}).build_review_data(
+#       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
+#     assert res
+#     assert res.endswith(".parquet")
+
 def test_score_actuals_lucas_case():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 

@@ -153,7 +153,7 @@ class ModelReview(object):
                     path = file if type(file) == str else file['path']
                     fsclient.remove_file(path)
 
-    def build_review_data(self, data_path=None, output=None):
+    def build_review_data(self, data_path=None, output=None, date_col=None):
         if not data_path:
             data_path = self.options['data_path']
 
@@ -166,7 +166,21 @@ class ModelReview(object):
             key=lambda f: f['last_modified'],
             reverse=True
         )
+        logging.info("build_review_data with date_col: %s"%date_col)
+        if date_col and date_col in train_features:
+            try:
+                start_date = convert_to_date(ds_train.df[date_col].max())
+                for idx, file in enumerate(all_files):
+                    file_date = os.path.basename(file['path']).split("_")[0]
+                    if convert_to_date(file_date) <= start_date:
+                        continue
 
+                    all_files = all_files[idx:]
+                    break
+            except Exception as e:
+                logging.error("Getting latest date from data path %s failed: %s"%(data_path,e))
+
+        logging.info("build_review_data adding files: %s"%all_files)        
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
                 ds_actuals.drop(['prediction_id', 'a2ml_predicted'])
@@ -420,7 +434,7 @@ class ModelReview(object):
             path = os.path.join(model_path, "predictions/" + "*" + path_suffix)
             files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
             yield ("today", files)
-
+        
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'

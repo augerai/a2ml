@@ -579,6 +579,14 @@ def clear_model_results_and_actuals(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def build_review_data_task(params):
+    ctx = _create_provider_context(params)
+    ctx = _read_hub_experiment_session(ctx, params)
+
+    date_col = None
+    if config.get_list('experiment/date_time'):
+        date_col = config.get_list('experiment/date_time')[0]
+
     return ModelReview(params).build_review_data(
-        data_path=params.get('data_path')
+        data_path=params.get('data_path'),
+        date_col = date_col
     )
