@@ -103,6 +103,8 @@ class AugerExperimentApi(AugerBaseApi):
             options["algorithms_to_exlude"] = self.ctx.config.get_list('experiment/blocked_models')
         if self.ctx.config.get('experiment/allowed_models'):
             options["allowed_algorithms"] = self.ctx.config.get_list('experiment/allowed_models')
+        if config.get('experiment/exit_score'):
+            options['exit_score'] = config.get('experiment/exit_score')
 
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(

@@ -187,6 +187,8 @@ def _read_hub_experiment_session(ctx, params):
         ctx.config.set('experiment/blocked_models', evaluation_options.get('algorithms_to_exlude'))
     if evaluation_options.get('allowed_algorithms'):
         ctx.config.set('experiment/allowed_models', evaluation_options.get('allowed_algorithms'))
+    if evaluation_options.get('exit_score'):
+        ctx.config.set('experiment/exit_score', evaluation_options.get('exit_score'))
 
     return ctx
 
