@@ -40,6 +40,9 @@ experiment:
   # Try to improve model performance by creating ensembles from the trial models
   use_ensemble: true
 
+  # The experiment terminates after this score is reached
+  #exit_score: 0.7
+
   # The maximum number of threads to use for a given training trial
   #max_cores_per_trial: 4
   # Represents the maximum number of trials that would be executed in parallel on one node  
@@ -69,4 +72,4 @@ review:
 
     # Should prediction be called for each historical model or just latest one(default)
     support_model_history: false
-    
+

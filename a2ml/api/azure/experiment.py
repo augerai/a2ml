@@ -135,6 +135,9 @@ class AzureExperiment(object):
 
         if self.ctx.config.get('experiment/max_total_time'):
             automl_settings["experiment_timeout_hours"] = float(self.ctx.config.get('experiment/max_total_time'))/60.0
+        if self.ctx.config.get('experiment/exit_score'):
+            automl_settings["experiment_exit_score"] = float(self.ctx.config.get('experiment/exit_score'))
+
         if self.ctx.config.get('experiment/max_cores_per_trial'):
             automl_settings["max_cores_per_iteration"] = self.ctx.config.get('experiment/max_cores_per_trial')
         if self.ctx.config.get('experiment/max_concurrent_trials'):
