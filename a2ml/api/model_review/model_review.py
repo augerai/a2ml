@@ -194,7 +194,7 @@ class ModelReview(object):
         if not output:
             file_name = os.path.splitext(data_path)[0]
             if '_review_' in file_name:
-                idx = file_name.rfind('_review_')
+                idx = file_name.find('_review_')
                 if idx > 0:
                     file_name = file_name[:idx]
 

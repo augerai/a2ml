@@ -1,6 +1,7 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
 from a2ml.api.utils import convert_source
+from a2ml.api.utils.context import Context
 
 
 class A2ML(BaseA2ML):
