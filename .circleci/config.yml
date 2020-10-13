@@ -113,6 +113,11 @@ jobs:
           Reuse last release's values and merge in any overrides
         type: boolean
         default: true
+      account-id:
+        description: |
+          AWS account containing the cluster
+        type: string
+        default: ${ACCOUNT_ID}
       role-name:
         description: |
           AWS role to assume for deploying to eks
@@ -125,7 +130,9 @@ jobs:
         default: ""
     steps:
       - aws-cli/setup
-      - role/assume-role
+      - role/assume-role:
+          account-id: << parameters.account-id >>
+          role-name: << parameters.role-name >>
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
           aws-region: << parameters.aws-region >>
@@ -212,13 +219,14 @@ workflows:
               ignore: /^v.*/
       - deploy-to-k8s:
           name: deploy-to-k8s
-          cluster-name: ${PROD_CLUSTER_NAME}
           namespace: a2ml
           release-name: a2ml
           values-to-override: "image.tag=$CIRCLE_TAG"
           context: eks
           requires:
             - docker-publish-tag
+          account-id: ${PROD_ACCOUNT_ID}
+          cluster-name: ${PROD_CLUSTER_NAME}
           role-name: ${PROD_ROLE_NAME}
           filters:
             tags:
