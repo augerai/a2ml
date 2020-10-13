@@ -459,9 +459,14 @@ def test_score_actuals_return_count_nones():
 def test_build_review_data():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class.csv")
+    res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class_review_B6FD93C248984BC.csv")
     assert res
     assert res.endswith(".parquet")
+    assert 'B6FD93C248984BC' not in res
+
+    res_ar = res.split("_")
+    assert len(res_ar) == 4
+    assert res_ar[2] == "review"
 
 # def test_build_review_data_2():
 #     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
