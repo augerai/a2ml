@@ -41,6 +41,49 @@ class AugerExperimentApi(AugerBaseApi):
             'project_id': self.parent_api.object_id,
             'data_path': data_set_properties.get('url')})
 
+    @staticmethod    
+    def get_experiment_options(config, ):
+        model_type = config.get('model_type', '')
+
+        options = {
+            'crossValidationFolds':
+                config.get('experiment/cross_validation_folds', 5),
+            'max_total_time_mins':
+                config.get('experiment/max_total_time', 60),
+            'max_eval_time_mins':
+                config.get('experiment/max_eval_time', 6),
+            'max_n_trials':
+                config.get('experiment/max_n_trials', 1000),
+            'use_ensemble':
+                config.get('experiment/use_ensemble', True),
+            'classification':
+                True if model_type == 'classification' else False,
+            'scoring':
+                config.get('experiment/metric',
+                    'accuracy' if model_type == 'classification' else 'r2')
+        }
+
+        if config.get('experiment/trials_per_worker'):
+            options['trials_per_worker'] = config.get('experiment/trials_per_worker')
+        if config.get('experiment/class_weight'):
+            options['algorithm_params_common'] = {'class_weight': config.get('experiment/class_weight')}
+        if config.get('experiment/oversampling'):
+            options['oversampling'] = config.get('experiment/oversampling')
+        if config.get('experiment/estimate_trial_time'):
+            options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
+        if config.get('experiment/max_cores_per_trial'):
+            options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_trial')
+        if config.get('experiment/max_concurrent_trials'):
+            options['trials_per_worker'] = config.get('experiment/max_concurrent_trials')
+        if config.get('experiment/blocked_models'):
+            options["algorithms_to_exlude"] = config.get_list('experiment/blocked_models')
+        if config.get('experiment/allowed_models'):
+            options["allowed_algorithms"] = config.get_list('experiment/allowed_models')
+        if config.get('experiment/exit_score'):
+            options['exit_score'] = config.get('experiment/exit_score')
+
+        return options
+            
     def get_experiment_settings(self):
         config = self.ctx.config
 
@@ -68,44 +111,9 @@ class AugerExperimentApi(AugerBaseApi):
             self.ctx.config.remove('experiment/validation_dataset')
             self.ctx.config.write()
 
-        options = {
-            'crossValidationFolds':
-                config.get('experiment/cross_validation_folds', 5),
-            'max_total_time_mins':
-                config.get('experiment/max_total_time', 60),
-            'max_eval_time_mins':
-                config.get('experiment/max_eval_time', 6),
-            'max_n_trials':
-                config.get('experiment/max_n_trials', 1000),
-            'use_ensemble':
-                config.get('experiment/use_ensemble', True),
-            'classification':
-                True if model_type == 'classification' else False,
-            'scoring':
-                config.get('experiment/metric',
-                    'accuracy' if model_type == 'classification' else 'r2'),
-            'test_data_path': test_data_path
-        }
-
-        if config.get('experiment/trials_per_worker'):
-            options['trials_per_worker'] = config.get('experiment/trials_per_worker')
-        if config.get('experiment/class_weight'):
-            options['algorithm_params_common'] = {'class_weight': config.get('experiment/class_weight')}
-        if config.get('experiment/oversampling'):
-            options['oversampling'] = config.get('experiment/oversampling')
-        if config.get('experiment/estimate_trial_time'):
-            options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
-        if config.get('experiment/max_cores_per_trial'):
-            options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_trial')
-        if config.get('experiment/max_concurrent_trials'):
-            options['trials_per_worker'] = config.get('experiment/max_concurrent_trials')
-        if self.ctx.config.get('experiment/blocked_models'):
-            options["algorithms_to_exlude"] = self.ctx.config.get_list('experiment/blocked_models')
-        if self.ctx.config.get('experiment/allowed_models'):
-            options["allowed_algorithms"] = self.ctx.config.get_list('experiment/allowed_models')
-        if config.get('experiment/exit_score'):
-            options['exit_score'] = config.get('experiment/exit_score')
-
+        options = self.get_experiment_options(config)
+        options['test_data_path'] = test_data_path
+            
         data_set_id = self.properties()['project_file_id']
         data_set_api = AugerDataSetApi(
             self.ctx, self.parent_api, None, data_set_id)

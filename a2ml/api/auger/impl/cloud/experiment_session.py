@@ -76,3 +76,22 @@ class AugerExperimentSessionApi(AugerBaseApi):
             leaderboard.sort(key=lambda t: list(t.values())[-1], reverse=False)
             
         return leaderboard
+
+    def update_settings(self):
+        from .experiment import AugerExperimentApi
+
+        session_props = self.properties()
+        props = session_props.get('model_settings',{}).get('evaluation_options')
+        config_props = AugerExperimentApi.get_experiment_options(self.ctx.config)
+        update_props = {}
+        for name, value in config_props.items():
+            if not name in props or props.get(name) != config_props.get(name):
+                update_props[name] = value
+
+        if update_props:
+            self.ctx.log("Updating Review retrain options: %s"%update_props)
+            model_settings = session_props['model_settings']
+            for name, value in update_props.items():
+                model_settings['evaluation_options'][name] = value
+
+            self._call_update({'id': self.object_id, 'model_settings': model_settings})
