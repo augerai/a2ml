@@ -390,7 +390,10 @@ class ModelReview(object):
                 importance_data = fsclient.read_json_file(os.path.join(cache_path, "metric_names_feature_importance.json")).get('feature_importance_data')
 
         if importance_data:
-            return dict(zip(importance_data['features'], importance_data['scores']))
+            if importance_data.get('features_orig') and importance_data.get('scores_orig'):
+                return dict(zip(importance_data['features_orig'], importance_data['scores_orig']))
+            else:    
+                return dict(zip(importance_data['features'], importance_data['scores']))
         else:
             logging.warn("No feature importance in cache: for model %s" % (cache_path))
             return {}
