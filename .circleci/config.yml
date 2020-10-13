@@ -62,15 +62,29 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: make config docker-test
       - run: make docker-save
       - persist_to_workspace:
           root: .
           paths:
             - ./image.tar.gz
+  publish-docker:
+    executor: docker/machine
+    parameters:
+      docker-tag:
+        description: Tag to publish
+        type: string
+        default: latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - docker/check
+      - run: make docker-load
+      - docker/push:
+          image: augerai/a2ml:latest
+          tag: augerai/a2ml:<< parameters.docker-tag >>
 
   publish-pip:
     docker:
@@ -169,15 +183,10 @@ workflows:
             branches:
               only:
                 - master
-      - docker/publish:
-          attach-at: ./
-          before_build:
-            - run: gunzip image.tar.gz
-            - run: docker load -i image.tar
+      - publish-docker:
           context: docker-hub
-          image: augerai/a2ml
           name: docker-publish-tag
-          tag: $CIRCLE_TAG
+          docker-tag: $CIRCLE_TAG
           requires:
             - build-and-test
           filters:
@@ -185,15 +194,9 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - docker/publish:
-          attach-at: ./
-          before_build:
-            - run: gunzip image.tar.gz
-            - run: docker load -i image.tar          
+      - publish-docker:
           context: docker-hub
-          image: augerai/a2ml
           name: docker-publish-master
-          tag: latest
           requires:
             - build-and-test
           filters:

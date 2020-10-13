@@ -7,20 +7,21 @@ config:
 	cp develop.env.example develop.env
 
 docker-build:
-	docker-compose build
-
-docker-build-stages:
 	docker build \
-		--target base \
-		--tag augerai/a2ml:base .
+		--target=base \
+		--cache-from=base \
+		--tag base .
 	docker build \
-		--target builder \
-		--cache-from=augerai/a2ml:base \
-		--tag augerai/a2ml:builder .
+		--target=builder \
+		--cache-from=base \
+		--cache-from=builder \
+		--tag builder .
 	docker build \
-		--target runtime \
-		--cache-from=augerai/a2ml:builder \
-		--tag augerai/a2ml:runtime .
+		--target=runtime \
+		--cache-from=base \
+		--cache-from=builder \
+		--cache-from=augerai/a2ml:${DOCKER_TAG} \
+		--tag augerai/a2ml:${DOCKER_TAG} .
 
 docker-clean:
 	docker-compose down -v --remove-orphans
@@ -47,13 +48,10 @@ docker-save:
 docker-tag: docker-build
 	docker tag augerai/a2ml:latest augerai/a2ml:${DOCKER_TAG}
 
-docker-test-build:
-	docker-compose -f docker-compose.test.yml build
-
 docker-test-clean: docker-minio-clean
 	docker-compose -f docker-compose.test.yml down -v --remove-orphans
 
-docker-test: docker-test-build
+docker-test: docker-build
 	docker-compose -f docker-compose.test.yml run --rm a2ml
 
 build: clean
