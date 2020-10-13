@@ -28,7 +28,12 @@ class ModelHelper(object):
         return root_dir, root_tmp_dir
 
     @staticmethod
-    def get_project_path():
+    def get_project_path(params=None):
+        if params:
+            project_path = params.get('hub_info', {}).get('project_path')
+            if project_path:
+                return project_path
+
         root_dir, root_tmp_dir = ModelHelper.get_root_paths()
         return os.path.join(root_dir, os.environ.get('AUGER_PROJECT_PATH', ''))
 
@@ -39,19 +44,35 @@ class ModelHelper(object):
         return os.path.join(project_path, "models")
 
     @staticmethod
-    def get_model_path(model_id, project_path=None):
-        if model_id:
-            return os.path.join(ModelHelper.get_models_path(project_path), model_id)
+    def get_model_path(model_id=None, project_path=None, params=None):
+        project_path = project_path or ModelHelper.get_project_path(params)
+        if project_path:
+            model_id = model_id or params.get('hub_info', {}).get('pipeline_id')
+
+            if model_id:
+                return os.path.join(ModelHelper.get_models_path(project_path), model_id)
+
+    @staticmethod
+    def get_experiment_session_path(params):
+        project_path = ModelHelper.get_project_path(params)
+
+        if params.get('hub_info', {}).get('experiment_id') and params.get('hub_info', {}).get('experiment_session_id'):
+            return os.path.join(
+                project_path,
+                "channels",
+                params['hub_info']['experiment_id'],
+                "project_runs",
+                params['hub_info']['experiment_session_id']
+            )
+
+        return None
 
     @staticmethod
     def get_metrics_path(params):
-        project_path = params.get('hub_info', {}).get('project_path')
-        if not project_path:
-            project_path = ModelHelper.get_project_path()
+        experiment_session_path = ModelHelper.get_experiment_session_path(params)
 
-        if params.get('hub_info', {}).get('experiment_id') and params.get('hub_info', {}).get('experiment_session_id'):
-            return os.path.join(project_path, "channels", params['hub_info']['experiment_id'],
-                "project_runs", params['hub_info']['experiment_session_id'], "metrics")
+        if experiment_session_path:
+            return os.path.join(experiment_session_path, "metrics")
 
         return None
 
@@ -282,19 +303,19 @@ class ModelHelper(object):
             ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
 
         return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output, 
+            json_result, count_in_result, prediction_date, model_path, model_id, output,
             gzip_predict_file=gzip_predict_file, model_features=model_features)
 
     @staticmethod
     def save_prediction_result(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None, 
+        json_result, count_in_result, prediction_date, model_path, model_id, output=None,
         gzip_predict_file=False, model_features=None):
         path_to_predict = ds.options.get('data_path')
         # Id for whole prediction (can contains many rows)
         if not prediction_id:
             prediction_id = get_uid()
 
-        result = {}    
+        result = {}
         if path_to_predict and not json_result:
             if output:
                 predict_path = output
@@ -321,13 +342,13 @@ class ModelHelper(object):
                 result = {'data': predicted.get('data', []), 'columns': predicted.get('columns')}
             elif ds.from_pandas:
                 result = ds.df
-            else:    
+            else:
                 result = ds.df.to_dict('records')
 
         if support_review_model:
             file_name = str(prediction_date or datetime.date.today()) + \
                 '_' + prediction_id + "_results.feather.zstd"
-            #Save only model features, they should contain target and prediction_id    
+            #Save only model features, they should contain target and prediction_id
             if model_features:
                 ds.select(model_features)
 
@@ -335,7 +356,7 @@ class ModelHelper(object):
                 model_path, "predictions", file_name))
 
         return result
-            
+
     @staticmethod
     def revertCategories(results, categories):
         return list(map(lambda x: categories[int(x)], results))

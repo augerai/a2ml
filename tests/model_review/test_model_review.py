@@ -236,7 +236,7 @@ def test_get_feature_importances_general_metrics_cache():
 
     params = load_metric_task_params(model_path)
 
-    res = ModelReview(params)._get_feature_importances()
+    res = ModelReview(params).get_feature_importances()
     assert res == {'workclass': 0.12006373015194421, 'sex': 0.039481754114499897,
       'occupation': 0.20967661413259162, 'education': 0.2999579889231273,
       'relationship': 0.08698243068672135, 'marital-status': 0.14329620992107325,
@@ -250,7 +250,7 @@ def test_get_feature_importances_no_metrics_cache():
     params = load_metric_task_params(model_path)
     params['hub_info']['pipeline_id'] = '555555555555555'
 
-    res = ModelReview(params)._get_feature_importances()
+    res = ModelReview(params).get_feature_importances()
 
     assert res == {}
 

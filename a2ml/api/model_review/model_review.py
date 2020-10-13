@@ -80,7 +80,7 @@ class ModelReview(object):
 
         #TODO: why we check for primary_ds here?
         if raise_not_found and actuals_count != match_count and primary_ds is None:
-            df_diff = ds_actuals.df[['prediction_id']].merge(combined_df[['prediction_id']], 
+            df_diff = ds_actuals.df[['prediction_id']].merge(combined_df[['prediction_id']],
                 on="prediction_id", how="left", indicator=True)
             diff_ids = df_diff[df_diff._merge=='left_only']['prediction_id'].head(100).values.tolist()
             raise Exception("Actual Prediction ID(s) not found in model predictions: %s"%diff_ids)
@@ -323,7 +323,7 @@ class ModelReview(object):
     def _distribution_stats(self, date_from, date_to, path_suffix, features,
         categoricalFeatures=[], feature_mapper={}):
         res = {}
-        feature_importances = self._get_feature_importances()
+        feature_importances = self.get_feature_importances()
         counter = ProbabilisticCounter()
         second_pass_counter = ProbabilisticCounter()
 
@@ -380,7 +380,7 @@ class ModelReview(object):
 
         return res
 
-    def _get_feature_importances(self):
+    def get_feature_importances(self):
         cache_path = ModelHelper.get_metric_path(self.options)
 
         importance_data = None

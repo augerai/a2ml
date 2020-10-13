@@ -1,0 +1,992 @@
+{
+  "hub_info": {
+    "pipeline_id": "F6F741544E9A468",
+    "project_file": {
+      "id": 3927,
+      "url": "s3://auger-providers--02eda1/workspace/projects/alex-test/files/iris-74ae14.csv",
+      "name": "iris",
+      "object": "project_file",
+      "status": "processed",
+      "deleted": false,
+      "industry": null,
+      "image_url": null,
+      "providers": [
+        "auger",
+        "azure"
+      ],
+      "created_at": "2020-09-04T08:33:23.384Z",
+      "project_id": 2048,
+      "updated_at": "2020-09-04T08:33:44.454Z",
+      "description": null,
+      "content_type": "text/csv",
+      "error_message": null,
+      "providers_data": {
+        "auger": null,
+        "azure": {
+          "url": "iris-74ae14.csv"
+        }
+      }
+    },
+    "project_name": "a2mlworkspaceprod",
+    "project_path": "s3://auger-providers--02eda1/workspace/projects/alex-test",
+    "experiment_id": "19b2e8b2d2cdb697",
+    "prediction_id": null,
+    "cluster_task_id": 267808,
+    "experiment_name": "iris-049c",
+    "project_file_id": 3927,
+    "experiment_session": {
+      "id": "a516d4a1c72cc2db",
+      "number": 1,
+      "object": "experiment_session",
+      "status": "completed",
+      "deleted": false,
+      "message": null,
+      "runtime": 1000.726337038,
+      "providers": [
+        "auger",
+        "azure"
+      ],
+      "created_at": "2020-09-04T08:33:44.775Z",
+      "model_type": "classification",
+      "project_id": 2048,
+      "started_at": "2020-09-04T08:35:04.173Z",
+      "updated_at": "2020-09-04T08:51:45.035Z",
+      "completed_at": "2020-09-04T08:51:44.900Z",
+      "search_space": null,
+      "error_message": null,
+      "experiment_id": "19b2e8b2d2cdb697",
+      "model_settings": {
+        "status": "completed",
+        "end_time": "2020-09-04 08:38:28.337574",
+        "timeouts": [],
+        "start_time": "2020-09-04 08:35:44.048089",
+        "error_trials": [],
+        "failed_trials": [],
+        "featuresCount": 4,
+        "timeouts_stat": {},
+        "featureColumns": [
+          "sepal_length",
+          "sepal_width",
+          "petal_length",
+          "petal_width"
+        ],
+        "timeouts_count": 0,
+        "error_trials_stat": {},
+        "total_evaluations": 5,
+        "error_trials_count": 0,
+        "evaluation_options": {
+          "scoring": "accuracy",
+          "ensemble": true,
+          "data_path": "s3://auger-providers--02eda1/workspace/projects/alex-test/files/iris-74ae14.csv",
+          "optimizers": {
+            "auger_ml.warmstart_optimizer.WarmStartOptimizer": {
+              "num_trials": 0
+            },
+            "auger_ml.optimizers.de_optimizer.DEEliminationOptimizer": {
+              "phi": 0.5,
+              "rho": 0.7
+            },
+            "auger_ml.optimizers.skopt_async_optimizer.SkOptAsyncOptimizer": {
+              "acq_func": "gp_hedge",
+              "batch_size": 5,
+              "acq_optimizer": "sampling",
+              "base_estimator": "GP"
+            }
+          },
+          "scoreNames": [
+            "accuracy",
+            "neg_log_loss",
+            "f1_micro",
+            "f1_macro",
+            "f1_weighted",
+            "precision_micro",
+            "precision_macro",
+            "precision_weighted",
+            "recall_micro",
+            "recall_macro",
+            "recall_weighted"
+          ],
+          "start_time": "2020-09-04 08:35:44.048089",
+          "content_type": "text/csv",
+          "max_n_trials": 5,
+          "search_space": {
+            "xgboost.XGBClassifier": {
+              "gamma": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  10
+                ],
+                "tunable": true
+              },
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "objective": {
+                "type": "categorical",
+                "values": [
+                  "binary:logistic"
+                ],
+                "tunable": false
+              },
+              "reg_alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  60,
+                  600
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "colsample_bytree": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.6,
+                  1
+                ],
+                "tunable": true
+              },
+              "min_child_weight": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              }
+            },
+            "lightgbm.LGBMClassifier": {
+              "silent": {
+                "type": "categorical",
+                "values": [
+                  -1
+                ],
+                "tunable": false
+              },
+              "verbose": {
+                "type": "categorical",
+                "values": [
+                  -1
+                ],
+                "tunable": false
+              },
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "reg_alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "num_leaves": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  16,
+                  64
+                ],
+                "tunable": true
+              },
+              "reg_lambda": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  100,
+                  1600
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "colsample_bytree": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.6,
+                  1
+                ],
+                "tunable": true
+              }
+            },
+            "auger_ml.algorithms.svm.SVC": {
+              "C": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.0001,
+                  25
+                ],
+                "tunable": true
+              },
+              "gamma": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.0001,
+                  25
+                ],
+                "tunable": true
+              },
+              "degree": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  5
+                ],
+                "tunable": true
+              },
+              "kernel": {
+                "type": "categorical",
+                "values": [
+                  "rbf",
+                  "sigmoid",
+                  "poly"
+                ],
+                "tunable": true
+              },
+              "probability": {
+                "log": false,
+                "type": "categorical",
+                "values": [
+                  true
+                ],
+                "tunable": false
+              }
+            },
+            "sklearn.linear_model.SGDClassifier": {
+              "loss": {
+                "type": "categorical",
+                "values": [
+                  "log",
+                  "modified_huber"
+                ],
+                "tunable": true
+              },
+              "alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  1e-05,
+                  10
+                ],
+                "tunable": true
+              },
+              "penalty": {
+                "type": "categorical",
+                "values": [
+                  "l2",
+                  "l1",
+                  "elasticnet"
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.AdaBoostClassifier": {
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  1
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.tree.DecisionTreeClassifier": {
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.ExtraTreesClassifier": {
+              "bootstrap": {
+                "type": "categorical",
+                "values": [
+                  false,
+                  true
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.RandomForestClassifier": {
+              "bootstrap": {
+                "type": "categorical",
+                "values": [
+                  true,
+                  false
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.GradientBoostingClassifier": {
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  1
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "auger_ml.algorithms.cat_boost.CatBoostClassifier": {
+              "rsm": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "l2_leaf_reg": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "border_count": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  16,
+                  128
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  100,
+                  800
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "loss_function": {
+                "type": "categorical",
+                "values": [
+                  "Logloss",
+                  "MultiClass"
+                ],
+                "tunable": false
+              },
+              "model_size_reg": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  10
+                ],
+                "tunable": true
+              },
+              "allow_writing_files": {
+                "type": "categorical",
+                "values": [
+                  false
+                ],
+                "tunable": false
+              },
+              "feature_border_type": {
+                "type": "categorical",
+                "values": [
+                  "Median",
+                  "UniformAndQuantiles",
+                  "GreedyLogSum",
+                  "MaxLogSum",
+                  "MinEntropy"
+                ],
+                "tunable": true
+              }
+            }
+          },
+          "splitOptions": {
+            "shuffleData": true
+          },
+          "use_ensemble": true,
+          "dataset_ncols": 4,
+          "dataset_nrows": 100,
+          "targetFeature": "species",
+          "classification": true,
+          "optimizer_name": "auger_ml.warmstart_optimizer.WarmStartOptimizer",
+          "optimizers_names": [
+            "auger_ml.optimizers.de_optimizer.DEEliminationOptimizer",
+            "auger_ml.optimizers.skopt_async_optimizer.SkOptAsyncOptimizer",
+            "auger_ml.warmstart_optimizer.WarmStartOptimizer"
+          ],
+          "max_eval_time_mins": 6,
+          "categoricalFeatures": [],
+          "ensemble_start_time": "2020-09-04 08:37:00.328333",
+          "max_total_time_mins": 60,
+          "preprocessors_space": {
+            "nan.NanPreprocessor": {
+              "thresh_col": 0.95
+            },
+            "extra.ExtraPreprocessor": {},
+            "scale.ScalePreprocessor": {},
+            "sparse.SparsePreprocessor": {
+              "n_comp_frac": 0.2,
+              "thresh_sparse": 0.95
+            },
+            "date_time.DateTimePreprocessor": {},
+            "eliminate.EliminatePreprocessor": {
+              "thresh_var": 0.05
+            },
+            "categorical.CategoricalPreprocessor": {
+              "max_categoricals_nunique": 50
+            }
+          },
+          "top_pipelines_limit": 100,
+          "binaryClassification": false,
+          "cpu_per_mt_algorithm": 4,
+          "crossValidationFolds": 3,
+          "split_to_folds_files": true,
+          "originalFeaturesCount": 4,
+          "pp_fold_groups_params": {},
+          "originalFeatureColumns": [
+            "sepal_length",
+            "sepal_width",
+            "petal_length",
+            "petal_width"
+          ],
+          "search_space_ensembles": {
+            "auger_ml.ensembles.algorithms.VotingAlgorithm": {
+              "n_best": 3,
+              "voting": "soft",
+              "weights": null
+            },
+            "auger_ml.ensembles.algorithms.GreedySelectionAlgorithm": {
+              "n_bags": 3,
+              "n_best": 1,
+              "improve_eps": false,
+              "bag_fraction": 0.5,
+              "random_state": 42,
+              "prune_fraction": 0.0,
+              "max_bag_pipelines": 3
+            },
+            "auger_ml.ensembles.algorithms.AveragingAlgorithmClassifier": {
+              "n_best": 3,
+              "weights": null
+            },
+            "auger_ml.ensembles.algorithms.SuperLearnerAlgorithmClassifier": {
+              "method": "slsqp",
+              "opt_trials": 3
+            }
+          },
+          "algorithm_params_defaults": {
+            "loss_function": "MultiClass"
+          },
+          "apply_estimate_trial_time": false,
+          "max_concurrent_iterations": 1,
+          "top_pipelines_poll_interval": 10
+        },
+        "failed_trials_stat": {},
+        "ensemble_start_time": "2020-09-04 08:37:00.328333",
+        "failed_trials_count": 0,
+        "completed_evaluations": 18,
+        "last_update_trial_report": 1599208707.625927
+      },
+      "providers_data": {
+        "auger": {
+          "status": "completed",
+          "completed_evaluations": 18
+        },
+        "azure": {
+          "id": "AutoML_2df7b0e9-32c5-4491-aed9-42bc72b2ee8e",
+          "errors": {
+            "error": null,
+            "error_details": null
+          },
+          "status": "completed",
+          "completed_evaluations": 5
+        }
+      },
+      "project_file_id": 3927,
+      "starter_user_id": 2,
+      "top_score_value": 0.96,
+      "dataset_statistics": {
+        "count": 150,
+        "stat_data": [
+          {
+            "avg": 5.843333,
+            "use": true,
+            "range": [
+              "4.30",
+              "7.90"
+            ],
+            "std_dev": 0.828066,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                9,
+                23,
+                14,
+                27,
+                16,
+                26,
+                18,
+                6,
+                5,
+                6
+              ],
+              "bin_edges": [
+                4.3,
+                4.66,
+                5.02,
+                5.38,
+                5.74,
+                6.1,
+                6.46,
+                6.82,
+                7.18,
+                7.54,
+                7.9
+              ]
+            },
+            "column_name": "sepal_length",
+            "orig_datatype": "double",
+            "unique_values": 35
+          },
+          {
+            "avg": 3.054,
+            "use": true,
+            "range": [
+              "2.00",
+              "4.40"
+            ],
+            "std_dev": 0.433594,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                4,
+                7,
+                22,
+                24,
+                38,
+                31,
+                9,
+                11,
+                2,
+                2
+              ],
+              "bin_edges": [
+                2,
+                2.24,
+                2.48,
+                2.72,
+                2.96,
+                3.2,
+                3.44,
+                3.6800000000000006,
+                3.92,
+                4.16,
+                4.4
+              ]
+            },
+            "column_name": "sepal_width",
+            "orig_datatype": "double",
+            "unique_values": 23
+          },
+          {
+            "avg": 3.758667,
+            "use": true,
+            "range": [
+              "1.00",
+              "6.90"
+            ],
+            "std_dev": 1.76442,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                37,
+                13,
+                0,
+                3,
+                8,
+                26,
+                29,
+                18,
+                11,
+                5
+              ],
+              "bin_edges": [
+                1,
+                1.59,
+                2.18,
+                2.77,
+                3.36,
+                3.95,
+                4.540000000000001,
+                5.130000000000001,
+                5.720000000000001,
+                6.31,
+                6.9
+              ]
+            },
+            "column_name": "petal_length",
+            "orig_datatype": "double",
+            "unique_values": 43
+          },
+          {
+            "avg": 1.198667,
+            "use": true,
+            "range": [
+              "0.10",
+              "2.50"
+            ],
+            "std_dev": 0.763161,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                41,
+                8,
+                1,
+                7,
+                8,
+                33,
+                6,
+                23,
+                9,
+                14
+              ],
+              "bin_edges": [
+                0.1,
+                0.34,
+                0.58,
+                0.82,
+                1.06,
+                1.3,
+                1.54,
+                1.78,
+                2.02,
+                2.26,
+                2.5
+              ]
+            },
+            "column_name": "petal_width",
+            "orig_datatype": "double",
+            "unique_values": 22
+          },
+          {
+            "use": false,
+            "datatype": "categorical",
+            "isTarget": true,
+            "column_name": "species",
+            "value_counts": {
+              "setosa": 50,
+              "virginica": 50,
+              "versicolor": 50
+            },
+            "orig_datatype": "string",
+            "unique_values": 3,
+            "value_counts_ex": [
+              {
+                "count": 50,
+                "value": "virginica"
+              },
+              {
+                "count": 50,
+                "value": "setosa"
+              },
+              {
+                "count": 50,
+                "value": "versicolor"
+              }
+            ]
+          }
+        ],
+        "columns_count": 5
+      },
+      "dataset_manifest_id": "b0ef50bdbf608714"
+    },
+    "dataset_manifest_id": "b0ef50bdbf608714",
+    "experiment_session_id": "a516d4a1c72cc2db"
+  },
+  "provider": "auger",
+  "actual_at": "2020-10-08T00:00:00.000+00:00",
+  "data_path": "s3://auger-providers--02eda1/workspace/projects/alex-test/files/iris-74ae14.csv",
+  "actual_date": "2020-10-08",
+  "actuals_path": null,
+  "content_type": "text/csv",
+  "return_count": true,
+  "provider_info": {
+    "auger": {
+      "project": {
+        "deploy_cluster": {
+          "type": "aci",
+          "cpu_cores": 1,
+          "memory_gb": 2,
+          "compute_target": "standard"
+        }
+      },
+      "experiment_session": {
+        "status": "completed",
+        "completed_evaluations": 18
+      }
+    }
+  },
+  "actual_records": [
+    {
+      "actual": "setosa",
+      "prediction_id": "acc1d5f5-2255-4364-bd10-36545781583e"
+    }
+  ],
+  "prediction_group_id": null,
+  "primary_pipeline_id": null,
+  "primary_prediction_group_id": null
+}
