@@ -16,6 +16,7 @@ from a2ml.api.a2ml_experiment import A2MLExperiment
 from a2ml.api.a2ml_project import A2MLProject
 from a2ml.api.model_review.model_helper import ModelHelper
 from a2ml.api.model_review.model_review import ModelReview
+from a2ml.api.stats.feature_divergence import FeatureDivergence
 from a2ml.api.utils import dict_dig, merge_dicts
 from a2ml.api.utils.json_utils import json_dumps_np
 from a2ml.api.utils.context import Context
@@ -479,7 +480,7 @@ def undeploy_model_task(params):
     if not model_id:
         raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
-    ctx.config.set('undeploy/service_only', params.get('service_only', False), provider)    
+    ctx.config.set('undeploy/service_only', params.get('service_only', False), provider)
     ctx.config.clean_changes()
     res = A2MLModel(ctx).undeploy(model_id = model_id, locally=params.get('locally', False))
     _update_hub_objects(ctx, params.get('provider'), params)
@@ -596,12 +597,12 @@ def build_review_data_task(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def build_divergence_model_task(params):
-    return DivergenceHelper(params).build_and_save_model()
+    return FeatureDivergence(params).build_and_save_model()
 
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def calc_divergence_daily_task(params):
-    return DivergenceHelper(params).score_divergence_daily(
+    return FeatureDivergence(params).score_divergence_daily(
         date_from=params.get('date_from'),
         date_to=params.get('date_to'),
         top_n=params.get('top_n'),
