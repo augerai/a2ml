@@ -47,7 +47,8 @@ class ModelHelper(object):
     def get_model_path(model_id=None, project_path=None, params=None):
         project_path = project_path or ModelHelper.get_project_path(params)
         if project_path:
-            model_id = model_id or params.get('hub_info', {}).get('pipeline_id')
+            if not model_id and params:
+                model_id = params.get('hub_info', {}).get('pipeline_id')
 
             if model_id:
                 return os.path.join(ModelHelper.get_models_path(project_path), model_id)
