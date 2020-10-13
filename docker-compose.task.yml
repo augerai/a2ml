@@ -3,7 +3,7 @@ version: '3'
 services:
   a2ml:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     working_dir: /app
     command: pytest -vv -s -o log_cli=True -o log_cli_level=info -W ignore tests/test_celery_tasks/test_tasks.py::TestTasks::test_train_server
     env_file: 
@@ -17,7 +17,7 @@ services:
 
   a2ml-worker:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     command: a2ml worker
     env_file: develop.env
     volumes:
@@ -28,7 +28,7 @@ services:
 
   a2ml-server:
     build: .
-    image: deeplearninc/a2ml
+    image: augerai/a2ml
     command: a2ml server
     env_file: develop.env
     volumes:

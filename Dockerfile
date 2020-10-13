@@ -13,10 +13,12 @@ FROM base as builder
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
-COPY LICENSE README.md $WORKDIR/
-COPY setup.py $WORKDIR/
+COPY LICENSE README.md setup.py $WORKDIR/
+# unused version so we get dependencies installed
+RUN mkdir -p $WORKDIR/a2ml && \
+  echo "__version__ = '99.99.99'" > $WORKDIR/a2ml/__init__.py
 
-RUN pip install ".[testing,server,azure,google]"
+RUN pip install ".[all]"
 RUN find /usr/local/lib/python3.7 \
   -name '*.pxd' -o \
   -name '*.pyd' -o \
@@ -28,7 +30,7 @@ RUN find /usr/local/lib/python3.7 \
   && find /usr/local/lib/python3.7 \
   -name '*.so*' | xargs strip
 
-FROM base
+FROM base as runtime
 
 ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
 
@@ -37,13 +39,11 @@ WORKDIR $WORKDIR
 
 COPY --from=builder /usr/local/lib/python3.7 /usr/local/lib/python3.7
 COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
-COPY --from=builder /usr/local/bin/pytest /usr/local/bin/pytest
-COPY --from=builder /usr/local/bin/tox /usr/local/bin/tox
 
-COPY LICENSE README.md setup.py tox.ini $WORKDIR/
+COPY LICENSE README.md setup.py setup.cfg $WORKDIR/
 COPY a2ml $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
 RUN python setup.py bdist_wheel && \
-  pip install -U --no-deps dist/*
+  pip install -U --force-reinstall --no-cache-dir --no-deps dist/*
 
 CMD /usr/local/bin/a2ml

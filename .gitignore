@@ -32,6 +32,8 @@ coverage/*
 **/log/*
 Session.vim
 tags
+*.tar
+*.tar.gz
 
 # Setuptools distribution and build folders
 dist/
