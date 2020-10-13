@@ -4,6 +4,7 @@ import numpy as np
 
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
+from ..cloud.experiment_session import AugerExperimentSessionApi
 from ..cloud.endpoint import AugerEndpointApi
 from ..cloud.review_alert import AugerReviewAlertApi
 from ..cloud.review_alert_item import AugerReviewAlertItemApi
@@ -39,6 +40,9 @@ class ModelDeploy(object):
         else:
             endpoint_api = AugerEndpointApi(self.ctx, None, 
                 pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+            session_id = endpoint_api.properties().get('primary_experiment_session_id')
+            if session_id:
+                AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
 
         AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
 

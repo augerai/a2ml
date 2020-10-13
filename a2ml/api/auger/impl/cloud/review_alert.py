@@ -12,7 +12,7 @@ class AugerReviewAlertApi(AugerBaseApi):
         return self._call_create(params)
 
     def create_update(self, parameters=None):
-        alert_items = self.list()
+        alerts = self.list()
 
         config = self.ctx.config
         if not parameters:
@@ -33,15 +33,15 @@ class AugerReviewAlertApi(AugerBaseApi):
         if params['notifications'] == 'no':
             params['notifications'] = 'no_notifications'
 
-        if not alert_items:
+        if not alerts:
             res = self.create(params)
         else:
             params_changed = {}
             for key, value in params.items():
-                alert_value = alert_items[0].get(key)
+                alert_value = alerts[0].get(key)
                 if value is not None and value != alert_value:
                     params_changed[key] = value
 
             if params_changed:
-                params_changed['id'] = alert_items[0].get('id')
+                params_changed['id'] = alerts[0].get('id')
                 self._call_update(params_changed)
