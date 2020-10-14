@@ -30,6 +30,7 @@ class FeatureDivergence:
 
     class Histogram:
         def fit(self, X, y=None):
+            X = X.replace([np.inf, -np.inf], np.nan).dropna()
             X = np.copy(X)
             self.hist_ = []
 
@@ -40,6 +41,7 @@ class FeatureDivergence:
             return self
 
         def score_samples(self, X, y=None):
+            X = X.replace([np.inf, -np.inf], np.nan).dropna()
             X = np.copy(X)
             res = np.zeros_like(X, dtype=float)
 
@@ -55,6 +57,8 @@ class FeatureDivergence:
             self.cat_cols = cat_cols or []
 
         def fit(self, X, y=None):
+            X = X.replace([np.inf, -np.inf], np.nan).dropna()
+
             self.cont_ = None
             self.cat_ = None
 
@@ -67,6 +71,7 @@ class FeatureDivergence:
             return self
 
         def score(self, X, y=None):
+            X = X.replace([np.inf, -np.inf], np.nan).dropna()
             num_score = self.cont_.score_samples(X[self.num_cols]) if self.cont_ is not None else np.zeros(X.shape[0])
             cat_score = self.cat_.score_samples(X[self.cat_cols]) if self.cat_ is not None else np.zeros(X.shape[0])
 
@@ -101,6 +106,9 @@ class FeatureDivergence:
             else:
                 raise KeyError("Feature: '" + feature + "'' is not in the model")
 
+    class ModelIsNotReadyError(Exception):
+        pass
+
     def __init__(self, params):
         self.params = params
         self.experiment_session = params['hub_info']['experiment_session']
@@ -125,7 +133,12 @@ class FeatureDivergence:
 
     def score_divergence_daily(self, date_from=None, date_to=None, divergence_model_name=None, top_n=None):
         model_path = ModelHelper.get_model_path(params=self.params)
-        divergence_model = fsclient.load_object_from_file(self._get_divergence_model_path(divergence_model_name))
+        div_model_path = self._get_divergence_model_path(divergence_model_name)
+
+        if not fsclient.is_file_exists(div_model_path):
+            raise self.ModelIsNotReadyError(div_model_path)
+
+        divergence_model = fsclient.load_object_from_file(div_model_path)
         features = self._get_density_features()
 
         features_source = features
