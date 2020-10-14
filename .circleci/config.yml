@@ -83,7 +83,7 @@ jobs:
       - docker/check
       - run: make docker-load
       - docker/push:
-          image: augerai/a2ml:latest
+          image: augerai/a2ml
           tag: augerai/a2ml:<< parameters.docker-tag >>
 
   publish-pip:
