@@ -83,16 +83,16 @@ class ModelPredict():
                     file_url = self._upload_file_to_cloud(filename)
 
         return records, features, file_url, data is not None and isinstance(data, pd.DataFrame)
-                    
+
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
         temp_file = None
         ds_result = None
         if records is not None and len(records) == 0:
-            ds_result =  DataFrame.create_dataframe(None, [], features+["prediction_id", self.ctx.config.get('target')])   
-        else:    
-            pipeline_api = AugerPipelineApi(self.ctx, None, model_id)        
-            predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)            
+            ds_result =  DataFrame.create_dataframe(None, [], features+["prediction_id", self.ctx.config.get('target')])
+        else:
+            pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
+            predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
 
             ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
                 records=predictions.get('data'), features=predictions.get('columns'))
@@ -105,15 +105,12 @@ class ModelPredict():
 
             is_model_loaded, model_path_1, model_name = \
                 ModelDeploy(self.ctx, None).verify_local_model(model_id)
-            support_review_model = False
-            model_path = None    
+            model_path = None
             if is_model_loaded:
-                support_review_model = True
                 model_path = os.path.join(model_path_1, "model-%s"%model_id, 'model')
 
             return ModelHelper.save_prediction_result(ds_result,
-                prediction_id = None, support_review_model = support_review_model,
-                json_result=False, count_in_result=False, prediction_date=predicted_at,
+                prediction_id = None, json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)
         finally:
             if temp_file:
@@ -155,7 +152,6 @@ class ModelPredict():
 
             return ModelHelper.save_prediction_result(ds_result,
                 prediction_id = None,
-                support_review_model = model_options.get("support_review_model") if model_path else False,
                 json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)
         elif output:

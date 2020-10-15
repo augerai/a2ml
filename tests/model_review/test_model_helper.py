@@ -64,59 +64,48 @@ class TestModelHelper(unittest.TestCase):
 
         prediction_id = "123"
         prediction_date="today"
-        results_file_path = os.path.join(model_path, "predictions",
-            prediction_date + '_' + prediction_id + "_results.feather.zstd")
         predicted_file_path = os.path.join(model_path, "predictions",
             "iris_test_"+prediction_id+"_"+options.get('uid')+"_predicted.csv")
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
-        fsclient.remove_file(results_file_path)
-        self.assertFalse(fsclient.is_file_exists(results_file_path))
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         res = ModelHelper.save_prediction(ds, prediction_id,
-            support_review_model=True, json_result=False, count_in_result=False, prediction_date=prediction_date,
+            json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual(res, predicted_file_path)
         self.assertTrue(fsclient.is_file_exists(predicted_file_path))
-        self.assertTrue(fsclient.is_file_exists(results_file_path))
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
-        fsclient.remove_file(results_file_path)
-        self.assertFalse(fsclient.is_file_exists(results_file_path))
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         res = ModelHelper.save_prediction(ds, prediction_id,
-            support_review_model=True, json_result=True, count_in_result=False, prediction_date=prediction_date,
+            json_result=True, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual( res['columns'], ds.columns)
         self.assertEqual( len(res['data']), 6)
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
-        fsclient.remove_file(results_file_path)
-        self.assertFalse(fsclient.is_file_exists(results_file_path))
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         ds.options['data_path'] = None
         res = ModelHelper.save_prediction(ds, prediction_id,
-            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date,
+            json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual( type(res[0]), dict)
         self.assertEqual( res[0][options['targetFeature']], 'setosa')
 
         ds = DataFrame.create_dataframe(os.path.join(model_path, "iris_test.csv"))
-        fsclient.remove_file(results_file_path)
-        self.assertFalse(fsclient.is_file_exists(results_file_path))
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         ds.options['data_path'] = None
         ds.loaded_columns = ds.columns
         res = ModelHelper.save_prediction(ds, prediction_id,
-            support_review_model=False, json_result=False, count_in_result=False, prediction_date=prediction_date,
+            json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'))
         self.assertEqual( res['columns'], ds.columns)
         self.assertEqual( len(res['data']), 6)
@@ -128,8 +117,6 @@ class TestModelHelper(unittest.TestCase):
 
         prediction_id = "123"
         prediction_date="today"
-        results_file_path = os.path.join(model_path, "predictions",
-            prediction_date + '_' + prediction_id + "_results.feather.zstd")
         predicted_file_path = os.path.join(model_path, "predictions",
             "iris_test_"+prediction_id+"_"+options.get('uid')+"_predicted.csv")
 
@@ -143,18 +130,15 @@ class TestModelHelper(unittest.TestCase):
         ds.drop(['prediction_id'])
         self.assertFalse('prediction_id' in ds.columns)
 
-        fsclient.remove_file(results_file_path)
-        self.assertFalse(fsclient.is_file_exists(results_file_path))
         fsclient.remove_file(predicted_file_path)
         self.assertFalse(fsclient.is_file_exists(predicted_file_path))
 
         res = ModelHelper.save_prediction(ds, prediction_id,
-            support_review_model=True, json_result=False, count_in_result=False, prediction_date=prediction_date,
+            json_result=False, count_in_result=False, prediction_date=prediction_date,
             model_path=model_path, model_id=options.get('uid'), prediction_id_col=prediction_id_col)
 
         self.assertEqual(res, predicted_file_path)
         self.assertTrue(fsclient.is_file_exists(predicted_file_path))
-        self.assertTrue(fsclient.is_file_exists(results_file_path))
 
         ds2 = DataFrame.create_dataframe(predicted_file_path)
         self.assertEqual(ds2.df['prediction_id'].tolist(), prediction_ids)
