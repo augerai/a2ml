@@ -24,6 +24,7 @@ class ModelReview(object):
             self.options['hub_info'] = params['hub_info']
 
         self.target_feature = self.options.get('targetFeature')
+        self.original_features = self.options.get("originalFeatureColumns")
 
     # def get_actuals_statistic(self, date_from=None, date_to=None):
     #     count_actuals = self.count_actuals_by_prediction_id()
@@ -35,62 +36,6 @@ class ModelReview(object):
     #         'performance_daily': performance_daily,
     #         'distribution_chart_stats': distribution_chart_stats
     #     }
-
-    def get_actuals_score(self):
-        #TODO: calc score for the all actuals (use some size or count limit)
-        return {}
-
-    def _process_actuals(self, ds_actuals,
-            prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=False, raise_not_found=False):
-
-        ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
-
-        actuals_count = ds_actuals.count()
-
-        primary_ds = None
-        if primary_prediction_group_id:
-            files = ModelReview._get_prediction_files(primary_model_path, primary_prediction_group_id)
-            for (_, df) in DataFrame.load_from_files(files, features=['prediction_id']):
-                primary_ds = df
-                # should be only one file
-                break
-
-        prediction_files = ModelReview._get_prediction_files(self.model_path, prediction_group_id)
-
-        combined_df = None
-        for (file, df_prediction_results) in DataFrame.load_from_files(prediction_files):
-            if primary_ds is not None:
-                ds_actuals.df['prediction_id'] = ModelReview._map_primary_prediction_id_to_candidate(
-                    ds_actuals.df['prediction_id'],
-                    primary_ds.df['prediction_id'],
-                    df_prediction_results.df['prediction_id']
-                )
-
-            intersect_df = ds_actuals.df.merge(df_prediction_results.df, on="prediction_id", how="inner")
-            if combined_df is None:
-                combined_df = intersect_df
-            else:
-                combined_df = combined_df.append(intersect_df)
-
-            match_count = len(combined_df)
-            #TODO: why we check for primary_ds here?
-            if actuals_count == match_count or primary_ds is not None:
-                break
-
-        #TODO: why we check for primary_ds here?
-        if raise_not_found and actuals_count != match_count and primary_ds is None:
-            df_diff = ds_actuals.df[['prediction_id']].merge(combined_df[['prediction_id']],
-                on="prediction_id", how="left", indicator=True)
-            diff_ids = df_diff[df_diff._merge=='left_only']['prediction_id'].head(100).values.tolist()
-            raise Exception("Actual Prediction ID(s) not found in model predictions: %s"%diff_ids)
-
-        result = True
-        if calc_score:
-            result = self._do_score_actual(combined_df)
-
-        ds_actuals.df = combined_df
-        return result
 
     def _do_score_actual(self, df_data):
         ds_true = DataFrame({})
@@ -107,25 +52,42 @@ class ModelReview(object):
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
-    def add_actuals(self, actuals_path = None, actual_records=None,
+    def add_actuals(self, actuals_path=None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, calc_score=True, return_count=False):
+            actual_date=None, actuals_id = None, return_count=False):
 
         features = None
-        if actuals_path or (actual_records and type(actual_records[0]) == list):
-            features = ['prediction_id', 'actual']
 
-        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records,
-            features=features)
-        if features is None:
-            ds_actuals.select(['prediction_id', 'actual'])
+        if actuals_path or (actual_records and type(actual_records[0]) == list):
+            features = ['actual'] + self.original_features + [self.target_feature]
+
+        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
+        missed_features = set(self.original_features) - set(ds_actuals.columns)
+
+        if missed_features:
+            missed_features = list(missed_features)
+            missed_features.sort()
+            raise Exception("There is a missed features in data: " + ", ".join(list(missed_features)))
+
+        if not 'actual' in ds_actuals.columns:
+            raise Exception("There is no 'actual' column in data")
+
+        # if features is None:
+        #     ds_actuals.select(['prediction_id', 'actual'])
 
         actuals_count = ds_actuals.count()
-        result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
-            actual_date, actuals_id, calc_score, raise_not_found=True)
 
-        #print(ds_actuals)
-        #ds_actuals.drop(self.target_feature)
+        # result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
+            # actual_date, actuals_id, calc_score, raise_not_found=True)
+
+        ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
+
+        if not self.target_feature in ds_actuals.columns:
+            # TODO: score
+            ds_actuals.df[self.target_feature] = 0
+
+        result = self._do_score_actual(ds_actuals.df)
+
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 
@@ -179,15 +141,14 @@ class ModelReview(object):
 
                     new_files.append(file)
 
-                all_files = new_files    
+                all_files = new_files
             except Exception as e:
                 logging.error("Getting latest date from data path %s failed: %s"%(data_path,e))
 
-        logging.info("build_review_data adding files: %s"%all_files)        
+        logging.info("build_review_data adding files: %s"%all_files)
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
-                ds_actuals.drop(['prediction_id', 'a2ml_predicted'])
-
+                ds_actuals.drop(['a2ml_predicted'])
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
                 ds_train.drop_duplicates()
 
@@ -398,7 +359,7 @@ class ModelReview(object):
         if importance_data:
             if importance_data.get('features_orig') and importance_data.get('scores_orig'):
                 return dict(zip(importance_data['features_orig'], importance_data['scores_orig']))
-            else:    
+            else:
                 return dict(zip(importance_data['features'], importance_data['scores']))
         else:
             logging.warn("No feature importance in cache: for model %s" % (cache_path))
@@ -446,7 +407,7 @@ class ModelReview(object):
             path = os.path.join(model_path, "predictions/" + "*" + path_suffix)
             files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
             yield ("today", files)
-        
+
     @staticmethod
     def _remove_duplicates_by(df, column_name, counter):
         dup_flag_column_name = '__duplicate'

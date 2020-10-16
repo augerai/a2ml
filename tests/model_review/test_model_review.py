@@ -314,7 +314,30 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
       os.remove(actuals_path)
 
     actuals = [
-      {'prediction_id': '0551c7c7-d771-4973-809d-899418421004', 'actual': 'good' },
+      {
+        'actual': 'good',
+        'checking_status': 'no checking',
+        'duration': 6,
+        'credit_history': 'all paid',
+        'purpose': 'radio/tv',
+        'credit_amount': 1750,
+        'savings_status': '500<=X<1000',
+        'employment': '>=7',
+        'installment_commitment': 2,
+        'personal_status': 'male single',
+        'other_parties': 'none',
+        'residence_since': 4,
+        'property_magnitude': 'life insurance',
+        'age': 45,
+        'other_payment_plans': 'bank',
+        'housing': 'own',
+        'existing_credits': 1,
+        'job': 'unskilled resident',
+        'num_dependents': 2,
+        'own_telephone': 'none',
+        'foreign_worker': 'yes',
+        'class': 'good',
+      }
     ]
 
     actual_date = datetime.date(2020, 8, 3)
@@ -330,58 +353,10 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
     stored_actuals = DataFrame({})
     stored_actuals.loadFromFeatherFile(actual_files[0])
 
-    stored_actuals = json.loads(
-      stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
-    )
+    stored_actuals = json.loads(stored_actuals.df.to_json(orient='records'))
 
     assert stored_actuals[0]['class'] == 'good'
     assert stored_actuals[0]['a2ml_predicted'] == 'good'
-
-def test_score_actuals_with_not_full_actuals():
-    model_path = 'tests/fixtures/test_score_actuals'
-
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
-
-    actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': False },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': True },
-    ]
-
-    actual_date = datetime.date.today() - datetime.timedelta(days=1)
-
-    res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path=None, actual_records=actuals, actual_date=actual_date
-    )
-    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
-    assert len(actual_files) > 0
-    assert str(actual_date) in actual_files[0]
-
-    stored_actuals = DataFrame({})
-    stored_actuals.loadFromFeatherFile(actual_files[0])
-    #assert 'prediction_group_id' in stored_actuals.columns
-
-    stored_actuals = json.loads(
-      stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
-    )
-
-    assert len(stored_actuals) == len(actuals) #+ 1
-
-    assert stored_actuals[0]['prediction_id'] == '5c93079c-00c9-497a-8967-53fa0dd02054'
-    #assert stored_actuals[0]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
-    assert stored_actuals[0]['feature1'] == 1
-    assert stored_actuals[0]['income'] == False
-
-    assert stored_actuals[1]['prediction_id'] == 'b1bf9ebf-0277-4771-9bc5-236690a21194'
-    #assert stored_actuals[1]['prediction_group_id'] == '2ab1e430-6082-4465-b057-3408d36de144'
-    assert stored_actuals[1]['feature1'] == 1.1
-    assert stored_actuals[1]['income'] == False
-
-    assert stored_actuals[2]['prediction_id'] == 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd'
-    #assert stored_actuals[2]['prediction_group_id'] == '03016c26-f69a-416f-817f-4c58cd69d675'
-    assert stored_actuals[2]['feature1'] == 1.3
-    assert stored_actuals[2]['income'] == True
 
 def test_score_actuals_return_count():
     model_path = 'tests/fixtures/test_score_actuals'
@@ -389,44 +364,37 @@ def test_score_actuals_return_count():
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
       os.remove(actuals_path)
 
+    row = {
+      'age': 33,
+      'capital-gain': 0,
+      'capital-loss': 0,
+      'education': 'Some-college',
+      'fnlwgt': 1,
+      'hours-per-week': 40,
+      'marital-status': 'Never-married',
+      'native-country': 'United-States',
+      'occupation': 'Prof-specialty',
+      'race': 'White',
+      'relationship': 'Not-in-family',
+      'sex': 'Male',
+      'workclass': 'Private'
+    }
+
     actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': True },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': False },
+      { 'actual': True },
+      { 'actual': False },
+      { 'actual': False },
     ]
+
+    for actual in actuals:
+      actual.update(row)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       actuals_path=None, actual_records=actuals, return_count=True
     )
 
     assert res['count'] == 3
-    assert res['score']['accuracy'] == 1.0
-
-def test_score_actuals_not_found_id():
-    model_path = 'tests/fixtures/test_score_actuals'
-
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
-
-    actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': True },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2', 'actual': False },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1', 'actual': False },
-    ]
-
-    try:
-      res = ModelReview({'model_path': model_path}).add_actuals(
-        actuals_path=None, actual_records=actuals, return_count=True
-      )
-    except Exception as e:
-      assert 'Actual Prediction ID(s) not found in model predictions:' in str(e)
-      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_2' in str(e)
-      assert 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd_1' in str(e)
-      assert 'b1bf9ebf-0277-4771-9bc5-236690a21194' not in str(e)
-    else:
-      fail('No exception was raised')
+    # TODO: assert res['score']['accuracy'] == 1.0
 
 def test_score_actuals_return_count_nones():
     model_path = 'tests/fixtures/test_score_actuals'
@@ -434,11 +402,30 @@ def test_score_actuals_return_count_nones():
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
       os.remove(actuals_path)
 
+    row = {
+      'age': 33,
+      'capital-gain': 0,
+      'capital-loss': 0,
+      'education': 'Some-college',
+      'fnlwgt': 1,
+      'hours-per-week': 40,
+      'marital-status': 'Never-married',
+      'native-country': 'United-States',
+      'occupation': 'Prof-specialty',
+      'race': 'White',
+      'relationship': 'Not-in-family',
+      'sex': 'Male',
+      'workclass': 'Private'
+    }
+
     actuals = [
-      {'prediction_id': '5c93079c-00c9-497a-8967-53fa0dd02054', 'actual': None },
-      {'prediction_id': 'b1bf9ebf-0277-4771-9bc5-236690a21194', 'actual': None },
-      {'prediction_id': 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'actual': None },
+      {'feature1': 1, 'income': True, 'actual': None },
+      {'feature1': 1.1, 'income': False,'actual': None },
+      {'feature1': 1.3, 'income': False,'actual': None },
     ]
+
+    for actual in actuals:
+      actual.update(row)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       actuals_path=None, actual_records=actuals, return_count=True
@@ -459,7 +446,9 @@ def test_score_actuals_return_count_nones():
 def test_build_review_data():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    res = ModelReview({'model_path': model_path}).build_review_data(data_path="tests/fixtures/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv")
+    res = ModelReview({'model_path': model_path}).build_review_data(
+      data_path="tests/fixtures/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
+    )
     assert res
     assert res.endswith(".parquet")
     assert 'B6FD93C248984BC' not in res
@@ -467,6 +456,10 @@ def test_build_review_data():
     res_ar = res.split("_")
     assert len(res_ar) == 4
     assert res_ar[2] == "review"
+
+
+    for actuals_path in glob.glob('tests/fixtures/iris_class_review_*.parquet'):
+      os.remove(actuals_path)
 
 # def test_build_review_data_2():
 #     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
@@ -483,19 +476,18 @@ def test_score_actuals_lucas_case():
         os.remove(actuals_path)
 
     actuals = [
-      { 'actual': 'Iris-setosa', 'prediction_id': 'eaed9cd8-ba49-4c06-86d5-71d453c681d1' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '2be58239-3508-41e3-921d-28be50319bdc' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'bc25e14e-76b0-4082-84a3-9e1684916088' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '55764866-56df-402a-8f8b-f713c2c9fbc2' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'e93b9605-ed74-42cb-86f2-64f619be9139' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '316852e1-a6eb-4740-92b2-69a4b27667d9' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '7e641ffd-bb06-4a18-aad6-db416bf55bfb' },
-      { 'actual': 'Iris-setosa', 'prediction_id': '5ac7274b-d094-43e8-8947-c4705f13eb97' },
-      { 'actual': 'Iris-setosa', 'prediction_id': 'f1dd6088-8d70-43e3-bf84-bebf14eaa3b6' }
+      {"actual": "Iris-setosa", "sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 4.9, "sepal_width": 3.0, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 4.7, "sepal_width": 3.2, "petal_length": 1.3, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 4.6, "sepal_width": 3.1, "petal_length": 1.5, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 5.0, "sepal_width": 3.6, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 5.4, "sepal_width": 3.9, "petal_length": 1.7, "petal_width": 0.4, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 4.6, "sepal_width": 3.4, "petal_length": 1.4, "petal_width": 0.3, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 5.0, "sepal_width": 3.4, "petal_length": 1.5, "petal_width": 0.2, "class": "Iris-setosa"},
+{"actual": "Iris-setosa", "sepal_length": 4.4, "sepal_width": 2.9, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
-      calc_score=True)
+    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
 
     assert res == {
       'accuracy': 1.0,
@@ -518,8 +510,7 @@ def test_score_iris_file():
         os.remove(actuals_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv',
-      calc_score=True)
+      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
 
     assert res == {
       'accuracy': 1.0,
@@ -542,19 +533,19 @@ def test_score_actuals_lucas_case_array():
         os.remove(actuals_path)
 
     actuals = [
-      ['eaed9cd8-ba49-4c06-86d5-71d453c681d1', 'Iris-setosa'],
-      ['2be58239-3508-41e3-921d-28be50319bdc', 'Iris-setosa'],
-      ['bc25e14e-76b0-4082-84a3-9e1684916088', 'Iris-setosa'],
-      ['55764866-56df-402a-8f8b-f713c2c9fbc2', 'Iris-setosa'],
-      ['e93b9605-ed74-42cb-86f2-64f619be9139', 'Iris-setosa'],
-      ['316852e1-a6eb-4740-92b2-69a4b27667d9', 'Iris-setosa'],
-      ['7e641ffd-bb06-4a18-aad6-db416bf55bfb', 'Iris-setosa'],
-      ['5ac7274b-d094-43e8-8947-c4705f13eb97', 'Iris-setosa'],
-      ['f1dd6088-8d70-43e3-bf84-bebf14eaa3b6', 'Iris-setosa']
+      # actual sepal_length sepal_width petal_length petal_width class
+      ["Iris-setosa", 5.1, 3.5, 1.4, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 4.9, 3.0, 1.4, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 4.7, 3.2, 1.3, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 4.6, 3.1, 1.5, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 5.0, 3.6, 1.4, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 5.4, 3.9, 1.7, 0.4, "Iris-setosa"],
+      ["Iris-setosa", 4.6, 3.4, 1.4, 0.3, "Iris-setosa"],
+      ["Iris-setosa", 5.0, 3.4, 1.5, 0.2, "Iris-setosa"],
+      ["Iris-setosa", 4.4, 2.9, 1.4, 0.2, "Iris-setosa"],
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals,
-      calc_score=True)
+    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
 
     assert res == {
       'accuracy': 1.0,
@@ -570,77 +561,31 @@ def test_score_actuals_lucas_case_array():
       'recall_weighted': 1.0
     }
 
-def test_score_actuals_with_no_predictions_in_model_folder():
+def test_score_actuals_without_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
       os.remove(actuals_path)
 
     actuals = [
-      { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
+      {
+        'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b',
+        'actual':'versicolor',
+        'sepal_length': 1.0,
+        'sepal_width': 2.0
+      },
       { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
     ]
 
     try:
       ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
     except Exception as e:
-      assert 'there is no prediction results for this model' in str(e)
+      assert 'missed features in data: petal_length, petal_width' in str(e)
     else:
       fail('No exception was raised')
 
     actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
     assert len(actual_files) == 0
-
-def test_score_actuals_for_candidate_prediction():
-  # Prediction data:
-  # { 'prediction_id':'bef9be07-5534-434e-ab7c-c379d8fcfe77', 'species':'versicolor' },
-  # { 'prediction_id':'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd', 'species':'virginica' }
-  model_path = 'tests/fixtures/test_score_actuals/pr_can/candidate'
-  prediction_group_id = '272B088D17A7490'
-
-  # Primary prediction data:
-  # { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'species':'virginica' },
-  # { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'species':'virginica' }
-  primary_model_path = 'tests/fixtures/test_score_actuals/pr_can/primary'
-  primary_prediction_group_id = 'A4FD5B64FEE5434'
-
-  for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
-
-  actuals = [
-    { 'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b', 'actual':'versicolor' },
-    { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
-  ]
-
-  res = ModelReview({'model_path': model_path}).add_actuals(
-    actual_records=actuals, prediction_group_id=prediction_group_id,
-    primary_prediction_group_id=primary_prediction_group_id, primary_model_path=primary_model_path,
-    calc_score=True
-  )
-
-  assert type(res) == dict
-  assert res['accuracy'] == 1.0
-
-  actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
-  assert len(actual_files) == 1
-  actual_file = actual_files[0]
-  assert str(datetime.date.today()) in actual_file
-
-  stored_actuals = DataFrame({})
-  stored_actuals.loadFromFeatherFile(actual_file)
-  #assert 'prediction_group_id' in stored_actuals.columns
-
-  stored_actuals = json.loads(
-    stored_actuals.df.sort_values(by=['prediction_id']).to_json(orient='records')
-  )
-
-  assert stored_actuals[0]['prediction_id'] == 'bef9be07-5534-434e-ab7c-c379d8fcfe77'
-  #assert stored_actuals[0]['prediction_group_id'] == prediction_group_id
-  assert stored_actuals[0]['species'] == 'versicolor'
-
-  assert stored_actuals[1]['prediction_id'] == 'f61b1bbc-6f7b-4e7e-9a3b-6acb6e1462cd'
-  #assert stored_actuals[1]['prediction_group_id'] == prediction_group_id
-  assert stored_actuals[1]['species'] == 'virginica'
 
 def test_score_actuals_another_result_first():
   model_path = 'tests/fixtures/test_score_actuals/another_result_first'
@@ -649,9 +594,33 @@ def test_score_actuals_another_result_first():
     os.remove(actuals_path)
 
   actuals = [
-    { 'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7', 'actual':'good' },
+    {
+      'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7',
+      'actual':'good',
+      'class': 'good',
+      'checking_status': "'0<=X<200'",
+      'duration': 9,
+      'credit_history': "'existing paid'",
+      'purpose': "radio/tv",
+      'credit_amount': 790,
+      'savings_status': "'500<=X<1000'",
+      'employment': "'1<=X<4'",
+      'installment_commitment': 4,
+      'personal_status': "'female div/dep/mar'",
+      'other_parties': " none",
+      'residence_since': 3,
+      'property_magnitude': "'real estate'",
+      'age': 66,
+      'other_payment_plans': "none",
+      'housing': "own",
+      'existing_credits': 1,
+      'job': "'unskilled resident'",
+      'num_dependents': 1,
+      'own_telephone': "none",
+      'foreign_worker': "yes",
+    },
   ]
 
-  res = ModelReview({'model_path': model_path}).add_actuals(actual_records=actuals, calc_score=True)
+  res = ModelReview({'model_path': model_path}).add_actuals(actual_records=actuals)
   assert res['accuracy'] == 1
 
