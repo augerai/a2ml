@@ -602,8 +602,16 @@ def build_divergence_model_task(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def calc_divergence_daily_task(params):
-    return FeatureDivergence(params).score_divergence_daily(
-        date_from=params.get('date_from'),
-        date_to=params.get('date_to'),
-        top_n=params.get('top_n'),
-    )
+    # In casse of ModelIsNotReadyError try to build it and retry 1 time
+    for attempt in range(2):
+        try:
+            return FeatureDivergence(params).score_divergence_daily(
+                date_from=params.get('date_from'),
+                date_to=params.get('date_to'),
+                top_n=params.get('top_n'),
+            )
+        except FeatureDivergence.ModelIsNotReadyError as e:
+            if attempt == 0:
+                FeatureDivergence(params).build_and_save_model()
+            else:
+                raise e

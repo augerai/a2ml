@@ -83,6 +83,16 @@ class TestFeatureDivergence(unittest.TestCase):
         self.assertIsInstance(divergence[str(date_to)]['petal_width'], float)
         self.assertTrue(divergence[str(date_to)]['petal_width'] < divergence[str(date_from)]['petal_width'])
 
+    def test_score_divergence_model_is_not_exist(self):
+        params = self._load_task_params()
+        params['hub_info']['experiment_session_id'] = 'AA1838384490'
+        fd = FeatureDivergence(params)
+
+        self.assertRaises(
+            FeatureDivergence.ModelIsNotReadyError,
+            lambda: fd.score_divergence_daily(divergence_model_name='test_density_model.pkl')
+        )
+
     def _project_path(self):
         return 'tests/fixtures/test_feature_divergence'
 
