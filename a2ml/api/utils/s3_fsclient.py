@@ -415,13 +415,14 @@ class S3FSClient:
     def write_text_file(self, path, data, atomic=False, mode="w"):
         #TODO: support mode="a"
         path = self._get_relative_path(path)
-        mimetype, _ = mimetypes.guess_type(path)
-        if mimetype is None:
-            self.client.put_object(
-                Body=data, Bucket=self.s3BucketName, Key=path)
-        else:
-            self.client.put_object(
-                Body=data, Bucket=self.s3BucketName, Key=path, ContentType=mimetype)
+        mimetype, encoding = mimetypes.guess_type(path)
+        args = {}
+        if mimetype:
+            args['ContentType'] = mimetype
+        if encoding:
+            args['ContentType'] = "application/octet-stream"
+
+        self.client.put_object(Body=data, Bucket=self.s3BucketName, Key=path, **args)
 
     def copy_file_remote(self, path_src, path_dst):
         path = self._get_relative_path(path_src)
@@ -447,15 +448,17 @@ class S3FSClient:
 
         s3_config = boto3.s3.transfer.TransferConfig(use_threads=False)
 
-        mimetype, _ = mimetypes.guess_type(path_local)
-        if mimetype is None:
-            self.client.upload_file(
-                path_local, Bucket=self.s3BucketName, Key=path_s3, Config=s3_config)
-        else:
-            self.client.upload_file(path_local, Bucket=self.s3BucketName, Key=path_s3, Config=s3_config,
-                                    ExtraArgs={"ContentType": mimetype}
-                                    )
+        mimetype, encoding = mimetypes.guess_type(path_local)
+        args = {}
+        if mimetype:
+            args['ContentType'] = mimetype
+        if encoding:
+            args['ContentType'] = "application/octet-stream"
 
+        self.client.upload_file(path_local, Bucket=self.s3BucketName, Key=path_s3, Config=s3_config,
+            ExtraArgs=args
+        )
+        
     def copy_files(self, path_src, path_dst):
         files = self.list_folder(path_src, wild=True)
         for file in files:
