@@ -494,8 +494,8 @@ def predict_by_model_task(params):
 
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
-
     ctx.config.clean_changes()
+
     runner = CRUDRunner(ctx, "%s"%params.get('provider'), 'model')
     res = list(runner.providers.values())[0].predict(
         filename=params.get('path_to_predict'),
@@ -516,6 +516,10 @@ def predict_by_model_task(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def score_actuals_by_model_task(params):
+    ctx = _create_provider_context(params)
+    ctx = _read_hub_experiment_session(ctx, params)
+    ctx.config.clean_changes()
+
     return ModelReview(params).add_actuals(
         actuals_path = params.get('actuals_path'),
         actual_records=params.get('actual_records'),
@@ -525,7 +529,8 @@ def score_actuals_by_model_task(params):
             params.get('hub_info', {}).get('project_path')),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id'),
-        return_count=params.get('return_count', False)
+        return_count=params.get('return_count', False),
+        ctx=ctx
     )
 
 @celeryApp.task(ignore_result=True)

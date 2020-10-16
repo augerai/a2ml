@@ -10,7 +10,8 @@ import time
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_review import ModelReview
-
+from a2ml.tasks_queue.tasks_hub_api import _create_provider_context, _read_hub_experiment_session
+from tests.vcr_helper import vcr
 
 # def test_count_actuals_by_prediction_id():
 #     model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
@@ -358,43 +359,61 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
     assert stored_actuals[0]['class'] == 'good'
     assert stored_actuals[0]['a2ml_predicted'] == 'good'
 
+@vcr.use_cassette('model_review/score_actuals_return_count/predict.yaml')
 def test_score_actuals_return_count():
-    model_path = 'tests/fixtures/test_score_actuals'
+    model_path = 'tests/fixtures/test_score_actuals/iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
       os.remove(actuals_path)
 
-    row = {
-      'age': 33,
-      'capital-gain': 0,
-      'capital-loss': 0,
-      'education': 'Some-college',
-      'fnlwgt': 1,
-      'hours-per-week': 40,
-      'marital-status': 'Never-married',
-      'native-country': 'United-States',
-      'occupation': 'Prof-specialty',
-      'race': 'White',
-      'relationship': 'Not-in-family',
-      'sex': 'Male',
-      'workclass': 'Private'
-    }
-
     actuals = [
-      { 'actual': True },
-      { 'actual': False },
-      { 'actual': False },
+      {
+        "actual": "setosa",
+        "sepal_length": 5.1,
+        "sepal_width": 3.5,
+        "petal_length": 1.4,
+        "petal_width": 0.2
+      },
+      {
+        "actual": "setosa",
+        "sepal_length": 5.2,
+        "sepal_width": 3.6,
+        "petal_length": 1.5,
+        "petal_width": 0.3
+      },
     ]
 
-    for actual in actuals:
-      actual.update(row)
+    params = load_score_task_params(model_path)
 
-    res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path=None, actual_records=actuals, return_count=True
+    ctx = _create_provider_context(params)
+    ctx = _read_hub_experiment_session(ctx, params)
+    ctx.config.clean_changes()
+
+    ctx.credentials = {
+      'api_url': 'https://app-staging.auger.ai',
+      'token': 'secret',
+      'organization': 'mt-org',
+    }
+
+    res = ModelReview(params).add_actuals(
+      actuals_path=None, actual_records=actuals, return_count=True, ctx=ctx
     )
 
-    assert res['count'] == 3
-    # TODO: assert res['score']['accuracy'] == 1.0
+    assert res['count'] == 2
+    assert res['score']['accuracy'] == 1.0
+
+def load_score_task_params(model_path):
+    path = model_path + '/score_task_params.json'
+
+    res = {}
+
+    with open(path, 'r') as f:
+      res = json.load(f)
+
+    res['model_path'] = model_path
+    res['hub_info']['project_path'] = model_path
+
+    return res
 
 def test_score_actuals_return_count_nones():
     model_path = 'tests/fixtures/test_score_actuals'

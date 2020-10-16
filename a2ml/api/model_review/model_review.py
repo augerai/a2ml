@@ -7,6 +7,7 @@ import logging
 
 from a2ml.api.utils import get_uid, convert_to_date, merge_dicts, fsclient
 from a2ml.api.utils.dataframe import DataFrame
+from a2ml.api.a2ml import A2ML, Context
 
 from .model_helper import ModelHelper
 from .probabilistic_counter import ProbabilisticCounter
@@ -14,10 +15,11 @@ from .probabilistic_counter import ProbabilisticCounter
 
 class ModelReview(object):
     def __init__(self, params):
+        self.model_id = params.get('hub_info', {}).get('pipeline_id')
         self.model_path = params.get('model_path')
+
         if not self.model_path:
-            self.model_path = ModelHelper.get_model_path(params['hub_info']['pipeline_id'],
-                params['hub_info'].get('project_path'))
+            self.model_path = ModelHelper.get_model_path(self.model_id, params['hub_info'].get('project_path'))
 
         self.options = fsclient.read_json_file(os.path.join(self.model_path, "options.json"))
         if params.get('hub_info'):
@@ -54,7 +56,7 @@ class ModelReview(object):
     # and prediction rows id should be matched with actuals using primary_prediction_group
     def add_actuals(self, actuals_path=None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, return_count=False):
+            actual_date=None, actuals_id = None, return_count=False, ctx=None):
 
         features = None
 
@@ -72,19 +74,16 @@ class ModelReview(object):
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
 
-        # if features is None:
-        #     ds_actuals.select(['prediction_id', 'actual'])
-
         actuals_count = ds_actuals.count()
-
-        # result = self._process_actuals(ds_actuals, prediction_group_id, primary_prediction_group_id, primary_model_path,
-            # actual_date, actuals_id, calc_score, raise_not_found=True)
-
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         if not self.target_feature in ds_actuals.columns:
-            # TODO: score
-            ds_actuals.df[self.target_feature] = 0
+            res = A2ML(ctx).predict(None, self.model_id, data=ds_actuals.df, provider='auger')
+
+            if res['result']:
+                ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]
+            else:
+                raise Exception(res['data'])
 
         result = self._do_score_actual(ds_actuals.df)
 
