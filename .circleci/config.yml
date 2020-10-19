@@ -82,6 +82,7 @@ jobs:
           at: ./
       - docker/check
       - run: make docker-load
+      - run: DOCKER_TAG=<< parameters.docker-tag >> make docker-tag
       - docker/push:
           image: augerai/a2ml
           tag: << parameters.docker-tag >>

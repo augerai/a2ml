@@ -45,7 +45,7 @@ docker-save:
 	docker save -o image.tar augerai/a2ml:${DOCKER_TAG}
 	gzip image.tar
 
-docker-tag: docker-build
+docker-tag:
 	docker tag augerai/a2ml:latest augerai/a2ml:${DOCKER_TAG}
 
 docker-test-clean: docker-minio-clean
