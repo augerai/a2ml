@@ -33,6 +33,7 @@ install_requires = [
     'joblib>=0.11',  # version for azure
     'ruamel.yaml>0.16.7',  # version for azure
     'pyarrow<2.0.0,>=0.17.0',  # version for azure
+    'scipy==1.5.2',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.2',
