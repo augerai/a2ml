@@ -344,7 +344,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
     actual_date = datetime.date(2020, 8, 3)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
+      None, actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
     )
 
     actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
@@ -384,19 +384,10 @@ def test_score_actuals_return_count():
     ]
 
     params = load_score_task_params(model_path)
-
-    ctx = _create_provider_context(params)
-    ctx = _read_hub_experiment_session(ctx, params)
-    ctx.config.clean_changes()
-
-    ctx.credentials = {
-      'api_url': 'https://app-staging.auger.ai',
-      'token': 'secret',
-      'organization': 'mt-org',
-    }
+    ctx = _build_context(params)
 
     res = ModelReview(params).add_actuals(
-      actuals_path=None, actual_records=actuals, return_count=True, ctx=ctx
+      ctx, actuals_path=None, actual_records=actuals, return_count=True
     )
 
     assert res['count'] == 2
@@ -447,7 +438,7 @@ def test_score_actuals_return_count_nones():
       actual.update(row)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path=None, actual_records=actuals, return_count=True
+      None, actuals_path=None, actual_records=actuals, return_count=True
     )
 
     assert res['count'] == 3
@@ -506,7 +497,7 @@ def test_score_actuals_lucas_case():
 {"actual": "Iris-setosa", "sepal_length": 4.4, "sepal_width": 2.9, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
 
     assert res == {
       'accuracy': 1.0,
@@ -529,21 +520,25 @@ def test_score_iris_file():
         os.remove(actuals_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
+      None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
 
-    assert res == {
-      'accuracy': 1.0,
-      'neg_log_loss': 0,
-      'f1_micro': 1.0,
-      'f1_macro': 1.0,
-      'f1_weighted': 1.0,
-      'precision_micro': 1.0,
-      'precision_macro': 1.0,
-      'precision_weighted': 1.0,
-      'recall_micro': 1.0,
-      'recall_macro': 1.0,
-      'recall_weighted': 1.0
-    }
+    assert res['accuracy'] == 1.0
+
+@vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
+def test_score_iris_file_wo_predicted():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+        os.remove(actuals_path)
+
+    params = load_score_task_params(model_path)
+    ctx = _build_context(params)
+
+    res = ModelReview(params).add_actuals(
+      ctx, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals_wo_predictions.csv',
+    )
+
+    assert res['accuracy'] == 1.0
 
 def test_score_actuals_lucas_case_array():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -564,21 +559,27 @@ def test_score_actuals_lucas_case_array():
       ["Iris-setosa", 4.4, 2.9, 1.4, 0.2, "Iris-setosa"],
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
 
-    assert res == {
-      'accuracy': 1.0,
-      'neg_log_loss': 0,
-      'f1_micro': 1.0,
-      'f1_macro': 1.0,
-      'f1_weighted': 1.0,
-      'precision_micro': 1.0,
-      'precision_macro': 1.0,
-      'precision_weighted': 1.0,
-      'recall_micro': 1.0,
-      'recall_macro': 1.0,
-      'recall_weighted': 1.0
-    }
+    assert res['accuracy'] == 1.0
+
+@vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
+def test_score_actuals_lucas_case_array_wo_prediceted():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+        os.remove(actuals_path)
+
+    actuals = [
+      # actual sepal_length sepal_width petal_length petal_width
+      ["setosa", 5.1, 3.5, 1.4, 0.2],
+    ]
+
+    params = load_score_task_params(model_path)
+    ctx = _build_context(params)
+    res = ModelReview(params).add_actuals(ctx, actuals_path=None, actual_records=actuals)
+
+    assert res['accuracy'] == 1.0
 
 def test_score_actuals_without_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
@@ -597,7 +598,7 @@ def test_score_actuals_without_features():
     ]
 
     try:
-      ModelReview({'model_path': model_path}).add_actuals(actuals_path=None, actual_records=actuals)
+      ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
     except Exception as e:
       assert 'missed features in data: petal_length, petal_width' in str(e)
     else:
@@ -640,6 +641,18 @@ def test_score_actuals_another_result_first():
     },
   ]
 
-  res = ModelReview({'model_path': model_path}).add_actuals(actual_records=actuals)
+  res = ModelReview({'model_path': model_path}).add_actuals(None, actual_records=actuals)
   assert res['accuracy'] == 1
 
+def _build_context(params):
+    ctx = _create_provider_context(params)
+    ctx = _read_hub_experiment_session(ctx, params)
+    ctx.config.clean_changes()
+
+    ctx.credentials = {
+      'api_url': 'https://app-staging.auger.ai',
+      'token': 'secret',
+      'organization': 'mt-org',
+    }
+
+    return ctx

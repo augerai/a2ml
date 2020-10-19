@@ -521,6 +521,7 @@ def score_actuals_by_model_task(params):
     ctx.config.clean_changes()
 
     return ModelReview(params).add_actuals(
+        ctx,
         actuals_path = params.get('actuals_path'),
         actual_records=params.get('actual_records'),
         prediction_group_id=params.get('prediction_group_id', None),
@@ -530,7 +531,7 @@ def score_actuals_by_model_task(params):
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id'),
         return_count=params.get('return_count', False),
-        ctx=ctx
+
     )
 
 @celeryApp.task(ignore_result=True)

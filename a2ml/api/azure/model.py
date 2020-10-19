@@ -299,7 +299,7 @@ def get_df(data):
                 raise Exception('Model should be deployed first.')
 
             return ModelReview({'model_path': model_path}).add_actuals(
-                actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+                self.ctx, actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
         else:
             raise Exception("Not Implemented")
 

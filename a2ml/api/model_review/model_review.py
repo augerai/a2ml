@@ -54,16 +54,24 @@ class ModelReview(object):
     # prediction_group_id - prediction group for these actuals
     # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
     # and prediction rows id should be matched with actuals using primary_prediction_group
-    def add_actuals(self, actuals_path=None, actual_records=None,
+    def add_actuals(self, ctx, actuals_path=None, actual_records=None,
             prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, return_count=False, ctx=None):
+            actual_date=None, actuals_id = None, return_count=False):
 
         features = None
+        list_records = actual_records and type(actual_records[0]) == list
 
-        if actuals_path or (actual_records and type(actual_records[0]) == list):
+        if actuals_path or list_records:
             features = ['actual'] + self.original_features + [self.target_feature]
 
-        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
+        try:
+            ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
+        except ValueError:
+            # Predicted value of target is optional last item in features
+            # data withouttarget column, remote it and reload data
+            features.pop()
+            ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
+
         missed_features = set(self.original_features) - set(ds_actuals.columns)
 
         if missed_features:
