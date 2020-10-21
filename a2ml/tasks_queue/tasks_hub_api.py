@@ -524,14 +524,10 @@ def score_actuals_by_model_task(params):
         ctx,
         actuals_path = params.get('actuals_path'),
         actual_records=params.get('actual_records'),
-        prediction_group_id=params.get('prediction_group_id', None),
-        primary_prediction_group_id=params.get('primary_prediction_group_id', None),
-        primary_model_path=ModelHelper.get_model_path(params.get('primary_pipeline_id', None),
-            params.get('hub_info', {}).get('project_path')),
+        actual_columns=params.get('actual_columns', None),
         actual_date=params.get('actual_date'),
         actuals_id=params.get('actuals_id'),
         return_count=params.get('return_count', False),
-
     )
 
 @celeryApp.task(ignore_result=True)
@@ -542,14 +538,6 @@ def delete_actuals_task(params):
         begin_date=params.get('begin_date'),
         end_date=params.get('end_date'),
     )
-
-# @celeryApp.task(ignore_result=True)
-# @process_task_result
-# def count_actuals_by_prediction_id_task(params):
-#     return ModelReview(params).count_actuals_by_prediction_id(
-#         date_from=params.get('date_from'),
-#         date_to=params.get('date_to')
-#     )
 
 @celeryApp.task(ignore_result=True)
 @process_task_result

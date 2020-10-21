@@ -51,33 +51,16 @@ class ModelReview(object):
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
-    # prediction_group_id - prediction group for these actuals
-    # primary_prediction_group_id - means that prediction_group_id is produced by a candidate model
-    # and prediction rows id should be matched with actuals using primary_prediction_group
-    def add_actuals(self, ctx, actuals_path=None, actual_records=None,
-            prediction_group_id=None, primary_prediction_group_id=None, primary_model_path=None,
-            actual_date=None, actuals_id = None, return_count=False):
-
+    def add_actuals(
+        self, ctx, actuals_path=None, actual_records=None, actual_columns=None,
+        actual_date=None, actuals_id = None, return_count=False
+    ):
         features = None
-        list_records = actual_records and type(actual_records[0]) == list
 
-        if actuals_path or list_records:
-            features = ['actual'] + self.original_features + [self.target_feature]
+        if actual_records and type(actual_records[0]) == list:
+            features = actual_columns
 
-        try:
-            ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
-        except ValueError:
-            # Predicted value of target is optional last item in features
-            # data withouttarget column, remote it and reload data
-            features.pop()
-            ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
-
-        missed_features = set(self.original_features) - set(ds_actuals.columns)
-
-        if missed_features:
-            missed_features = list(missed_features)
-            missed_features.sort()
-            raise Exception("There is a missed features in data: " + ", ".join(list(missed_features)))
+        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
 
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
@@ -156,8 +139,10 @@ class ModelReview(object):
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
             if not ds_actuals.df.empty:
                 ds_actuals.drop(['a2ml_predicted'])
-                ds_train.df = pd.concat([ds_train.df, ds_actuals.df[ds_train.columns]], ignore_index=True)
+                ds_train.df = pd.concat([ds_train.df, ds_actuals.df], ignore_index=True)
                 ds_train.drop_duplicates()
+
+        ds_train.dropna()
 
         if not output:
             file_name = os.path.splitext(data_path)[0]
@@ -170,40 +155,6 @@ class ModelReview(object):
 
         ds_train.saveToFile(output)
         return output
-
-    # def count_actuals_by_prediction_id(self, date_from=None, date_to=None):
-    #     res = {}
-    #     features = ['prediction_group_id', 'prediction_id', self.target_feature]
-    #     counter = ProbabilisticCounter()
-
-    #     all_files = fsclient.list_folder(
-    #         os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
-    #         wild=True,
-    #         remove_folder_name=False,
-    #         meta_info=False
-    #     )
-
-    #     #print(all_files)
-
-    #     for (curr_date, files) in ModelReview._prediction_files_by_day(
-    #         self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
-
-    #         for (file, df) in DataFrame.load_from_files(files, features):
-    #             ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
-
-    #             agg = df.df.groupby(['prediction_group_id', 'prediction_id']).count()
-    #             agg[self.target_feature] = 1 # exclude duplication prediction_id's inside groups
-    #             agg = agg.groupby('prediction_group_id').count()
-
-    #             for prediction_group_id, row, in agg.iterrows():
-    #                 count = row[0]
-
-    #                 if prediction_group_id not in res:
-    #                     res[prediction_group_id] = count
-    #                 else:
-    #                     res[prediction_group_id] = res[prediction_group_id] + count
-
-    #     return res
 
     def statistic_daily(self, date_from, date_to):
         features = ['prediction_id', self.target_feature]

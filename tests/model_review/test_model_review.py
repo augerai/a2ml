@@ -13,105 +13,15 @@ from a2ml.api.model_review.model_review import ModelReview
 from a2ml.tasks_queue.tasks_hub_api import _create_provider_context, _read_hub_experiment_session
 from tests.vcr_helper import vcr
 
-# def test_count_actuals_by_prediction_id():
-#     model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
-#     res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id()
-
-#     assert type(res) is dict
-#     assert len(res) > 0
-
-#     assert res == {
-#       'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 2,
-#       '5d9f640d-529a-42bd-be85-172107249a01': 1,
-#       '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
-#     }
-
-# def test_count_actuals_by_prediction_id_with_period():
-#     model_path = 'tests/fixtures/test_count_actuals_by_prediction_id/adult'
-#     date_from = datetime.date(2020, 8, 18)
-#     date_to = datetime.date(2020, 8, 18)
-#     res = ModelReview({'model_path': model_path}).count_actuals_by_prediction_id(date_from, date_to)
-
-#     assert type(res) is dict
-#     assert len(res) > 0
-
-#     assert res == {
-#       'ffa89d52-5300-412d-b7a4-d21b3c9b7d16': 1,
-#       '5d9f640d-529a-42bd-be85-172107249a01': 1,
-#       '066f3c25-80ee-4c75-af15-38cda8a4ad57': 1
-#     }
-
 def test_score_model_performance_daily():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
     date_from = datetime.date(2020, 2, 16)
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
-    print(res)
     assert type(res) is dict
     assert type(res[str(date_from)]) is numpy.float64
     assert res[str(date_from)] > 0
-
-# def test_update_actuals():
-#     model_paths = [
-#       #'tests/fixtures/test_score_model_performance_daily/iris',
-#       #'tests/fixtures/test_score_model_performance_daily/iris_no_matches',
-#       'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals',
-#     ]
-#     #iris
-#     # actuals = {
-#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
-#     #   'records':[
-#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','7b7ab6e1-e013-492f-b35c-c536490e7147','versicolor','versicolor'],
-#     #     ['77f09b91-55a6-4327-80d0-db37d187e7a7','4936b673-b671-4a8f-a7f8-51e2a9a48e8a','virginica','virginica'],
-#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','b89b4433-9823-474f-976e-c6cdda94868c','virginica','setosa'],
-#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c797a908-d7af-40b7-9a1a-4e94fa85f094','setosa','virginica'],
-#     #     ['b78475ac-daa3-4dbd-a258-8e66bbb822ea','c32f024d-6711-46da-af46-ff8f9439f9e5','setosa','setosa'],
-#     #   ]
-#     # }
-#     #iris_no_matches
-#     # actuals = {
-#     #   'features' :['prediction_group_id', 'prediction_id', 'species', 'a2ml_predicted'],
-#     #   'records':[
-#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','24820f77-0399-4f90-8d61-077f0624c8f5',None,'versicolor'],
-#     #     ['3b849c29-f321-41f9-9315-39e5c736501f','f1d6eea3-529c-4b05-ba7b-db7d65fa73df',None,'versicolor'],
-#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','b12cc508-69db-4e7a-b7f7-127c4cee43ab','virginica','setosa'],
-#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','6498b0b3-7e16-4a4e-925a-dd844ce5f7f1','setosa','virginica'],
-#     #     ['621b2b16-568f-411a-b663-a35b9dbb2510','69187c46-cf89-43fc-96cc-15354a975a49','setosa','setosa'],
-#     #   ]
-#     # }
-
-#     #dsNew = DataFrame.create_dataframe(records = actuals['records'], features=actuals['features'])
-#     for model_path in model_paths:
-#       files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"),
-#         wild=True, remove_folder_name=False, meta_info=False)
-#       results = fsclient.list_folder(os.path.join(model_path, "predictions/*_results.feather.zstd"),
-#         wild=True, remove_folder_name=False, meta_info=False)
-
-#       for (file, ds) in DataFrame.load_from_files(files):
-#         print(file)
-#         print(ds.df)
-#         #dsNew.saveToFile(file)
-
-#       for (file, ds) in DataFrame.load_from_files(results):
-#         print(file)
-#         print(ds.df)
-
-# def test_rename_target():
-#     model_paths = [
-#       # 'tests/fixtures/test_score_model_performance_daily/iris_no_matches',
-#       # 'tests/fixtures/test_score_model_performance_daily/iris',
-#       #'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals', #class
-#       'tests/fixtures/test_score_actuals', #income
-#       # 'tests/fixtures/test_score_actuals/pr_can/candidate'
-#     ]
-#     for model_path in model_paths:
-#       files = fsclient.list_folder(os.path.join(model_path, "predictions/*_actuals.feather.zstd"),
-#         wild=True, remove_folder_name=False, meta_info=False)
-
-#       for (file, ds) in DataFrame.load_from_files(files):
-#         ds.df.rename(columns={'actual': 'income'}, inplace=True)
-#         ds.saveToFile(file)
 
 def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
@@ -119,7 +29,6 @@ def test_score_model_performance_daily_none_actuals():
     date_to = datetime.date(2020, 2, 18)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
-    print(res)
     assert type(res) is dict
     assert res[str(date_from)] == 0.2
 
@@ -132,28 +41,12 @@ def test_score_model_performance_daily_none_actuals():
 #     assert type(res) is dict
 #     assert res[str(date_to)] == 0
 
-def load_metric_task_params(model_path):
-    path = 'tests/fixtures/test_distribution_chart_stats/metric_task_params.json'
-
-    res = {}
-
-    with open(path, 'r') as f:
-      res = json.load(f)
-
-    res['model_path'] = model_path
-    res['metrics_rebuild'] = False
-    res['hub_info']['experiment_id'] = 'b04782c60b1bc194'
-    res['hub_info']['experiment_session_id'] = '2cf2db7ae6eca1e0'
-    res['hub_info']['project_path'] = 'tests/fixtures/test_distribution_chart_stats'
-
-    return res
-
 def test_distribution_chart_stats():
     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
     date_from = datetime.date(2020, 2, 16)
     date_to = datetime.date(2020, 2, 19)
 
-    res = ModelReview(load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
+    res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
     assert type(res[str(date_to)]) is dict
 
@@ -180,7 +73,7 @@ def test_distribution_chart_stats_for_categorical_target():
     date_from = datetime.date(2020, 2, 16)
     date_to = datetime.date(2020, 2, 20)
 
-    res = ModelReview(load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
+    res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
     assert type(res[str(date_to)]) is dict
 
@@ -208,7 +101,7 @@ def test_distribution_chart_stats_with_null_booleans():
     date_from = datetime.date(2020, 5, 7)
     date_to = datetime.date(2020, 5, 7)
 
-    res = ModelReview(load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
+    res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
     assert type(res[str(date_to)]) is dict
 
@@ -235,7 +128,7 @@ def test_distribution_chart_stats_with_null_booleans():
 def test_get_feature_importances_general_metrics_cache():
     model_path = 'tests/fixtures/test_distribution_chart_stats/adult'
 
-    params = load_metric_task_params(model_path)
+    params = _load_metric_task_params(model_path)
 
     res = ModelReview(params).get_feature_importances()
     assert res == {'workclass': 0.12006373015194421, 'sex': 0.039481754114499897,
@@ -248,7 +141,7 @@ def test_get_feature_importances_general_metrics_cache():
 def test_get_feature_importances_no_metrics_cache():
     model_path = 'tests/fixtures/test_distribution_chart_stats/adult'
 
-    params = load_metric_task_params(model_path)
+    params = _load_metric_task_params(model_path)
     params['hub_info']['pipeline_id'] = '555555555555555'
 
     res = ModelReview(params).get_feature_importances()
@@ -359,8 +252,37 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
     assert stored_actuals[0]['class'] == 'good'
     assert stored_actuals[0]['a2ml_predicted'] == 'good'
 
+def test_score_actuals_dict_full():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = [
+      {
+        'species': 'virginica',
+        'actual': 'versicolor',
+        'sepal_length': 5.0,
+        'sepal_width': 4.0,
+        'petal_length': 3.0,
+        'petal_width': 1.0,
+      },
+      {
+        'species': 'virginica',
+        'actual': 'virginica',
+        'sepal_length': 3.0,
+        'sepal_width': 2.0,
+        'petal_length': 1.0,
+        'petal_width': 1.0,
+      },
+    ]
+
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+
+    assert res['accuracy'] == 0.5
+
 @vcr.use_cassette('model_review/score_actuals_return_count/predict.yaml')
-def test_score_actuals_return_count():
+def test_score_actuals_dict_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
@@ -383,7 +305,7 @@ def test_score_actuals_return_count():
       },
     ]
 
-    params = load_score_task_params(model_path)
+    params = _load_score_task_params(model_path)
     ctx = _build_context(params)
 
     res = ModelReview(params).add_actuals(
@@ -393,20 +315,22 @@ def test_score_actuals_return_count():
     assert res['count'] == 2
     assert res['score']['accuracy'] == 1.0
 
-def load_score_task_params(model_path):
-    path = model_path + '/score_task_params.json'
+def test_score_actuals_dict_wo_features():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    res = {}
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
 
-    with open(path, 'r') as f:
-      res = json.load(f)
+    actuals = [
+      { 'species':'virginica', 'actual':'versicolor' },
+      { 'species':'virginica', 'actual':'virginica' },
+    ]
 
-    res['model_path'] = model_path
-    res['hub_info']['project_path'] = model_path
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
 
-    return res
+    assert res['accuracy'] == 0.5
 
-def test_score_actuals_return_count_nones():
+def test_score_actuals_dict_with_predicted_none():
     model_path = 'tests/fixtures/test_score_actuals'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
@@ -444,76 +368,7 @@ def test_score_actuals_return_count_nones():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
-# def test_score_actuals_custom():
-#     model_path = 'tests/fixtures/test_score_actuals/custom'
-
-#     res = ModelReview({'model_path': model_path}).add_actuals(
-#       actuals_path=os.path.join(model_path,
-#         "predictions/ACvFZgFJu4SJvpZe4fqRSL-temp_predict-b7280a.csv_cf1b3cd9-d3b1-4bed-8296-aa59ebe60124_AutoML_3adce96a-b0ad-42e8-9e48-559ffa5b9b37_9_predicted.csv.gz"), return_count=True
-#     )
-#     print(res)
-
-def test_build_review_data():
-    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
-
-    res = ModelReview({'model_path': model_path}).build_review_data(
-      data_path="tests/fixtures/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
-    )
-    assert res
-    assert res.endswith(".parquet")
-    assert 'B6FD93C248984BC' not in res
-
-    res_ar = res.split("_")
-    assert len(res_ar) == 4
-    assert res_ar[2] == "review"
-
-
-    for actuals_path in glob.glob('tests/fixtures/iris_class_review_*.parquet'):
-      os.remove(actuals_path)
-
-# def test_build_review_data_2():
-#     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
-
-#     res = ModelReview({'model_path': model_path}).build_review_data(
-#       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
-#     assert res
-#     assert res.endswith(".parquet")
-
-def test_score_actuals_lucas_case():
-    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
-
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
-
-    actuals = [
-      {"actual": "Iris-setosa", "sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 4.9, "sepal_width": 3.0, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 4.7, "sepal_width": 3.2, "petal_length": 1.3, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 4.6, "sepal_width": 3.1, "petal_length": 1.5, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 5.0, "sepal_width": 3.6, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 5.4, "sepal_width": 3.9, "petal_length": 1.7, "petal_width": 0.4, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 4.6, "sepal_width": 3.4, "petal_length": 1.4, "petal_width": 0.3, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 5.0, "sepal_width": 3.4, "petal_length": 1.5, "petal_width": 0.2, "class": "Iris-setosa"},
-{"actual": "Iris-setosa", "sepal_length": 4.4, "sepal_width": 2.9, "petal_length": 1.4, "petal_width": 0.2, "class": "Iris-setosa"},
-    ]
-
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
-
-    assert res == {
-      'accuracy': 1.0,
-      'neg_log_loss': 0,
-      'f1_micro': 1.0,
-      'f1_macro': 1.0,
-      'f1_weighted': 1.0,
-      'precision_micro': 1.0,
-      'precision_macro': 1.0,
-      'precision_weighted': 1.0,
-      'recall_micro': 1.0,
-      'recall_macro': 1.0,
-      'recall_weighted': 1.0
-    }
-
-def test_score_iris_file():
+def test_score_iris_csv_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
@@ -525,13 +380,13 @@ def test_score_iris_file():
     assert res['accuracy'] == 1.0
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
-def test_score_iris_file_wo_predicted():
+def test_score_iris_csv_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
         os.remove(actuals_path)
 
-    params = load_score_task_params(model_path)
+    params = _load_score_task_params(model_path)
     ctx = _build_context(params)
 
     res = ModelReview(params).add_actuals(
@@ -540,14 +395,24 @@ def test_score_iris_file_wo_predicted():
 
     assert res['accuracy'] == 1.0
 
-def test_score_actuals_lucas_case_array():
+def test_score_iris_csv_wo_features():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+        os.remove(actuals_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals_wo_features.csv')
+
+    assert res['accuracy'] == 1.0
+
+def test_score_actuals_lucas_case_array_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
         os.remove(actuals_path)
 
     actuals = [
-      # actual sepal_length sepal_width petal_length petal_width class
       ["Iris-setosa", 5.1, 3.5, 1.4, 0.2, "Iris-setosa"],
       ["Iris-setosa", 4.9, 3.0, 1.4, 0.2, "Iris-setosa"],
       ["Iris-setosa", 4.7, 3.2, 1.3, 0.2, "Iris-setosa"],
@@ -559,7 +424,11 @@ def test_score_actuals_lucas_case_array():
       ["Iris-setosa", 4.4, 2.9, 1.4, 0.2, "Iris-setosa"],
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+    actual_columns = ["actual", "sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None, actual_records=actuals, actual_columns=actual_columns
+    )
 
     assert res['accuracy'] == 1.0
 
@@ -572,40 +441,36 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     actuals = [
       # actual sepal_length sepal_width petal_length petal_width
-      ["setosa", 5.1, 3.5, 1.4, 0.2],
+      [5.1, 3.5, 1.4, 0.2, "setosa"],
     ]
 
-    params = load_score_task_params(model_path)
+    actual_columns = ["sepal_length", "sepal_width", "petal_length", "petal_width", "actual"]
+
+    params = _load_score_task_params(model_path)
     ctx = _build_context(params)
-    res = ModelReview(params).add_actuals(ctx, actuals_path=None, actual_records=actuals)
+    res = ModelReview(params).add_actuals(ctx, actual_records=actuals, actual_columns=actual_columns)
 
     assert res['accuracy'] == 1.0
 
-def test_score_actuals_without_features():
-    model_path = 'tests/fixtures/test_score_actuals/iris'
+def test_score_actuals_lucas_case_array_wo_features():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
     for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+        os.remove(actuals_path)
 
     actuals = [
-      {
-        'prediction_id':'09aaa96b-5d9c-4c45-ab04-726da868624b',
-        'actual':'versicolor',
-        'sepal_length': 1.0,
-        'sepal_width': 2.0
-      },
-      { 'prediction_id':'5e5ad22b-6789-47c6-9a4d-a3a998065127', 'actual':'virginica' }
+      ["Iris-setosa", "Iris-setosa"],
+      ["Iris-setosa", "Iris-setosa"],
+      ["Iris-setosa", "Iris-virginica"],
     ]
 
-    try:
-      ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
-    except Exception as e:
-      assert 'missed features in data: petal_length, petal_width' in str(e)
-    else:
-      fail('No exception was raised')
+    actual_columns = ["actual", "class"]
 
-    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
-    assert len(actual_files) == 0
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None, actual_records=actuals, actual_columns=actual_columns
+    )
+
+    assert res['accuracy'] == 2 / 3
 
 def test_score_actuals_another_result_first():
   model_path = 'tests/fixtures/test_score_actuals/another_result_first'
@@ -615,7 +480,6 @@ def test_score_actuals_another_result_first():
 
   actuals = [
     {
-      'prediction_id':'df3fdbfd-688c-4c93-8211-ffd8b68ccaa7',
       'actual':'good',
       'class': 'good',
       'checking_status': "'0<=X<200'",
@@ -644,6 +508,32 @@ def test_score_actuals_another_result_first():
   res = ModelReview({'model_path': model_path}).add_actuals(None, actual_records=actuals)
   assert res['accuracy'] == 1
 
+def test_build_review_data():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+
+    res = ModelReview({'model_path': model_path}).build_review_data(
+      data_path="tests/fixtures/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
+    )
+    assert res
+    assert res.endswith(".parquet")
+    assert 'B6FD93C248984BC' not in res
+
+    res_ar = res.split("_")
+    assert len(res_ar) == 4
+    assert res_ar[2] == "review"
+
+
+    for actuals_path in glob.glob('tests/fixtures/iris_class_review_*.parquet'):
+      os.remove(actuals_path)
+
+# def test_build_review_data_2():
+#     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
+
+#     res = ModelReview({'model_path': model_path}).build_review_data(
+#       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
+#     assert res
+#     assert res.endswith(".parquet")
+
 def _build_context(params):
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
@@ -656,3 +546,32 @@ def _build_context(params):
     }
 
     return ctx
+
+def _load_metric_task_params(model_path):
+    path = 'tests/fixtures/test_distribution_chart_stats/metric_task_params.json'
+
+    res = {}
+
+    with open(path, 'r') as f:
+      res = json.load(f)
+
+    res['model_path'] = model_path
+    res['metrics_rebuild'] = False
+    res['hub_info']['experiment_id'] = 'b04782c60b1bc194'
+    res['hub_info']['experiment_session_id'] = '2cf2db7ae6eca1e0'
+    res['hub_info']['project_path'] = 'tests/fixtures/test_distribution_chart_stats'
+
+    return res
+
+def _load_score_task_params(model_path):
+    path = model_path + '/score_task_params.json'
+
+    res = {}
+
+    with open(path, 'r') as f:
+      res = json.load(f)
+
+    res['model_path'] = model_path
+    res['hub_info']['project_path'] = model_path
+
+    return res

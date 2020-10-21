@@ -51,6 +51,7 @@ tests/fixtures/test_predict_by_model/credit-g/predictions/*_results.feather.zstd
 tests/fixtures/test_predict_by_model/iris/predictions/*_results.feather.zstd
 tests/fixtures/test_score_actuals/another_result_first/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/categorical_convert/predictions/*_actuals.feather.zstd
+tests/fixtures/test_score_actuals/iris/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/lucas-iris/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/pr_can/candidate/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/predictions/*_actuals.feather.zstd
