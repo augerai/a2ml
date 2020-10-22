@@ -4,6 +4,7 @@ import json
 import numpy
 import os
 import pathlib
+import re
 import shutil
 import time
 
@@ -240,17 +241,10 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
       None, actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
     )
 
-    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
-    assert len(actual_files) > 0
-    assert str(actual_date) in actual_files[0]
-
-    stored_actuals = DataFrame({})
-    stored_actuals.loadFromFeatherFile(actual_files[0])
-
-    stored_actuals = json.loads(stored_actuals.df.to_json(orient='records'))
-
-    assert stored_actuals[0]['class'] == 'good'
-    assert stored_actuals[0]['a2ml_predicted'] == 'good'
+    for (_path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
+      assert actuals[0]['class'] == 'good'
+      assert actuals[0]['a2ml_predicted'] == 'good'
+      assert actuals[0]['checking_status'] == 'no checking'
 
 def test_score_actuals_dict_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
@@ -280,6 +274,43 @@ def test_score_actuals_dict_full():
     res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
 
     assert res['accuracy'] == 0.5
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'virginica'
+      assert actuals[0]['species'] == 'versicolor'
+      assert actuals[0]['sepal_length'] == 5.0
+
+      assert actuals[1]['a2ml_predicted'] == 'virginica'
+      assert actuals[1]['species'] == 'virginica'
+      assert actuals[1]['sepal_length'] == 3.0
+
+def test_score_actuals_dict_list_full():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
+
+    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
+      os.remove(actuals_path)
+
+    actuals = {
+      'species': ['virginica', 'virginica'],
+      'actual': ['versicolor', 'virginica'],
+      'sepal_length': [5.0, 3.0],
+      'sepal_width': [4.0, 2.0],
+      'petal_length': [3.0, 1.0],
+      'petal_width': [1.0, 1.0],
+    }
+
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+
+    assert res['accuracy'] == 0.5
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'virginica'
+      assert actuals[0]['species'] == 'versicolor'
+      assert actuals[0]['sepal_length'] == 5.0
+
+      assert actuals[1]['a2ml_predicted'] == 'virginica'
+      assert actuals[1]['species'] == 'virginica'
+      assert actuals[1]['sepal_length'] == 3.0
 
 @vcr.use_cassette('model_review/score_actuals_return_count/predict.yaml')
 def test_score_actuals_dict_wo_predicted():
@@ -315,6 +346,15 @@ def test_score_actuals_dict_wo_predicted():
     assert res['count'] == 2
     assert res['score']['accuracy'] == 1.0
 
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'setosa'
+      assert actuals[0]['species'] == 'setosa'
+      assert actuals[0]['sepal_length'] == 5.1
+
+      assert actuals[1]['a2ml_predicted'] == 'setosa'
+      assert actuals[1]['species'] == 'setosa'
+      assert actuals[1]['sepal_length'] == 5.2
+
 def test_score_actuals_dict_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
@@ -329,6 +369,13 @@ def test_score_actuals_dict_wo_features():
     res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
 
     assert res['accuracy'] == 0.5
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+      assert actuals[0]['a2ml_predicted'] == 'virginica'
+      assert actuals[0]['species'] == 'versicolor'
+
+      assert actuals[1]['a2ml_predicted'] == 'virginica'
+      assert actuals[1]['species'] == 'virginica'
 
 def test_score_actuals_dict_with_predicted_none():
     model_path = 'tests/fixtures/test_score_actuals'
@@ -368,6 +415,17 @@ def test_score_actuals_dict_with_predicted_none():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == True
+      assert actuals[0]['income'] == None
+      assert actuals[0]['age'] == 33
+
+      assert actuals[1]['a2ml_predicted'] == False
+      assert actuals[1]['income'] == None
+
+      assert actuals[2]['a2ml_predicted'] == False
+      assert actuals[2]['income'] == None
+
 def test_score_iris_csv_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
@@ -378,6 +436,11 @@ def test_score_iris_csv_full():
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
 
     assert res['accuracy'] == 1.0
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
+      assert actuals[0]['class'] == 'Iris-setosa'
+      assert actuals[0]['sepal_length'] == 5.1
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
@@ -395,6 +458,11 @@ def test_score_iris_csv_wo_predicted():
 
     assert res['accuracy'] == 1.0
 
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'setosa'
+      assert actuals[0]['class'] == 'setosa'
+      assert actuals[0]['sepal_length'] == 5.1
+
 def test_score_iris_csv_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
@@ -405,6 +473,10 @@ def test_score_iris_csv_wo_features():
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals_wo_features.csv')
 
     assert res['accuracy'] == 1.0
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+      assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
+      assert actuals[0]['class'] == 'Iris-setosa'
 
 def test_score_actuals_lucas_case_array_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -432,6 +504,11 @@ def test_score_actuals_lucas_case_array_full():
 
     assert res['accuracy'] == 1.0
 
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
+      assert actuals[0]['class'] == 'Iris-setosa'
+      assert actuals[0]['sepal_length'] == 5.1
+
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_actuals_lucas_case_array_wo_prediceted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -452,6 +529,11 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     assert res['accuracy'] == 1.0
 
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+      assert actuals[0]['a2ml_predicted'] == 'setosa'
+      assert actuals[0]['class'] == 'setosa'
+      assert actuals[0]['sepal_length'] == 5.1
+
 def test_score_actuals_lucas_case_array_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
@@ -471,6 +553,13 @@ def test_score_actuals_lucas_case_array_wo_features():
     )
 
     assert res['accuracy'] == 2 / 3
+
+    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+      assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
+      assert actuals[0]['class'] == 'Iris-setosa'
+
+      assert actuals[2]['a2ml_predicted'] == 'Iris-virginica'
+      assert actuals[2]['class'] == 'Iris-setosa'
 
 def test_score_actuals_another_result_first():
   model_path = 'tests/fixtures/test_score_actuals/another_result_first'
@@ -509,22 +598,25 @@ def test_score_actuals_another_result_first():
   assert res['accuracy'] == 1
 
 def test_build_review_data():
-    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+    model_path = "tests/fixtures/test_build_review_data/iris"
+    data_path = "tests/fixtures/test_build_review_data/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
+    full_actuals_path = "predictions/2020-10-22_F856362B6833492_full_actuals.feather.zstd"
 
-    res = ModelReview({'model_path': model_path}).build_review_data(
-      data_path="tests/fixtures/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
-    )
-    assert res
-    assert res.endswith(".parquet")
+    res = ModelReview({'model_path': model_path}).build_review_data(data_path=data_path)
+    print(res)
+
+    assert re.match(".*/iris_class_review_[0-9A-F]{15}.parquet", res)
     assert 'B6FD93C248984BC' not in res
 
-    res_ar = res.split("_")
-    assert len(res_ar) == 4
-    assert res_ar[2] == "review"
+    source_df = DataFrame({}).load_from_file(data_path)
+    actuals_df = DataFrame({}).load_from_file(os.path.join(model_path, full_actuals_path))
+    review_df = DataFrame({}).load_from_file(res)
 
+    assert len(review_df) == len(source_df) + len(actuals_df) - 1
+    # Should drop one duplicated row  `5.1,3.5,1.4,0.2,Iris-setosa`
 
-    for actuals_path in glob.glob('tests/fixtures/iris_class_review_*.parquet'):
-      os.remove(actuals_path)
+    for review_data_path in glob.glob('tests/fixtures/test_build_review_data/iris_class_review_*.parquet'):
+      os.remove(review_data_path)
 
 # def test_build_review_data_2():
 #     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
@@ -533,6 +625,31 @@ def test_build_review_data():
 #       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
 #     assert res
 #     assert res.endswith(".parquet")
+
+def _assert_actual_file(model_path, actual_date=None, with_features=True):
+    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
+    assert len(actual_files) > 0
+
+    actual_file = actual_files[0]
+
+    if actual_date:
+      assert str(actual_date) in actual_file
+
+    if with_features:
+      assert actual_file.endswith("_full_actuals.feather.zstd")
+    else:
+      assert actual_file.endswith("_no_features_actuals.feather.zstd")
+
+    stored_actuals = DataFrame({})
+    stored_actuals.loadFromFeatherFile(actual_files[0])
+    stored_actuals = json.loads(stored_actuals.df.to_json(orient='records'))
+
+    if with_features:
+      assert len(stored_actuals[0]) > 2
+    else:
+      assert len(stored_actuals[0]) == 2
+
+    yield(actual_file, stored_actuals)
 
 def _build_context(params):
     ctx = _create_provider_context(params)

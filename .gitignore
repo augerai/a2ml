@@ -45,6 +45,7 @@ tmp/
 
 tests/fixtures/*.feather.zstd
 tests/fixtures/*_predicted.csv
+tests/fixtures/test_build_review_data/iris/predictions/*.parquet
 tests/fixtures/test_clear_model_results_and_actuals/
 tests/fixtures/test_feature_divergence/channels/112233/project_runs/AABBCCDD/density_model.pkl
 tests/fixtures/test_predict_by_model/credit-g/predictions/*_results.feather.zstd

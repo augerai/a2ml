@@ -57,7 +57,7 @@ class ModelReview(object):
     ):
         features = None
 
-        if actual_records and type(actual_records[0]) == list:
+        if actual_records and type(actual_records) == list and type(actual_records[0]) == list:
             features = actual_columns
 
         ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
@@ -84,7 +84,11 @@ class ModelReview(object):
         if not actuals_id:
             actuals_id = get_uid()
 
-        file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_actuals.feather.zstd"
+        suffix = "full_actuals"
+        if len(ds_actuals.columns) == 2:
+            suffix = "no_features_actuals"
+
+        file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_" + suffix + ".feather.zstd"
         ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
         if return_count:
@@ -112,12 +116,13 @@ class ModelReview(object):
         train_features = ModelHelper.get_train_features(self.options)
         ds_train = DataFrame.create_dataframe(data_path, features=train_features)
 
-        all_files = fsclient.list_folder(os.path.join(self.model_path, "predictions/*_actuals.feather.zstd"),
-            wild=True, remove_folder_name=False, meta_info=True)
-        all_files.sort(
-            key=lambda f: f['last_modified'],
-            reverse=True
+        all_files = fsclient.list_folder(
+            os.path.join(self.model_path, "predictions/*_full_actuals.feather.zstd"),
+            wild=True, remove_folder_name=False, meta_info=True
         )
+
+        all_files.sort(key=lambda f: f['last_modified'], reverse=True)
+
         if date_col and date_col in train_features:
             new_files = []
             try:
@@ -145,13 +150,9 @@ class ModelReview(object):
         ds_train.dropna()
 
         if not output:
-            file_name = os.path.splitext(data_path)[0]
-            if '_review_' in file_name:
-                idx = file_name.find('_review_')
-                if idx > 0:
-                    file_name = file_name[:idx]
-
-            output =  file_name + "_review_%s.parquet"%(get_uid())
+            directory = os.path.dirname(data_path)
+            file_name = os.path.basename(data_path).split('_review_')[0]
+            output = os.path.join(directory, file_name + "_review_%s.parquet"%(get_uid()))
 
         ds_train.saveToFile(output)
         return output
