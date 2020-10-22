@@ -16,31 +16,25 @@ from tests.vcr_helper import vcr
 
 def test_score_model_performance_daily():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
-    date_from = datetime.date(2020, 2, 16)
-    date_to = datetime.date(2020, 2, 18)
+    date_from = datetime.date(2020, 10, 22)
+    date_to = datetime.date(2020, 10, 22)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
+
     assert type(res) is dict
     assert type(res[str(date_from)]) is numpy.float64
     assert res[str(date_from)] > 0
 
 def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
-    date_from = datetime.date(2020, 2, 16)
-    date_to = datetime.date(2020, 2, 18)
+    date_from = datetime.date(2020, 10, 21)
+    date_to = datetime.date(2020, 10, 22)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+
     assert type(res) is dict
-    assert res[str(date_from)] == 0.2
-
-# def test_score_model_performance_daily_not_full_actuals():
-#     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_not_full_actuals'
-#     date_from = datetime.date(2020, 3, 12)
-#     date_to = datetime.date(2020, 3, 13)
-
-#     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
-#     assert type(res) is dict
-#     assert res[str(date_to)] == 0
+    assert res[str(date_from)] == 1 / 3
+    assert res[str(date_to)] == 1 / 3
 
 def test_distribution_chart_stats():
     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
@@ -205,8 +199,7 @@ def test_clear_model_results_and_actuals():
 def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actuals_file():
     model_path = 'tests/fixtures/test_score_actuals/categorical_convert'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       {
@@ -249,8 +242,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
 def test_score_actuals_dict_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       {
@@ -287,8 +279,7 @@ def test_score_actuals_dict_full():
 def test_score_actuals_dict_list_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = {
       'species': ['virginica', 'virginica'],
@@ -316,8 +307,7 @@ def test_score_actuals_dict_list_full():
 def test_score_actuals_dict_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       {
@@ -358,8 +348,7 @@ def test_score_actuals_dict_wo_predicted():
 def test_score_actuals_dict_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       { 'species':'virginica', 'actual':'versicolor' },
@@ -380,8 +369,7 @@ def test_score_actuals_dict_wo_features():
 def test_score_actuals_dict_with_predicted_none():
     model_path = 'tests/fixtures/test_score_actuals'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-      os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     row = {
       'age': 33,
@@ -429,8 +417,7 @@ def test_score_actuals_dict_with_predicted_none():
 def test_score_iris_csv_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
@@ -446,8 +433,7 @@ def test_score_iris_csv_full():
 def test_score_iris_csv_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     params = _load_score_task_params(model_path)
     ctx = _build_context(params)
@@ -466,8 +452,7 @@ def test_score_iris_csv_wo_predicted():
 def test_score_iris_csv_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals_wo_features.csv')
@@ -481,8 +466,7 @@ def test_score_iris_csv_wo_features():
 def test_score_actuals_lucas_case_array_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       ["Iris-setosa", 5.1, 3.5, 1.4, 0.2, "Iris-setosa"],
@@ -513,8 +497,7 @@ def test_score_actuals_lucas_case_array_full():
 def test_score_actuals_lucas_case_array_wo_prediceted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       # actual sepal_length sepal_width petal_length petal_width
@@ -537,8 +520,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 def test_score_actuals_lucas_case_array_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-        os.remove(actuals_path)
+    _remove_actual_files(model_path)
 
     actuals = [
       ["Iris-setosa", "Iris-setosa"],
@@ -564,8 +546,7 @@ def test_score_actuals_lucas_case_array_wo_features():
 def test_score_actuals_another_result_first():
   model_path = 'tests/fixtures/test_score_actuals/another_result_first'
 
-  for actuals_path in glob.glob(model_path + '/predictions/*_actuals.feather.zstd'):
-    os.remove(actuals_path)
+  _remove_actual_files(model_path)
 
   actuals = [
     {
@@ -600,7 +581,7 @@ def test_score_actuals_another_result_first():
 def test_build_review_data():
     model_path = "tests/fixtures/test_build_review_data/iris"
     data_path = "tests/fixtures/test_build_review_data/iris_class_review_B6FD93C248984BC_review_8E0B1F1D71A44DF.csv"
-    full_actuals_path = "predictions/2020-10-22_F856362B6833492_full_actuals.feather.zstd"
+    full_actuals_path = "predictions/2020-10-22_F856362B6833492_full_data.feather.zstd"
 
     res = ModelReview({'model_path': model_path}).build_review_data(data_path=data_path)
     print(res)
@@ -626,8 +607,12 @@ def test_build_review_data():
 #     assert res
 #     assert res.endswith(".parquet")
 
+def _remove_actual_files(model_path):
+    for actuals_path in glob.glob(model_path + '/predictions/*_data.feather.zstd'):
+      os.remove(actuals_path)
+
 def _assert_actual_file(model_path, actual_date=None, with_features=True):
-    actual_files = glob.glob(model_path + '/predictions/*_actuals.feather.zstd')
+    actual_files = glob.glob(model_path + '/predictions/*_data.feather.zstd')
     assert len(actual_files) > 0
 
     actual_file = actual_files[0]
@@ -636,9 +621,9 @@ def _assert_actual_file(model_path, actual_date=None, with_features=True):
       assert str(actual_date) in actual_file
 
     if with_features:
-      assert actual_file.endswith("_full_actuals.feather.zstd")
+      assert actual_file.endswith("_full_data.feather.zstd")
     else:
-      assert actual_file.endswith("_no_features_actuals.feather.zstd")
+      assert actual_file.endswith("_no_features_data.feather.zstd")
 
     stored_actuals = DataFrame({})
     stored_actuals.loadFromFeatherFile(actual_files[0])

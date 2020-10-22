@@ -84,9 +84,9 @@ class ModelReview(object):
         if not actuals_id:
             actuals_id = get_uid()
 
-        suffix = "full_actuals"
+        suffix = "full_data"
         if len(ds_actuals.columns) == 2:
-            suffix = "no_features_actuals"
+            suffix = "no_features_data"
 
         file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_" + suffix + ".feather.zstd"
         ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
@@ -117,7 +117,7 @@ class ModelReview(object):
         ds_train = DataFrame.create_dataframe(data_path, features=train_features)
 
         all_files = fsclient.list_folder(
-            os.path.join(self.model_path, "predictions/*_full_actuals.feather.zstd"),
+            os.path.join(self.model_path, "predictions/*_full_data.feather.zstd"),
             wild=True, remove_folder_name=False, meta_info=True
         )
 
@@ -192,18 +192,16 @@ class ModelReview(object):
 
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
-        features = ['prediction_id', self.target_feature, 'a2ml_predicted']
+        features = [self.target_feature, 'a2ml_predicted']
         res = {}
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
-                self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
+                self.model_path, date_from, date_to, "*_data.feather.zstd"):
             df_actuals = DataFrame({})
             for (file, df) in DataFrame.load_from_files(files, features):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
             if df_actuals.count() > 0:
-                df_actuals.drop_duplicates(['prediction_id'])
-
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
