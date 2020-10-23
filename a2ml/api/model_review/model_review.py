@@ -211,22 +211,18 @@ class ModelReview(object):
         return res
 
     def distribution_chart_stats(self, date_from, date_to):
-        features = [self.target_feature]
+        features = [self.target_feature, 'a2ml_predicted']
+        features += self.options.get('originalFeatureColumns', [])
         categoricalFeatures = self.options.get('categoricalFeatures', [])
         mapper = {}
-        mapper[self.target_feature] = 'actual_%s'%self.target_feature
+        mapper[self.target_feature] = 'actual_%s' % self.target_feature
+        mapper['a2ml_predicted'] = 'predicted_%s' % self.target_feature
 
         actuals_stats = self._distribution_stats(
-            date_from, date_to, "_*_actuals.feather.zstd", features, categoricalFeatures, mapper
+            date_from, date_to, "_*_data.feather.zstd", features, categoricalFeatures, mapper
         )
 
-        features += self.options.get('originalFeatureColumns', [])
-        mapper[self.target_feature] = 'predicted_%s'%self.target_feature
-        features_stats = self._distribution_stats(
-            date_from, date_to, "_*_results.feather.zstd", features, categoricalFeatures, mapper
-        )
-
-        return merge_dicts(features_stats, actuals_stats)
+        return actuals_stats
 
     def set_support_review_model_flag(self, flag_value):
         path = os.path.join(self.model_path, "options.json")
@@ -248,8 +244,6 @@ class ModelReview(object):
         categoricalFeatures=[], feature_mapper={}):
         res = {}
         feature_importances = self.get_feature_importances()
-        counter = ProbabilisticCounter()
-        second_pass_counter = ProbabilisticCounter()
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, date_from, date_to, path_suffix):
             stats = {}
@@ -264,25 +258,24 @@ class ModelReview(object):
                 }
 
             df_list = []
-            for (file, df) in DataFrame.load_from_files(files, features + ['prediction_id']):
-                ModelReview._remove_duplicates_by(df, 'prediction_id', counter)
-
+            for (file, df) in DataFrame.load_from_files(files):
                 df_list.append(df)
 
             # First pass: calc sum and count in each column for average
             for df in df_list:
                 for feature in features:
-                    stats[feature]['count'] += df.df[feature].count()
+                    if feature in df.columns:
+                        stats[feature]['count'] += df.df[feature].count()
 
-                    if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
-                        feature in categoricalFeatures:
-                        stats[feature]['dist'] = merge_dicts(
-                            stats[feature]['dist'] or {},
-                            dict(df.df[feature].value_counts()),
-                            lambda v, ov: v + ov
-                        )
-                    else:
-                        stats[feature]['sum'] += df.df[feature].sum()
+                        if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
+                            feature in categoricalFeatures:
+                            stats[feature]['dist'] = merge_dicts(
+                                stats[feature]['dist'] or {},
+                                dict(df.df[feature].value_counts()),
+                                lambda v, ov: v + ov
+                            )
+                        else:
+                            stats[feature]['sum'] += df.df[feature].sum()
 
             # Calc average
             for feature in features:
@@ -291,10 +284,8 @@ class ModelReview(object):
 
             # Second pass: sum of squares of value and average for std dev
             for df in df_list:
-                ModelReview._remove_duplicates_by(df, 'prediction_id', second_pass_counter)
-
                 for feature in features:
-                    if 'average' in stats[feature]:
+                    if 'average' in stats[feature] and feature in df.columns:
                         avg = stats[feature]['average']
                         stats[feature]['sq_sum'] += ((df.df[feature] - avg)**2).sum()
 

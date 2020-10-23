@@ -3,10 +3,14 @@ import glob
 import json
 import numpy
 import os
+import pandas as pd
 import pathlib
 import re
 import shutil
 import time
+import uuid
+
+from pyarrow import feather
 
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
@@ -36,59 +40,44 @@ def test_score_model_performance_daily_none_actuals():
     assert res[str(date_from)] == 1 / 3
     assert res[str(date_to)] == 1 / 3
 
-def test_distribution_chart_stats():
-    model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
-    date_from = datetime.date(2020, 2, 16)
-    date_to = datetime.date(2020, 2, 19)
-
-    res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
-    assert type(res) is dict
-    assert type(res[str(date_to)]) is dict
-
-    assert res[str(date_to)] == {
-      'predicted_cnt': { 'avg': 483.18357849636016, 'std_dev': 0.0, 'imp': 0 },
-      'dteday': { 'avg': 0.0,  'std_dev': 0.0, 'imp': 0 },
-      'season': { 'dist': { 0: 2 }, 'imp': 0},
-      'yr': { 'dist': { 0: 2 }, 'imp': 0 },
-      'mnth': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'holiday': { 'dist': { 0: 2 }, 'imp': 0},
-      'weekday': { 'dist': { 0: 2 }, 'imp': 0},
-      'workingday': { 'dist': { 0: 2 }, 'imp': 0},
-      'weathersit': { 'dist': { 0: 2 }, 'imp': 0},
-      'temp': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'atemp': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'hum': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'casual': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'registered': { 'avg': 0.0, 'std_dev': 0.0, 'imp': 0 },
-      'actual_cnt': { 'avg': 2.6, 'std_dev': 2.073644135332772, 'imp': 0 },
-    }
-
 def test_distribution_chart_stats_for_categorical_target():
-    model_path = 'tests/fixtures/test_distribution_chart_stats/adult'
-    date_from = datetime.date(2020, 2, 16)
-    date_to = datetime.date(2020, 2, 20)
+    model_path = 'tests/fixtures/test_distribution_chart_stats/iris'
+    date_from = datetime.date(2020, 10, 22)
+    date_to = datetime.date(2020, 10, 22)
 
     res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
-      'predicted_income': {'dist': {' <=50K': 1}, 'imp': 0},
-      'age': {'avg': 0.0, 'std_dev': 0, 'imp': 0.716105},
-      'workclass': {'dist': {0: 1}, 'imp': 0.120064},
-      'fnlwgt': {'avg': 0.0, 'std_dev': 0, 'imp': 1.0},
-      'education': {'dist': {0: 1}, 'imp': 0.299958},
-      'education-num': {'avg': 0.0, 'std_dev': 0, 'imp': 0},
-      'marital-status': {'dist': {0: 1}, 'imp': 0.143296},
-      'occupation': {'dist': {0: 1}, 'imp': 0.209677},
-      'relationship': {'dist': {0: 1}, 'imp': 0.086982},
-      'race': {'dist': {0: 1}, 'imp': 0.041806},
-      'sex': {'dist': {0: 1}, 'imp': 0.039482},
-      'capital-gain': {'avg': 0.0, 'std_dev': 0, 'imp': 0.313237},
-      'capital-loss': {'avg': 0.0, 'std_dev': 0, 'imp': 0.257126},
-      'hours-per-week': {'avg': 0.0, 'std_dev': 0, 'imp': 0.424639},
-      'native-country': {'dist': {0: 1}, 'imp': 0.020726},
-      'actual_income': {'dist': {' <=50K': 1}, 'imp': 0},
+      "actual_species": {
+        "dist": { "virginica": 2, "versicolor": 2 },
+        "imp": 0
+      },
+      "predicted_species": {
+        "dist": { "virginica": 4 },
+        "imp": 0
+      },
+      "sepal_length": {
+        "avg": 4.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "sepal_width": {
+        "avg": 3.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "petal_length": {
+        "avg": 2.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "petal_width": {
+        "avg": 1.0,
+        "std_dev": 0.0,
+        "imp": 0
+      }
     }
 
 def test_distribution_chart_stats_with_null_booleans():
@@ -96,16 +85,44 @@ def test_distribution_chart_stats_with_null_booleans():
     date_from = datetime.date(2020, 5, 7)
     date_to = datetime.date(2020, 5, 7)
 
+    actuals = {
+      'store_id': [40, 278],
+      'company_id': [11, 37],
+      'gender': [None, 'FEMALE'],
+      'employee_age': [None, 24],
+      'is_minor': [None, False],
+      'marital_status': [None, 'SINGLE'],
+      'race': [None, 'CAUCASIAN'],
+      'shift_date': ['2020-05-09', '2020-05-17'],
+      'is_weekend': [True, True],
+      'start_time': ['2020-05-09T16:00:00+00:00', '2020-05-17T22:00:00+00:00'],
+      'end_time': ['2020-05-09T19:15:00+00:00', '2020-05-18T06:00:00+00:00'],
+      'unrecorded_no_show_count': [3, 0],
+      'default_rate': [10, 12],
+      'hire_date': [None, '2016-12-25'],
+      'is_holiday': [False, False],
+      'callin_cancel_count': [0, 0],
+      'recently_cancel_count': [0, 0],
+      'proba_False': [0.0216337, 0.999738],
+      'proba_True': [0.978366, 0.000262292],
+      'target': [True, True],
+      'a2ml_predicted': [True, False],
+    }
+
+    _remove_actual_files(model_path)
+    _write_actuals(model_path, actuals, with_features=True, date=date_from)
+
     res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
     assert type(res[str(date_to)]) is dict
 
     assert res[str(date_to)] == {
+      'actual_target': {'avg': 1.0, 'std_dev': 0.0, 'imp': 0},
       'predicted_target': {'avg': 0.5, 'std_dev': 0.7071067811865476, 'imp': 0},
       'company_id': {'avg': 24.0, 'std_dev': 18.384776310850235, 'imp': 0},
       'gender': {'dist': {'FEMALE': 1}, 'imp': 0},
-      'employee_age': {'dist': {}, 'imp': 0},
-      'is_minor': {'dist': {}, 'imp': 0},
+      'employee_age': {'avg': 24.0, 'imp': 0, 'std_dev': 0},
+      'is_minor': {'dist': {False: 1}, 'imp': 0},
       'marital_status': {'dist': {'SINGLE': 1}, 'imp': 0},
       'race': {'dist': {'CAUCASIAN': 1}, 'imp': 0}, #0.041806
       'shift_date': {'dist': {'2020-05-17': 1, '2020-05-09': 1}, 'imp': 0},
@@ -606,6 +623,17 @@ def test_build_review_data():
 #       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
 #     assert res
 #     assert res.endswith(".parquet")
+
+def _write_actuals(model_path, actuals, with_features=True, date=None):
+    df = pd.DataFrame(data=actuals)
+    date = str(date or datetime.date.today())
+    uid = uuid.uuid4().hex[:15].upper()
+    suffix = "full_data" if with_features else "no_features_data"
+    feather.write_feather(
+      df,
+      os.path.join(model_path, "predictions", date + "_" + uid + "_" + suffix + ".feather.zstd"),
+      compression="zstd"
+    )
 
 def _remove_actual_files(model_path):
     for actuals_path in glob.glob(model_path + '/predictions/*_data.feather.zstd'):
