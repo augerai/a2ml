@@ -50,7 +50,7 @@ class DataFrame(object):
             ds = DataFrame({})
             ds.df = records
             ds.from_pandas = True
-        else:    
+        else:
             ds = DataFrame({})
             ds.load_records(records, features=features)
 
@@ -58,7 +58,7 @@ class DataFrame(object):
 
     @staticmethod
     def load_from_files(files, features=None):
-        for file in files: 
+        for file in files:
             path = file if type(file) == str else file['path']
 
             fsclient.wait_for_file(path, True)
@@ -285,7 +285,7 @@ class DataFrame(object):
         return self.df
 
     def loadFromParquetFile(self, path, features=None):
-        self.df = fsclient.load_db_from_parquet_file(path, features)    
+        self.df = fsclient.load_db_from_parquet_file(path, features)
         return self.df
 
     def saveToFile(self, path):
@@ -305,6 +305,9 @@ class DataFrame(object):
             return len(self.df)
         else:
             return 0
+
+    def __len__(self):
+        return self.count()
 
     @property
     def columns(self):

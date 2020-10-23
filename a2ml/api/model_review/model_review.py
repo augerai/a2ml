@@ -53,7 +53,7 @@ class ModelReview(object):
 
     def add_actuals(
         self, ctx, actuals_path=None, actual_records=None, actual_columns=None,
-        actual_date=None, actuals_id = None, return_count=False
+        actual_date=None, actual_date_column=None, actuals_id = None, return_count=False
     ):
         features = None
 
@@ -88,8 +88,19 @@ class ModelReview(object):
         if len(ds_actuals.columns) == 2:
             suffix = "no_features_data"
 
-        file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_" + suffix + ".feather.zstd"
-        ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
+        if actual_date_column:
+            ds_actuals.df[actual_date_column] = ds_actuals.df[actual_date_column].fillna(datetime.date.today()).apply(pd.to_datetime).dt.date
+
+            uniq_dates = ds_actuals.df[actual_date_column].unique()
+            uniq_dates.sort()
+
+            for actual_date in uniq_dates:
+                file_name = str(actual_date) + '_' + actuals_id + "_" + suffix + ".feather.zstd"
+                df = DataFrame.create_dataframe(records=ds_actuals.df[ds_actuals.df[actual_date_column] == actual_date])
+                df.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
+        else:
+            file_name = str(actual_date or datetime.date.today()) + '_' + actuals_id + "_" + suffix + ".feather.zstd"
+            ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
         if return_count:
             return {'score': result, 'count': actuals_count}

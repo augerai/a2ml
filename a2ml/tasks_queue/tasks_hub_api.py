@@ -526,6 +526,7 @@ def score_actuals_by_model_task(params):
         actual_records=params.get('actual_records'),
         actual_columns=params.get('actual_columns', None),
         actual_date=params.get('actual_date'),
+        actual_date_column=params.get('actual_date_column'),
         actuals_id=params.get('actuals_id'),
         return_count=params.get('return_count', False),
     )

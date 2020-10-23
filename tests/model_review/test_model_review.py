@@ -1,4 +1,5 @@
 import datetime
+import dateutil
 import glob
 import json
 import numpy
@@ -83,6 +84,8 @@ def test_distribution_chart_stats_for_categorical_target():
 
 def test_distribution_chart_stats_with_null_booleans():
     model_path = 'tests/fixtures/test_distribution_chart_stats/callouts'
+    os.makedirs(os.path.join(model_path, 'predictions'), exist_ok=True)
+
     date_from = datetime.date(2020, 5, 7)
     date_to = datetime.date(2020, 5, 7)
 
@@ -248,7 +251,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
       None, actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
     )
 
-    for (_path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
       assert actuals[0]['class'] == 'good'
       assert actuals[0]['a2ml_predicted'] == 'good'
       assert actuals[0]['checking_status'] == 'no checking'
@@ -281,7 +284,7 @@ def test_score_actuals_dict_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -308,7 +311,7 @@ def test_score_actuals_dict_list_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -350,7 +353,7 @@ def test_score_actuals_dict_wo_predicted():
     assert res['count'] == 2
     assert res['score']['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['species'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -373,7 +376,7 @@ def test_score_actuals_dict_wo_features():
 
     assert res['accuracy'] == 0.5
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
 
@@ -417,7 +420,7 @@ def test_score_actuals_dict_with_predicted_none():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == True
       assert actuals[0]['income'] == None
       assert actuals[0]['age'] == 33
@@ -438,10 +441,38 @@ def test_score_iris_csv_full():
 
     assert res['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
+
+def test_score_iris_csv_full_with_date_columns():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
+
+    _remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None,
+      actuals_path=actuals_path,
+      actual_date_column='date'
+    )
+    actuals = DataFrame.create_dataframe(data_path=actuals_path)
+
+    assert res['accuracy'] == 1.0
+
+    saved_actuals = list(_assert_actual_file(model_path, with_features=True))
+
+    assert len(saved_actuals) == 3
+
+    ((day1, _, actuals1), (day2, _, actuals2), (day3, _, actuals3)) = saved_actuals
+
+    assert str(day1) == '2020-10-21'
+    assert str(day2) == '2020-10-22'
+    assert str(day3) == '2020-10-23'
+
+    assert len(actuals1) + len(actuals2) + len(actuals3) == len(actuals)
+
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
@@ -458,7 +489,7 @@ def test_score_iris_csv_wo_predicted():
 
     assert res['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -473,7 +504,7 @@ def test_score_iris_csv_wo_features():
 
     assert res['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
@@ -502,7 +533,7 @@ def test_score_actuals_lucas_case_array_full():
 
     assert res['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -526,7 +557,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     assert res['accuracy'] == 1.0
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -550,7 +581,7 @@ def test_score_actuals_lucas_case_array_wo_features():
 
     assert res['accuracy'] == 2 / 3
 
-    for (_path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
@@ -664,7 +695,7 @@ def test_delete_actuals(with_predictions, begin_date, end_date, expected_files_l
 
     # assert
     files_left = os.listdir(predictions_path) if os.path.exists(predictions_path) else []
-    assert files_left == expected_files_left
+    assert sorted(files_left) == sorted(expected_files_left)
 
 def _write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)
@@ -683,28 +714,31 @@ def _remove_actual_files(model_path):
 
 def _assert_actual_file(model_path, actual_date=None, with_features=True):
     actual_files = glob.glob(model_path + '/predictions/*_data.feather.zstd')
+    actual_files.sort()
+
     assert len(actual_files) > 0
 
-    actual_file = actual_files[0]
+    for actual_file in actual_files:
+      if actual_date:
+        assert str(actual_date) in actual_file
 
-    if actual_date:
-      assert str(actual_date) in actual_file
+      if with_features:
+        assert actual_file.endswith("_full_data.feather.zstd")
+      else:
+        assert actual_file.endswith("_no_features_data.feather.zstd")
 
-    if with_features:
-      assert actual_file.endswith("_full_data.feather.zstd")
-    else:
-      assert actual_file.endswith("_no_features_data.feather.zstd")
+      stored_actuals = DataFrame({})
+      stored_actuals.loadFromFeatherFile(actual_file)
+      stored_actuals = json.loads(stored_actuals.df.to_json(orient='records'))
 
-    stored_actuals = DataFrame({})
-    stored_actuals.loadFromFeatherFile(actual_files[0])
-    stored_actuals = json.loads(stored_actuals.df.to_json(orient='records'))
+      if with_features:
+        assert len(stored_actuals[0]) > 2
+      else:
+        assert len(stored_actuals[0]) == 2
 
-    if with_features:
-      assert len(stored_actuals[0]) > 2
-    else:
-      assert len(stored_actuals[0]) == 2
+      date = dateutil.parser.parse(os.path.basename(actual_file).split("_")[0]).date()
 
-    yield(actual_file, stored_actuals)
+      yield(date, actual_file, stored_actuals)
 
 def _build_context(params):
     ctx = _create_provider_context(params)
