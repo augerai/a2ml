@@ -100,14 +100,16 @@ class ModelReview(object):
         if with_predictions and not begin_date and not end_date:
             self.clear_model_results_and_actuals()
         else:
-            path_suffix = "_*_actuals.feather.zstd"
-            if with_predictions:
-                path_suffix = "_*_*.feather.zstd"
+            path_suffixes = ["actuals.feather.zstd", "data.feather.zstd"]
 
-            for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, begin_date, end_date, path_suffix):
-                for file in files:
-                    path = file if type(file) == str else file['path']
-                    fsclient.remove_file(path)
+            if with_predictions:
+                path_suffixes = [".feather.zstd"]
+
+            for path_suffix in path_suffixes:
+                for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, begin_date, end_date, path_suffix):
+                    for file in files:
+                        path = file if type(file) == str else file['path']
+                        fsclient.remove_file(path)
 
     def build_review_data(self, data_path=None, output=None, date_col=None):
         if not data_path:
@@ -347,7 +349,7 @@ class ModelReview(object):
             curr_date = date_from
 
             while curr_date <= date_to:
-                path = os.path.join(model_path, "predictions/" + str(curr_date) + path_suffix)
+                path = os.path.join(model_path, "predictions/" + str(curr_date) + "*" + path_suffix)
                 files = fsclient.list_folder(path, wild=True, remove_folder_name=False, meta_info=False)
                 yield (curr_date, files)
                 curr_date += datetime.timedelta(days=1)

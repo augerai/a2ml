@@ -5,6 +5,7 @@ import numpy
 import os
 import pandas as pd
 import pathlib
+import pytest
 import re
 import shutil
 import time
@@ -182,8 +183,6 @@ def test_remove_model():
     # arrange
     model_path = 'tests/fixtures/test_remove_model'
     fsclient.write_json_file(model_path + '/options.json', {})
-    # os.makedirs(model_path, exist_ok=True)
-    # pathlib.Path(model_path + '/options.json').touch()
     os.makedirs(model_path + '/predictions', exist_ok=True)
     pathlib.Path(model_path + '/predictions/somedata.csv').touch()
     assert os.path.exists(model_path) == True
@@ -199,8 +198,6 @@ def test_clear_model_results_and_actuals():
     model_path = 'tests/fixtures/test_clear_model_results_and_actuals'
     fsclient.write_json_file(model_path + '/options.json', {})
 
-    # os.makedirs(model_path, exist_ok=True)
-    # pathlib.Path(model_path + '/options.json').touch()
     os.makedirs(model_path + '/predictions', exist_ok=True)
     pathlib.Path(model_path + '/predictions/somedata.csv').touch()
     assert os.path.exists(model_path) == True
@@ -623,6 +620,51 @@ def test_build_review_data():
 #       data_path="tests/fixtures/bike_sharing_small.csv", date_col='dteday')
 #     assert res
 #     assert res.endswith(".parquet")
+
+@pytest.mark.parametrize(
+  "with_predictions, begin_date, end_date, expected_files_left",
+  [
+    pytest.param(True, None, None, [], id='Delete everything in whole range'),
+    pytest.param(
+      True,
+      '2020-02-20',
+      '2020-08-02',
+      [
+        '2020-10-22_638A9CF95B254D0_no_features_data.feather.zstd',
+        '2020-10-22_F281E06F0CB44CB_full_data.feather.zstd'
+      ], id='Delete everything in some range'
+    ),
+    pytest.param(
+      False,
+      None,
+      None,
+      ['2020-08-02_d8f4a1d6-43c4-41bb-b1d3-4926faaad975_results.feather.zstd'],
+      id='Delete actuals in whole range'
+    ),
+  ]
+)
+def test_delete_actuals(with_predictions, begin_date, end_date, expected_files_left):
+    # arrange
+    model_path = 'tests/fixtures/test_delete_actuals'
+    predictions_path = model_path + '/predictions/'
+    fsclient.write_json_file(model_path + '/options.json', {})
+    os.makedirs(predictions_path, exist_ok=True)
+    pathlib.Path(predictions_path + '2020-02-20_549AA373A8FB470_actuals.feather.zstd').touch()
+    pathlib.Path(predictions_path + '2020-08-02_d8f4a1d6-43c4-41bb-b1d3-4926faaad975_results.feather.zstd').touch()
+    pathlib.Path(predictions_path + '2020-10-22_638A9CF95B254D0_no_features_data.feather.zstd').touch()
+    pathlib.Path(predictions_path + '2020-10-22_F281E06F0CB44CB_full_data.feather.zstd').touch()
+    assert os.path.exists(model_path) == True
+
+    # act
+    ModelReview({'model_path': model_path}).delete_actuals(
+      with_predictions=with_predictions,
+      begin_date=begin_date,
+      end_date=end_date,
+    )
+
+    # assert
+    files_left = os.listdir(predictions_path) if os.path.exists(predictions_path) else []
+    assert files_left == expected_files_left
 
 def _write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)
