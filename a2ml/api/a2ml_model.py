@@ -113,7 +113,7 @@ class A2MLModel(BaseA2ML):
 
                 ctx = Context()
                 data = [['value1', 'value2'], ['value3', 'value4']]
-                columns = ['col1', 'col2']                
+                columns = ['col1', 'col2']
                 rv = A2MLModel(ctx).predict(None, model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
@@ -122,7 +122,7 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
     @show_result
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False, provider=None):
+    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
@@ -142,8 +142,10 @@ class A2MLModel(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)
+            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual) or
+dict created with Pandas DataFramme to_dict method
             actuals_at: Actuals date. Use for review of historical data.
+            actual_date_column(str): name of column in data which contains actual date
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
@@ -171,7 +173,7 @@ class A2MLModel(BaseA2ML):
                 model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
 
             .. code-block:: python
-            
+
                 # To pass just one actual:
                 ctx = Context()
                 actual_records = [['prediction_id', 'actual_value']]
@@ -184,7 +186,7 @@ class A2MLModel(BaseA2ML):
                 model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, actual_date_column, locally)
 
     @show_result
     def review_alert(self, model_id, parameters = None, locally=False, provider=None):
@@ -285,9 +287,9 @@ class A2MLModel(BaseA2ML):
 
         Args:
             model_id (str): Model ID to delete actuals and predictions.
-            with_predictions(bool): 
-            begin_date: Date to begin delete operations 
-            end_date: Date to end delete operations 
+            with_predictions(bool):
+            begin_date: Date to begin delete operations
+            end_date: Date to end delete operations
             locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 

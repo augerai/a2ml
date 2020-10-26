@@ -36,7 +36,7 @@ class Model(object):
 
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
+    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
             is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
                 verify_local_model(model_id)
@@ -46,7 +46,12 @@ class Model(object):
 
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
             return ModelReview({'model_path': os.path.join(model_path, "model")}).add_actuals(
-              self.ctx, actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+              self.ctx,
+              actuals_path=filename,
+              actual_records=actual_records,
+              actual_date=actuals_at,
+              actual_date_column=actual_date_column,
+            )
         else:
             return ModelActual(self.ctx).execute(model_id, filename, actual_records, actuals_at)
 

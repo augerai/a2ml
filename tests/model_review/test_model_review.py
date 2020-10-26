@@ -463,15 +463,16 @@ def test_score_iris_csv_full_with_date_columns():
 
     saved_actuals = list(_assert_actual_file(model_path, with_features=True))
 
-    assert len(saved_actuals) == 3
+    assert len(saved_actuals) == 4
 
-    ((day1, _, actuals1), (day2, _, actuals2), (day3, _, actuals3)) = saved_actuals
+    ((day1, _, actuals1), (day2, _, actuals2), (day3, _, actuals3), (day4, _, actuals4)) = saved_actuals
 
-    assert str(day1) == '2020-10-21'
-    assert str(day2) == '2020-10-22'
-    assert str(day3) == '2020-10-23'
+    assert str(day1) == '2020-10-21' # date used
+    assert str(day2) == '2020-10-22' # date used
+    assert str(day3) == '2020-10-23' # time is covreted to date
+    assert str(day4) == str(datetime.date.today()) # today is used for rows without date
 
-    assert len(actuals1) + len(actuals2) + len(actuals3) == len(actuals)
+    assert len(actuals1) + len(actuals2) + len(actuals3) + len(actuals4) == len(actuals)
 
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')

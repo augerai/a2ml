@@ -291,7 +291,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
+    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
             model_path = self.ctx.config.get_model_path(model_id)
 
@@ -299,7 +299,12 @@ def get_df(data):
                 raise Exception('Model should be deployed first.')
 
             return ModelReview({'model_path': model_path}).add_actuals(
-                self.ctx, actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+                self.ctx,
+                actuals_path=filename,
+                actual_records=actual_records,
+                actual_date=actuals_at,
+                actual_date_column=actual_date_column,
+            )
         else:
             raise Exception("Not Implemented")
 
