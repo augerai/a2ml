@@ -64,7 +64,7 @@ class ModelReview(object):
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         if not self.target_feature in ds_actuals.columns:
-            res = A2ML(ctx).predict(None, self.model_id, data=ds_actuals.df, provider=provider)
+            res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
 
             if res['result']:
                 ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]

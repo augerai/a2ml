@@ -51,8 +51,8 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review)
 
     @show_result
-    def predict(self, filename,
-      model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, provider=None):
+    def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
+            threshold=None, output=None, locally=False, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Note:
@@ -60,15 +60,15 @@ class A2MLModel(BaseA2ML):
             This method support only one provider
 
         Args:
-            filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
-            threshold(float): For classification models only. This will return class probabilities with response.
-            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            data: dict or array of records or Pandas DataFrame
+            filename(str): The file with data to request predictions for.            
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
+            threshold(float): For classification models only. This will return class probabilities with response.
             output(str): Output csv file path.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             if filename is not None. ::
@@ -82,21 +82,21 @@ class A2MLModel(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'predicted': [{col1: value1, col2: value2}, {col1: value3, col2: value4}]}
+                    'data': {'predicted': [{col1: value1, col2: value2, target: predicted_value1}, {col1: value3, col2: value4, target: predicted_value2}]}
                 }
 
             if filename is None and data is not None and columns is not None. ::
 
                 {
                     'result': True,
-                    'data': {'predicted': {'columns': ['col1', 'col2'], 'data': [['value1', 'value2'], ['value3', 'value4']]}}
+                    'data': {'predicted': {'columns': ['col1', 'col2', target], 'data': [['value1', 'value2', 1], ['value3', 'value4', 0]]}}
                 }
 
         Examples:
             .. code-block:: python
 
                 ctx = Context()
-                rv = A2MLModel(ctx).predict('../irises.csv', model_id)
+                rv = A2MLModel(ctx).predict(model_id, '../irises.csv')
                 # if rv[provider].result is True
                 # predictions are stored in rv[provider]['data']['predicted']
 
@@ -104,7 +104,7 @@ class A2MLModel(BaseA2ML):
 
                 ctx = Context()
                 data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
-                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                rv = A2MLModel(ctx).predict(model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
@@ -113,7 +113,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 data = [['value1', 'value2'], ['value3', 'value4']]
                 columns = ['col1', 'col2']
-                rv = A2MLModel(ctx).predict(None, model_id, data=data)
+                rv = A2MLModel(ctx).predict(model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
