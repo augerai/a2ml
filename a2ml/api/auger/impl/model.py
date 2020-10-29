@@ -51,7 +51,8 @@ class Model(object):
               data=data,
               columns=columns,
               actual_date=actuals_at,
-              actual_date_column=actual_date_column
+              actual_date_column=actual_date_column,
+              provider='auger'
             )
         else:
             return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at)

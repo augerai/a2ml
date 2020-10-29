@@ -53,14 +53,9 @@ class ModelReview(object):
 
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None,
-        actual_date=None, actual_date_column=None, actuals_id = None, return_count=False
+        actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger'
     ):
-        features = None
-
-        if data and type(data) == list and type(data[0]) == list:
-            features = columns
-
-        ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=features)
+        ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
@@ -69,7 +64,7 @@ class ModelReview(object):
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         if not self.target_feature in ds_actuals.columns:
-            res = A2ML(ctx).predict(None, self.model_id, data=ds_actuals.df, provider='auger')
+            res = A2ML(ctx).predict(None, self.model_id, data=ds_actuals.df, provider=provider)
 
             if res['result']:
                 ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]

@@ -298,6 +298,7 @@ def get_df(data):
                 columns=columns,
                 actual_date=actuals_at,
                 actual_date_column=actual_date_column,
+                provider='azure'
             )
         else:
             raise Exception("Not Implemented")

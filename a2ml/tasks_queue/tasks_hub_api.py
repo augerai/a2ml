@@ -529,6 +529,7 @@ def score_actuals_by_model_task(params):
         actual_date_column=params.get('actual_date_column'),
         actuals_id=params.get('actuals_id'),
         return_count=params.get('return_count', False),
+        provider=params.get('provider')
     )
 
 @celeryApp.task(ignore_result=True)
