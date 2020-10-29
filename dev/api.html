@@ -425,25 +425,24 @@
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.predict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Use deployed model_id</p>
-<p>This method support only one provider
-If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.</p>
+<p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
-<li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
-<li><p><strong>data</strong> -- dict or array of records or Pandas DataFrame</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
 <li><p><strong>output</strong> (<em>str</em>) -- Output csv file path.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
 </ul>
 </dd>
@@ -458,14 +457,14 @@ If you pass prediction_id column in input data, it will be return in predict res
 <p>if filename is None and data is not None and columns is None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">:</span> <span class="mi">456</span><span class="p">,</span> <span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">predicted_value1</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">predicted_value2</span><span class="p">}]}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>if filename is None and data is not None and columns is not None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;789&#39;</span><span class="p">,</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;321&#39;</span><span class="p">,</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]}}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -474,14 +473,14 @@ If you pass prediction_id column in input data, it will be return in predict res
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">&#39;../irises.csv&#39;</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;../irises.csv&#39;</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are stored in rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value2&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value4&#39;</span><span class="p">}]</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
@@ -489,7 +488,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]</span>
 <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">]</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
@@ -498,31 +497,11 @@ If you pass prediction_id column in input data, it will be return in predict res
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.actuals">
-<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_records</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actuals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_date_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id.</p>
-<table class="colwidths-given docutils align-default" id="id4">
-<caption><span class="caption-text">actuals.csv</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>prediction_id</p></th>
-<th class="head"><p>actual</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>eaed9cd8-ba49-4c06-86d5-71d453c681d1</p></td>
-<td><p>Iris-setosa</p></td>
-</tr>
-<tr class="row-odd"><td><p>eaed9cd8-ba49-4c06-86d5-71d453c65290</p></td>
-<td><p>Iris-virginica</p></td>
-</tr>
-</tbody>
-</table>
+<p>It is assumed you have predictions against this model first.</p>
 <p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
@@ -530,8 +509,10 @@ If you pass prediction_id column in input data, it will be return in predict res
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
+<li><p><strong>actual_date_column</strong> (<em>str</em>) -- name of column in data which contains actual date</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
 </ul>
@@ -555,18 +536,14 @@ If you pass prediction_id column in input data, it will be return in predict res
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To pass just one actual:</span>
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value&#39;</span><span class="p">]]</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;prediction_2&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">]]</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1085,26 +1062,25 @@ If you pass prediction_id column in input data, it will be return in predict res
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Use deployed model_id</p>
-<p>This method support only one provider
-If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.</p>
+<p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
-<li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
-<li><p><strong>data</strong> -- dict or array of records or Pandas DataFrame</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
 <li><p><strong>output</strong> (<em>str</em>) -- Output csv file path.</p></li>
-<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
+<li><p><strong>locally</strong> (<em>bool</em>) -- Predicts using a local model if True, on the Provider Cloud if False.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1118,14 +1094,14 @@ If you pass prediction_id column in input data, it will be return in predict res
 <p>if filename is None and data is not None and columns is None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">}]}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value1</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value2</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">predicted_value1</span><span class="p">},</span> <span class="p">{</span><span class="n">col1</span><span class="p">:</span> <span class="n">value3</span><span class="p">,</span> <span class="n">col2</span><span class="p">:</span> <span class="n">value4</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">predicted_value2</span><span class="p">}]}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>if filename is None and data is not None and columns is not None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]}}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;predicted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]}}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1134,14 +1110,14 @@ If you pass prediction_id column in input data, it will be return in predict res
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">&#39;../irises.csv&#39;</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;../irises.csv&#39;</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are stored in rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value2&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="s1">&#39;value4&#39;</span><span class="p">}]</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
@@ -1149,7 +1125,7 @@ If you pass prediction_id column in input data, it will be return in predict res
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]</span>
 <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">]</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
@@ -1158,41 +1134,24 @@ If you pass prediction_id column in input data, it will be return in predict res
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.actuals">
-<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_records</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actuals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_date_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id.</p>
-<table class="colwidths-given docutils align-default" id="id5">
-<caption><span class="caption-text">actuals.csv</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>prediction_id</p></th>
-<th class="head"><p>actual</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>eaed9cd8-ba49-4c06-86d5-71d453c681d1</p></td>
-<td><p>Iris-setosa</p></td>
-</tr>
-<tr class="row-odd"><td><p>eaed9cd8-ba49-4c06-86d5-71d453c65290</p></td>
-<td><p>Iris-virginica</p></td>
-</tr>
-</tbody>
-</table>
+<p>It is assumed you have predictions against this model first.</p>
+<p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>actual_records</strong> -- array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
+<li><p><strong>actual_date_column</strong> (<em>str</em>) -- name of column in data which contains actual date</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Process actuals locally.</p></li>
-<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1204,10 +1163,8 @@ If you pass prediction_id column in input data, it will be return in predict res
 </div>
 <p>Errors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;auger&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Actual Prediction IDs not found in model predictions.&#39;</span>
-    <span class="p">}</span>
+    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;Actual Prediction IDs not found in model predictions.&#39;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1219,15 +1176,11 @@ If you pass prediction_id column in input data, it will be return in predict res
 <span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To pass just one actual:</span>
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value&#39;</span><span class="p">]]</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prediction_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;prediction_2&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">]]</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">actual_records</span><span class="o">=</span><span class="n">actual_records</span><span class="p">)</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
