@@ -66,7 +66,7 @@ class TestFacade(object):
             'train': [],
             'evaluate': [],
             'deploy': ['some_model_id', True],
-            'predict': ['some_csv', 'some_model_id', 0.5, True]
+            'predict': ['some_model_id', 'some_csv', 0.5, True]
         }
         for opname, args in ops.items():
             test_operation(opname, args)

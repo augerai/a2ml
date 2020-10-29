@@ -21,9 +21,9 @@ class AugerA2ML(object):
     def deploy(self, model_id, locally=False, review=True):
         return AugerModel(self.ctx).deploy(model_id, locally, review)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
+    def predict(self, model_id, filename, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
         return AugerModel(self.ctx).predict(
-            filename, model_id, threshold, locally, data, columns, predicted_at, output)
+            model_id, filename, threshold, locally, data, columns, predicted_at, output)
 
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         return AugerModel(self.ctx).actuals(

@@ -39,7 +39,7 @@ class TestTasksApiAuger(BaseTest):
         res = import_data_task.apply(params).result
         self.assert_result(res, True, {'created': 'iris-13.csv'})
 
-    #TODO: fix spec    
+    #TODO: fix spec
     # @vcr.use_cassette('auger/train/valid.yaml')
     # def test_train_valid(self):
     #     params = self.params('auger')
@@ -50,8 +50,8 @@ class TestTasksApiAuger(BaseTest):
     def test_evaluate_valid(self):
         params = self.params('auger', '29654979bf8a1877')
         res = evaluate_task.apply(params).result
-        self.assert_result(res, True, 
-            {'leaderboard': ANY, 'run_id': '29654979bf8a1877', 
+        self.assert_result(res, True,
+            {'leaderboard': ANY, 'run_id': '29654979bf8a1877',
             'status': 'completed', 'provider_status': 'completed', 'trials_count': 19})
 
     @vcr.use_cassette('auger/deploy/valid.yaml')
@@ -96,7 +96,7 @@ class TestTasksApiAuger(BaseTest):
     def test_experiment_leaderboard_valid(self):
         params = self.params('auger', 'a6bc4bdb6607e7c2')
         res = leaderboard_experiment_task.apply(params).result
-        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2', 
+        self.assert_result(res, True, {'leaderboard': ANY, 'run_id': 'a6bc4bdb6607e7c2',
             'status': 'completed', 'provider_status': 'completed', 'trials_count': 34})
 
     @vcr.use_cassette('auger/experiment/list_valid.yaml')
@@ -111,8 +111,8 @@ class TestTasksApiAuger(BaseTest):
 
         params = self.params(
             'auger',
-            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
             '2B702A5511A44E3',
+            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
             None,
             False
         )
@@ -123,11 +123,11 @@ class TestTasksApiAuger(BaseTest):
     @vcr.use_cassette('auger/predict/invalid_model.yaml')
     def test_predict_failure_model_status(self, monkeypatch):
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
-        
+
         params = self.params(
             'auger',
-            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
             'BF8BDC3CD21648A',
+            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
             None,
             False
         )
