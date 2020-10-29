@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: '{"limit": 100, "offset": 0, "name": "mt-org", "token": "secret"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '64'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: https://app-staging.auger.ai/api/v1/organizations
+  response:
+    body:
+      string: '{"meta":{"status":401,"request_params":{"limit":100,"offset":0,"name":"mt-org","token":"****","organization":{"name":"mt-org"}},"errors":[{"error_type":"unauthenticated","message":"User
+        should be logged in"}]}}'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 19 Oct 2020 12:53:13 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - nginx
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      Via:
+      - 1.1 vegur
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 36619823-4a7f-4706-bca5-6a246d101415
+      X-Runtime:
+      - '0.045892'
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

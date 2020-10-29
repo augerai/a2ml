@@ -20,4 +20,4 @@ def cmdl(ctx, provider, filename, model_id, threshold, locally, output):
     """Predict with deployed model."""
     ctx.setup_logger(format='')
     A2ML(ctx, provider).predict(
-      filename, model_id, threshold=threshold, locally=locally, output=output)
+      filename=filename, model_id=model_id, threshold=threshold, locally=locally, output=output)

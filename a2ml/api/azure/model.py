@@ -106,7 +106,7 @@ class AzureModel(object):
             entry_script = script_file_name)
 
         deploy_service = Model.deploy(
-            ws, service_name, [model], inference_config, deployment_config=service_config, 
+            ws, service_name, [model], inference_config, deployment_config=service_config,
             deployment_target=service_target, overwrite=True)
         deploy_service.wait_for_deployment(show_output=True)
         self.ctx.log('%s state %s' % (service_name, str(deploy_service.state)))
@@ -143,7 +143,7 @@ class AzureModel(object):
 
                 self.ctx.log('Creating AksCompute %s ...' % aks_compute_target)
                 prov_config = AksCompute.provisioning_configuration(
-                    agent_count=int(self.ctx.config.get('deploy_cluster/agent_count', 2)), 
+                    agent_count=int(self.ctx.config.get('deploy_cluster/agent_count', 2)),
                     vm_size=self.ctx.config.get('deploy_cluster/vm_size', "STANDARD_D2_V2"),
                     cluster_purpose=self.ctx.config.get('deploy_cluster/purpose', AksCompute.ClusterPurpose.DEV_TEST)
                 )
@@ -153,7 +153,7 @@ class AzureModel(object):
 
                 # Wait for the create process to complete
                 service_target.wait_for_completion(show_output = True)
-            else:    
+            else:
                 service_target = AksCompute(ws, aks_compute_target)
 
             service_config = AksWebservice.deploy_configuration(
@@ -166,7 +166,7 @@ class AzureModel(object):
             Webservice(ws, service_name).delete()
         except WebserviceException as exc:
             self.ctx.log("Delete existing service failed: %s"%exc.message)
-            
+
         return service_name, service_config, service_target
 
     def _get_deploy_service(self, model_name, ws):
@@ -180,8 +180,8 @@ class AzureModel(object):
         elif service_type == "aks":
             deploy_service = AksWebservice(ws, service_name)
         else:
-            raise AzureException("deploy_cluster/type: %s it not supported. Supported type: aci, aks"%service_type)        
-        
+            raise AzureException("deploy_cluster/type: %s it not supported. Supported type: aci, aks"%service_type)
+
         return deploy_service
 
     def _edit_score_script(self, script_file_name):
@@ -241,18 +241,12 @@ def get_df(data):
         predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
         ):
         ds = DataFrame.create_dataframe(filename, data, columns)
-        prediction_id_col = None
-        if 'prediction_id' in ds.columns:
-            prediction_id_col = ds.df['prediction_id']
-            if prediction_id_col.isna().sum() > 0:
-                raise Exception("Prediction input contain prediction_id with nan values.")
-
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
 
         if threshold and options.get('model_type', 'classification') != 'classification':
             self.ctx.log("Threshold only applied to classification and will be ignored.")
-            threshold = None    
+            threshold = None
 
         results, results_proba, proba_classes, target_categories, model_features = \
             self._predict_locally(ds.df, model_id, threshold) if locally else self._predict_remotely(ds.df, model_id, threshold)
@@ -272,17 +266,16 @@ def get_df(data):
             target_feature,
             target_categories)
 
-        gzip_predict_file = False    
+        gzip_predict_file = False
         if ds.count() > options.get('max_predict_records_to_gzip', 1000):
             gzip_predict_file = True
 
         if model_features:
-            model_features += [target_feature, 'prediction_id']
+            model_features += [target_feature]
 
         predicted = ModelHelper.save_prediction(ds, prediction_id,
-            options.get('support_review_model', True), json_result, count_in_result, predicted_at,
-            model_path, model_id, output, gzip_predict_file=gzip_predict_file,
-            prediction_id_col=prediction_id_col, model_features=model_features)
+            json_result, count_in_result, predicted_at,
+            model_path, model_id, output, gzip_predict_file=gzip_predict_file, model_features=model_features)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
@@ -291,7 +284,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
             model_path = self.ctx.config.get_model_path(model_id)
 
@@ -299,7 +292,14 @@ def get_df(data):
                 raise Exception('Model should be deployed first.')
 
             return ModelReview({'model_path': model_path}).add_actuals(
-                actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
+                self.ctx,
+                actuals_path=filename,
+                data=data,
+                columns=columns,
+                actual_date=actuals_at,
+                actual_date_column=actual_date_column,
+                provider='azure'
+            )
         else:
             raise Exception("Not Implemented")
 
@@ -536,7 +536,7 @@ def get_df(data):
             from azureml.train.automl.run import AutoMLRun
             from azureml.core.webservice import Webservice
             from azureml.exceptions import WebserviceException
-            
+
             ws, experiment = self._get_experiment()
             model_run = AutoMLRun(experiment = experiment, run_id = model_id)
             model_name = model_run.properties['model_name']
@@ -547,7 +547,7 @@ def get_df(data):
             except WebserviceException as exc:
                 #self.ctx.log(exc.message)
                 raise AzureException(exc.message)
-                
+
             self.ctx.log("Model endpoint has been removed.")
 
     @error_handler

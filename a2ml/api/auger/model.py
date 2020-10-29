@@ -28,14 +28,14 @@ class AugerModel(object):
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
-        
+
         return {'predicted': predicted}
 
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def actuals(self, project, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
-        return Model(self.ctx, project).actuals(model_id, filename, actual_records, actuals_at, locally)
+    def actuals(self, project, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
+        return Model(self.ctx, project).actuals(model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
     @error_handler
     @authenticated
@@ -63,7 +63,7 @@ class AugerModel(object):
 
     @error_handler
     @authenticated
-    @with_project(autocreate=False)    
+    @with_project(autocreate=False)
     def undeploy(self, project, model_id, locally):
         Model(self.ctx, project).undeploy(model_id, locally)
         return {'model_id': model_id}

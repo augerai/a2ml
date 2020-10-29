@@ -144,9 +144,9 @@ class A2ML(BaseA2ML):
                             ],
                             'trials_count': 10,
                             'status': 'started',
-                            'provider_status': 'provider specific'                            
+                            'provider_status': 'provider specific'
                         }
-                    }                    
+                    }
                 }
 
             **Status**
@@ -201,24 +201,23 @@ class A2ML(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review)
 
     @show_result
-    def predict(self, filename,
-      model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, provider=None):
+    def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
+            threshold=None, output=None, locally=False, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Note:
             Use deployed model_id \n
             This method support only one provider
-            If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.
 
         Args:
-            filename(str): The file with data to request predictions for.
             model_id(str): The deployed model id you want to use.
-            threshold(float): For classification models only. This will return class probabilities with response.
-            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
-            data: dict or array of records or Pandas DataFrame
+            filename(str): The file with data to request predictions for.            
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
+            threshold(float): For classification models only. This will return class probabilities with response.
             output(str): Output csv file path.
+            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
@@ -233,21 +232,21 @@ class A2ML(BaseA2ML):
 
                 {
                     'result': True,
-                    'data': {'predicted': [{'prediction_id': 123, col1: value1, col2: value2}, {'prediction_id': 456, col1: value3, col2: value4}]}
+                    'data': {'predicted': [{col1: value1, col2: value2, target: predicted_value1}, {col1: value3, col2: value4, target: predicted_value2}]}
                 }
 
             if filename is None and data is not None and columns is not None. ::
 
                 {
                     'result': True,
-                    'data': {'predicted': {'columns': ['prediction_id', 'col1', 'col2'], 'data': [['789', 'value1', 'value2'], ['321', 'value3', 'value4']]}}
+                    'data': {'predicted': {'columns': ['col1', 'col2', target], 'data': [['value1', 'value2', 1], ['value3', 'value4', 0]]}}
                 }
 
         Examples:
             .. code-block:: python
 
                 ctx = Context()
-                rv = A2ML(ctx).predict('../irises.csv', model_id)
+                rv = A2ML(ctx).predict(model_id, '../irises.csv')
                 # if rv[provider].result is True
                 # predictions are stored in rv[provider]['data']['predicted']
 
@@ -255,7 +254,7 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 data = [{'col1': 'value1', 'col2': 'value2'}, {'col1': 'value3', 'col2': 'value4'}]
-                rv = A2ML(ctx).predict(None, model_id, data=data)
+                rv = A2ML(ctx).predict(model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
@@ -263,8 +262,8 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 data = [['value1', 'value2'], ['value3', 'value4']]
-                columns = ['col1', 'col2']                
-                rv = A2ML(ctx).predict(None, model_id, data=data)
+                columns = ['col1', 'col2']
+                rv = A2ML(ctx).predict(model_id, data=data)
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
@@ -272,30 +271,33 @@ class A2ML(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
     @show_result
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False, provider=None):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
-            It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id.
+            It is assumed you have predictions against this model first.
 
             .. list-table:: actuals.csv
                 :widths: 50 50
                 :header-rows: 1
 
-                * - prediction_id
+                * - target: predicted value
                   - actual
-                * - eaed9cd8-ba49-4c06-86d5-71d453c681d1
+                * - Iris-setosa
                   - Iris-setosa
-                * - eaed9cd8-ba49-4c06-86d5-71d453c65290
+                * - Iris-virginica
                   - Iris-virginica
+                * It may also contain train features to retrain while Review
 
             This method support only one provider
 
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual)
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
+            columns(list): list of column names if data is array of records
             actuals_at: Actuals date. Use for review of historical data.
+            actual_date_column(str): name of column in data which contains actual date
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
@@ -318,23 +320,18 @@ class A2ML(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
-
-            .. code-block:: python
-            
-                # To pass just one actual:
-                ctx = Context()
-                actual_records = [['prediction_id', 'actual_value']]
-                model = A2ML(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
+                model = A2ML(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
 
             .. code-block:: python
 
                 ctx = Context()
-                actual_records = [['prediction_1', 'value1'], ['prediction_2', 'value2']]
-                model = A2ML(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
+                actual_records = [['predicted_value_1', 'actual_value_1'], ['predicted_value_2', 'actual_value_2']]
+                columns = [target, 'actual']
+
+                model = A2ML(ctx).actuals('D881079E1ED14FB', data=actual_records,columns=columns)
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
 
     @show_result
@@ -343,9 +340,9 @@ class A2ML(BaseA2ML):
 
         Args:
             model_id (str): Model ID to delete actuals and predictions.
-            with_predictions(bool): 
-            begin_date: Date to begin delete operations 
-            end_date: Date to end delete operations 
+            with_predictions(bool):
+            begin_date: Date to begin delete operations
+            end_date: Date to end delete operations
             locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 

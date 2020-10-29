@@ -33,10 +33,10 @@ class Model(object):
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
         if locally:
             self.deploy(model_id, locally)
-            
+
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
             is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
                 verify_local_model(model_id)
@@ -46,9 +46,16 @@ class Model(object):
 
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
             return ModelReview({'model_path': os.path.join(model_path, "model")}).add_actuals(
-              actuals_path=filename, actual_records=actual_records, actual_date=actuals_at)
-        else:    
-            return ModelActual(self.ctx).execute(model_id, filename, actual_records, actuals_at)
+              self.ctx,
+              actuals_path=filename,
+              data=data,
+              columns=columns,
+              actual_date=actuals_at,
+              actual_date_column=actual_date_column,
+              provider='auger'
+            )
+        else:
+            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         if locally:
@@ -61,7 +68,7 @@ class Model(object):
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
             return ModelReview({'model_path': os.path.join(model_path, "model")}).delete_actuals(
               with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
-        else:    
+        else:
             return ModelDeleteActual(self.ctx).execute(model_id, with_predictions, begin_date, end_date)
 
     def build_review_data(self, model_id, locally, output):

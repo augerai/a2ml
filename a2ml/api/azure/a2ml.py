@@ -30,14 +30,14 @@ class AzureA2ML(object):
         from a2ml.api.azure.model import AzureModel
 
         return AzureModel(self.ctx).predict(
-            filename, model_id, threshold=threshold, locally=locally, data=data, columns=columns, 
+            filename, model_id, threshold=threshold, locally=locally, data=data, columns=columns,
             predicted_at=predicted_at, output=output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         from a2ml.api.azure.model import AzureModel
 
         return AzureModel(self.ctx).actuals(
-            model_id, filename, actual_records, actuals_at, locally)
+            model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         from a2ml.api.azure.model import AzureModel

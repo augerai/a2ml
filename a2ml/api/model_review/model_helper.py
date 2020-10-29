@@ -290,25 +290,7 @@ class ModelHelper(object):
                 ds.df['proba_'+str(name)] = list(results_proba[:, idx])
 
     @staticmethod
-    def save_prediction(ds, prediction_id, support_review_model,
-        json_result, count_in_result, prediction_date, model_path, model_id, output=None, gzip_predict_file=False,
-        prediction_id_col=None,model_features=None):
-        if prediction_id_col is not None:
-            ds.df['prediction_id'] = prediction_id_col
-        else:
-            # Ids for each row of prediction (prediction row's ids)
-            prediction_ids = []
-            for i in range(0, ds.count()):
-                prediction_ids.append(get_uid4())
-
-            ds.df.insert(loc=0, column='prediction_id', value=prediction_ids)
-
-        return ModelHelper.save_prediction_result(ds, prediction_id, support_review_model,
-            json_result, count_in_result, prediction_date, model_path, model_id, output,
-            gzip_predict_file=gzip_predict_file, model_features=model_features)
-
-    @staticmethod
-    def save_prediction_result(ds, prediction_id, support_review_model,
+    def save_prediction(ds, prediction_id,
         json_result, count_in_result, prediction_date, model_path, model_id, output=None,
         gzip_predict_file=False, model_features=None):
         path_to_predict = ds.options.get('data_path')
@@ -345,16 +327,6 @@ class ModelHelper(object):
                 result = ds.df
             else:
                 result = ds.df.to_dict('records')
-
-        if support_review_model:
-            file_name = str(prediction_date or datetime.date.today()) + \
-                '_' + prediction_id + "_results.feather.zstd"
-            #Save only model features, they should contain target and prediction_id
-            if model_features:
-                ds.select(model_features)
-
-            ds.saveToFeatherFile(os.path.join(
-                model_path, "predictions", file_name))
 
         return result
 

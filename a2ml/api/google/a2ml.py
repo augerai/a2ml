@@ -171,7 +171,7 @@ class GoogleA2ML(object):
         except google.api_core.exceptions.FailedPrecondition as inst:
             self.ctx.log("Failed to deploy because its already deploying: {}...".format(inst))
 
-    def predict(self, filename, model_id, threshold=None, locally=False):
+    def predict(self, model_id, filename, threshold=None, locally=False):
         self.ctx.log('Google Predict')
         prediction_client = PredictionServiceClient()
         basefile, file_extension = os.path.splitext(filename)
@@ -205,7 +205,7 @@ class GoogleA2ML(object):
                 i = i + 1
         self.ctx.log('{} predictions.'.format(i))
 
-    # TODO: rename to info and add to a2ml and for all providers    
+    # TODO: rename to info and add to a2ml and for all providers
     # def review(self):
     #     self.ctx.log('Google Review')
 

@@ -37,7 +37,7 @@ def deploy(ctx, provider, model_id, locally, no_review):
 @pass_context
 def predict(ctx, provider, filename, model_id, threshold, locally, output):
     """Predict with deployed model."""
-    A2MLModel(ctx, provider).predict(filename, model_id, threshold=threshold, locally=locally, output=output)
+    A2MLModel(ctx, provider).predict(filename=filename, model_id=model_id, threshold=threshold, locally=locally, output=output)
 
 @click.command('actuals', short_help='Send actual values for deployed model. Needed for review and monitoring.')
 @click.argument('filename', required=True, type=click.STRING)
