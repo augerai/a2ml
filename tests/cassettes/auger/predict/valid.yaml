@@ -789,7 +789,7 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '446'
+      - '210'
       Content-Security-Policy:
       - block-all-mixed-content
       Content-Type:
@@ -851,7 +851,7 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '446'
+      - '210'
       Content-Security-Policy:
       - block-all-mixed-content
       Content-Type:
