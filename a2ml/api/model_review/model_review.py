@@ -52,15 +52,15 @@ class ModelReview(object):
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
     def add_actuals(
-        self, ctx, actuals_path=None, actual_records=None, actual_columns=None,
+        self, ctx, actuals_path=None, data=None, columns=None,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False
     ):
         features = None
 
-        if actual_records and type(actual_records) == list and type(actual_records[0]) == list:
-            features = actual_columns
+        if data and type(data) == list and type(data[0]) == list:
+            features = columns
 
-        ds_actuals = DataFrame.create_dataframe(actuals_path, actual_records, features=features)
+        ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=features)
 
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
@@ -169,39 +169,6 @@ class ModelReview(object):
 
         ds_train.saveToFile(output)
         return output
-
-    def statistic_daily(self, date_from, date_to):
-        features = ['prediction_id', self.target_feature]
-        res = {}
-
-        for (curr_date, files) in ModelReview._prediction_files_by_day(
-                self.model_path, date_from, date_to, "_*_actuals.feather.zstd"):
-            df_actuals = DataFrame({})
-            for (file, df) in DataFrame.load_from_files(files, features):
-                df_actuals.df = pd.concat([df_actuals.df, df.df])
-
-            res[str(curr_date)] = {}
-            res[str(curr_date)]['actuals_count'] = df_actuals.count()
-
-            if df_actuals.count()>0:
-                df_actuals.drop_duplicates(['prediction_id'])
-            res[str(curr_date)]['actuals_count_unique'] = df_actuals.count()
-
-        for (curr_date, files) in ModelReview._prediction_files_by_day(
-                self.model_path, date_from, date_to, "_*_results.feather.zstd"):
-            df_results = DataFrame({})
-            for (file, df) in DataFrame.load_from_files(files, features):
-                df_results.df = pd.concat([df_results.df, df.df])
-
-            if not str(curr_date) in res:
-                res[str(curr_date)] = {}
-
-            res[str(curr_date)]['predictions_count'] = df_results.count()
-            if df_results.count()>0:
-                df_results.drop_duplicates(['prediction_id'])
-            res[str(curr_date)]['predictions_count_unique'] = df_results.count()
-
-        return res
 
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
@@ -379,20 +346,6 @@ class ModelReview(object):
         df.drop([dup_flag_column_name])
 
         return df
-
-    @staticmethod
-    def _map_primary_prediction_id_to_candidate(prediction_id, primary_prediction_id, candidate_prediction_id):
-        primary_prediction_id = primary_prediction_id.rename('primary_prediction_id')
-
-        if len(primary_prediction_id) != len(candidate_prediction_id):
-            raise Exception("Primary prediction's rows count doesn't match candidate's one")
-
-        mapper = {}
-        for (i, row) in pd.concat([primary_prediction_id, candidate_prediction_id], axis=1).iterrows():
-            mapper[row['primary_prediction_id']] = row['prediction_id']
-
-
-        return prediction_id.map(mapper)
 
     @staticmethod
     def _get_prediction_files(model_path, prediction_group_id=None):

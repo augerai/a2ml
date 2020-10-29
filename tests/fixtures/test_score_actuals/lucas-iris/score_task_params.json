@@ -972,7 +972,7 @@
   "actual_records": [
     {
       "actual": "setosa",
-      "prediction_id": "3b3e94e7-2e72-4be2-9be2-c3f69426b7da"
+      "species": "setosa"
     }
   ],
   "prediction_group_id": null,

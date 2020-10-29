@@ -5,4 +5,4 @@ def test_feather_segfault():
     # Looks like a bug in feather
     # https://issues.apache.org/jira/browse/ARROW-9662
     ds = DataFrame({'data_path': 'tests/fixtures/feather/2020-07-30_BF43CA09E5404F9_actuals.feather.zstd'})
-    ds.load(features = ['prediction_id', 'class'])
+    ds.load(features = ['class'])

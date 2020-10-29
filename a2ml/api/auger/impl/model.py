@@ -36,7 +36,7 @@ class Model(object):
 
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
             is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
                 verify_local_model(model_id)
@@ -48,12 +48,13 @@ class Model(object):
             return ModelReview({'model_path': os.path.join(model_path, "model")}).add_actuals(
               self.ctx,
               actuals_path=filename,
-              actual_records=actual_records,
+              data=data,
+              columns=columns,
               actual_date=actuals_at,
-              actual_date_column=actual_date_column,
+              actual_date_column=actual_date_column
             )
         else:
-            return ModelActual(self.ctx).execute(model_id, filename, actual_records, actuals_at)
+            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         if locally:

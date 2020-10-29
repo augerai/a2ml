@@ -58,7 +58,6 @@ class A2MLModel(BaseA2ML):
         Note:
             Use deployed model_id \n
             This method support only one provider
-            If you pass prediction_id column in input data, it will be return in predict result. Otherwise unique prediction_id will be generated for each record.
 
         Args:
             filename(str): The file with data to request predictions for.
@@ -122,32 +121,35 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
     @show_result
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
-            It is assumed you have predictions against this model first. The file will need to fill in actual values for prediction_id.
+            It is assumed you have predictions against this model first.
 
             .. list-table:: actuals.csv
                 :widths: 50 50
                 :header-rows: 1
 
-                * - prediction_id
+                * - target: predicted value
                   - actual
-                * - eaed9cd8-ba49-4c06-86d5-71d453c681d1
+                * - Iris-setosa
                   - Iris-setosa
-                * - eaed9cd8-ba49-4c06-86d5-71d453c65290
+                * - Iris-virginica
                   - Iris-virginica
+                * It may also contain train features to retrain while Review
+
+            This method support only one provider
 
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            actual_records: array of records [[prediction_id, actual]] or Pandas DataFrame (prediction_id, actual) or
-dict created with Pandas DataFramme to_dict method
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
+            columns(list): list of column names if data is array of records
             actuals_at: Actuals date. Use for review of historical data.
             actual_date_column(str): name of column in data which contains actual date
             locally(bool): Process actuals locally.
-            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
             ::
@@ -160,10 +162,8 @@ dict created with Pandas DataFramme to_dict method
             Errors. ::
 
                 {
-                    'auger': {
-                        'result': False,
-                        'data': 'Actual Prediction IDs not found in model predictions.'
-                    }
+                    'result': False,
+                    'data': 'Actual Prediction IDs not found in model predictions.'
                 }
 
         Examples:
@@ -174,19 +174,14 @@ dict created with Pandas DataFramme to_dict method
 
             .. code-block:: python
 
-                # To pass just one actual:
                 ctx = Context()
-                actual_records = [['prediction_id', 'actual_value']]
-                model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
+                actual_records = [['predicted_value_1', 'actual_value_1'], ['predicted_value_2', 'actual_value_2']]
+                columns = [target, 'actual']
 
-            .. code-block:: python
-
-                ctx = Context()
-                actual_records = [['prediction_1', 'value1'], ['prediction_2', 'value2']]
-                model = A2MLModel(ctx).actuals('D881079E1ED14FB', actual_records=actual_records)
+                model = A2MLModel(ctx).actuals('D881079E1ED14FB', data=actual_records,columns=columns)
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, actual_records, actuals_at, actual_date_column, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
     @show_result
     def review_alert(self, model_id, parameters = None, locally=False, provider=None):

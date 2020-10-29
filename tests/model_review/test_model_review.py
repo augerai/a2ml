@@ -248,7 +248,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
     actual_date = datetime.date(2020, 8, 3)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      None, actuals_path=None, actual_records=actuals, actual_date=str(actual_date), return_count=True
+      None, actuals_path=None, data=actuals, actual_date=str(actual_date), return_count=True
     )
 
     for (_date, _path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
@@ -280,7 +280,7 @@ def test_score_actuals_dict_full():
       },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
 
     assert res['accuracy'] == 0.5
 
@@ -307,7 +307,7 @@ def test_score_actuals_dict_list_full():
       'petal_width': [1.0, 1.0],
     }
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
 
     assert res['accuracy'] == 0.5
 
@@ -347,7 +347,7 @@ def test_score_actuals_dict_wo_predicted():
     ctx = _build_context(params)
 
     res = ModelReview(params).add_actuals(
-      ctx, actuals_path=None, actual_records=actuals, return_count=True
+      ctx, actuals_path=None, data=actuals, return_count=True
     )
 
     assert res['count'] == 2
@@ -372,7 +372,7 @@ def test_score_actuals_dict_wo_features():
       { 'species':'virginica', 'actual':'virginica' },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, actual_records=actuals)
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
 
     assert res['accuracy'] == 0.5
 
@@ -414,7 +414,7 @@ def test_score_actuals_dict_with_predicted_none():
       actual.update(row)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      None, actuals_path=None, actual_records=actuals, return_count=True
+      None, actuals_path=None, data=actuals, return_count=True
     )
 
     assert res['count'] == 3
@@ -529,7 +529,7 @@ def test_score_actuals_lucas_case_array_full():
     actual_columns = ["actual", "sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      None, actual_records=actuals, actual_columns=actual_columns
+      None, data=actuals, columns=actual_columns
     )
 
     assert res['accuracy'] == 1.0
@@ -554,7 +554,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     params = _load_score_task_params(model_path)
     ctx = _build_context(params)
-    res = ModelReview(params).add_actuals(ctx, actual_records=actuals, actual_columns=actual_columns)
+    res = ModelReview(params).add_actuals(ctx, data=actuals, columns=actual_columns)
 
     assert res['accuracy'] == 1.0
 
@@ -577,7 +577,7 @@ def test_score_actuals_lucas_case_array_wo_features():
     actual_columns = ["actual", "class"]
 
     res = ModelReview({'model_path': model_path}).add_actuals(
-      None, actual_records=actuals, actual_columns=actual_columns
+      None, data=actuals, columns=actual_columns
     )
 
     assert res['accuracy'] == 2 / 3
@@ -621,7 +621,7 @@ def test_score_actuals_another_result_first():
     },
   ]
 
-  res = ModelReview({'model_path': model_path}).add_actuals(None, actual_records=actuals)
+  res = ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
   assert res['accuracy'] == 1
 
 def test_build_review_data():

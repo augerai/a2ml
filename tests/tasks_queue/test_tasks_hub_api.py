@@ -268,5 +268,5 @@ class TestTasksHubApiAuger(unittest.TestCase):
         predicted = json.loads(res["predicted"])
         print(predicted.keys())
 
-        self.assertEqual(predicted['columns'], ["prediction_id","age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income","proba_0","proba_1"] )
+        self.assertEqual(predicted['columns'], ["age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income","proba_0","proba_1"] )
         self.assertEqual(len(predicted['data']), 7)

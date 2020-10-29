@@ -89,7 +89,7 @@ class ModelPredict():
         temp_file = None
         ds_result = None
         if records is not None and len(records) == 0:
-            ds_result =  DataFrame.create_dataframe(None, [], features+["prediction_id", self.ctx.config.get('target')])
+            ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
             predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
@@ -109,7 +109,7 @@ class ModelPredict():
             if is_model_loaded:
                 model_path = os.path.join(model_path_1, "model-%s"%model_id, 'model')
 
-            return ModelHelper.save_prediction_result(ds_result,
+            return ModelHelper.save_prediction(ds_result,
                 prediction_id = None, json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)
         finally:
@@ -150,7 +150,7 @@ class ModelPredict():
             ds_result.options['data_path'] = None
             ds_result.loaded_columns = columns
 
-            return ModelHelper.save_prediction_result(ds_result,
+            return ModelHelper.save_prediction(ds_result,
                 prediction_id = None,
                 json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)

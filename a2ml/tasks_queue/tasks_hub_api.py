@@ -523,8 +523,8 @@ def score_actuals_by_model_task(params):
     return ModelReview(params).add_actuals(
         ctx,
         actuals_path = params.get('actuals_path'),
-        actual_records=params.get('actual_records'),
-        actual_columns=params.get('actual_columns', None),
+        data=params.get('actual_records'),
+        columns=params.get('actual_columns', None),
         actual_date=params.get('actual_date'),
         actual_date_column=params.get('actual_date_column'),
         actuals_id=params.get('actuals_id'),

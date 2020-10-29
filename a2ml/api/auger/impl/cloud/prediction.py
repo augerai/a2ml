@@ -5,10 +5,8 @@ from ..exceptions import AugerException
 class AugerPredictionApi(AugerBaseApi):
     """Auger Trial API."""
 
-    def __init__(self, ctx, pipeline_api,
-        prediction_name=None, prediction_id=None, use_endpoint=False):
-        super(AugerPredictionApi, self).__init__(
-            ctx, pipeline_api, prediction_name, prediction_id)
+    def __init__(self, ctx, pipeline_api, use_endpoint=False):
+        super(AugerPredictionApi, self).__init__(ctx, pipeline_api)
         assert pipeline_api is not None, 'Pipeline must be set for Prediction'
 
         self.use_endpoint = use_endpoint

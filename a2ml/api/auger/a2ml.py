@@ -25,9 +25,9 @@ class AugerA2ML(object):
         return AugerModel(self.ctx).predict(
             filename, model_id, threshold, locally, data, columns, predicted_at, output)
 
-    def actuals(self, model_id, filename=None, actual_records=None, actuals_at=None, actual_date_column=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         return AugerModel(self.ctx).actuals(
-            model_id, filename, actual_records, actuals_at, actual_date_column, locally)
+            model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         return AugerModel(self.ctx).delete_actuals(
