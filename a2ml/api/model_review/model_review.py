@@ -69,6 +69,7 @@ class ModelReview(object):
                 missing_features = ', '.join(sorted(list(missing_features)))
                 raise Exception(f'missing features to make prediction: {missing_features}')
 
+            logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
             res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
 
             if res['result']:

@@ -12,7 +12,7 @@ class AugerActualApi(AugerBaseApi):
             self.parent_id_name = "endpoint_id"
             self._set_api_request_path("AugerEndpointActualApi")
 
-    def create(self, records, actuals_at, actuals_path=None):
+    def create(self, records, features, actuals_at, actuals_path, actual_date_column):
         params = {}
         if self.use_endpoint:
             params['endpoint_id'] = self.parent_api.object_id
@@ -22,6 +22,12 @@ class AugerActualApi(AugerBaseApi):
 
         if records:
             params['actuals'] = records
+
+        if features:
+            params['actual_column_names'] = features
+
+        if actual_date_column:
+            params['actual_date_column'] = actual_date_column
 
         if actuals_path:
             params['actuals_path'] = actuals_path

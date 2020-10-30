@@ -28,6 +28,9 @@ class ModelDeploy(object):
             return self.deploy_model_in_cloud(model_id, review)
 
     def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None):
+        if not self.ctx.config.get('review'):
+            raise Exception("To use Review, please add section review to config.yml")
+
         if not pipeline_properties:
             pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
 
