@@ -368,8 +368,8 @@ def test_score_actuals_dict_wo_features():
     _remove_actual_files(model_path)
 
     actuals = [
-      { 'species':'virginica', 'actual':'versicolor' },
-      { 'species':'virginica', 'actual':'virginica' },
+      { 'species': 'virginica', 'actual': 'versicolor' },
+      { 'species': 'virginica', 'actual': 'virginica' },
     ]
 
     res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
@@ -382,6 +382,39 @@ def test_score_actuals_dict_wo_features():
 
       assert actuals[1]['a2ml_predicted'] == 'virginica'
       assert actuals[1]['species'] == 'virginica'
+
+def test_score_actuals_dict_wo_prediction_and_missing_features():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
+
+    _remove_actual_files(model_path)
+
+    actuals = [{ 'actual': 'versicolor', 'sepal_length': 1.0, 'petal_length': 2.0 }]
+
+    with pytest.raises(Exception, match=r"missing features to make prediction\: petal_width, sepal_width"):
+      ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
+
+def test_score_actuals_dict_only_actual():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
+
+    _remove_actual_files(model_path)
+
+    actuals = [{ 'actual': 'versicolor' }]
+
+    with pytest.raises(
+      Exception,
+      match=r"missing features to make prediction\: petal_length, petal_width, sepal_length, sepal_width"
+    ):
+      ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
+
+def test_score_actuals_dict_only_prediction():
+    model_path = 'tests/fixtures/test_score_actuals/iris'
+
+    _remove_actual_files(model_path)
+
+    actuals = [{ 'species': 'versicolor' }]
+
+    with pytest.raises(Exception, match=r"There is no 'actual' column in data"):
+      ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
 
 def test_score_actuals_dict_with_predicted_none():
     model_path = 'tests/fixtures/test_score_actuals'
