@@ -283,6 +283,11 @@ def _create_provider_context(params):
         debug=task_config.debug
     )
 
+    if provider == 'auger':
+        auger_creds = params.get('auger_creds', None)
+        if auger_creds:
+            ctx.credentials = auger_creds
+
     ctx.set_runs_on_server(True)
     ctx.config.set('providers', [provider])
 
