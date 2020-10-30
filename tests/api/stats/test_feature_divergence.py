@@ -109,6 +109,6 @@ class TestFeatureDivergence(unittest.TestCase):
         hub_info['project_path'] = 'tests/fixtures/test_feature_divergence'
 
         evaluation_options = hub_info['experiment_session']['model_settings']['evaluation_options']
-        evaluation_options['data_path'] = self._project_path() + '/iris.csv'
-
+        #evaluation_options['data_path'] = self._project_path() + '/iris.csv'
+        res['data_path'] = self._project_path() + '/iris.csv'
         return res
