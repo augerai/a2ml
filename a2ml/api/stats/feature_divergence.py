@@ -9,6 +9,7 @@ from a2ml.api.model_review.model_review import ModelReview
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 
+
 class FeatureDivergence:
     NUMERIC_TYPES = {
         'integer',
@@ -36,7 +37,8 @@ class FeatureDivergence:
 
             for i in range(X.shape[1]):
                 values, counts = np.unique(X[:, i], return_counts=True)
-                self.hist_.append({v: p for v, p in zip(values, counts / X.shape[0])})
+                self.hist_.append(
+                    {v: p for v, p in zip(values, counts / X.shape[0])})
 
             return self
 
@@ -63,7 +65,8 @@ class FeatureDivergence:
             self.cat_ = None
 
             if self.num_cols:
-                self.cont_ = GaussianMixture(n_components=3, covariance_type="diag").fit(X[self.num_cols])
+                self.cont_ = GaussianMixture(
+                    n_components=3, covariance_type="diag").fit(X[self.num_cols])
 
             if self.cat_cols:
                 self.cat_ = FeatureDivergence.Histogram().fit(X[self.cat_cols])
@@ -72,8 +75,10 @@ class FeatureDivergence:
 
         def score(self, X, y=None):
             X = X.replace([np.inf, -np.inf], np.nan).dropna()
-            num_score = self.cont_.score_samples(X[self.num_cols]) if self.cont_ is not None else np.zeros(X.shape[0])
-            cat_score = self.cat_.score_samples(X[self.cat_cols]) if self.cat_ is not None else np.zeros(X.shape[0])
+            num_score = self.cont_.score_samples(
+                X[self.num_cols]) if self.cont_ is not None else np.zeros(X.shape[0])
+            cat_score = self.cat_.score_samples(
+                X[self.cat_cols]) if self.cat_ is not None else np.zeros(X.shape[0])
 
             return np.mean(num_score + cat_score)
 
@@ -104,7 +109,8 @@ class FeatureDivergence:
             if feature in self.models:
                 return self.models[feature].score(df) / self.base_values[feature]
             else:
-                raise KeyError("Feature: '" + feature + "'' is not in the model")
+                raise KeyError("Feature: '" + feature +
+                               "'' is not in the model")
 
     class ModelIsNotReadyError(Exception):
         pass
@@ -112,13 +118,12 @@ class FeatureDivergence:
     def __init__(self, params):
         self.params = params
         self.experiment_session = params['hub_info']['experiment_session']
-        self.stat_data = self.experiment_session.get('dataset_statistics', {}).get('stat_data', [])
+        self.stat_data = self.experiment_session.get(
+            'dataset_statistics', {}).get('stat_data', [])
 
     def build_and_save_model(self, divergence_model_name=None):
-        evaluation_options = self.experiment_session.get('model_settings', {}).get('evaluation_options')
-        data_path = evaluation_options['data_path']
-
-        df = DataFrame.create_dataframe(data_path=data_path, features=self._get_density_features())
+        df = DataFrame.create_dataframe(
+            data_path=self.params['data_path'], features=self._get_density_features())
 
         model = self.DensityEstimatorPerFeature(
             self._get_density_features(),
@@ -142,7 +147,8 @@ class FeatureDivergence:
         features = self._get_density_features()
 
         features_source = features
-        feature_importances = self._get_most_important_features(features, top_n)
+        feature_importances = self._get_most_important_features(
+            features, top_n)
 
         if top_n:
             features_source = feature_importances.keys()
@@ -158,7 +164,8 @@ class FeatureDivergence:
             daily_df = None
             for (file, df) in DataFrame.load_from_files(files, features):
                 if daily_df != None:
-                    daily_df.df = pd.concat([daily_df.df, df.df], ignore_index=True)
+                    daily_df.df = pd.concat(
+                        [daily_df.df, df.df], ignore_index=True)
                 else:
                     daily_df = df
 
@@ -166,7 +173,8 @@ class FeatureDivergence:
                 sub_res = {}
 
                 for feature in features_source:
-                    sub_res[feature] = divergence_model.score(feature, daily_df.df)
+                    sub_res[feature] = divergence_model.score(
+                        feature, daily_df.df)
 
                 res[str(curr_date)] = sub_res
 
@@ -179,7 +187,7 @@ class FeatureDivergence:
         features_set = set(features)
         res = ModelReview(self.params).get_feature_importances()
         # Get feature importance for our features
-        res = { key: res.get(key) for key in features_set }
+        res = {key: res.get(key) for key in features_set}
         res = [[res[k], k] for k in res if res.get(k) != None]
         # Sort by importance desc
         res.sort(reverse=True)
@@ -187,20 +195,23 @@ class FeatureDivergence:
         return dict(map(lambda x: [x[1], x[0]], res[0:top_n]))
 
     def _get_divergence_model_path(self, divergence_model_name=None):
-        experiment_session_path = ModelHelper.get_experiment_session_path(self.params)
+        experiment_session_path = ModelHelper.get_experiment_session_path(
+            self.params)
         return os.path.join(experiment_session_path, divergence_model_name or self.MODEL_NAME)
 
-
     def _get_density_features(self):
-        predicate = lambda col: self._is_column_used(col) and not self._is_column_ignored(col)
+        def predicate(col): return self._is_column_used(
+            col) and not self._is_column_ignored(col)
         return [col['column_name'] for col in self.stat_data if predicate(col)]
 
     def _get_numerical_features(self):
-        predicate = lambda col: self._is_column_used(col) and self._is_column_numerical(col)
+        def predicate(col): return self._is_column_used(
+            col) and self._is_column_numerical(col)
         return [col['column_name'] for col in self.stat_data if predicate(col)]
 
     def _get_categorical_features(self):
-        predicate = lambda col: self._is_column_used(col) and self._is_column_categorical(col)
+        def predicate(col): return self._is_column_used(
+            col) and self._is_column_categorical(col)
         return [col['column_name'] for col in self.stat_data if predicate(col)]
 
     def _is_column_used(self, column):
