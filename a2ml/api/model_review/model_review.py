@@ -64,6 +64,7 @@ class ModelReview(object):
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         if not self.target_feature in ds_actuals.columns:
+            logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(target_feature, ds_actuals.columns))
             res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
 
             if res['result']:
