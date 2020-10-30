@@ -56,12 +56,12 @@ class AugerPipelineApi(AugerBaseApi):
             prediction_api.create(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
         return prediction_properties.get('result')
 
-    def actual(self, records, actuals_at, actuals_path=None):
+    def actual(self, records, features, actuals_at, actuals_path, actual_date_column):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
 
         actual_api = AugerActualApi(self.ctx, self, use_endpoint=self.check_endpoint())
-        actual_api.create(records, actuals_at, actuals_path)
+        actual_api.create(records, features, actuals_at, actuals_path, actual_date_column)
 
         #TODO: get object actual from cloud
         return True

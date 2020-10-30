@@ -55,7 +55,7 @@ class Model(object):
               provider='auger'
             )
         else:
-            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at)
+            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at, actual_date_column)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         if locally:
