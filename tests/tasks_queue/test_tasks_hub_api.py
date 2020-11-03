@@ -1,9 +1,11 @@
+import botocore
 import os
 import pytest
 import unittest
 import json
 
 from a2ml.tasks_queue.tasks_hub_api import *
+from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
 
 # pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -91,7 +93,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         #monitor_evaluate_task(params)
         res = _get_leaderboad(params)
         print(res)
-        
+
         self.assertTrue(res)
         self.assertTrue(res[0]['uid'])
         self.assertTrue(res[0]['all_scores'])
@@ -119,7 +121,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         #monitor_evaluate_task(params)
         res = stop_evaluate_task(params)
         print(res)
-        
+
         self.assertTrue(res)
 
     @pytest.mark.skip(reason='run it locally')
@@ -139,7 +141,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                     "type": "STANDARD_D3_V2",
                     "max_nodes": 3,
                     "min_nodes": 0
-                }            
+                }
                 # {
                 #     'name': 'new-test-2',
                 #     'min_nodes': 0,
@@ -152,7 +154,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         }
         res = update_cluster_config_task(params)
         print(res)
-        
+
         #self.assertTrue(res)
 
     @pytest.mark.skip(reason='run it locally')
@@ -192,7 +194,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                         'evaluation_options': {}
                     }
                     # 'id': 'AutoML_22f2274b-9596-4912-b86b-9799df81d41b',
-                },                
+                },
             },
 
             'provider_info': {
@@ -203,7 +205,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                             'memory_gb': 2,
                             'cpu_cores': 1,
                             'compute_target': 'a2ml_aks'
-                        }                        
+                        }
                     },
                     'experiment': {
                         'name': 'bike-day-sample-',
@@ -270,3 +272,29 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         self.assertEqual(predicted['columns'], ["age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income","proba_0","proba_1"] )
         self.assertEqual(len(predicted['data']), 7)
+
+    def test_create_org_bucket(self):
+        bucket_name = 'test-org-bucket'
+        region = 'us-west-2'
+
+        create_org_bucket({'bucket_name': bucket_name, 'region': region})
+
+        client = BotoClient(region=region)
+        assert 200 == client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPStatusCode']
+
+    def test_delete_org_bucket(self):
+        bucket_name = 'test-org-bucket'
+        region = 'us-west-2'
+
+        client = S3FSClient()
+        client.ensure_bucket_created(Bucket=bucket_name)
+
+        client = BotoClient()
+        client.put_object(Bucket=bucket_name, Key='dir1/key1')
+        client.put_object(Bucket=bucket_name, Key='dir1/key2')
+        client.put_object(Bucket=bucket_name, Key='dir2/key1')
+
+        delete_org_bucket({'bucket_name': bucket_name})
+
+        with pytest.raises(botocore.exceptions.ClientError, match=r"HeadBucket operation: Not Found"):
+            client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPStatusCode']

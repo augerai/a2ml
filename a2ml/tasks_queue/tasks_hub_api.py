@@ -20,6 +20,7 @@ from a2ml.api.stats.feature_divergence import FeatureDivergence
 from a2ml.api.utils import dict_dig, merge_dicts
 from a2ml.api.utils.json_utils import json_dumps_np
 from a2ml.api.utils.context import Context
+from a2ml.api.utils.s3_fsclient import S3FSClient
 from a2ml.tasks_queue.config import Config
 
 from .celery_app import celeryApp
@@ -615,3 +616,22 @@ def calc_divergence_daily_task(params):
                 FeatureDivergence(params).build_and_save_model()
             else:
                 raise e
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def create_org_bucket(params):
+    client = S3FSClient()
+    client.ensure_bucket_created(
+        Bucket=params['bucket_name'],
+        region=params.get('region')
+    )
+
+    return True
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def delete_org_bucket(params):
+    client = S3FSClient()
+    client.ensure_bucket_deleted(Bucket=params['bucket_name'])
+
+    return True
