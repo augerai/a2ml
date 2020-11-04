@@ -11,11 +11,11 @@ from a2ml.api.utils import retry_helper
 def retry_handler(decorated):
     def wrapper(self, *args, **kwargs):
         return retry_helper(lambda: decorated(self, *args, **kwargs), ['InvalidAccessKeyId'])
-                
+
     return wrapper
 
 class BotoClient:
-    def __init__(self):
+    def __init__(self, region=None):
         import boto3
 
         endpoint_url = os.environ.get('S3_ENDPOINT_URL')
@@ -25,12 +25,14 @@ class BotoClient:
             self.client = boto3.client(
                 's3',
                 endpoint_url=endpoint_url,
-                config=boto3.session.Config(signature_version='s3v4')
+                config=boto3.session.Config(signature_version='s3v4'),
+                region_name=region,
             )
         else:
             self.client = boto3.client(
                 's3',
-                config=boto3.session.Config(signature_version='s3v4')
+                config=boto3.session.Config(signature_version='s3v4'),
+                region_name=region,
             )
 
     @retry_handler
@@ -52,6 +54,23 @@ class BotoClient:
     @retry_handler
     def create_bucket(self, *args, **kwargs):
         return self.client.create_bucket(*args, **kwargs)
+
+    @retry_handler
+    def delete_bucket(self, Bucket):
+        objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
+
+        while len(objects) > 0:
+            i = 0
+            keys_count_to_delete = 1000
+
+            while (i < len(objects)):
+                keys = list(map(lambda o: {'Key': o['Key']}, objects[i * keys_count_to_delete : (i + 1) * keys_count_to_delete]))
+                self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
+                i += keys_count_to_delete
+
+            objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
+
+        self.client.delete_bucket(Bucket=Bucket)
 
     @retry_handler
     def delete_object(self, *args, **kwargs):
@@ -90,7 +109,7 @@ class BotoClient:
         )
         s3_client = boto3.client(
             's3',
-            config=boto3.session.Config(signature_version='s3v4', 
+            config=boto3.session.Config(signature_version='s3v4',
                 region_name=response.get('LocationConstraint'))
         )
 
@@ -104,7 +123,7 @@ class BotoClient:
 
     def get_waiter_names(self):
         return self.client.waiter_names
-        
+
 class S3FSClient:
 
     def _get_relative_path(self, path):
@@ -148,7 +167,7 @@ class S3FSClient:
             logging.error("generate_presigned_url failed: %s"%e)
 
         return None
-            
+
     def wait_for_path(self, path):
         path = self._get_relative_path(path)
         if 'object_exists' in self.client.get_waiter_names():
@@ -265,14 +284,27 @@ class S3FSClient:
         if parent:
             self.create_folder(parent)
 
-    def ensure_bucket_created(self, Bucket):
+    def ensure_bucket_created(self, Bucket, region=None):
         try:
+            self.client = BotoClient(region=region)
             self.client.head_bucket(Bucket=Bucket)
         except botocore.client.ClientError as e:
             if e.response['Error']['Code'] == '404':
                 self.client.create_bucket(Bucket=Bucket)
             else:
                 raise
+
+    def ensure_bucket_deleted(self, Bucket):
+        try:
+            self.client = BotoClient()
+            self.client.head_bucket(Bucket=Bucket)
+            self.client.delete_bucket(Bucket=Bucket)
+        except botocore.client.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                return True
+            else:
+                raise
+
 
     def remove_folder(self, path, remove_self=True):
         path = self._get_relative_path(path)
@@ -458,7 +490,7 @@ class S3FSClient:
         self.client.upload_file(path_local, Bucket=self.s3BucketName, Key=path_s3, Config=s3_config,
             ExtraArgs=args
         )
-        
+
     def copy_files(self, path_src, path_dst):
         files = self.list_folder(path_src, wild=True)
         for file in files:
