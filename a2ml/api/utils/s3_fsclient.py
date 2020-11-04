@@ -60,8 +60,13 @@ class BotoClient:
         objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
 
         while len(objects) > 0:
-            for obj in objects:
-                self.client.delete_object(Bucket=Bucket, Key=obj['Key'])
+            i = 0
+            keys_count_to_delete = 1000
+
+            while (i < len(objects)):
+                keys = list(map(lambda o: {'Key': o['Key']}, objects[i * keys_count_to_delete : (i + 1) * keys_count_to_delete]))
+                self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
+                i += keys_count_to_delete
 
             objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
 
