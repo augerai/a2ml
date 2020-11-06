@@ -290,7 +290,12 @@ class S3FSClient:
             self.client.head_bucket(Bucket=Bucket)
         except botocore.client.ClientError as e:
             if e.response['Error']['Code'] == '404':
-                self.client.create_bucket(Bucket=Bucket)
+                kwargs = {'Bucket': Bucket}
+
+                if region:
+                    kwargs['CreateBucketConfiguration'] = {'LocationConstraint': region}
+
+                self.client.create_bucket(**kwargs)
             else:
                 raise
 
