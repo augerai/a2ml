@@ -314,7 +314,11 @@ class S3FSClient:
             self.client.head_bucket(Bucket=Bucket)
             self.client.delete_bucket(Bucket=Bucket)
         except botocore.client.ClientError as e:
-            if e.response['Error']['Code'] == '404':
+            code = e.response['Error']['Code']
+            # 404 - deleted, that how it should work
+            # 400 - looks like a bug in S3 API, it's returned for deleted versioned buckets
+            # same as in https://github.com/aws/aws-sdk-js/issues/2749
+            if code == '404' or code == '400':
                 return True
             else:
                 raise
