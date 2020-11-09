@@ -57,18 +57,19 @@ class BotoClient:
 
     @retry_handler
     def delete_bucket(self, Bucket):
-        objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
+        batch_delete_limit = 1000 # delete_objects can't delete more that 1000 keys at once
 
+        versions = self.client.list_object_versions(Bucket=Bucket, MaxKeys=batch_delete_limit).get("Versions", [])
+        while len(versions) > 0:
+            keys = list(map(lambda o: {'Key': o['Key'], 'VersionId': o['VersionId']}, versions))
+            self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
+            versions = self.client.list_object_versions(Bucket=Bucket, MaxKeys=batch_delete_limit).get("Versions", [])
+
+        objects = self.client.list_objects(Bucket=Bucket, MaxKeys=batch_delete_limit).get('Contents', [])
         while len(objects) > 0:
-            i = 0
-            keys_count_to_delete = 1000
-
-            while (i < len(objects)):
-                keys = list(map(lambda o: {'Key': o['Key']}, objects[i * keys_count_to_delete : (i + 1) * keys_count_to_delete]))
-                self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
-                i += keys_count_to_delete
-
-            objects = self.client.list_objects(Bucket=Bucket).get('Contents', [])
+            keys = list(map(lambda o: {'Key': o['Key']}, objects))
+            self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
+            objects = self.client.list_objects(Bucket=Bucket, MaxKeys=batch_delete_limit).get('Contents', [])
 
         self.client.delete_bucket(Bucket=Bucket)
 
