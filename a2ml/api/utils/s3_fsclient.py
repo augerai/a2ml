@@ -57,21 +57,29 @@ class BotoClient:
 
     @retry_handler
     def delete_bucket(self, Bucket):
-        batch_delete_limit = 1000 # delete_objects can't delete more that 1000 keys at once
-
-        versions = self.client.list_object_versions(Bucket=Bucket, MaxKeys=batch_delete_limit).get("Versions", [])
-        while len(versions) > 0:
-            keys = list(map(lambda o: {'Key': o['Key'], 'VersionId': o['VersionId']}, versions))
-            self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
-            versions = self.client.list_object_versions(Bucket=Bucket, MaxKeys=batch_delete_limit).get("Versions", [])
-
-        objects = self.client.list_objects(Bucket=Bucket, MaxKeys=batch_delete_limit).get('Contents', [])
-        while len(objects) > 0:
-            keys = list(map(lambda o: {'Key': o['Key']}, objects))
-            self.client.delete_objects(Bucket=Bucket, Delete={'Objects': keys})
-            objects = self.client.list_objects(Bucket=Bucket, MaxKeys=batch_delete_limit).get('Contents', [])
+        self._delete_items(Bucket, "list_objects", "Contents")
+        self._delete_items(Bucket, "list_object_versions", "Versions")
+        self._delete_items(Bucket, "list_object_versions", "DeleteMarkers")
 
         self.client.delete_bucket(Bucket=Bucket)
+
+    def _map_version_key(self, obj):
+        res = {"Key": obj["Key"]}
+
+        if "VersionId" in obj:
+            res["VersionId"] = obj["VersionId"]
+
+        return res
+
+    def _delete_items(self, bucket, method_name, resource_name):
+        batch_delete_limit = 1000 # delete_objects can't delete more that 1000 keys at once
+        list_func = lambda: getattr(self.client, method_name)(Bucket=bucket, MaxKeys=batch_delete_limit).get(resource_name, [])
+
+        items = list_func()
+        while len(items) > 0:
+            keys = list(map(self._map_version_key, items))
+            self.client.delete_objects(Bucket=bucket, Delete={'Objects': keys})
+            items = list_func()
 
     @retry_handler
     def delete_object(self, *args, **kwargs):
