@@ -165,8 +165,13 @@ def _read_hub_experiment_session(ctx, params):
 
     ctx.config.set('experiment/cross_validation_folds',
         evaluation_options.get('crossValidationFolds', 5))
-    if evaluation_options.get('trainRatio'):
-        ctx.config.set('experiment/validation_size', 1.0-float(evaluation_options.get('trainRatio')))
+    split_options = evaluation_options.get('splitOptions', {})
+    if split_options.get('trainRatio'):
+        ctx.config.set('experiment/validation_size', 1.0-float(split_options.get('trainRatio')))
+    if split_options.get('shuffleData'):
+        ctx.config.set('experiment/shuffle', split_options.get('shuffleData'))
+    if split_options.get('timeseriesSplit'):
+        ctx.config.set('experiment/timeseries_fold_split', split_options.get('timeseriesSplit'))
 
     ctx.config.set('experiment/max_total_time',
         evaluation_options.get('max_total_time_mins', 60))

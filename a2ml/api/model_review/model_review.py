@@ -78,7 +78,7 @@ class ModelReview(object):
                 raise Exception(res['data'])
 
         result = self._do_score_actual(ds_actuals.df)
-
+        logging.info("Actual result: %s", result)    
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
 

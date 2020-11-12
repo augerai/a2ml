@@ -57,6 +57,14 @@ experiment:
     #   sampling_strategy: minority
     #   k_neighbors: 5
 
+  # Split to folds parameters:
+  # Shuffle records in each fold
+  #shuffle: True
+  # Use TimeSeriesSplit for folds generation. Will not change records order on the training data
+  #timeseries_fold_split: False
+  # Validation data split ratio, used when split to test/validation datasets. If set, cross_validation_folds will be ignored
+  #validation_size: 0.8
+
 # CPU cluster hardware settings
 cluster:
   # Type could be standard or high_memory

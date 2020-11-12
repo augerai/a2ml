@@ -82,6 +82,17 @@ class AugerExperimentApi(AugerBaseApi):
         if config.get('experiment/exit_score'):
             options['exit_score'] = config.get('experiment/exit_score')
 
+        split_options = {}
+        if config.get('experiment/validation_size'):
+            split_options['trainRatio'] = 1.0-float(config.get('experiment/validation_size'))
+        if config.get('experiment/shuffle') is not None:
+            split_options['shuffleData'] = config.get('experiment/shuffle')
+        if config.get('experiment/timeseries_fold_split') is not None:
+            split_options['timeseriesSplit'] = config.get('experiment/timeseries_fold_split')
+
+        if split_options:
+            options['splitOptions'] = split_options
+
         return options
             
     def get_experiment_settings(self):
