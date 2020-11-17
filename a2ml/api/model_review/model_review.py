@@ -26,7 +26,7 @@ class ModelReview(object):
             self.options['hub_info'] = params['hub_info']
 
         self.target_feature = self.options.get('targetFeature')
-        self.original_features = self.options.get("originalFeatureColumns")
+        self.original_features = self.options.get("originalFeatureColumns", [])
 
     # def get_actuals_statistic(self, date_from=None, date_to=None):
     #     count_actuals = self.count_actuals_by_prediction_id()
@@ -41,20 +41,25 @@ class ModelReview(object):
 
     def _do_score_actual(self, df_data):
         ds_true = DataFrame({})
-        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual': self.target_feature})
 
         ds_predict = DataFrame({})
         ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
 
-        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
-        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
+        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict, self.target_feature)
+        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true, self.target_feature)
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
     def add_actuals(
-        self, ctx, actuals_path=None, data=None, columns=None,
+        self, ctx, actuals_path=None, data=None, columns=None, target_column=None, scoring=None,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger'
     ):
+        if target_column and scoring:
+            self.target_feature = target_column
+            self.options['scoring'] = scoring
+            self.options['scoreNames'] = [scoring]
+
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
         if not 'actual' in ds_actuals.columns:
@@ -78,9 +83,9 @@ class ModelReview(object):
                 raise Exception(res['data'])
 
         result = self._do_score_actual(ds_actuals.df)
-        logging.info("Actual result: %s", result)    
+        logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
-        ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
+        ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual': self.target_feature})
 
         if not actuals_id:
             actuals_id = get_uid()

@@ -1,8 +1,12 @@
 import botocore
+import json
 import os
 import pytest
+import re
+import time
 import unittest
-import json
+
+from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
 from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
@@ -298,3 +302,53 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         with pytest.raises(botocore.exceptions.ClientError, match=r"HeadBucket operation: Not Found"):
             client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPStatusCode']
+
+    def current_time():
+        return 0
+
+    def test_score_actuals_by_model_task_with_external_model(self):
+        setattr(score_actuals_by_model_task, "start_time", time.time())
+
+        bucket_name = "auger-alex-test--5ss5s2"
+
+        params = {
+            "hub_info": {
+                "pipeline_id": "b7c5c4ef5a7b3a24",
+                "project_name": "external-project",
+                "project_path": f"s3://{bucket_name}/workspace/projects/external-project",
+                "cluster_task_id": 144237,
+            },
+            "external_model": True,
+            "actual_at": "2020-11-16T14:15:53.996Z",
+            "actual_date": "2020-11-16",
+            "return_count": True,
+            "target_column": "y",
+            "scoring": "accuracy",
+            "actual_columns": ["x1", "x2", "x3", "y", "actual"],
+            "actual_records": [
+                [1, 2, 3, 0, 0],
+                [1.5, 2.5, 3.5, 0, 1],
+            ],
+        }
+
+        predictions_path = os.path.join(
+            params["hub_info"]["project_path"],
+            "models",
+            params["hub_info"]["pipeline_id"],
+            "predictions",
+        )
+
+        client = S3FSClient()
+        client.ensure_bucket_created(Bucket=bucket_name)
+        client.remove_folder(predictions_path)
+
+        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+            res = score_actuals_by_model_task(params)
+
+            assert 0.5 == res['score']['accuracy']
+            assert 2 == res['count']
+
+            files = client.list_folder(predictions_path)
+
+            assert 1 == len(files)
+            assert "_full_data.feather.zstd" in files[0]

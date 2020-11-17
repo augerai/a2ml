@@ -232,22 +232,23 @@ class ModelHelper(object):
         return ModelHelper.preprocess_target_ds(model_path, ds)
 
     @staticmethod
-    def preprocess_target_ds(model_path, ds):
+    def preprocess_target_ds(model_path, ds, targetFeature=None):
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+        targetFeature = targetFeature or options.get('targetFeature')
         target_categoricals = fsclient.read_json_file(os.path.join(model_path, "target_categoricals.json"))
         y_true =  None
 
-        if not options.get('targetFeature') or not options.get('targetFeature') in ds.columns:
+        if not targetFeature or not targetFeature in ds.columns:
             return y_true, target_categoricals
 
         if options.get('timeSeriesFeatures'):
-            y_true = np.ravel(ds.df[options.get('targetFeature')].astype(np.float64, copy=False), order='C')
+            y_true = np.ravel(ds.df[targetFeature].astype(np.float64, copy=False), order='C')
         else:
-            if target_categoricals and target_categoricals.get(options.get('targetFeature'), {}).get('categories'):
-                ds.convertToCategorical(options.get('targetFeature'), is_target=True,
-                    categories=target_categoricals.get(options.get('targetFeature')).get('categories'))
+            if target_categoricals and target_categoricals.get(targetFeature, {}).get('categories'):
+                ds.convertToCategorical(targetFeature, is_target=True,
+                    categories=target_categoricals.get(targetFeature).get('categories'))
 
-            y_true = np.ravel(ds.df[options.get('targetFeature')], order='C')
+            y_true = np.ravel(ds.df[targetFeature], order='C')
 
         return y_true, target_categoricals
 
