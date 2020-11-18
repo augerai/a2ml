@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
 from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
-from tests.model_review.test_model_review import remove_actual_files, write_actuals
+from tests.model_review.test_model_review import assert_actual_file, remove_actual_files, write_actuals
 
 # pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -305,24 +305,17 @@ class TestTasksHubApiAuger(unittest.TestCase):
         with pytest.raises(botocore.exceptions.ClientError, match=r"HeadBucket operation: Not Found"):
             client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPStatusCode']
 
-    def current_time():
-        return 0
-
     def test_score_actuals_by_model_task_with_external_model(self):
         setattr(score_actuals_by_model_task, "start_time", time.time())
 
-        bucket_name = "auger-alex-test--5ss5s2"
+        hub_info, project_name, model_path = self._build_hub_info()
+        actual_date = "2020-11-16"
 
         params = {
-            "hub_info": {
-                "pipeline_id": "b7c5c4ef5a7b3a24",
-                "project_name": "external-project",
-                "project_path": f"s3://{bucket_name}/workspace/projects/external-project",
-                "cluster_task_id": 144237,
-            },
+            "hub_info": hub_info,
             "external_model": True,
             "actual_at": "2020-11-16T14:15:53.996Z",
-            "actual_date": "2020-11-16",
+            "actual_date": actual_date,
             "return_count": True,
             "target_column": "y",
             "scoring": "accuracy",
@@ -333,42 +326,29 @@ class TestTasksHubApiAuger(unittest.TestCase):
             ],
         }
 
-        predictions_path = os.path.join(
-            params["hub_info"]["project_path"],
-            "models",
-            params["hub_info"]["pipeline_id"],
-            "predictions",
-        )
-
-        client = S3FSClient()
-        client.ensure_bucket_created(Bucket=bucket_name)
-        client.remove_folder(predictions_path)
-
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = score_actuals_by_model_task(params)
 
             assert 0.5 == res['score']['accuracy']
             assert 2 == res['count']
 
-            files = client.list_folder(predictions_path)
+            saved_actuals = list(assert_actual_file(model_path, actual_date=actual_date, with_features=True))
+            assert 1 == len(saved_actuals)
 
-            assert 1 == len(files)
-            assert "_full_data.feather.zstd" in files[0]
+            (day, _, actuals) = saved_actuals[0]
+
+            assert actual_date == str(day)
+            assert 2 == len(actuals)
 
     def test_score_model_performance_daily_task_with_external_model(self):
         setattr(score_model_performance_daily_task, "start_time", time.time())
 
-        project_name = "external-project"
+        hub_info, project_name, model_path = self._build_hub_info()
         date_from = datetime.date(2020, 11, 16)
         date_to = datetime.date(2020, 11, 17)
 
         params = {
-            "hub_info": {
-                "pipeline_id": "b7c5c4ef5a7b3a24",
-                "project_name": project_name,
-                "project_path": f"tmp/workspace/projects/{project_name}",
-                "cluster_task_id": 144237,
-            },
+            "hub_info": hub_info,
             "external_model": True,
             "date_from": str(date_from),
             "date_to": str(date_to),
@@ -376,34 +356,67 @@ class TestTasksHubApiAuger(unittest.TestCase):
             "scoring": "accuracy",
         }
 
-        model_path = os.path.join(
-            params["hub_info"]["project_path"],
-            "models",
-            params["hub_info"]["pipeline_id"],
-        )
-
-        actuals = {
-            date_from: {
-                "x1": [1.1, 1.2],
-                "x2": [2.1, 2.2],
-                "x3": [3.1, 3.2],
-                "y": [0, 0],
-                "a2ml_predicted": [0, 1],
-            },
-            date_to: {
-                "x1": [1.1, 1.2],
-                "x2": [2.1, 2.2],
-                "x3": [3.1, 3.2],
-                "y": [0, 0],
-                "a2ml_predicted": [0, 0],
-            }
-        }
-
-        remove_actual_files(model_path)
+        actuals = self._build_actuals([date_from, date_to])
         write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
         write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
 
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = score_model_performance_daily_task(params)
-
             assert {str(date_from): 0.5, str(date_to): 1.0} == res
+
+    def test_distribution_chart_stats_task_with_external_model(self):
+        setattr(distribution_chart_stats_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        date_from = datetime.date(2020, 11, 16)
+        date_to = datetime.date(2020, 11, 17)
+
+        params = {
+            "hub_info": hub_info,
+            "external_model": True,
+            "date_from": str(date_from),
+            "date_to": str(date_to),
+            "target_column": "y",
+        }
+
+        actuals = self._build_actuals([date_from, date_to])
+        write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
+        write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+
+        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+            res = distribution_chart_stats_task(params)
+            assert 2 == len(res)
+            assert 2 == len(res[str(date_to)])
+            assert "actual_y" in res[str(date_to)]
+            assert "predicted_y" in res[str(date_to)]
+
+    def _build_actuals(self, dates=None):
+        dates = dates or [datetime.date.today()]
+
+        def actuals(index):
+            return {
+                "x1": [1.1, 1.2],
+                "x2": [2.1, 2.2],
+                "x3": [3.1, 3.2],
+                "y": [0, 0],
+                "a2ml_predicted": [0, 1 if index % 2 == 0 else 0],
+            }
+
+        return { date : actuals(index) for index, date in enumerate(dates) }
+
+
+    def _build_hub_info(self):
+        project_name = "external-project"
+
+        hub_info = {
+            "pipeline_id": "b7c5c4ef5a7b3a24",
+            "project_name": project_name,
+            "project_path": f"tmp/workspace/projects/{project_name}",
+            "cluster_task_id": 144237,
+        }
+
+        model_path = os.path.join(hub_info["project_path"], "models", hub_info["pipeline_id"])
+
+        remove_actual_files(model_path)
+
+        return hub_info, project_name, model_path

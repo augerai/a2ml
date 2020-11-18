@@ -251,7 +251,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
       None, actuals_path=None, data=actuals, actual_date=str(actual_date), return_count=True
     )
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, actual_date=actual_date, with_features=True):
       assert actuals[0]['class'] == 'good'
       assert actuals[0]['a2ml_predicted'] == 'good'
       assert actuals[0]['checking_status'] == 'no checking'
@@ -284,7 +284,7 @@ def test_score_actuals_dict_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -311,7 +311,7 @@ def test_score_actuals_dict_list_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -353,7 +353,7 @@ def test_score_actuals_dict_wo_predicted():
     assert res['count'] == 2
     assert res['score']['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['species'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -376,7 +376,7 @@ def test_score_actuals_dict_wo_features():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
 
@@ -453,7 +453,7 @@ def test_score_actuals_dict_with_predicted_none():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == True
       assert actuals[0]['income'] == None
       assert actuals[0]['age'] == 33
@@ -474,7 +474,7 @@ def test_score_iris_csv_full():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -494,7 +494,7 @@ def test_score_iris_csv_full_with_date_columns():
 
     assert res['accuracy'] == 1.0
 
-    saved_actuals = list(_assert_actual_file(model_path, with_features=True))
+    saved_actuals = list(assert_actual_file(model_path, with_features=True))
 
     assert len(saved_actuals) == 4
 
@@ -523,7 +523,7 @@ def test_score_iris_csv_wo_predicted():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -538,7 +538,7 @@ def test_score_iris_csv_wo_features():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
@@ -567,7 +567,7 @@ def test_score_actuals_lucas_case_array_full():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -591,7 +591,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -615,7 +615,7 @@ def test_score_actuals_lucas_case_array_wo_features():
 
     assert res['accuracy'] == 2 / 3
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
@@ -748,7 +748,7 @@ def remove_actual_files(model_path):
     for actuals_path in glob.glob(model_path + '/predictions/*_data.feather.zstd'):
       os.remove(actuals_path)
 
-def _assert_actual_file(model_path, actual_date=None, with_features=True):
+def assert_actual_file(model_path, actual_date=None, with_features=True):
     actual_files = glob.glob(model_path + '/predictions/*_data.feather.zstd')
     actual_files.sort()
 

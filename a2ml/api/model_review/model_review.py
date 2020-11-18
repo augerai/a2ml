@@ -202,7 +202,10 @@ class ModelReview(object):
 
         return res
 
-    def distribution_chart_stats(self, date_from, date_to):
+    def distribution_chart_stats(self, date_from, date_to, target_column=None):
+        if target_column:
+            self.target_feature = target_column
+
         features = [self.target_feature, 'a2ml_predicted']
         features += self.options.get('originalFeatureColumns', [])
         categoricalFeatures = self.options.get('categoricalFeatures', [])

@@ -580,7 +580,8 @@ def set_support_review_model_flag_task(params):
 def distribution_chart_stats_task(params):
     return ModelReview(params).distribution_chart_stats(
         date_from=params.get('date_from'),
-        date_to=params.get('date_to')
+        date_to=params.get('date_to'),
+        target_column=params.get('target_column'),
     )
 
 @celeryApp.task(ignore_result=True)
