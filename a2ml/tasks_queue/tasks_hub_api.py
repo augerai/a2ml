@@ -563,7 +563,9 @@ def delete_actuals_task(params):
 def score_model_performance_daily_task(params):
     return ModelReview(params).score_model_performance_daily(
         date_from=params.get('date_from'),
-        date_to=params.get('date_to')
+        date_to=params.get('date_to'),
+        target_column=params.get('target_column'),
+        scoring=params.get('scoring'),
     )
 
 @celeryApp.task(ignore_result=True)

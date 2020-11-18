@@ -177,7 +177,13 @@ class ModelReview(object):
         return output
 
     # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to):
+    def score_model_performance_daily(self, date_from, date_to, target_column=None, scoring=None):
+        if target_column and scoring:
+            self.target_feature = target_column
+            self.options['scoring'] = scoring
+            self.options['score_name'] = scoring
+            self.options['scoreNames'] = [scoring]
+
         features = [self.target_feature, 'a2ml_predicted']
         res = {}
 

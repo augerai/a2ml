@@ -1,4 +1,5 @@
 import botocore
+import datetime
 import json
 import os
 import pytest
@@ -10,6 +11,7 @@ from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
 from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
+from tests.model_review.test_model_review import remove_actual_files, write_actuals
 
 # pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -352,3 +354,56 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
             assert 1 == len(files)
             assert "_full_data.feather.zstd" in files[0]
+
+    def test_score_model_performance_daily_task_with_external_model(self):
+        setattr(score_model_performance_daily_task, "start_time", time.time())
+
+        project_name = "external-project"
+        date_from = datetime.date(2020, 11, 16)
+        date_to = datetime.date(2020, 11, 17)
+
+        params = {
+            "hub_info": {
+                "pipeline_id": "b7c5c4ef5a7b3a24",
+                "project_name": project_name,
+                "project_path": f"tmp/workspace/projects/{project_name}",
+                "cluster_task_id": 144237,
+            },
+            "external_model": True,
+            "date_from": str(date_from),
+            "date_to": str(date_to),
+            "target_column": "y",
+            "scoring": "accuracy",
+        }
+
+        model_path = os.path.join(
+            params["hub_info"]["project_path"],
+            "models",
+            params["hub_info"]["pipeline_id"],
+        )
+
+        actuals = {
+            date_from: {
+                "x1": [1.1, 1.2],
+                "x2": [2.1, 2.2],
+                "x3": [3.1, 3.2],
+                "y": [0, 0],
+                "a2ml_predicted": [0, 1],
+            },
+            date_to: {
+                "x1": [1.1, 1.2],
+                "x2": [2.1, 2.2],
+                "x3": [3.1, 3.2],
+                "y": [0, 0],
+                "a2ml_predicted": [0, 0],
+            }
+        }
+
+        remove_actual_files(model_path)
+        write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
+        write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+
+        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+            res = score_model_performance_daily_task(params)
+
+            assert {str(date_from): 0.5, str(date_to): 1.0} == res
