@@ -545,6 +545,7 @@ def score_actuals_by_model_task(params):
         actuals_id=params.get('actuals_id'),
         target_column=params.get('target_column'),
         scoring=params.get('scoring'),
+        task_type=params.get('task_type'),
         return_count=params.get('return_count', False),
         provider=params.get('provider')
     )

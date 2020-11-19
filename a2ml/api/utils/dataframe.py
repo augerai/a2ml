@@ -2,6 +2,7 @@ import arff
 import copy
 import json
 import logging
+import math
 import os
 import pandas as pd
 import warnings
@@ -466,3 +467,184 @@ class DataFrame(object):
             for i, c in enumerate(columns)
         ]
 
+    def _check_for_json(self, cname):
+        rows = self.df[cname][(self.df[cname] != '[]') & (self.df[cname] != '{}')].values
+
+        if rows is None or len(rows) == 0:
+            return []
+        else:
+            row = rows[0]
+
+        try:
+            data = json.loads(row)
+            children = []
+            for key in data:
+                name = str(key) + '_' + cname
+                dtype = type(data[key]).__name__
+                if dtype == 'unicode':
+                    dtype = 'string'
+
+                children.append(
+                    {
+                        'column_name': name,
+                        'orig_column_name': str(key),
+                        'child': cname,
+                        'parent': None,
+                        'orig_datatype': dtype,
+                        'datatype': dtype,
+                        'range': ('', ''),
+                        'use': False,
+                        'isTarget': False,
+                        'missing_values': 0,
+                        'unique_values': 0
+                    }
+                )
+            return children
+        except Exception as e:
+            return []
+
+    def __format_number_for_serialization(self, v):
+        if v != v or math.isinf(v):
+            return None
+        else:
+            return round(v, 6)
+
+    def getSummary(self):
+        types_list = []
+        columns_list = self.df.columns.values.tolist()
+        for idx, dtype in enumerate(self.df.dtypes):
+            types_list.append((columns_list[idx], self._map_dtypes(dtype.name)))
+
+        info = {"dtypes": self.dtypes, "count": self.count(), 'columns_count': len(self.columns)}
+        stat_data = []
+        for x in info['dtypes']:
+            cname = str(x[0])
+            ctype = x[1]
+            children = []
+
+            if ctype == 'string':
+                children = self._check_for_json(cname)
+
+            # add children or just add row
+            if children:
+                stat_data = stat_data + children
+            else:
+                item = {
+                    'column_name': cname,
+                    'orig_datatype': ctype,
+                    'datatype': ctype,
+                }
+
+                if ctype == 'integer' or ctype == 'float' or ctype == 'double':
+                    mean = self.__format_number_for_serialization(self.df[cname].mean())
+                    if mean:
+                        item['avg'] = mean
+
+                    std = self.__format_number_for_serialization(self.df[cname].std())
+                    if std:
+                        item['std_dev'] = std
+
+                stat_data.append(item)
+
+        #TODO : remove from UI isTarget and use
+        lef = set(self.options.get('labelEncodingFeatures', []))
+        tf = self.options.get('targetFeature', "")
+        fc = set(self.options.get('featureColumns', []))
+        tsf = set(self.options.get('timeSeriesFeatures', []))
+        dtf = self.options.get('datetimeFeatures', [])
+        if dtf is None:
+            dtf = []
+
+        for row in stat_data:
+            row['isTarget'] = False
+            row['use'] = False
+
+            cname = row['column_name']
+            if row['datatype'] == 'string':
+                row['datatype'] = 'hashing' if cname in lef else 'categorical'
+
+            if cname == tf:
+                row['isTarget'] = True
+            if cname in fc:
+                row['use'] = True
+            if cname in tsf:
+                row['datatype'] = 'timeseries'
+            if cname in dtf:
+                row['datatype'] = 'datetime'
+
+        info['stat_data'] = stat_data
+        del info['dtypes']
+
+        return info
+
+    def update_options_by_dataset_statistics(self, stat_data=None):
+        transforms = []
+        categoricals = []
+        hashings = []
+        timeseries = []
+        selected_features = []
+        target_feature = None
+        binaryClassification = None
+        minority_target_class = None
+        datetimeFeatures = []
+        stat_data = stat_data or self.options.get('dataset_statistics', {}).get('stat_data', [])
+
+        for item in stat_data:
+            if item.get('isTarget'):
+                target_feature = item['column_name']
+                if (self.options.get('model_type', '') == 'classification' or self.options.get('classification')):
+                    binaryClassification = item.get('unique_values', 0) == 2
+
+                    #Find minority target class
+                    if item.get('value_counts_ex'):
+                        minority_target_class = item['value_counts_ex'][0]['value']
+                        minority_target_count = item['value_counts_ex'][0]['count']
+                        for vc in item['value_counts_ex']:
+                            if vc['count'] < minority_target_count:
+                                minority_target_class = vc['value']
+                                minority_target_count = vc['count']
+
+            if item.get('use') and not item.get('isTarget'):
+                selected_features.append(item['column_name'])
+
+            if item.get('use') or item.get('isTarget'):
+                if item['orig_datatype'] == 'string':
+                    if item['datatype'] == 'integer' or item['datatype'] == 'double':
+                        transforms.append({"withNumericColumn":{"col_name":item['column_name']}})
+                    if item['datatype'] == 'boolean':
+                        transforms.append({"withBooleanColumn":{"col_name":item['column_name']}})
+
+                if item['datatype'] == 'categorical':
+                    categoricals.append(item['column_name'])
+                if item['datatype'] == 'hashing':
+                    categoricals.append(item['column_name'])
+                    hashings.append(item['column_name'])
+                if item['datatype'] == 'timeseries':
+                    timeseries.append(item['column_name'])
+                if item['datatype'] == 'datetime':
+                    datetimeFeatures.append(item['column_name'])
+
+        if categoricals:
+            self.options['categoricalFeatures'] = categoricals
+        if hashings:
+            self.options['labelEncodingFeatures'] = hashings
+        if timeseries:
+            self.options['timeSeriesFeatures'] = timeseries
+        if selected_features:
+            self.options['featureColumns'] = selected_features
+        if target_feature:
+            self.options['targetFeature'] = target_feature
+        if datetimeFeatures:
+            self.options['datetimeFeatures'] = datetimeFeatures
+        if binaryClassification is not None:
+            self.options['binaryClassification'] = binaryClassification
+        if minority_target_class is not None and self.options.get('minority_target_class') is None and \
+            self.options.get('use_minority_target_class'):
+            self.options['minority_target_class'] = minority_target_class
+
+        if not 'datasource_transforms' in self.options:
+            self.options['datasource_transforms'] = []
+
+        self.options['datasource_transforms'] = [transforms]
+
+        return self.options

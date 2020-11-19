@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
+from a2ml.api.utils import fsclient
 from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
 from tests.model_review.test_model_review import assert_actual_file, remove_actual_files, write_actuals
 
@@ -309,7 +310,11 @@ class TestTasksHubApiAuger(unittest.TestCase):
         setattr(score_actuals_by_model_task, "start_time", time.time())
 
         hub_info, project_name, model_path = self._build_hub_info()
+        options_path = os.path.join(model_path, "options.json")
         actual_date = "2020-11-16"
+
+        remove_actual_files(model_path)
+        fsclient.remove_file(options_path)
 
         params = {
             "hub_info": hub_info,
@@ -319,18 +324,19 @@ class TestTasksHubApiAuger(unittest.TestCase):
             "return_count": True,
             "target_column": "y",
             "scoring": "accuracy",
-            "actual_columns": ["x1", "x2", "x3", "y", "actual"],
+            "task_type": "classification",
+            "actual_columns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "y", "actual"],
             "actual_records": [
-                [1, 2, 3, 0, 0],
-                [1.5, 2.5, 3.5, 0, 1],
+                [1, 2.2, datetime.date(2020, 11, 16), True, "cat1", 0, 0],
+                [1, 2.5, datetime.date(2020, 11, 17), False, "cat2", 0, 1],
             ],
         }
 
-        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+        with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
             res = score_actuals_by_model_task(params)
 
-            assert 0.5 == res['score']['accuracy']
-            assert 2 == res['count']
+            assert 0.5 == res["score"]["accuracy"]
+            assert 2 == res["count"]
 
             saved_actuals = list(assert_actual_file(model_path, actual_date=actual_date, with_features=True))
             assert 1 == len(saved_actuals)
@@ -340,12 +346,27 @@ class TestTasksHubApiAuger(unittest.TestCase):
             assert actual_date == str(day)
             assert 2 == len(actuals)
 
+            options = fsclient.read_json_file(options_path)
+
+            assert options == {
+                "targetFeature": "y",
+                "featureColumns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "actual"],
+                "task_type": "classification",
+                "scoring": "accuracy",
+                "scoreNames": ["accuracy"],
+                "classification": True,
+                "categoricalFeatures": ["x_date", "x_str"],
+                "binaryClassification": False,
+                "datasource_transforms": [[]],
+            }
+
     def test_score_model_performance_daily_task_with_external_model(self):
         setattr(score_model_performance_daily_task, "start_time", time.time())
 
         hub_info, project_name, model_path = self._build_hub_info()
         date_from = datetime.date(2020, 11, 16)
         date_to = datetime.date(2020, 11, 17)
+        remove_actual_files(model_path)
 
         params = {
             "hub_info": hub_info,
@@ -370,6 +391,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         hub_info, project_name, model_path = self._build_hub_info()
         date_from = datetime.date(2020, 11, 16)
         date_to = datetime.date(2020, 11, 17)
+        remove_actual_files(model_path)
 
         params = {
             "hub_info": hub_info,
@@ -389,6 +411,10 @@ class TestTasksHubApiAuger(unittest.TestCase):
             assert 2 == len(res[str(date_to)])
             assert "actual_y" in res[str(date_to)]
             assert "predicted_y" in res[str(date_to)]
+
+    def test_build_divergence_model_task_with_external_model(self):
+        setattr(build_divergence_model_task, "start_time", time.time())
+        pass
 
     def _build_actuals(self, dates=None):
         dates = dates or [datetime.date.today()]
@@ -416,7 +442,4 @@ class TestTasksHubApiAuger(unittest.TestCase):
         }
 
         model_path = os.path.join(hub_info["project_path"], "models", hub_info["pipeline_id"])
-
-        remove_actual_files(model_path)
-
         return hub_info, project_name, model_path
