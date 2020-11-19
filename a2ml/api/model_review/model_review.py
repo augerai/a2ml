@@ -56,8 +56,8 @@ class ModelReview(object):
         ds_predict = DataFrame({})
         ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
 
-        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict, self.target_feature)
-        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true, self.target_feature)
+        y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
+        y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
@@ -193,13 +193,7 @@ class ModelReview(object):
         return output
 
     # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to, target_column=None, scoring=None):
-        if target_column and scoring:
-            self.target_feature = target_column
-            self.options['scoring'] = scoring
-            self.options['score_name'] = scoring
-            self.options['scoreNames'] = [scoring]
-
+    def score_model_performance_daily(self, date_from, date_to):
         features = [self.target_feature, 'a2ml_predicted']
         res = {}
 
@@ -218,10 +212,7 @@ class ModelReview(object):
 
         return res
 
-    def distribution_chart_stats(self, date_from, date_to, target_column=None):
-        if target_column:
-            self.target_feature = target_column
-
+    def distribution_chart_stats(self, date_from, date_to):
         features = [self.target_feature, 'a2ml_predicted']
         features += self.options.get('originalFeatureColumns', [])
         categoricalFeatures = self.options.get('categoricalFeatures', [])

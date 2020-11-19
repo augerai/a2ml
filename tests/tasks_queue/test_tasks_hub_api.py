@@ -2,6 +2,7 @@ import botocore
 import datetime
 import json
 import os
+import numbers
 import pytest
 import re
 import time
@@ -353,6 +354,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 "featureColumns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "actual"],
                 "task_type": "classification",
                 "scoring": "accuracy",
+                "score_name": "accuracy",
                 "scoreNames": ["accuracy"],
                 "classification": True,
                 "categoricalFeatures": ["x_date", "x_str"],
@@ -373,13 +375,13 @@ class TestTasksHubApiAuger(unittest.TestCase):
             "external_model": True,
             "date_from": str(date_from),
             "date_to": str(date_to),
-            "target_column": "y",
-            "scoring": "accuracy",
         }
+
 
         actuals = self._build_actuals([date_from, date_to])
         write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
         write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+        self._write_options_file(model_path, actuals, "y")
 
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = score_model_performance_daily_task(params)
@@ -398,12 +400,12 @@ class TestTasksHubApiAuger(unittest.TestCase):
             "external_model": True,
             "date_from": str(date_from),
             "date_to": str(date_to),
-            "target_column": "y",
         }
 
         actuals = self._build_actuals([date_from, date_to])
         write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
         write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+        self._write_options_file(model_path, actuals, "y")
 
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = distribution_chart_stats_task(params)
@@ -443,3 +445,27 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         model_path = os.path.join(hub_info["project_path"], "models", hub_info["pipeline_id"])
         return hub_info, project_name, model_path
+
+    def _write_options_file(self, model_path, actuals, target_feature):
+        feature_columns = []
+        categorical_features = []
+
+        for feature, values in list(actuals.values())[0].items():
+            if feature != target_feature:
+                feature_columns.append(feature)
+                if not isinstance(values[0], numbers.Number):
+                    categorical_features.append(feature)
+
+        options = {
+            "targetFeature": target_feature,
+            "featureColumns": feature_columns,
+            "task_type": "classification",
+            "scoring": "accuracy",
+            "score_name": "accuracy",
+            "scoreNames": ["accuracy"],
+            "classification": True,
+            "categoricalFeatures": categorical_features,
+            "datasource_transforms": [[]],
+        }
+
+        fsclient.write_json_file(os.path.join(model_path, "options.json"), options)
