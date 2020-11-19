@@ -159,9 +159,9 @@ class ModelReview(object):
             if not ds_actuals.df.empty:
                 ds_actuals.drop(['a2ml_predicted'])
                 ds_train.df = pd.concat([ds_train.df, ds_actuals.df], ignore_index=True)
-                ds_train.drop_duplicates()
+                #ds_train.drop_duplicates()
 
-        ds_train.dropna()
+        #ds_train.dropna()
 
         if not output:
             directory = os.path.dirname(data_path)
