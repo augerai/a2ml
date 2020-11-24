@@ -61,25 +61,41 @@ class ModelReview(object):
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
+    def add_external_model(self, target_column, scoring, task_type):
+        ModelHelper.create_model_options_file(
+            options_path=self.options_path,
+            scoring=scoring,
+            target_column=target_column,
+            task_type=task_type,
+        )
+
+        self._load_options()
+
+
+        return True
+
     def add_actuals(
-        self, ctx, actuals_path=None, data=None, columns=None, target_column=None, scoring=None, task_type=None,
+        self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger'
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
-        if not 'actual' in ds_actuals.columns:
-            raise Exception("There is no 'actual' column in data")
+        if external_model:
+            options = self.options.copy()
 
-        if target_column and scoring and task_type and not self.options_file_exists:
-            ModelHelper.create_model_options_file(
-                ds_actuals,
+            if 'hub_info' in options:
+                del options['hub_info']
+
+            ModelHelper.update_model_options_file(
                 options_path=self.options_path,
-                scoring=scoring,
-                target_column=target_column,
-                task_type=task_type,
+                options=options,
+                ds_actuals=ds_actuals,
             )
 
             self._load_options()
+
+        if not 'actual' in ds_actuals.columns:
+            raise Exception("There is no 'actual' column in data")
 
         actuals_count = ds_actuals.count()
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)

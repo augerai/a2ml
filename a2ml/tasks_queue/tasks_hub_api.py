@@ -480,6 +480,15 @@ def deploy_model_task(params):
 
 @celeryApp.task(ignore_result=True)
 @process_task_result
+def add_external_model_task(params):
+    return ModelReview(params).add_external_model(
+        target_column=params.get('target_column'),
+        scoring=params.get('scoring'),
+        task_type=params.get('task_type'),
+    )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
     provider = params.get('provider', 'auger')
@@ -529,8 +538,9 @@ def predict_by_model_task(params):
 @process_task_result
 def score_actuals_by_model_task(params):
     ctx = None
+    external_model = params.get("external_model", False)
 
-    if not params.get("external_model", False):
+    if not external_model:
         ctx = _create_provider_context(params)
         ctx = _read_hub_experiment_session(ctx, params)
         ctx.config.clean_changes()
@@ -543,11 +553,9 @@ def score_actuals_by_model_task(params):
         actual_date=params.get('actual_date'),
         actual_date_column=params.get('actual_date_column'),
         actuals_id=params.get('actuals_id'),
-        target_column=params.get('target_column'),
-        scoring=params.get('scoring'),
-        task_type=params.get('task_type'),
         return_count=params.get('return_count', False),
-        provider=params.get('provider')
+        provider=params.get('provider'),
+        external_model=external_model,
     )
 
 @celeryApp.task(ignore_result=True)

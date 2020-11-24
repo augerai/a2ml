@@ -315,7 +315,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
         actual_date = "2020-11-16"
 
         remove_actual_files(model_path)
-        fsclient.remove_file(options_path)
+        self._write_options_file(model_path, None, "y", with_features=False)
 
         params = {
             "hub_info": hub_info,
@@ -414,9 +414,35 @@ class TestTasksHubApiAuger(unittest.TestCase):
             assert "actual_y" in res[str(date_to)]
             assert "predicted_y" in res[str(date_to)]
 
-    def test_build_divergence_model_task_with_external_model(self):
-        setattr(build_divergence_model_task, "start_time", time.time())
-        pass
+    def test_add_external_model_task(self):
+        setattr(add_external_model_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        options_path = os.path.join(model_path, "options.json")
+
+        fsclient.remove_file(options_path)
+
+        params = {
+            "hub_info": hub_info,
+            "target_column": "y",
+            "scoring": "accuracy",
+            "task_type": "classification",
+        }
+
+        with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+            add_external_model_task(params)
+
+            options = fsclient.read_json_file(options_path)
+
+            assert options == {
+                "targetFeature": "y",
+                "task_type": "classification",
+                "classification": True,
+                "scoring": "accuracy",
+                "score_name": "accuracy",
+                "scoreNames": ["accuracy"],
+            }
+
 
     def _build_actuals(self, dates=None):
         dates = dates or [datetime.date.today()]
@@ -446,26 +472,29 @@ class TestTasksHubApiAuger(unittest.TestCase):
         model_path = os.path.join(hub_info["project_path"], "models", hub_info["pipeline_id"])
         return hub_info, project_name, model_path
 
-    def _write_options_file(self, model_path, actuals, target_feature):
+    def _write_options_file(self, model_path, actuals, target_feature, with_features=True):
         feature_columns = []
         categorical_features = []
 
-        for feature, values in list(actuals.values())[0].items():
-            if feature != target_feature:
-                feature_columns.append(feature)
-                if not isinstance(values[0], numbers.Number):
-                    categorical_features.append(feature)
+        if actuals:
+            for feature, values in list(actuals.values())[0].items():
+                if feature != target_feature:
+                    feature_columns.append(feature)
+                    if not isinstance(values[0], numbers.Number):
+                        categorical_features.append(feature)
 
         options = {
             "targetFeature": target_feature,
-            "featureColumns": feature_columns,
             "task_type": "classification",
+            "classification": True,
             "scoring": "accuracy",
             "score_name": "accuracy",
             "scoreNames": ["accuracy"],
-            "classification": True,
-            "categoricalFeatures": categorical_features,
-            "datasource_transforms": [[]],
         }
+
+        if with_features:
+            options["featureColumns"] = feature_columns
+            options["categoricalFeatures"] = categorical_features
+            options["datasource_transforms"] = [[]]
 
         fsclient.write_json_file(os.path.join(model_path, "options.json"), options)
