@@ -672,7 +672,8 @@ def test_build_review_data():
     actuals_df = DataFrame({}).load_from_file(os.path.join(model_path, full_actuals_path))
     review_df = DataFrame({}).load_from_file(res)
 
-    assert len(review_df) == len(source_df) + len(actuals_df) - 1
+    assert len(review_df) == len(source_df) + len(actuals_df)# - 1
+    # We do not drop duplicates, since it is incorrect behaviour
     # Should drop one duplicated row  `5.1,3.5,1.4,0.2,Iris-setosa`
 
     for review_data_path in glob.glob('tests/fixtures/test_build_review_data/iris_class_review_*.parquet'):
