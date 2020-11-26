@@ -100,13 +100,14 @@ class ModelPredict():
             ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-            self._check_model_project(pipeline_api)
             predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
 
             try:
                 ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
                     records=predictions.get('data'), features=predictions.get('columns'))
             except Exception as e:
+                self._check_model_project(pipeline_api)
+
                 msg = "Prediction result file(%s) cannot be downloaded."%predictions.get('signed_prediction_url')
                 raise AugerException(msg+"Please contact support.")
 
