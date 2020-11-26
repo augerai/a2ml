@@ -4,6 +4,8 @@ from a2ml.api.utils import fsclient
 from .deploy import ModelDeploy
 from ..cloud.pipeline import AugerPipelineApi
 from ..cloud.endpoint import AugerEndpointApi
+from ..cloud.endpoint_pipeline import AugerEndpointPipelineApi
+
 
 class ModelUndeploy(object):
     """Undeploy Model locally or from Auger Cloud."""
@@ -27,19 +29,24 @@ class ModelUndeploy(object):
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
             if pipeline_api.check_endpoint():
-                self.ctx.log("Undeploy Review endpoint and all models.")
                 endpoint_api = AugerEndpointApi(self.ctx, None, pipeline_api.object_id)
                 endpoint_props = endpoint_api.properties()
-                for pipeline in endpoint_props.get('endpoint_pipelines', []):
-                    try:
+                endpoint_pipelines = sorted(endpoint_props.get('endpoint_pipelines', []), key=lambda k: k['id'])
+                print(endpoint_pipelines)
+                if endpoint_pipelines and endpoint_pipelines[0]['pipeline_id'] == model_id:
+                    self.ctx.log("Undeploy Review endpoint and all models.")
+                    for pipeline in endpoint_pipelines:
                         AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
-                    except Exception as e:
-                        if "transition to this status impossible" in str(e):
-                            self.ctx.log("Model %s already undeployed."%pipeline.get('pipeline_id'))
-                        else:
-                            self.ctx.error("Model %s undeploy error: %s"%(pipeline.get('pipeline_id'),e))
 
-                endpoint_api.delete()
+                    endpoint_api.delete()
+
+                else:
+                    self.ctx.log("Undeploy model and remove from Review endpoint.")
+                    for pipeline in endpoint_pipelines:
+                        if pipeline.get('pipeline_id') == model_id:
+                            AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
+                            AugerEndpointPipelineApi(self.ctx, pipeline.get('id')).delete()
+                            break
             else:
                 pipeline_api.remove(model_id)                    
 

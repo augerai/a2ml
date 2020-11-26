@@ -13,6 +13,7 @@ from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_helper import ModelHelper
 from ..decorators import with_project
+from ..project import Project
 
 
 class ModelPredict():
@@ -84,6 +85,13 @@ class ModelPredict():
 
         return records, features, file_url, data is not None and isinstance(data, pd.DataFrame)
 
+    def _check_model_project(self, pipeline_api):
+        model_project_name = Project(self.ctx, project_id=pipeline_api.properties().get('project_id')).properties().get('name')
+
+        if model_project_name != self.ctx.config.get('name'):
+            raise AugerException("Project name: %s in config.yml is different from model project name: %s. Please change name in config.yml."%(
+                self.ctx.config.get('name'), model_project_name))
+
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
         temp_file = None
@@ -92,10 +100,16 @@ class ModelPredict():
             ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
+            self._check_model_project(pipeline_api)
             predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
 
-            ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
-                records=predictions.get('data'), features=predictions.get('columns'))
+            try:
+                ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
+                    records=predictions.get('data'), features=predictions.get('columns'))
+            except Exception as e:
+                msg = "Prediction result file(%s) cannot be downloaded."%predictions.get('signed_prediction_url')
+                raise AugerException(msg+"Please contact support.")
+
             temp_file = ds_result.options['data_path'] if predictions.get('signed_prediction_url') else None
 
         try:

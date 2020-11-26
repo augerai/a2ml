@@ -16,7 +16,13 @@ class AugerPipelineApi(AugerBaseApi):
             ['creating_files', 'packaging', 'deploying'])
 
     def remove(self, trial_id):
-        return self._call_update({'id': trial_id, 'status': 'undeploying'}, progress=['ready','packaged_with_error'])
+        try:
+            return self._call_update({'id': trial_id, 'status': 'undeploying'}, progress=['ready','packaged_with_error'])
+        except Exception as e:
+            if "transition to this status impossible" in str(e):
+                self.ctx.log("Model %s already undeployed."%trial_id)
+            else:
+                self.ctx.error("Model %s undeploy error: %s"%(trial_id,e))
 
     def check_endpoint(self, props=None):
         if not props:
