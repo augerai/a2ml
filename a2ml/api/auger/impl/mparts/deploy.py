@@ -38,7 +38,8 @@ class ModelDeploy(object):
         if not pipeline_properties.get('endpoint_pipelines'):
             self.ctx.log('Creating review endpoint ...')
             endpoint_api = AugerEndpointApi(self.ctx, None)
-            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'))
+            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), 
+                fsclient.get_path_base_name(self.ctx.config.get('source')))
             pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
         else:
             endpoint_api = AugerEndpointApi(self.ctx, None, 
