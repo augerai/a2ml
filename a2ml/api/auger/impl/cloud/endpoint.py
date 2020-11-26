@@ -11,5 +11,5 @@ class AugerEndpointApi(AugerBaseApi):
         super(AugerEndpointApi, self).__init__(
             ctx, endpoint_api, None, endpoint_id)
 
-    def create(self, pipeline_id):
-        return self._call_create({'pipeline_id': pipeline_id},[])
+    def create(self, pipeline_id, name):
+        return self._call_create({'pipeline_id': pipeline_id, 'name': name},[])
