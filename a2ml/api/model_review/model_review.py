@@ -17,16 +17,13 @@ class ModelReview(object):
     def __init__(self, params):
         self.model_id = params.get('hub_info', {}).get('pipeline_id')
         self.model_path = params.get('model_path')
+        self.params = params
 
         if not self.model_path:
             self.model_path = ModelHelper.get_model_path(self.model_id, params['hub_info'].get('project_path'))
 
-        self.options = fsclient.read_json_file(os.path.join(self.model_path, "options.json"))
-        if params.get('hub_info'):
-            self.options['hub_info'] = params['hub_info']
+        self._load_options()
 
-        self.target_feature = self.options.get('targetFeature')
-        self.original_features = self.options.get("originalFeatureColumns")
 
     # def get_actuals_statistic(self, date_from=None, date_to=None):
     #     count_actuals = self.count_actuals_by_prediction_id()
@@ -39,9 +36,22 @@ class ModelReview(object):
     #         'distribution_chart_stats': distribution_chart_stats
     #     }
 
+    def _load_options(self):
+        self.options_path = os.path.join(self.model_path, "options.json")
+        self.options_file_exists = fsclient.is_file_exists(self.options_path)
+
+        self.options = fsclient.read_json_file(self.options_path)
+
+        if self.params.get('hub_info'):
+            self.options['hub_info'] = self.params['hub_info']
+
+        self.target_feature = self.options.get('targetFeature')
+        self.original_features = self.options.get("originalFeatureColumns", [])
+
+
     def _do_score_actual(self, df_data):
         ds_true = DataFrame({})
-        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual':self.target_feature})
+        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual': self.target_feature})
 
         ds_predict = DataFrame({})
         ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
@@ -51,11 +61,38 @@ class ModelReview(object):
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
+    def add_external_model(self, target_column, scoring, task_type):
+        ModelHelper.create_model_options_file(
+            options_path=self.options_path,
+            scoring=scoring,
+            target_column=target_column,
+            task_type=task_type,
+        )
+
+        self._load_options()
+
+
+        return True
+
     def add_actuals(
-        self, ctx, actuals_path=None, data=None, columns=None,
+        self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger'
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
+
+        if external_model:
+            options = self.options.copy()
+
+            if 'hub_info' in options:
+                del options['hub_info']
+
+            ModelHelper.update_model_options_file(
+                options_path=self.options_path,
+                options=options,
+                ds_actuals=ds_actuals,
+            )
+
+            self._load_options()
 
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
@@ -78,9 +115,9 @@ class ModelReview(object):
                 raise Exception(res['data'])
 
         result = self._do_score_actual(ds_actuals.df)
-        logging.info("Actual result: %s", result)    
+        logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
-        ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual':self.target_feature})
+        ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual': self.target_feature})
 
         if not actuals_id:
             actuals_id = get_uid()

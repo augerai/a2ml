@@ -79,7 +79,7 @@ def build_and_send_task_result_to_hub(args, status, result, traceback=None):
         if params and params.get('hub_info', {}).get('cluster_task_id'):
             response = {
                 'type': 'TaskResult',
-                'provider': params['provider'],
+                'provider': params.get('provider'), # provider == None -> means external provider
                 'hub_info': params['hub_info'],
                 'status': status,
                 'runtime': time.time() - current_task.start_time,
@@ -99,6 +99,7 @@ def process_task_result(task_func):
         try:
             result = task_func(*args, **kwargs)
             build_and_send_task_result_to_hub(args, 'success', result)
+            return result
         except Exception as e:
             build_and_send_task_result_to_hub(
                 args,
@@ -479,6 +480,15 @@ def deploy_model_task(params):
 
 @celeryApp.task(ignore_result=True)
 @process_task_result
+def add_external_model_task(params):
+    return ModelReview(params).add_external_model(
+        target_column=params.get('target_column'),
+        scoring=params.get('scoring'),
+        task_type=params.get('task_type'),
+    )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
     provider = params.get('provider', 'auger')
@@ -527,9 +537,13 @@ def predict_by_model_task(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def score_actuals_by_model_task(params):
-    ctx = _create_provider_context(params)
-    ctx = _read_hub_experiment_session(ctx, params)
-    ctx.config.clean_changes()
+    ctx = None
+    external_model = params.get("external_model", False)
+
+    if not external_model:
+        ctx = _create_provider_context(params)
+        ctx = _read_hub_experiment_session(ctx, params)
+        ctx.config.clean_changes()
 
     return ModelReview(params).add_actuals(
         ctx,
@@ -540,7 +554,8 @@ def score_actuals_by_model_task(params):
         actual_date_column=params.get('actual_date_column'),
         actuals_id=params.get('actuals_id'),
         return_count=params.get('return_count', False),
-        provider=params.get('provider')
+        provider=params.get('provider'),
+        external_model=external_model,
     )
 
 @celeryApp.task(ignore_result=True)
@@ -557,7 +572,7 @@ def delete_actuals_task(params):
 def score_model_performance_daily_task(params):
     return ModelReview(params).score_model_performance_daily(
         date_from=params.get('date_from'),
-        date_to=params.get('date_to')
+        date_to=params.get('date_to'),
     )
 
 @celeryApp.task(ignore_result=True)
@@ -572,7 +587,7 @@ def set_support_review_model_flag_task(params):
 def distribution_chart_stats_task(params):
     return ModelReview(params).distribution_chart_stats(
         date_from=params.get('date_from'),
-        date_to=params.get('date_to')
+        date_to=params.get('date_to'),
     )
 
 @celeryApp.task(ignore_result=True)

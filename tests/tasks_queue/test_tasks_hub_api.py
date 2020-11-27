@@ -1,11 +1,19 @@
 import botocore
-import os
-import pytest
-import unittest
+import datetime
 import json
+import os
+import numbers
+import pytest
+import re
+import time
+import unittest
+
+from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
+from a2ml.api.utils import fsclient
 from a2ml.api.utils.s3_fsclient import BotoClient, S3FSClient
+from tests.model_review.test_model_review import assert_actual_file, remove_actual_files, write_actuals
 
 # pytestmark = pytest.mark.usefixtures('config_context')
 
@@ -298,3 +306,195 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         with pytest.raises(botocore.exceptions.ClientError, match=r"HeadBucket operation: Not Found"):
             client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPStatusCode']
+
+    def test_score_actuals_by_model_task_with_external_model(self):
+        setattr(score_actuals_by_model_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        options_path = os.path.join(model_path, "options.json")
+        actual_date = "2020-11-16"
+
+        remove_actual_files(model_path)
+        self._write_options_file(model_path, None, "y", with_features=False)
+
+        params = {
+            "hub_info": hub_info,
+            "external_model": True,
+            "actual_at": "2020-11-16T14:15:53.996Z",
+            "actual_date": actual_date,
+            "return_count": True,
+            "target_column": "y",
+            "scoring": "accuracy",
+            "task_type": "classification",
+            "actual_columns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "y", "actual"],
+            "actual_records": [
+                [1, 2.2, datetime.date(2020, 11, 16), True, "cat1", 0, 0],
+                [1, 2.5, datetime.date(2020, 11, 17), False, "cat2", 0, 1],
+            ],
+        }
+
+        with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+            res = score_actuals_by_model_task(params)
+
+            assert 0.5 == res["score"]["accuracy"]
+            assert 2 == res["count"]
+
+            saved_actuals = list(assert_actual_file(model_path, actual_date=actual_date, with_features=True))
+            assert 1 == len(saved_actuals)
+
+            (day, _, actuals) = saved_actuals[0]
+
+            assert actual_date == str(day)
+            assert 2 == len(actuals)
+
+            options = fsclient.read_json_file(options_path)
+
+            assert options == {
+                "targetFeature": "y",
+                "featureColumns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "actual"],
+                "task_type": "classification",
+                "scoring": "accuracy",
+                "score_name": "accuracy",
+                "scoreNames": ["accuracy"],
+                "classification": True,
+                "categoricalFeatures": ["x_date", "x_str"],
+                "binaryClassification": False,
+                "datasource_transforms": [[]],
+            }
+
+    def test_score_model_performance_daily_task_with_external_model(self):
+        setattr(score_model_performance_daily_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        date_from = datetime.date(2020, 11, 16)
+        date_to = datetime.date(2020, 11, 17)
+        remove_actual_files(model_path)
+
+        params = {
+            "hub_info": hub_info,
+            "external_model": True,
+            "date_from": str(date_from),
+            "date_to": str(date_to),
+        }
+
+
+        actuals = self._build_actuals([date_from, date_to])
+        write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
+        write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+        self._write_options_file(model_path, actuals, "y")
+
+        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+            res = score_model_performance_daily_task(params)
+            assert {str(date_from): 0.5, str(date_to): 1.0} == res
+
+    def test_distribution_chart_stats_task_with_external_model(self):
+        setattr(distribution_chart_stats_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        date_from = datetime.date(2020, 11, 16)
+        date_to = datetime.date(2020, 11, 17)
+        remove_actual_files(model_path)
+
+        params = {
+            "hub_info": hub_info,
+            "external_model": True,
+            "date_from": str(date_from),
+            "date_to": str(date_to),
+        }
+
+        actuals = self._build_actuals([date_from, date_to])
+        write_actuals(model_path, actuals[date_from], with_features=True, date=date_from)
+        write_actuals(model_path, actuals[date_to], with_features=False, date=date_to)
+        self._write_options_file(model_path, actuals, "y")
+
+        with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
+            res = distribution_chart_stats_task(params)
+            assert 2 == len(res)
+            assert 2 == len(res[str(date_to)])
+            assert "actual_y" in res[str(date_to)]
+            assert "predicted_y" in res[str(date_to)]
+
+    def test_add_external_model_task(self):
+        setattr(add_external_model_task, "start_time", time.time())
+
+        hub_info, project_name, model_path = self._build_hub_info()
+        options_path = os.path.join(model_path, "options.json")
+
+        fsclient.remove_file(options_path)
+
+        params = {
+            "hub_info": hub_info,
+            "target_column": "y",
+            "scoring": "accuracy",
+            "task_type": "classification",
+        }
+
+        with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+            add_external_model_task(params)
+
+            options = fsclient.read_json_file(options_path)
+
+            assert options == {
+                "targetFeature": "y",
+                "task_type": "classification",
+                "classification": True,
+                "scoring": "accuracy",
+                "score_name": "accuracy",
+                "scoreNames": ["accuracy"],
+            }
+
+
+    def _build_actuals(self, dates=None):
+        dates = dates or [datetime.date.today()]
+
+        def actuals(index):
+            return {
+                "x1": [1.1, 1.2],
+                "x2": [2.1, 2.2],
+                "x3": [3.1, 3.2],
+                "y": [0, 0],
+                "a2ml_predicted": [0, 1 if index % 2 == 0 else 0],
+            }
+
+        return { date : actuals(index) for index, date in enumerate(dates) }
+
+
+    def _build_hub_info(self):
+        project_name = "external-project"
+
+        hub_info = {
+            "pipeline_id": "b7c5c4ef5a7b3a24",
+            "project_name": project_name,
+            "project_path": f"tmp/workspace/projects/{project_name}",
+            "cluster_task_id": 144237,
+        }
+
+        model_path = os.path.join(hub_info["project_path"], "models", hub_info["pipeline_id"])
+        return hub_info, project_name, model_path
+
+    def _write_options_file(self, model_path, actuals, target_feature, with_features=True):
+        feature_columns = []
+        categorical_features = []
+
+        if actuals:
+            for feature, values in list(actuals.values())[0].items():
+                if feature != target_feature:
+                    feature_columns.append(feature)
+                    if not isinstance(values[0], numbers.Number):
+                        categorical_features.append(feature)
+
+        options = {
+            "targetFeature": target_feature,
+            "task_type": "classification",
+            "classification": True,
+            "scoring": "accuracy",
+            "score_name": "accuracy",
+            "scoreNames": ["accuracy"],
+        }
+
+        if with_features:
+            options["featureColumns"] = feature_columns
+            options["categoricalFeatures"] = categorical_features
+            options["datasource_transforms"] = [[]]
+
+        fsclient.write_json_file(os.path.join(model_path, "options.json"), options)

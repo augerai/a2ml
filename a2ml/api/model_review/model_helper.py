@@ -413,3 +413,31 @@ class ModelHelper(object):
 
         return remove_dups_from_list(selected_cols)
 
+    @staticmethod
+    def create_model_options_file(options_path, scoring, target_column, task_type):
+        options = {}
+        options["targetFeature"] = target_column
+        options["task_type"] = task_type
+        options["scoring"] = scoring
+        options["score_name"] = scoring
+        options["scoreNames"] = [scoring]
+
+        if task_type == "classification":
+            options["classification"] = True
+
+        fsclient.write_json_file(options_path, options)
+
+        return options
+
+    def update_model_options_file(options_path, options, ds_actuals):
+        ds_actuals.options = options
+
+        feature_columns = ds_actuals.columns
+        feature_columns.remove(options["targetFeature"])
+        ds_actuals.options["featureColumns"] = feature_columns
+
+        summary = ds_actuals.getSummary()
+        options = ds_actuals.update_options_by_dataset_statistics(summary["stat_data"])
+        fsclient.write_json_file(options_path, options)
+
+        return options

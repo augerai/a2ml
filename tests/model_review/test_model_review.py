@@ -113,8 +113,8 @@ def test_distribution_chart_stats_with_null_booleans():
       'a2ml_predicted': [True, False],
     }
 
-    _remove_actual_files(model_path)
-    _write_actuals(model_path, actuals, with_features=True, date=date_from)
+    remove_actual_files(model_path)
+    write_actuals(model_path, actuals, with_features=True, date=date_from)
 
     res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
     assert type(res) is dict
@@ -216,7 +216,7 @@ def test_clear_model_results_and_actuals():
 def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actuals_file():
     model_path = 'tests/fixtures/test_score_actuals/categorical_convert'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       {
@@ -251,7 +251,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
       None, actuals_path=None, data=actuals, actual_date=str(actual_date), return_count=True
     )
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, actual_date=actual_date, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, actual_date=actual_date, with_features=True):
       assert actuals[0]['class'] == 'good'
       assert actuals[0]['a2ml_predicted'] == 'good'
       assert actuals[0]['checking_status'] == 'no checking'
@@ -259,7 +259,7 @@ def test_score_actuals_should_not_convert_predicted_categorical_to_int_in_actual
 def test_score_actuals_dict_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       {
@@ -284,7 +284,7 @@ def test_score_actuals_dict_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -296,7 +296,7 @@ def test_score_actuals_dict_full():
 def test_score_actuals_dict_list_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = {
       'species': ['virginica', 'virginica'],
@@ -311,7 +311,7 @@ def test_score_actuals_dict_list_full():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
       assert actuals[0]['sepal_length'] == 5.0
@@ -324,7 +324,7 @@ def test_score_actuals_dict_list_full():
 def test_score_actuals_dict_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       {
@@ -353,7 +353,7 @@ def test_score_actuals_dict_wo_predicted():
     assert res['count'] == 2
     assert res['score']['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['species'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -365,7 +365,7 @@ def test_score_actuals_dict_wo_predicted():
 def test_score_actuals_dict_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       { 'species': 'virginica', 'actual': 'versicolor' },
@@ -376,7 +376,7 @@ def test_score_actuals_dict_wo_features():
 
     assert res['accuracy'] == 0.5
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
       assert actuals[0]['species'] == 'versicolor'
 
@@ -386,7 +386,7 @@ def test_score_actuals_dict_wo_features():
 def test_score_actuals_dict_wo_prediction_and_missing_features():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [{ 'actual': 'versicolor', 'sepal_length': 1.0, 'petal_length': 2.0 }]
 
@@ -396,7 +396,7 @@ def test_score_actuals_dict_wo_prediction_and_missing_features():
 def test_score_actuals_dict_only_actual():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [{ 'actual': 'versicolor' }]
 
@@ -409,7 +409,7 @@ def test_score_actuals_dict_only_actual():
 def test_score_actuals_dict_only_prediction():
     model_path = 'tests/fixtures/test_score_actuals/iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [{ 'species': 'versicolor' }]
 
@@ -419,7 +419,7 @@ def test_score_actuals_dict_only_prediction():
 def test_score_actuals_dict_with_predicted_none():
     model_path = 'tests/fixtures/test_score_actuals'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     row = {
       'age': 33,
@@ -453,7 +453,7 @@ def test_score_actuals_dict_with_predicted_none():
     assert res['count'] == 3
     assert res['score']['accuracy'] == 0.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == True
       assert actuals[0]['income'] == None
       assert actuals[0]['age'] == 33
@@ -467,14 +467,14 @@ def test_score_actuals_dict_with_predicted_none():
 def test_score_iris_csv_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals.csv')
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -483,7 +483,7 @@ def test_score_iris_csv_full_with_date_columns():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
     actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       None,
@@ -494,7 +494,7 @@ def test_score_iris_csv_full_with_date_columns():
 
     assert res['accuracy'] == 1.0
 
-    saved_actuals = list(_assert_actual_file(model_path, with_features=True))
+    saved_actuals = list(assert_actual_file(model_path, with_features=True))
 
     assert len(saved_actuals) == 4
 
@@ -512,7 +512,7 @@ def test_score_iris_csv_full_with_date_columns():
 def test_score_iris_csv_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     params = _load_score_task_params(model_path)
     ctx = _build_context(params)
@@ -523,7 +523,7 @@ def test_score_iris_csv_wo_predicted():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -531,21 +531,21 @@ def test_score_iris_csv_wo_predicted():
 def test_score_iris_csv_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     res = ModelReview({'model_path': model_path}).add_actuals(
       None, actuals_path='tests/fixtures/test_score_actuals/lucas-iris/iris_actuals_wo_features.csv')
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
 def test_score_actuals_lucas_case_array_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       ["Iris-setosa", 5.1, 3.5, 1.4, 0.2, "Iris-setosa"],
@@ -567,7 +567,7 @@ def test_score_actuals_lucas_case_array_full():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -576,7 +576,7 @@ def test_score_actuals_lucas_case_array_full():
 def test_score_actuals_lucas_case_array_wo_prediceted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       # actual sepal_length sepal_width petal_length petal_width
@@ -591,7 +591,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 
     assert res['accuracy'] == 1.0
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=True):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'setosa'
       assert actuals[0]['class'] == 'setosa'
       assert actuals[0]['sepal_length'] == 5.1
@@ -599,7 +599,7 @@ def test_score_actuals_lucas_case_array_wo_prediceted():
 def test_score_actuals_lucas_case_array_wo_features():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
 
-    _remove_actual_files(model_path)
+    remove_actual_files(model_path)
 
     actuals = [
       ["Iris-setosa", "Iris-setosa"],
@@ -615,7 +615,7 @@ def test_score_actuals_lucas_case_array_wo_features():
 
     assert res['accuracy'] == 2 / 3
 
-    for (_date, _path, actuals) in _assert_actual_file(model_path, with_features=False):
+    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=False):
       assert actuals[0]['a2ml_predicted'] == 'Iris-setosa'
       assert actuals[0]['class'] == 'Iris-setosa'
 
@@ -625,7 +625,7 @@ def test_score_actuals_lucas_case_array_wo_features():
 def test_score_actuals_another_result_first():
   model_path = 'tests/fixtures/test_score_actuals/another_result_first'
 
-  _remove_actual_files(model_path)
+  remove_actual_files(model_path)
 
   actuals = [
     {
@@ -732,7 +732,7 @@ def test_delete_actuals(with_predictions, begin_date, end_date, expected_files_l
     files_left = os.listdir(predictions_path) if os.path.exists(predictions_path) else []
     assert sorted(files_left) == sorted(expected_files_left)
 
-def _write_actuals(model_path, actuals, with_features=True, date=None):
+def write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)
     date = str(date or datetime.date.today())
     uid = uuid.uuid4().hex[:15].upper()
@@ -743,11 +743,13 @@ def _write_actuals(model_path, actuals, with_features=True, date=None):
       compression="zstd"
     )
 
-def _remove_actual_files(model_path):
+def remove_actual_files(model_path):
+    os.makedirs(os.path.join(model_path, 'predictions'), exist_ok=True)
+
     for actuals_path in glob.glob(model_path + '/predictions/*_data.feather.zstd'):
       os.remove(actuals_path)
 
-def _assert_actual_file(model_path, actual_date=None, with_features=True):
+def assert_actual_file(model_path, actual_date=None, with_features=True):
     actual_files = glob.glob(model_path + '/predictions/*_data.feather.zstd')
     actual_files.sort()
 
