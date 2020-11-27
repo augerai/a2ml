@@ -414,13 +414,14 @@ class ModelHelper(object):
         return remove_dups_from_list(selected_cols)
 
     @staticmethod
-    def create_model_options_file(options_path, scoring, target_column, task_type):
+    def create_model_options_file(options_path, scoring, target_column, task_type, support_review_model):
         options = {}
         options["targetFeature"] = target_column
         options["task_type"] = task_type
         options["scoring"] = scoring
         options["score_name"] = scoring
         options["scoreNames"] = [scoring]
+        options["support_review_model"] = support_review_model
 
         if task_type == "classification":
             options["classification"] = True

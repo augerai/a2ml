@@ -441,6 +441,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 "scoring": "accuracy",
                 "score_name": "accuracy",
                 "scoreNames": ["accuracy"],
+                "support_review_model": True,
             }
 
 

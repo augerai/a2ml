@@ -61,18 +61,21 @@ class ModelReview(object):
 
         return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
-    def add_external_model(self, target_column, scoring, task_type):
+    def add_external_model(self, target_column, scoring, task_type, support_review_model):
         ModelHelper.create_model_options_file(
             options_path=self.options_path,
             scoring=scoring,
             target_column=target_column,
             task_type=task_type,
+            support_review_model=support_review_model,
         )
 
         self._load_options()
 
-
-        return True
+        return {
+            "data": True,
+            "result": True,
+        }
 
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
