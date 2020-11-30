@@ -20,7 +20,7 @@ from a2ml.api.stats.feature_divergence import FeatureDivergence
 from a2ml.api.utils import dict_dig, merge_dicts
 from a2ml.api.utils.json_utils import json_dumps_np
 from a2ml.api.utils.context import Context
-from a2ml.api.utils.s3_fsclient import S3FSClient
+from a2ml.api.utils.s3_fsclient import S3FSClient, BotoClient
 from a2ml.tasks_queue.config import Config
 
 from .celery_app import celeryApp
@@ -655,3 +655,19 @@ def delete_org_bucket(params):
     client.ensure_bucket_deleted(Bucket=params['bucket_name'])
 
     return True
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def presign_s3_url_task(params):
+    client = BotoClient()
+
+    if params.get('multipart', False):
+        return client.get_multipart_upload_config()
+    else:
+        return client.generate_presigned_url_ex(
+            bucket=params['bucket'],
+            key=params['key'],
+            method=params['method'],
+            expires_in=params.get('expires_in'),
+            max_content_length=params.get('max_content_length'),
+        )

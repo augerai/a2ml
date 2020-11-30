@@ -1,11 +1,13 @@
+import boto3
 import botocore
-import os
 import datetime
-from dateutil.tz import tzutc
-import mimetypes
 import logging
+import mimetypes
+import os
 import time
+
 from a2ml.api.utils import retry_helper
+from dateutil.tz import tzutc
 
 
 def retry_handler(decorated):
@@ -16,8 +18,6 @@ def retry_handler(decorated):
 
 class BotoClient:
     def __init__(self, region=None):
-        import boto3
-
         endpoint_url = os.environ.get('S3_ENDPOINT_URL')
 
         self.client = None
@@ -110,25 +110,46 @@ class BotoClient:
         return self.client.copy(*args, **kwargs)
 
     @retry_handler
-    def generate_presigned_url_ex(self, bucket, path):
-        import boto3
+    def generate_presigned_url_ex(self, bucket, key, method="GET", expires_in=None, max_content_length=None):
+        response = self.client.get_bucket_location(Bucket=bucket)
 
-        response = self.client.get_bucket_location(
-            Bucket=bucket
-        )
         s3_client = boto3.client(
             's3',
-            config=boto3.session.Config(signature_version='s3v4',
-                region_name=response.get('LocationConstraint'))
+            config=boto3.session.Config(
+                signature_version='s3v4',
+                region_name=response.get('LocationConstraint')
+            )
         )
 
-        return s3_client.generate_presigned_url(
-            ClientMethod='get_object',
-            Params={
-                'Bucket': bucket,
-                'Key': path
-            }
-        )
+        if method == 'POST':
+            conditions = None
+
+            if max_content_length:
+                conditions = [["content-length-range", 0, max_content_length]]
+
+            return s3_client.generate_presigned_post(
+                Bucket=bucket,
+                Key=key,
+                ExpiresIn=expires_in or 3600,
+                Fields={'success_action_status': 200},
+                Conditions=conditions,
+            )
+        elif method == "GET" or method == "PUT":
+            client_method = 'get_object'
+
+            if method == 'PUT':
+                client_method = 'put_object'
+
+            return s3_client.generate_presigned_url(
+                ClientMethod=client_method,
+                ExpiresIn=expires_in,
+                Params={
+                    'Bucket': bucket,
+                    'Key': key
+                },
+            )
+        else:
+            raise ValueError(f"unexpected method: '{method}'")
 
     def get_waiter_names(self):
         return self.client.waiter_names
@@ -494,8 +515,6 @@ class S3FSClient:
             self.download_file(path_src, path_dst)
 
     def _s3_upload_file(self, path_local, path_s3):
-        import boto3
-
         s3_config = boto3.s3.transfer.TransferConfig(use_threads=False)
 
         mimetype, encoding = mimetypes.guess_type(path_local)
@@ -528,7 +547,7 @@ class S3FSClient:
 
     def download_file(self, path, local_path):
         from .local_fsclient import LocalFSClient
-        import boto3
+
         try:
             from urllib.parse import urlparse
         except ImportError:

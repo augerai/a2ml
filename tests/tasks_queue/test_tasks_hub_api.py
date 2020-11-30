@@ -443,7 +443,6 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 "scoreNames": ["accuracy"],
             }
 
-
     def _build_actuals(self, dates=None):
         dates = dates or [datetime.date.today()]
 
@@ -498,3 +497,61 @@ class TestTasksHubApiAuger(unittest.TestCase):
             options["datasource_transforms"] = [[]]
 
         fsclient.write_json_file(os.path.join(model_path, "options.json"), options)
+
+@pytest.mark.parametrize("expires_in", [1800, None])
+@pytest.mark.parametrize("method", ["GET", "PUT"])
+def test_presign_s3_url_task_get_put(expires_in, method):
+    setattr(presign_s3_url_task, "start_time", time.time())
+
+    bucket = "auger-mt-org-test"
+    client = S3FSClient()
+    client.ensure_bucket_created(bucket)
+
+    params = {
+        "bucket": bucket,
+        "key": "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv",
+        "method": method,
+        "expires_in": expires_in,
+    }
+
+    with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+        res = presign_s3_url_task(params)
+
+        assert isinstance(res, str)
+        assert f"https://{bucket}" in res
+
+        if expires_in:
+            assert f"X-Amz-Expires={expires_in}" in res
+        else:
+            assert f"X-Amz-Expires=3600" in res , "expires_in should be 3600 by default"
+
+@pytest.mark.parametrize("expires_in", [1800, None])
+@pytest.mark.parametrize("max_content_length", [1048576, None])
+def test_presign_s3_url_task_post(expires_in, max_content_length):
+    setattr(presign_s3_url_task, "start_time", time.time())
+
+    bucket = "auger-mt-org-test"
+    key = "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv"
+    client = S3FSClient()
+    client.ensure_bucket_created(bucket)
+
+    params = {
+        "bucket": bucket,
+        "key": key,
+        "method": "POST",
+        "expires_in": expires_in,
+        "max_content_length": max_content_length,
+    }
+
+    with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+        res = presign_s3_url_task(params)
+
+        assert isinstance(res, dict)
+        assert len(res) == 2
+        assert isinstance(res["url"], str)
+        assert f"https://{bucket}" in res["url"]
+
+        fields = res["fields"]
+
+        assert 200 == fields["success_action_status"]
+        assert key == fields["key"]
