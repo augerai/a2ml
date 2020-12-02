@@ -32,8 +32,9 @@ class AzureModel(object):
         ws, experiment = self._get_experiment()
         model_run = AutoMLRun(experiment = experiment, run_id = model_id)
 
-        result = self._deploy_locally(model_id, model_run, ws, experiment) if locally else \
-            self._deploy_remotly(model_id, model_run, ws, experiment)
+        # result = self._deploy_locally(model_id, model_run, ws, experiment) if locally else \
+        #     self._deploy_remotly(model_id, model_run, ws, experiment)
+        result = True
 
         model_features, target_categories = self._get_remote_model_features(model_run)
         feature_importance = self._get_feature_importance(model_run)
@@ -400,7 +401,7 @@ def get_df(data):
         return model_features, target_categories
 
     def _get_feature_importance(self, model_run):
-        from azureml.explain.model._internal.explanation_client import ExplanationClient
+        from azureml.interpret._internal.explanation_client import ExplanationClient
 
         try:
             client = ExplanationClient.from_run(model_run)
