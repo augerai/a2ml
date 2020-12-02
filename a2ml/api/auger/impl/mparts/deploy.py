@@ -21,13 +21,13 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False, review=True):
+    def execute(self, model_id, locally=False, review=True, name=None):
         if locally:
-            return self.deploy_model_locally(model_id, review)
+            return self.deploy_model_locally(model_id, review, name)
         else:
-            return self.deploy_model_in_cloud(model_id, review)
+            return self.deploy_model_in_cloud(model_id, review, name)
 
-    def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None):
+    def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None, name=None):
         if not self.ctx.config.get('review'):
             raise Exception("To use Review, please add section review to config.yml")
 
@@ -38,8 +38,9 @@ class ModelDeploy(object):
         if not pipeline_properties.get('endpoint_pipelines'):
             self.ctx.log('Creating review endpoint ...')
             endpoint_api = AugerEndpointApi(self.ctx, None)
-            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), 
-                fsclient.get_path_base_name(self.ctx.config.get('source')))
+            if not name:
+                name = fsclient.get_path_base_name(self.ctx.config.get('source'))
+            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
             pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
         else:
             endpoint_api = AugerEndpointApi(self.ctx, None, 
@@ -104,7 +105,7 @@ class ModelDeploy(object):
         }
         return result
             
-    def deploy_model_in_cloud(self, model_id, review):
+    def deploy_model_in_cloud(self, model_id, review, name):
         self.ctx.log('Deploying model %s' % model_id)
 
         self.project.start()
@@ -114,7 +115,7 @@ class ModelDeploy(object):
 
         if pipeline_properties.get('status') == 'ready':
             if review:
-                self.create_update_review_alert(model_id, pipeline_properties)
+                self.create_update_review_alert(model_id, pipeline_properties, name=name)
 
             self.ctx.log('Deployed Model on Auger Cloud. Model id is %s' % \
                 pipeline_properties.get('id'))            
@@ -124,7 +125,7 @@ class ModelDeploy(object):
 
         return pipeline_properties.get('id')
 
-    def deploy_model_locally(self, model_id, review):
+    def deploy_model_locally(self, model_id, review, name):
         is_loaded, model_path, model_name = self.verify_local_model(model_id)
         #TODO: support review flag
         if not is_loaded:

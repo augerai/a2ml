@@ -25,7 +25,7 @@ class A2MLModel(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None, name=None):
         """Deploy a model locally or to specified provider(s).
 
         Args:
@@ -33,6 +33,7 @@ class A2MLModel(BaseA2ML):
             locally(bool): Deploys using a local model if True, on the Provider Cloud if False.
             review(bool): Should model support review based on actual data. The default is True.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+            name (str): Friendly name for the model. Used as name for Review Endpoint
 
         Returns:
             ::
@@ -48,7 +49,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).deploy(model_id='D881079E1ED14FB', locally=True)
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 

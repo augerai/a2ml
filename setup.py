@@ -30,7 +30,7 @@ class VerifyVersionCommand(install):
 install_requires = [
     'numpy<1.19.0,>=1.16.0',  # version for azure
     'pandas>=0.22',  # version for azure
-    'joblib>=0.11',  # version for azure
+    'joblib>=0.14.1',  # version for azure
     'ruamel.yaml>0.16.7',  # version for azure
     'pyarrow<2.0.0,>=0.17.0',  # version for azure
     'scipy==1.5.2',
@@ -73,11 +73,11 @@ extras = {
         'uvicorn',
     ],
     'azure': [
-        'scikit-learn==0.22.1',
+        'scikit-learn~=0.22.2',
         'xgboost<=0.90',
         # https://github.com/Azure/azure-sdk-for-python/issues/13871
-        'azure-mgmt-resource==10.2.0',
-        'azureml-sdk[automl]~=1.13.0'
+        #'azure-mgmt-resource==10.2.0',
+        'azureml-sdk[automl]~=1.18.0'
     ],
     'google': [
         'google-cloud-automl'

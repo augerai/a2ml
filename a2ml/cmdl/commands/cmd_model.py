@@ -17,10 +17,12 @@ def cmdl(ctx):
     help='Do not support model review based on actual data.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
+@click.option('--name', '-n', required=False, type=click.STRING, 
+    help='Model friendly name.Used as name for Review Endpoint')
 @pass_context
-def deploy(ctx, provider, model_id, locally, no_review):
+def deploy(ctx, provider, model_id, locally, no_review, name):
     """Deploy trained model."""
-    A2MLModel(ctx, provider).deploy(model_id, locally, not no_review)
+    A2MLModel(ctx, provider).deploy(model_id, locally, not no_review, name=name)
 
 @click.command('predict', short_help='Predict with deployed model.')
 @click.argument('filename', required=True, type=click.STRING)

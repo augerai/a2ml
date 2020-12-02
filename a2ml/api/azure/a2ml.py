@@ -21,10 +21,10 @@ class AzureA2ML(object):
 
         return AzureExperiment(self.ctx).leaderboard(run_id)
 
-    def deploy(self, model_id, locally=False, review=True):
+    def deploy(self, model_id, locally=False, review=True, name=None):
         from a2ml.api.azure.model import AzureModel
 
-        return AzureModel(self.ctx).deploy(model_id, locally, review)
+        return AzureModel(self.ctx).deploy(model_id, locally, review, name)
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
         from a2ml.api.azure.model import AzureModel
