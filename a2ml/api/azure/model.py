@@ -20,7 +20,7 @@ class AzureModel(object):
 
     @error_handler
     @authenticated
-    def deploy(self, model_id, locally, review):
+    def deploy(self, model_id, locally, review, name=None):
         if locally:
             is_loaded, model_path = self.verify_local_model(model_id)
             if is_loaded:
@@ -46,6 +46,7 @@ class AzureModel(object):
             'scoreNames': [self.ctx.config.get('experiment/metric')],
             'scoring': self.ctx.config.get('experiment/metric'),
             "score_name": self.ctx.config.get('experiment/metric'),
+            "review_metric": self.ctx.config.get('experiment/review_metric'),
             "originalFeatureColumns": model_features,
             "model_type": self.ctx.config.get("model_type")
         }

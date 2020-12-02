@@ -224,7 +224,11 @@ class ModelReview(object):
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
                 scores = self._do_score_actual(df_actuals.df)
-                res[str(curr_date)] = scores[self.options.get('score_name')]
+                score_name = self.options.get('score_name')
+                if self.options.get('review_metric'):
+                    score_name = self.options.get('review_metric')
+                        
+                res[str(curr_date)] = scores[score_name]
 
         return res
 

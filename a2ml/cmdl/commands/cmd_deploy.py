@@ -11,8 +11,10 @@ from a2ml.api.utils.context import pass_context
     help='Download and deploy trained model locally.')
 @click.option('--no-review', is_flag=True, default=False,
     help='Do not support model review based on actual data.')
+@click.option('--name', '-n', required=False, type=click.STRING, 
+    help='Model friendly name.Used as name for Review Endpoint')
 @pass_context
-def cmdl(ctx, provider, model_id, locally, no_review):
+def cmdl(ctx, provider, model_id, locally, no_review, name):
     """Deploy trained model."""
     ctx.setup_logger(format='')
-    A2ML(ctx, provider).deploy(model_id, locally, not no_review)
+    A2ML(ctx, provider).deploy(model_id, locally, not no_review, name=name)
