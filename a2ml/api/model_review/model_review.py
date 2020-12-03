@@ -229,7 +229,7 @@ class ModelReview(object):
                     score_name = self.options.get('review_metric')
                         
                 res[str(curr_date)] = scores[score_name]
-                if 'FP' in scores.get():
+                if 'FP' in scores:
                     res['FP'] = scores['FP']
                     res['TN'] = scores['TN']
                     res['FN'] = scores['FN']
