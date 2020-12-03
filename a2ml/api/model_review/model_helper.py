@@ -159,6 +159,7 @@ class ModelHelper(object):
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
         from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
+        from sklearn.metrics import confusion_matrix
         # For calculate_scores
         from .scores.regression import spearman_correlation_score
         from .scores.classification import AUC_weighted_score
@@ -183,6 +184,13 @@ class ModelHelper(object):
                 logging.error("calculate_scores: no scaling found for target fold group: %s"%options['fold_group'])
 
         all_scores = {}
+        if y_pred is not None and options.get('binaryClassification'):
+            tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()    
+            all_scores['FP'] = fp
+            all_scores['TN'] = tn
+            all_scores['FN'] = fn
+            all_scores['TP'] = tp
+
         for scoring in options.get('scoreNames', []):
             try:
                 if options.get('task_type') == "timeseries":

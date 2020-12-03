@@ -229,7 +229,12 @@ class ModelReview(object):
                     score_name = self.options.get('review_metric')
                         
                 res[str(curr_date)] = scores[score_name]
-
+                if 'FP' in scores.get():
+                    res['FP'] = scores['FP']
+                    res['TN'] = scores['TN']
+                    res['FN'] = scores['FN']
+                    res['TP'] = scores['TP']
+                    
         return res
 
     def distribution_chart_stats(self, date_from, date_to):

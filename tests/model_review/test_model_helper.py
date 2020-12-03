@@ -38,6 +38,27 @@ class TestModelHelper(unittest.TestCase):
         self.assertEqual(len(scores), len(options['scoreNames']))
         self.assertTrue(scores['accuracy']>0.8)
 
+    def test_calculate_scores_binary(self):
+        model_path = 'tests/fixtures/test_predict_by_model/credit-g'
+        options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+
+        y_test, _ = ModelHelper.preprocess_target(model_path,
+            records=[["bad"], ["bad"], ["good"], ["good"], ["bad"], ["good"]],
+            features=["class"]
+        )
+        y_pred, _ = ModelHelper.preprocess_target(model_path,
+            records=[["bad"], ["good"], ["good"], ["bad"], ["bad"], ["good"]],
+            features=["class"]
+        )
+
+        scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
+        self.assertEqual(len(scores), len(options['scoreNames'])+4)
+        self.assertTrue(scores['accuracy']>0.6)
+        self.assertTrue(scores['FP']==1)
+        self.assertTrue(scores['TN']==2)
+        self.assertTrue(scores['FN']==1)
+        self.assertTrue(scores['TP']==2)
+
     def test_process_prediction(self):
         model_path = 'tests/fixtures/test_predict_by_model/iris'
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
