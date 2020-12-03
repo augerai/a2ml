@@ -185,11 +185,23 @@ class ModelHelper(object):
 
         all_scores = {}
         if y_pred is not None and options.get('binaryClassification'):
-            tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()    
-            all_scores['FP'] = fp
-            all_scores['TN'] = tn
-            all_scores['FN'] = fn
-            all_scores['TP'] = tp
+            print(y_test)
+            print(y_pred)
+            res = confusion_matrix(y_test, y_pred).ravel()    
+            #tn, fp, fn, tp
+            all_scores['TN'] = 0
+            all_scores['FP'] = 0
+            all_scores['FN'] = 0
+            all_scores['TP'] = 0
+
+            if len(res) > 0:
+                all_scores['TN'] = res[0]
+            if len(res) > 1:
+                all_scores['FP'] = res[1]
+            if len(res) > 2:
+                all_scores['FN'] = res[2]
+            if len(res) > 3:
+                all_scores['TP'] = res[3]
 
         for scoring in options.get('scoreNames', []):
             try:
