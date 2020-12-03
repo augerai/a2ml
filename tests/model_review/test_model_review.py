@@ -17,7 +17,6 @@ from pyarrow import feather
 from a2ml.api.utils import fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_review import ModelReview
-from a2ml.tasks_queue.tasks_hub_api import _create_provider_context, _read_hub_experiment_session
 from tests.vcr_helper import vcr
 
 def test_score_model_performance_daily():
@@ -416,53 +415,54 @@ def test_score_actuals_dict_only_prediction():
     with pytest.raises(Exception, match=r"There is no 'actual' column in data"):
       ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
 
-def test_score_actuals_dict_with_predicted_none():
-    model_path = 'tests/fixtures/test_score_actuals'
+# We do not support it
+# def test_score_actuals_dict_with_predicted_none():
+#     model_path = 'tests/fixtures/test_score_actuals'
 
-    remove_actual_files(model_path)
+#     remove_actual_files(model_path)
 
-    row = {
-      'age': 33,
-      'capital-gain': 0,
-      'capital-loss': 0,
-      'education': 'Some-college',
-      'fnlwgt': 1,
-      'hours-per-week': 40,
-      'marital-status': 'Never-married',
-      'native-country': 'United-States',
-      'occupation': 'Prof-specialty',
-      'race': 'White',
-      'relationship': 'Not-in-family',
-      'sex': 'Male',
-      'workclass': 'Private'
-    }
+#     row = {
+#       'age': 33,
+#       'capital-gain': 0,
+#       'capital-loss': 0,
+#       'education': 'Some-college',
+#       'fnlwgt': 1,
+#       'hours-per-week': 40,
+#       'marital-status': 'Never-married',
+#       'native-country': 'United-States',
+#       'occupation': 'Prof-specialty',
+#       'race': 'White',
+#       'relationship': 'Not-in-family',
+#       'sex': 'Male',
+#       'workclass': 'Private'
+#     }
 
-    actuals = [
-      {'feature1': 1, 'income': True, 'actual': None },
-      {'feature1': 1.1, 'income': False,'actual': None },
-      {'feature1': 1.3, 'income': False,'actual': None },
-    ]
+#     actuals = [
+#       {'feature1': 1, 'income': True, 'actual': None },
+#       {'feature1': 1.1, 'income': False,'actual': None },
+#       {'feature1': 1.3, 'income': False,'actual': None },
+#     ]
 
-    for actual in actuals:
-      actual.update(row)
+#     for actual in actuals:
+#       actual.update(row)
 
-    res = ModelReview({'model_path': model_path}).add_actuals(
-      None, actuals_path=None, data=actuals, return_count=True
-    )
+#     res = ModelReview({'model_path': model_path}).add_actuals(
+#       None, actuals_path=None, data=actuals, return_count=True
+#     )
 
-    assert res['count'] == 3
-    assert res['score']['accuracy'] == 0.0
+#     assert res['count'] == 3
+#     assert res['score']['accuracy'] == 0.0
 
-    for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
-      assert actuals[0]['a2ml_predicted'] == True
-      assert actuals[0]['income'] == None
-      assert actuals[0]['age'] == 33
+#     for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
+#       assert actuals[0]['a2ml_predicted'] == True
+#       assert actuals[0]['income'] == None
+#       assert actuals[0]['age'] == 33
 
-      assert actuals[1]['a2ml_predicted'] == False
-      assert actuals[1]['income'] == None
+#       assert actuals[1]['a2ml_predicted'] == False
+#       assert actuals[1]['income'] == None
 
-      assert actuals[2]['a2ml_predicted'] == False
-      assert actuals[2]['income'] == None
+#       assert actuals[2]['a2ml_predicted'] == False
+#       assert actuals[2]['income'] == None
 
 def test_score_iris_csv_full():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -778,6 +778,8 @@ def assert_actual_file(model_path, actual_date=None, with_features=True):
       yield(date, actual_file, stored_actuals)
 
 def _build_context(params):
+    from a2ml.tasks_queue.tasks_hub_api import _create_provider_context, _read_hub_experiment_session
+
     ctx = _create_provider_context(params)
     ctx = _read_hub_experiment_session(ctx, params)
     ctx.config.clean_changes()
