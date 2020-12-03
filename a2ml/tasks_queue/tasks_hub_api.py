@@ -662,7 +662,11 @@ def presign_s3_url_task(params):
     client = BotoClient()
 
     if params.get('multipart', False):
-        return client.get_multipart_upload_config()
+        return client.get_multipart_upload_config(
+            bucket=params['bucket'],
+            key=params['key'],
+            expires_in=params.get('expires_in'),
+        )
     else:
         return client.generate_presigned_url_ex(
             bucket=params['bucket'],

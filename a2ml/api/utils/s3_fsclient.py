@@ -1,13 +1,16 @@
 import boto3
 import botocore
 import datetime
+import json
 import logging
 import mimetypes
 import os
 import time
+import uuid
 
 from a2ml.api.utils import retry_helper
 from dateutil.tz import tzutc
+from urllib.parse import urlparse
 
 
 def retry_handler(decorated):
@@ -17,23 +20,19 @@ def retry_handler(decorated):
     return wrapper
 
 class BotoClient:
-    def __init__(self, region=None):
-        endpoint_url = os.environ.get('S3_ENDPOINT_URL')
+    def __init__(self, region=None, aws_role_arn=None, endpoint_url=None):
+        self.endpoint_url = endpoint_url or os.environ.get('S3_ENDPOINT_URL')
+        self.aws_role_arn = aws_role_arn or os.environ.get('AWS_ROLE_ARN')
+        self.region = region
+        self.client = self._build_client('s3')
 
-        self.client = None
-        if endpoint_url:
-            self.client = boto3.client(
-                's3',
-                endpoint_url=endpoint_url,
-                config=boto3.session.Config(signature_version='s3v4'),
-                region_name=region,
-            )
-        else:
-            self.client = boto3.client(
-                's3',
-                config=boto3.session.Config(signature_version='s3v4'),
-                region_name=region,
-            )
+    def _build_client(self, service_name):
+        return boto3.client(
+            service_name,
+            endpoint_url=self.endpoint_url,
+            config=boto3.session.Config(signature_version='s3v4'),
+            region_name=self.region,
+        )
 
     @retry_handler
     def get_waiter(self, *args, **kwargs):
@@ -115,6 +114,7 @@ class BotoClient:
 
         s3_client = boto3.client(
             's3',
+            endpoint_url=self.endpoint_url,
             config=boto3.session.Config(
                 signature_version='s3v4',
                 region_name=response.get('LocationConstraint')
@@ -150,6 +150,58 @@ class BotoClient:
             )
         else:
             raise ValueError(f"unexpected method: '{method}'")
+
+    @retry_handler
+    def get_multipart_upload_config(self, bucket, key, expires_in=None):
+        sts_client = self._build_client('sts')
+
+        response = sts_client.assume_role(
+            RoleArn=self.aws_role_arn,
+            RoleSessionName='upload_' + str(uuid.uuid4()),
+            DurationSeconds=expires_in,
+            Policy=self._build_upload_polciy(bucket, key)
+        )
+
+        credentials = response["Credentials"]
+        endpoint = self.client._endpoint.host
+
+        return {
+            "bucket": bucket,
+            "key": key,
+            "config": {
+                "endpoint": endpoint,
+                "port": urlparse(endpoint).port,
+                "use_ssl": True,
+                "access_key": credentials["AccessKeyId"],
+                "secret_key": credentials["SecretAccessKey"],
+                "security_token": credentials["SessionToken"],
+            }
+        }
+
+    def _build_upload_polciy(self, bucket, key):
+        return json.dumps(
+            {
+                "Version": '2012-10-17',
+                "Statement": [
+                    {
+                        "Action": [
+                            "s3:HeadBucket",
+                            "s3:PutObject",
+                            "s3:GetObject",
+                            "s3:DeleteObject",
+                            "s3:AbortMultipartUpload",
+                            "s3:ListMultipartUploadParts",
+                            "s3:ListBucketMultipartUploads"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                            f"arn:aws:s3:::{bucket}/{key}"
+                        ],
+                        "Sid": ""
+                    }
+                ]
+            }
+        )
 
     def get_waiter_names(self):
         return self.client.waiter_names

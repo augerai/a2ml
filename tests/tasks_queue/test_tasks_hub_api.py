@@ -1,4 +1,5 @@
 import botocore
+import boto3
 import datetime
 import json
 import os
@@ -8,6 +9,7 @@ import re
 import time
 import unittest
 
+from botocore.stub import Stubber, ANY
 from unittest.mock import patch
 
 from a2ml.tasks_queue.tasks_hub_api import *
@@ -518,7 +520,7 @@ def test_presign_s3_url_task_get_put(expires_in, method):
         res = presign_s3_url_task(params)
 
         assert isinstance(res, str)
-        assert f"https://{bucket}" in res
+        assert f"/{bucket}/" in res
 
         if expires_in:
             assert f"X-Amz-Expires={expires_in}" in res
@@ -549,9 +551,69 @@ def test_presign_s3_url_task_post(expires_in, max_content_length):
         assert isinstance(res, dict)
         assert len(res) == 2
         assert isinstance(res["url"], str)
-        assert f"https://{bucket}" in res["url"]
+        assert f"/{bucket}" in res["url"]
 
         fields = res["fields"]
 
         assert 200 == fields["success_action_status"]
         assert key == fields["key"]
+
+# Looks like it's not possible or very complex to create IAM role in Minio
+# So mock here
+@patch("a2ml.api.utils.s3_fsclient.BotoClient._build_client")
+def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch):
+    role_arn = "some_role_arn-12312233434"
+    setattr(presign_s3_url_task, "start_time", time.time())
+    monkeypatch.setenv("AWS_ROLE_ARN", role_arn)
+
+    client = boto3.client('sts')
+    stubber = Stubber(client)
+    build_client_mock.return_value = client
+
+    assume_role_response = {
+        "Credentials": {
+            "AccessKeyId": "some-strong-secret-a",
+            "SecretAccessKey": "some-strong-secret-s",
+            "SessionToken": "some-strong-secret-t",
+            "Expiration": datetime.datetime.now(),
+        }
+    }
+
+    expires_in = 1800
+
+    expected_params = {
+        'RoleArn': role_arn,
+        'DurationSeconds': expires_in,
+        'Policy': ANY,
+        'RoleSessionName': ANY,
+    }
+
+    stubber.add_response('assume_role', assume_role_response, expected_params)
+
+    with stubber:
+        bucket = "auger-mt-org-test"
+        key = "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv"
+
+        params = {
+            "multipart": True,
+            "bucket": bucket,
+            "key": key,
+            "expires_in": expires_in,
+        }
+
+        with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
+            res = presign_s3_url_task(params)
+
+            assert isinstance(res, dict)
+            assert len(res) == 3
+            assert bucket == res["bucket"]
+            assert key == res["key"]
+            assert isinstance(res["config"], dict)
+
+            assert assume_role_response["Credentials"]["AccessKeyId"] == res["config"]["access_key"]
+            assert assume_role_response["Credentials"]["SecretAccessKey"] == res["config"]["secret_key"]
+            assert assume_role_response["Credentials"]["SessionToken"] == res["config"]["security_token"]
+            assert "endpoint" in res["config"]
+            assert "port" in res["config"]
+            assert "use_ssl" in res["config"]
+
