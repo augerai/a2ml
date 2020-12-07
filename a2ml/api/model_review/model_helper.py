@@ -160,8 +160,10 @@ class ModelHelper(object):
         from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
         from sklearn.metrics import confusion_matrix
+        from sklearn.preprocessing import MinMaxScaler
+
         # For calculate_scores
-        from .scores.regression import spearman_correlation_score
+        from .scores.regression import spearman_correlation_score, mae
         from .scores.classification import AUC_weighted_score
 
         import inspect
@@ -184,24 +186,32 @@ class ModelHelper(object):
                 logging.error("calculate_scores: no scaling found for target fold group: %s"%options['fold_group'])
 
         all_scores = {}
-        if y_pred is not None and options.get('binaryClassification'):
-            print(y_test)
-            print(y_pred)
-            res = confusion_matrix(y_test, y_pred).ravel()    
-            #tn, fp, fn, tp
-            all_scores['TN'] = 0
-            all_scores['FP'] = 0
-            all_scores['FN'] = 0
-            all_scores['TP'] = 0
+        if y_pred is not None:
+            if options.get('binaryClassification'):
+                res = confusion_matrix(y_test, y_pred).ravel()    
+                #tn, fp, fn, tp
+                all_scores['TN'] = 0
+                all_scores['FP'] = 0
+                all_scores['FN'] = 0
+                all_scores['TP'] = 0
 
-            if len(res) > 0:
-                all_scores['TN'] = res[0]
-            if len(res) > 1:
-                all_scores['FP'] = res[1]
-            if len(res) > 2:
-                all_scores['FN'] = res[2]
-            if len(res) > 3:
-                all_scores['TP'] = res[3]
+                if len(res) > 0:
+                    all_scores['TN'] = res[0]
+                if len(res) > 1:
+                    all_scores['FP'] = res[1]
+                if len(res) > 2:
+                    all_scores['FN'] = res[2]
+                if len(res) > 3:
+                    all_scores['TP'] = res[3]
+            elif options.get("task_type") == "regression":
+                scaler = MinMaxScaler()
+                y_test_2 = np.reshape(y_test, (-1, 1))
+                y_pred_2 = np.reshape(y_pred, (-1, 1))
+                scaler.partial_fit(y_test_2)
+                scaler.partial_fit(y_pred_2)
+                y_test1 = scaler.transform(y_test_2)
+                y_pred1 = scaler.transform(y_pred_2)
+                all_scores['normilized_mae'] = mae(np.ravel(y_test1), np.ravel(y_pred1))
 
         for scoring in options.get('scoreNames', []):
             try:
