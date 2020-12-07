@@ -385,7 +385,14 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = score_model_performance_daily_task(params)
-            assert {str(date_from): 0.5, str(date_to): 1.0} == res
+            assert type(res) is dict
+            date_item = res[str(date_from)]
+            score = date_item['scores'][date_item['score_name']]
+            assert score == 0.5
+            date_item = res[str(date_to)]
+            score = date_item['scores'][date_item['score_name']]
+            assert score == 1.0            
+            #assert {str(date_from): 0.5, str(date_to): 1.0} == res
 
     def test_distribution_chart_stats_task_with_external_model(self):
         setattr(distribution_chart_stats_task, "start_time", time.time())
