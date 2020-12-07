@@ -27,8 +27,14 @@ def test_score_model_performance_daily():
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
 
     assert type(res) is dict
-    assert type(res[str(date_from)]) is numpy.float64
-    assert res[str(date_from)] > 0
+    date_item = res[str(date_from)]
+    assert type(date_item) is dict
+    assert date_item['scores']
+    assert date_item['score_name']
+    score = date_item['scores'][date_item['score_name']]
+    assert type(score) is numpy.float64
+    assert score > 0
+    assert 'review_metric' in date_item
 
 def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
@@ -38,8 +44,12 @@ def test_score_model_performance_daily_none_actuals():
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
 
     assert type(res) is dict
-    assert res[str(date_from)] == 1 / 3
-    assert res[str(date_to)] == 1 / 3
+    date_item = res[str(date_from)]
+    score = date_item['scores'][date_item['score_name']]
+    assert score == 1 / 3
+    date_item = res[str(date_to)]
+    score = date_item['scores'][date_item['score_name']]
+    assert score == 1 / 3
 
 def test_distribution_chart_stats_for_categorical_target():
     model_path = 'tests/fixtures/test_distribution_chart_stats/iris'
