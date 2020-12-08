@@ -278,6 +278,7 @@ def test_score_actuals_dict_full():
         'sepal_width': 4.0,
         'petal_length': 3.0,
         'petal_width': 1.0,
+        'baseline_target': 'virginica'
       },
       {
         'species': 'virginica',
@@ -286,12 +287,14 @@ def test_score_actuals_dict_full():
         'sepal_width': 2.0,
         'petal_length': 1.0,
         'petal_width': 1.0,
+        'baseline_target': 'virginica'
       },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
-
-    assert res['accuracy'] == 0.5
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals, return_count=True)
+    assert res['score']['accuracy'] == 0.5
+    assert res['baseline_score']['accuracy'] == 0.5
+    assert res['count'] == 2
 
     for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'

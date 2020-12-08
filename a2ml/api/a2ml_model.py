@@ -134,6 +134,7 @@ class A2MLModel(BaseA2ML):
 
                 * - target: predicted value
                   - actual
+                  - baseline_target: predicted value for baseline model (OPTIONAL)
                 * - Iris-setosa
                   - Iris-setosa
                 * - Iris-virginica
