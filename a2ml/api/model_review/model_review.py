@@ -49,12 +49,15 @@ class ModelReview(object):
         self.original_features = self.options.get("originalFeatureColumns", [])
 
 
-    def _do_score_actual(self, df_data):
+    def _do_score_actual(self, df_data, predicted_feature=None):
         ds_true = DataFrame({})
         ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual': self.target_feature})
 
         ds_predict = DataFrame({})
-        ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
+        if predicted_feature:
+            ds_predict.df = df_data[[predicted_feature]].rename(columns={predicted_feature: self.target_feature})
+        else:    
+            ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
 
         y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
         y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
@@ -115,7 +118,11 @@ class ModelReview(object):
                 raise Exception(res['data'])
 
         result = self._do_score_actual(ds_actuals.df)
-        logging.info("Actual result: %s", result)
+        baseline_score = {}
+        if "baseline_target" in ds_actuals.columns:
+            baseline_score = self._do_score_actual(ds_actuals.df, "baseline_target")
+
+        #logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
         ds_actuals.df = ds_actuals.df.rename(columns={'a2ml_actual': self.target_feature})
 
@@ -141,7 +148,7 @@ class ModelReview(object):
             ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
         if return_count:
-            return {'score': result, 'count': actuals_count}
+            return {'score': result, 'count': actuals_count, 'baseline_score': baseline_score}
         else:
             return result
 
@@ -224,16 +231,17 @@ class ModelReview(object):
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
                 scores = self._do_score_actual(df_actuals.df)
-                score_name = self.options.get('score_name')
-                if self.options.get('review_metric'):
-                    score_name = self.options.get('review_metric')
-                        
-                res[str(curr_date)] = scores[score_name]
-                if 'FP' in scores:
-                    res['FP'] = scores['FP']
-                    res['TN'] = scores['TN']
-                    res['FN'] = scores['FN']
-                    res['TP'] = scores['TP']
+
+                baseline_score = {}
+                if "baseline_target" in df_actuals.columns:
+                    baseline_score = self._do_score_actual(df_actuals.df, "baseline_target")
+
+                res[str(curr_date)] = {
+                    'scores': scores,
+                    'score_name': self.options.get('score_name'),
+                    'review_metric': self.options.get('review_metric'),
+                    'baseline_scores': baseline_score
+                }
                     
         return res
 

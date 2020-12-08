@@ -27,8 +27,14 @@ def test_score_model_performance_daily():
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
 
     assert type(res) is dict
-    assert type(res[str(date_from)]) is numpy.float64
-    assert res[str(date_from)] > 0
+    date_item = res[str(date_from)]
+    assert type(date_item) is dict
+    assert date_item['scores']
+    assert date_item['score_name']
+    score = date_item['scores'][date_item['score_name']]
+    assert type(score) is numpy.float64
+    assert score > 0
+    assert 'review_metric' in date_item
 
 def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
@@ -38,8 +44,12 @@ def test_score_model_performance_daily_none_actuals():
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
 
     assert type(res) is dict
-    assert res[str(date_from)] == 1 / 3
-    assert res[str(date_to)] == 1 / 3
+    date_item = res[str(date_from)]
+    score = date_item['scores'][date_item['score_name']]
+    assert score == 1 / 3
+    date_item = res[str(date_to)]
+    score = date_item['scores'][date_item['score_name']]
+    assert score == 1 / 3
 
 def test_distribution_chart_stats_for_categorical_target():
     model_path = 'tests/fixtures/test_distribution_chart_stats/iris'
@@ -268,6 +278,7 @@ def test_score_actuals_dict_full():
         'sepal_width': 4.0,
         'petal_length': 3.0,
         'petal_width': 1.0,
+        'baseline_target': 'virginica'
       },
       {
         'species': 'virginica',
@@ -276,12 +287,14 @@ def test_score_actuals_dict_full():
         'sepal_width': 2.0,
         'petal_length': 1.0,
         'petal_width': 1.0,
+        'baseline_target': 'virginica'
       },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals)
-
-    assert res['accuracy'] == 0.5
+    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals, return_count=True)
+    assert res['score']['accuracy'] == 0.5
+    assert res['baseline_score']['accuracy'] == 0.5
+    assert res['count'] == 2
 
     for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'

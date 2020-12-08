@@ -59,6 +59,50 @@ class TestModelHelper(unittest.TestCase):
         self.assertTrue(scores['FN']==1)
         self.assertTrue(scores['TP']==2)
 
+    def test_calculate_scores_regression(self):
+        model_path = 'tests/fixtures/test_predict_by_model/bike'
+        options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+
+        y_test, _ = ModelHelper.preprocess_target(model_path,
+            records=[[100], [0], [34], [88], [44], [1]],
+            features=["cnt"]
+        )
+        y_pred, _ = ModelHelper.preprocess_target(model_path,
+            records=[[0], [100], [35], [80], [40], [23]],
+            features=["cnt"]
+        )
+
+        scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
+        assert scores['normilized_mae'] > 0.39
+
+    def test_calculate_scores_regression_1(self):
+        model_path = 'tests/fixtures/test_predict_by_model/bike'
+        options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+
+        y_test, _ = ModelHelper.preprocess_target(model_path,
+            records=[[100], [0], [34], [88], [44], [1]],
+            features=["cnt"]
+        )
+        y_pred, _ = ModelHelper.preprocess_target(model_path,
+            records=[[100], [0], [34], [88], [44], [1]],
+            features=["cnt"]
+        )
+
+        scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
+        assert scores['normilized_mae'] == 0.0
+
+        y_test, _ = ModelHelper.preprocess_target(model_path,
+            records=[[100], [10], [34], [88], [44], [1]],
+            features=["cnt"]
+        )
+        y_pred, _ = ModelHelper.preprocess_target(model_path,
+            records=[[0], [0], [0], [0], [0], [0]],
+            features=["cnt"]
+        )
+
+        scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
+        assert scores['normilized_mae'] >= 0.46
+
     def test_process_prediction(self):
         model_path = 'tests/fixtures/test_predict_by_model/iris'
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
