@@ -10,12 +10,12 @@ def cmdl(ctx):
     ctx.setup_logger(format='')
 
 @click.command('deploy', short_help='Deploy trained model.')
-@click.argument('model-id', required=True, type=click.STRING)
+@click.argument('model-id', required=False, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
 @click.option('--no-review', is_flag=True, default=False,
     help='Do not support model review based on actual data.')
-@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+@click.option('--provider', '-p', type=click.Choice(['auger','azure','external']), required=False,
     help='Cloud AutoML Provider.')
 @click.option('--name', '-n', required=False, type=click.STRING, 
     help='Model friendly name.Used as name for Review Endpoint')

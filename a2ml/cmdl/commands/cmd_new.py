@@ -76,7 +76,7 @@ class NewCmd(object):
 @click.command('new', short_help='Create new A2ML project.')
 @click.argument('project', required=True, type=click.STRING)
 @click.option('--providers', '-p', default='auger',
-    type=click.Choice(['all','auger','google','azure']),
+    type=click.Choice(['all','auger','google','azure','external']),
     help='Model Provider.')
 @click.option('--source', '-s',  default='', type=click.STRING,
     help='Data source local file or remote url.')
