@@ -393,7 +393,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             assert score == 0.5
             date_item = res[str(date_to)]
             score = date_item['scores'][date_item['score_name']]
-            assert score == 1.0            
+            assert score == 1.0
             #assert {str(date_from): 0.5, str(date_to): 1.0} == res
 
     def test_distribution_chart_stats_task_with_external_model(self):
@@ -509,19 +509,25 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
 @pytest.mark.parametrize("expires_in", [1800, None])
 @pytest.mark.parametrize("method", ["GET", "PUT"])
-def test_presign_s3_url_task_get_put(expires_in, method):
+@pytest.mark.parametrize("with_path", [False, True])
+def test_presign_s3_url_task_get_put(expires_in, method, with_path):
     setattr(presign_s3_url_task, "start_time", time.time())
 
     bucket = "auger-mt-org-test"
+    key = "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv"
     client = S3FSClient()
     client.ensure_bucket_created(bucket)
 
     params = {
-        "bucket": bucket,
-        "key": "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv",
         "method": method,
         "expires_in": expires_in,
     }
+
+    if with_path:
+        params["path"] = f"s3://{bucket}/{key}"
+    else:
+        params["bucket"] = bucket
+        params["key"] = key
 
     with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
         res = presign_s3_url_task(params)
@@ -536,7 +542,8 @@ def test_presign_s3_url_task_get_put(expires_in, method):
 
 @pytest.mark.parametrize("expires_in", [1800, None])
 @pytest.mark.parametrize("max_content_length", [1048576, None])
-def test_presign_s3_url_task_post(expires_in, max_content_length):
+@pytest.mark.parametrize("with_path", [False, True])
+def test_presign_s3_url_task_post(expires_in, max_content_length, with_path):
     setattr(presign_s3_url_task, "start_time", time.time())
 
     bucket = "auger-mt-org-test"
@@ -545,12 +552,16 @@ def test_presign_s3_url_task_post(expires_in, max_content_length):
     client.ensure_bucket_created(bucket)
 
     params = {
-        "bucket": bucket,
-        "key": key,
         "method": "POST",
         "expires_in": expires_in,
         "max_content_length": max_content_length,
     }
+
+    if with_path:
+        params["path"] = f"s3://{bucket}/{key}"
+    else:
+        params["bucket"] = bucket
+        params["key"] = key
 
     with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
         res = presign_s3_url_task(params)
@@ -567,8 +578,9 @@ def test_presign_s3_url_task_post(expires_in, max_content_length):
 
 # Looks like it's not possible or very complex to create IAM role in Minio
 # So mock here
+@pytest.mark.parametrize("with_path", [False, True])
 @patch("a2ml.api.utils.s3_fsclient.BotoClient._build_client")
-def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch):
+def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch, with_path):
     role_arn = "some_role_arn-12312233434"
     setattr(presign_s3_url_task, "start_time", time.time())
     monkeypatch.setenv("AWS_ROLE_ARN", role_arn)
@@ -603,10 +615,14 @@ def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch
 
         params = {
             "multipart": True,
-            "bucket": bucket,
-            "key": key,
             "expires_in": expires_in,
         }
+
+        if with_path:
+            params["path"] = f"s3://{bucket}/{key}"
+        else:
+            params["bucket"] = bucket
+            params["key"] = key
 
         with patch("a2ml.tasks_queue.tasks_hub_api.send_result_to_hub") as mock_requests:
             res = presign_s3_url_task(params)
