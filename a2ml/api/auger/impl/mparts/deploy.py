@@ -114,7 +114,7 @@ class ModelDeploy(object):
         else:    
             self.project.start()
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create(model_id, review, name)
+                self.ctx, None).create(model_id, review)
 
         if pipeline_properties.get('status') == 'ready':
             if review:
