@@ -399,7 +399,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_id</strong> (<em>str</em>) -- The model id from any experiment you will deploy.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em>) -- The model id from any experiment you will deploy. Ignored for 'external' provider</p></li>
 <li><p><strong>locally</strong> (<em>bool</em>) -- Deploys the model locally if True, on the Provider Cloud if False. The default is False.</p></li>
 <li><p><strong>review</strong> (<em>bool</em>) -- Should model support review based on actual data. The default is True.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
