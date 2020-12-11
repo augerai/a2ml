@@ -207,25 +207,21 @@ class BotoClient:
         return self.client.waiter_names
 
 class S3FSClient:
+    @staticmethod
+    def split_path_to_bucket_and_key(path):
+        uri = urlparse(path)
+
+        rel_path = uri.path[1:]
+        rel_path = rel_path.replace("//", "/")
+        if rel_path.endswith("/"):
+            rel_path = rel_path[:-1]
+
+        return uri.netloc, rel_path
 
     def _get_relative_path(self, path):
-        try:
-            from urllib.parse import urlparse
-        except ImportError:
-            from urlparse import urlparse
-
-        relPath = path
-        uri = urlparse(path)
-        self.s3BucketName = uri.netloc
-
+        self.s3BucketName, rel_path = S3FSClient.split_path_to_bucket_and_key(path)
         self.client = BotoClient()
-        relPath = uri.path[1:]
-
-        relPath = relPath.replace("//", "/")
-        if relPath.endswith("/"):
-            relPath = relPath[:-1]
-
-        return relPath
+        return rel_path
 
     def get_smart_open_transport_params(self):
         transport_params = None
