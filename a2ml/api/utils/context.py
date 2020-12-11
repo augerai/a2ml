@@ -8,7 +8,7 @@ import warnings
 log = logging.getLogger("a2ml")
 
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='A2ML')
-PROVIDERS = ['auger', 'google', 'azure']
+PROVIDERS = ['auger', 'google', 'azure', 'external']
 PROVIDERS_META = '|'.join(PROVIDERS)
 
 
@@ -103,6 +103,9 @@ class Context(object):
             return "azure"
 
         return "auger"
+
+    def is_external_provider(self):
+        return self.config.get_list('providers')[0] == 'external'
 
     def copy(self, name):
         """creates a copy of an existing Context

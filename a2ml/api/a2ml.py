@@ -178,7 +178,7 @@ class A2ML(BaseA2ML):
             This method support only one provider
 
         Args:
-            model_id (str): The model id from any experiment you will deploy.
+            model_id (str): The model id from any experiment you will deploy. Ignored for 'external' provider
             locally(bool): Deploys the model locally if True, on the Provider Cloud if False. The default is False.
             review(bool): Should model support review based on actual data. The default is True.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.

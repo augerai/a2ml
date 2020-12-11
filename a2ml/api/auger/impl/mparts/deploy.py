@@ -108,10 +108,13 @@ class ModelDeploy(object):
     def deploy_model_in_cloud(self, model_id, review, name):
         self.ctx.log('Deploying model %s' % model_id)
 
-        self.project.start()
-
-        pipeline_properties = AugerPipelineApi(
-            self.ctx, None).create(model_id, review)
+        if self.ctx.is_external_provider():
+            pipeline_properties = AugerPipelineApi(
+                self.ctx, None).create_external(review, name, self.project.object_id)
+        else:    
+            self.project.start()
+            pipeline_properties = AugerPipelineApi(
+                self.ctx, None).create(model_id, review)
 
         if pipeline_properties.get('status') == 'ready':
             if review:

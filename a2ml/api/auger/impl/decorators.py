@@ -13,7 +13,7 @@ def _get_project(self, autocreate):
     project = Project(self.ctx, project_name)
     project_properties = project.properties()
     if project_properties is None:
-        if autocreate:
+        if autocreate or self.ctx.is_external_provider():
             self.ctx.log(
                 'Can\'t find project %s on the Auger Cloud. '
                 'Creating...' % project_name)
