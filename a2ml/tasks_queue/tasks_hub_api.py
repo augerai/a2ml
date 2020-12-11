@@ -661,6 +661,10 @@ def delete_org_bucket(params):
 def presign_s3_url_task(params):
     client = BotoClient()
 
+    path = params.get('path')
+    if path:
+        params['bucket'], params['key'] = S3FSClient.split_path_to_bucket_and_key(path)
+
     if params.get('multipart', False):
         return client.get_multipart_upload_config(
             bucket=params['bucket'],
