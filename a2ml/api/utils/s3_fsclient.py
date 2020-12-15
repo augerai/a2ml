@@ -125,7 +125,7 @@ class BotoClient:
             conditions = [{"success_action_status": "200"}]
 
             if max_content_length:
-                conditions = [["content-length-range", 0, max_content_length]]
+                conditions.append(["content-length-range", 0, max_content_length])
 
             return s3_client.generate_presigned_post(
                 Bucket=bucket,
@@ -170,7 +170,7 @@ class BotoClient:
             "key": key,
             "config": {
                 "endpoint": endpoint,
-                "port": urlparse(endpoint).port,
+                "port": urlparse(endpoint).port or 443,
                 "use_ssl": True,
                 "access_key": credentials["AccessKeyId"],
                 "secret_key": credentials["SecretAccessKey"],
