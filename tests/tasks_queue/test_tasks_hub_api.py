@@ -582,12 +582,16 @@ def test_presign_s3_url_task_post(expires_in, max_content_length, with_path):
 @patch("a2ml.api.utils.s3_fsclient.BotoClient._build_client")
 def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch, with_path):
     role_arn = "some_role_arn-12312233434"
+    aws_s3_host = "s3.amazonaws.com"
     setattr(presign_s3_url_task, "start_time", time.time())
     monkeypatch.setenv("AWS_ROLE_ARN", role_arn)
 
-    client = boto3.client('sts')
-    stubber = Stubber(client)
-    build_client_mock.return_value = client
+    sts_client = boto3.client('sts')
+    sts_stubber = Stubber(sts_client)
+    s3_client = boto3.client('s3')
+    s3_client._endpoint = botocore.endpoint.Endpoint(f"https://{aws_s3_host}", "s3", None)
+
+    build_client_mock.side_effect = [s3_client, sts_client]
 
     assume_role_response = {
         "Credentials": {
@@ -607,9 +611,9 @@ def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch
         'RoleSessionName': ANY,
     }
 
-    stubber.add_response('assume_role', assume_role_response, expected_params)
+    sts_stubber.add_response('assume_role', assume_role_response, expected_params)
 
-    with stubber:
+    with sts_stubber:
         bucket = "auger-mt-org-test"
         key = "workspace/projects/alex-mt-test-exp/files/iris-d336e4.csv"
 
@@ -636,7 +640,10 @@ def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch
             assert assume_role_response["Credentials"]["AccessKeyId"] == res["config"]["access_key"]
             assert assume_role_response["Credentials"]["SecretAccessKey"] == res["config"]["secret_key"]
             assert assume_role_response["Credentials"]["SessionToken"] == res["config"]["security_token"]
+
             assert "endpoint" in res["config"]
             assert "port" in res["config"]
             assert "use_ssl" in res["config"]
+
+            assert f"{bucket}.{aws_s3_host}" in res["config"]["endpoint"]
 

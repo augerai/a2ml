@@ -12,6 +12,7 @@ from a2ml.api.utils import retry_helper
 from dateutil.tz import tzutc
 from urllib.parse import urlparse
 
+AWS_S3_HOST = "s3.amazonaws.com"
 
 def retry_handler(decorated):
     def wrapper(self, *args, **kwargs):
@@ -164,13 +165,20 @@ class BotoClient:
 
         credentials = response["Credentials"]
         endpoint = self.client._endpoint.host
+        parsed_url = urlparse(endpoint)
+
+        # Multipart upload requires host if format: "Host: Bucket.s3.amazonaws.com"
+        # see https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+        # but Minio requires plain URL, so check netloc and insert bucket only for AWS S3
+        if parsed_url.netloc == AWS_S3_HOST:
+            endpoint = endpoint.replace(AWS_S3_HOST, f"{bucket}.{AWS_S3_HOST}")
 
         return {
             "bucket": bucket,
             "key": key,
             "config": {
                 "endpoint": endpoint,
-                "port": urlparse(endpoint).port or 443,
+                "port": parsed_url.port or 443,
                 "use_ssl": True,
                 "access_key": credentials["AccessKeyId"],
                 "secret_key": credentials["SecretAccessKey"],
