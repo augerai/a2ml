@@ -122,7 +122,7 @@ class BotoClient:
         )
 
         if method == 'POST':
-            conditions = None
+            conditions = [{"success_action_status": "200"}]
 
             if max_content_length:
                 conditions = [["content-length-range", 0, max_content_length]]
