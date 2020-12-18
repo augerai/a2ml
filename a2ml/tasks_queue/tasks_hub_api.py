@@ -659,7 +659,7 @@ def delete_org_bucket(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def presign_s3_url_task(params):
-    client = BotoClient()
+    client = BotoClient(region=params.get('region'))
 
     path = params.get('path')
     if path:
