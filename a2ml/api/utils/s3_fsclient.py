@@ -171,7 +171,7 @@ class BotoClient:
         # see https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
         # but Minio requires plain URL, so check netloc and insert bucket only for AWS S3
         if parsed_url.netloc == AWS_S3_HOST:
-            endpoint = endpoint.replace(AWS_S3_HOST, f"{bucket}.{AWS_S3_HOST}")
+            endpoint = None
 
         return {
             "bucket": bucket,

@@ -645,5 +645,5 @@ def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch
             assert "port" in res["config"]
             assert "use_ssl" in res["config"]
 
-            assert f"{bucket}.{aws_s3_host}" in res["config"]["endpoint"]
+            assert None == res["config"]["endpoint"]
 
