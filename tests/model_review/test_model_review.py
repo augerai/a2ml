@@ -36,6 +36,23 @@ def test_score_model_performance_daily():
     assert score > 0
     assert 'review_metric' in date_item
 
+def test_score_model_performance_daily():
+    model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
+    date_from = datetime.date(2020, 10, 22)
+    date_to = datetime.date(2020, 10, 22)
+
+    res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
+
+    assert type(res) is dict
+    date_item = res[str(date_from)]
+    assert type(date_item) is dict
+    assert date_item['scores']
+    assert date_item['score_name']
+    score = date_item['scores'][date_item['score_name']]
+    assert type(score) is numpy.float64
+    assert score > 0
+    assert 'review_metric' in date_item
+
 def test_score_model_performance_daily_none_actuals():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris_no_matches'
     date_from = datetime.date(2020, 10, 21)
@@ -304,6 +321,10 @@ def test_score_actuals_dict_full():
       assert actuals[1]['a2ml_predicted'] == 'virginica'
       assert actuals[1]['species'] == 'virginica'
       assert actuals[1]['sepal_length'] == 3.0
+
+    res2 = ModelReview({'model_path': model_path}).score_model_performance_daily(None, None)
+    print(res2)
+    assert res2['today']['baseline_scores']['accuracy'] == 0.5
 
 def test_score_actuals_dict_list_full():
     model_path = 'tests/fixtures/test_score_actuals/iris'
