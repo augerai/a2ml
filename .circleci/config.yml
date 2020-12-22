@@ -6,7 +6,7 @@ orbs:
   role: airswap/assume-role@0.2.0
   aws-cli: circleci/aws-cli@1.3.0
   kubernetes: circleci/kubernetes@0.11.1
-  helm: circleci/helm@1.0.0
+  helm: circleci/helm@1.1.2
 
 jobs:
   build-docs:
