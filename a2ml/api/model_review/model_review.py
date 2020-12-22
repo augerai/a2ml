@@ -217,7 +217,8 @@ class ModelReview(object):
 
     # date_from..date_to inclusive
     def score_model_performance_daily(self, date_from, date_to):
-        features = [self.target_feature, 'a2ml_predicted']
+        #To support baseline_target
+        features = None #[self.target_feature, 'a2ml_predicted']
         res = {}
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(
