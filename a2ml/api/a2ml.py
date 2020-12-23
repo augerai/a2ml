@@ -198,6 +198,14 @@ class A2ML(BaseA2ML):
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.deploy(model_id='A017AC8EAD094FD')
+
+            .. code-block:: python
+
+                ctx = Context()
+                a2ml = A2ML(ctx, 'external')
+                result = a2ml.deploy(model_id=None, name="My external model.")
+                model_id = result['model_id']
+
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name)
 
@@ -322,7 +330,7 @@ class A2ML(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2ML(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
+                A2ML(ctx).actuals('D881079E1ED14FB', filename=<path_to_file>/actuals.csv)
 
             .. code-block:: python
 
@@ -330,7 +338,15 @@ class A2ML(BaseA2ML):
                 actual_records = [['predicted_value_1', 'actual_value_1'], ['predicted_value_2', 'actual_value_2']]
                 columns = [target, 'actual']
 
-                model = A2ML(ctx).actuals('D881079E1ED14FB', data=actual_records,columns=columns)
+                A2ML(ctx).actuals('D881079E1ED14FB', data=actual_records,columns=columns)
+
+            .. code-block:: python
+
+                ctx = Context()
+                actual_records = [['predicted_value_1', 'actual_value_1'], ['predicted_value_2', 'actual_value_2']]
+                columns = [target, 'actual']
+
+                A2ML(ctx, "external").actuals('external_model_id', data=actual_records,columns=columns)
 
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, data, columns, actuals_at, actual_date_column, locally)

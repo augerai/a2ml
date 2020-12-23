@@ -64,7 +64,7 @@ Provider Specfic
   <a href="https://imbalanced-learn.readthedocs.io/en/stable/api.html#module-imblearn.over_sampling" target="_blank">oversampling</a>
 
 
-Currently a2ml supports Auger, Azure, and Google providers.
+Currently a2ml supports Auger, Azure, Google and External providers.
 
 
 Auger
@@ -208,7 +208,10 @@ Google
     * **gsbucket**
 
 
-A2ML can be configured in three different ways.
+External
+^^^^^^^^
+No provider specific yml-file is required. You can pass this provider to model deploy and actuals calls.
+
 
 Architecture
 ============
