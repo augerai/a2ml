@@ -422,6 +422,12 @@
 <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">)</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -537,14 +543,21 @@
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+<span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
 <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
+
+<span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;external&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1060,6 +1073,12 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">locally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">)</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1175,14 +1194,21 @@
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
+<span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=&lt;</span><span class="n">path_to_file</span><span class="o">&gt;/</span><span class="n">actuals</span><span class="o">.</span><span class="n">csv</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
 <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
+
+<span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;external&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
