@@ -73,7 +73,8 @@ class TestModelHelper(unittest.TestCase):
         )
 
         scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
-        assert scores['normilized_mae'] > 0.39
+        assert scores['mae_over'] >= 41
+        assert scores['mae_under'] >= 37
 
     def test_calculate_scores_regression_1(self):
         model_path = 'tests/fixtures/test_predict_by_model/bike'
@@ -89,7 +90,8 @@ class TestModelHelper(unittest.TestCase):
         )
 
         scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
-        assert scores['normilized_mae'] == 0.0
+        assert scores['mae_over'] == 0.0
+        assert scores['mae_under'] == 0.0
 
         y_test, _ = ModelHelper.preprocess_target(model_path,
             records=[[100], [10], [34], [88], [44], [1]],
@@ -101,7 +103,8 @@ class TestModelHelper(unittest.TestCase):
         )
 
         scores = ModelHelper.calculate_scores(options, y_test=y_test, y_pred=y_pred)
-        assert scores['normilized_mae'] >= 0.46
+        assert scores['mae_over'] == 0.0
+        assert scores['mae_under'] >= 46.0
 
     def test_process_prediction(self):
         model_path = 'tests/fixtures/test_predict_by_model/iris'

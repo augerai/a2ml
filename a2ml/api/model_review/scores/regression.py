@@ -20,6 +20,37 @@ def mae(actual: np.ndarray, predicted: np.ndarray):
     """ Mean Absolute Error """
     return np.mean(np.abs(_error(actual, predicted)))
 
+# def normilized_mae(y_test, y_pred):
+#     from sklearn.preprocessing import MinMaxScaler
+
+#     scaler = MinMaxScaler()
+#     y_test_2 = np.reshape(y_test, (-1, 1))
+#     y_pred_2 = np.reshape(y_pred, (-1, 1))
+#     scaler.partial_fit(y_test_2)
+#     scaler.partial_fit(y_pred_2)
+#     y_test1 = scaler.transform(y_test_2)
+#     y_pred1 = scaler.transform(y_pred_2)
+#     return mae(np.ravel(y_test1), np.ravel(y_pred1))
+
+def mae_ex(y_test, y_pred):
+    all_errors = _error(np.ravel(y_test), np.ravel(y_pred))
+    over_errors = []
+    under_errors = []
+    for item in all_errors:
+        if item < 0:
+            over_errors.append(abs(item))            
+        else:
+            under_errors.append(abs(item))
+
+    mae_over = 0.0
+    mae_under = 0.0
+    if over_errors:
+        mae_over = np.mean(over_errors)
+    if under_errors:
+        mae_under = np.mean(under_errors)
+
+    return mae_over, mae_under
+
 def _naive_forecasting(actual: np.ndarray, seasonality: int = 1):
     """ Naive forecasting method which just repeats previous samples """
     return actual[:-seasonality]

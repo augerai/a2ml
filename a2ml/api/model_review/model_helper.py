@@ -160,10 +160,9 @@ class ModelHelper(object):
         from sklearn.metrics.scorer import get_scorer
         from sklearn.model_selection._validation import _score
         from sklearn.metrics import confusion_matrix
-        from sklearn.preprocessing import MinMaxScaler
 
         # For calculate_scores
-        from .scores.regression import spearman_correlation_score, mae
+        from .scores.regression import spearman_correlation_score, mae_ex
         from .scores.classification import AUC_weighted_score
 
         import inspect
@@ -204,14 +203,8 @@ class ModelHelper(object):
                 if len(res) > 3:
                     all_scores['TP'] = res[3]
             elif options.get("task_type") == "regression":
-                scaler = MinMaxScaler()
-                y_test_2 = np.reshape(y_test, (-1, 1))
-                y_pred_2 = np.reshape(y_pred, (-1, 1))
-                scaler.partial_fit(y_test_2)
-                scaler.partial_fit(y_pred_2)
-                y_test1 = scaler.transform(y_test_2)
-                y_pred1 = scaler.transform(y_pred_2)
-                all_scores['normilized_mae'] = mae(np.ravel(y_test1), np.ravel(y_pred1))
+                all_scores['mae_over'], all_scores['mae_under'] = \
+                    mae_ex(y_test, y_pred)
 
         for scoring in options.get('scoreNames', []):
             try:
