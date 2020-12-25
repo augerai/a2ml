@@ -112,9 +112,7 @@ class TestTasksApiAuger(BaseTest):
         params = self.params(
             'auger',
             '2B702A5511A44E3',
-            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
-            None,
-            False
+            'tests/fixtures/iris_for_predict.csv',
         )
 
         res = predict_model_task.apply(params).result
@@ -127,9 +125,7 @@ class TestTasksApiAuger(BaseTest):
         params = self.params(
             'auger',
             'BF8BDC3CD21648A',
-            's3://sample-bucket/workspace/projects/a2ml-app/files/iris_for_predict.csv',
-            None,
-            False
+            'tests/fixtures/iris_for_predict.csv',
         )
 
         res = predict_model_task.apply(params).result

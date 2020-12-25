@@ -276,7 +276,7 @@ def __map_collection_to_name(res, collection_name):
             res[provder]['data'][collection_name] = list(
                 map(lambda x: __map_to_name(x), res[provder]['data'][collection_name])
             )
-                    
+
     return res
 
 def __map_to_name(obj):
