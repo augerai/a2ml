@@ -68,6 +68,27 @@ def test_score_model_performance_daily_none_actuals():
     score = date_item['scores'][date_item['score_name']]
     assert score == 1 / 3
 
+def test_score_model_performance_daily_fn_fp():
+    # one of the files does not contain base line scores
+    # then nan converted to category gives additional invalid class on confision matrix
+    model_path = 'tests/fixtures/test_score_model_performance_daily/fp_fn_adult'
+    date_from = datetime.date(2020, 12, 19)
+    date_to = datetime.date(2020, 12, 19)
+
+    res = ModelReview({'model_path': model_path}).score_model_performance_daily(date_from, str(date_to))
+
+    assert type(res) is dict
+
+    confusion_sum = lambda scores: scores['TN'] + scores['FP'] + scores['FN'] + scores['TP']
+    date_res = res[str(date_to)]
+
+    assert 2 == confusion_sum(date_res['scores'])
+    assert 1 == confusion_sum(date_res['baseline_scores'])
+
+    # actuals with base line result if FN
+    assert date_res['baseline_scores']['FN'] == 1
+
+
 def test_distribution_chart_stats_for_categorical_target():
     model_path = 'tests/fixtures/test_distribution_chart_stats/iris'
     date_from = datetime.date(2020, 10, 22)
@@ -323,7 +344,6 @@ def test_score_actuals_dict_full():
       assert actuals[1]['sepal_length'] == 3.0
 
     res2 = ModelReview({'model_path': model_path}).score_model_performance_daily(None, None)
-    print(res2)
     assert res2['today']['baseline_scores']['accuracy'] == 0.5
 
 def test_score_actuals_dict_list_full():
@@ -697,7 +717,6 @@ def test_build_review_data():
     full_actuals_path = "predictions/2020-10-22_F856362B6833492_full_data.feather.zstd"
 
     res = ModelReview({'model_path': model_path}).build_review_data(data_path=data_path)
-    print(res)
 
     assert re.match(".*/iris_class_review_[0-9A-F]{15}.parquet", res)
     assert 'B6FD93C248984BC' not in res
