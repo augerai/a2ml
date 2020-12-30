@@ -51,12 +51,15 @@ class ModelReview(object):
 
     def _do_score_actual(self, df_data, predicted_feature=None):
         ds_true = DataFrame({})
-        ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual': self.target_feature})
 
         ds_predict = DataFrame({})
         if predicted_feature:
-            ds_predict.df = df_data[[predicted_feature]].rename(columns={predicted_feature: self.target_feature})
-        else:    
+            df_predicted_actual = df_data[[predicted_feature, 'a2ml_actual']].dropna()
+
+            ds_true.df = df_predicted_actual.rename(columns={'a2ml_actual': self.target_feature})
+            ds_predict.df = df_predicted_actual.rename(columns={predicted_feature: self.target_feature})
+        else:
+            ds_true.df = df_data[['a2ml_actual']].rename(columns={'a2ml_actual': self.target_feature})
             ds_predict.df = df_data[[self.target_feature]] # copy to prevent source data modification
 
         y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
@@ -243,7 +246,7 @@ class ModelReview(object):
                     'review_metric': self.options.get('review_metric'),
                     'baseline_scores': baseline_score
                 }
-                    
+
         return res
 
     def distribution_chart_stats(self, date_from, date_to):
