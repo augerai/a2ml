@@ -390,17 +390,21 @@ class A2ML(BaseA2ML):
             locally(bool): Process review locally.
 
         Returns:
+            status(str): May be : started, error, completed, retrain
+            error(str): Description of error if status='error'
+            accuracy(float): Average accuracy of model(based on used metric) for review sensitivity period(see config.yml)
+            
             ::
 
                 {
                     'result': True,
-                    'data': {'status': 'completed', 'error': ''}
+                    'data': {'status': 'completed', 'error': '', 'accuracy': 0.76}
                 }
 
         Examples:
             .. code-block:: python
 
                 ctx = Context()
-                model = A2ML(ctx).review(model_id='D881079E1ED14FB')
+                result = A2ML(ctx).review(model_id='D881079E1ED14FB')
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
