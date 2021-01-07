@@ -378,6 +378,27 @@ class S3FSClient:
             else:
                 raise
 
+        try:
+            config = {
+                'CORSRules': [
+                    {
+                        "AllowedHeaders": ["*"],
+                        "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+                        "AllowedOrigins": ["*"],
+                        "ExposeHeaders": ["ETag", "x-amz-request-id", "x-amz-id-2"],
+                        "MaxAgeSeconds": 3600,
+                    }
+                ]
+            }
+
+            self.client.client.put_bucket_cors(Bucket=Bucket, CORSConfiguration=config)
+        except botocore.exceptions.ClientError as e:
+            if not "NotImplemented" in str(e):
+                raise
+            else:
+                pass
+                # Minio doesn't support CORSes yet https://docs.min.io/docs/minio-server-limits-per-tenant.html
+
     def ensure_bucket_deleted(self, Bucket):
         try:
             self.client = BotoClient()
