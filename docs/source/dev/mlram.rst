@@ -37,7 +37,7 @@ Self-hosted model
 
 	    ctx = Context()
 	    a2ml = A2ML(ctx)
-	    result = a2ml.deploy(model_id=None, name="My self-hosted model.")
+	    result = a2ml.deploy(model_id=None, name="My self-hosted model.", algorithm="RandomForest", score=0.76)
 	    model_id = result['model_id']
     
 4. Send actuals:
@@ -58,5 +58,5 @@ Self-hosted model
         result = A2ML(ctx).review(model_id='external_model_id')
         if result['data']['status'] == 'retrain':
         	#Train new model using updated data
-        	
+        	a2ml.deploy(model_id=None, name="My self-hosted model.", algorithm="RandomForest", score=0.77)
 

@@ -13,8 +13,12 @@ from a2ml.api.utils.context import pass_context
     help='Do not support model review based on actual data.')
 @click.option('--name', '-n', required=False, type=click.STRING, 
     help='Model friendly name.Used as name for Review Endpoint')
+@click.option('--algorithm', '-a', required=False, type=click.STRING, 
+    help='Self-hosted model(external provider) algorithm name.')
+@click.option('--score', '-s', required=False, type=float, 
+    help='Self-hosted model(external provider) score.')
 @pass_context
-def cmdl(ctx, provider, model_id, locally, no_review, name):
+def cmdl(ctx, provider, model_id, locally, no_review, name, algorithm, score):
     """Deploy trained model."""
     ctx.setup_logger(format='')
-    A2ML(ctx, provider).deploy(model_id, locally, not no_review, name=name)
+    A2ML(ctx, provider).deploy(model_id, locally, not no_review, name=name, algorithm=algorithm, score=score)

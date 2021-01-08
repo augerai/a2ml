@@ -19,10 +19,14 @@ def cmdl(ctx):
     help='Cloud AutoML Provider.')
 @click.option('--name', '-n', required=False, type=click.STRING, 
     help='Model friendly name.Used as name for Review Endpoint')
+@click.option('--algorithm', '-a', required=False, type=click.STRING, 
+    help='Self-hosted model(external provider) algorithm name.')
+@click.option('--score', '-s', required=False, type=float, 
+    help='Self-hosted model(external provider) score.')
 @pass_context
 def deploy(ctx, provider, model_id, locally, no_review, name):
     """Deploy trained model."""
-    A2MLModel(ctx, provider).deploy(model_id, locally, not no_review, name=name)
+    A2MLModel(ctx, provider).deploy(model_id, locally, not no_review, name=name, algorithm=algorithm, score=score)
 
 @click.command('predict', short_help='Predict with deployed model.')
 @click.argument('filename', required=True, type=click.STRING)

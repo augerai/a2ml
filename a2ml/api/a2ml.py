@@ -170,7 +170,7 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None, name=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None, name=None, algorithm=None, score=None):
         """Deploy a model locally or to specified provider(s).
 
         Note:
@@ -183,6 +183,8 @@ class A2ML(BaseA2ML):
             review(bool): Should model support review based on actual data. The default is True.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
             name (str): Friendly name for the model. Used as name for Review Endpoint
+            algorithm (str): Self-hosted model(external provider) algorithm name.
+            score (float): Self-hosted model(external provider) score.
 
         Returns:
             ::
@@ -197,17 +199,17 @@ class A2ML(BaseA2ML):
 
                 ctx = Context()
                 a2ml = A2ML(ctx, 'auger, azure')
-                a2ml.deploy(model_id='A017AC8EAD094FD')
+                a2ml.deploy(model_id='A017AC8EAD094FD', name='FirstExperiment')
 
             .. code-block:: python
 
                 ctx = Context()
                 a2ml = A2ML(ctx, 'external')
-                result = a2ml.deploy(model_id=None, name="My external model.")
+                result = a2ml.deploy(model_id=None, name="My external model.", algorithm='RandomForest', score=0.75)
                 model_id = result['model_id']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name, algorithm, score)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
