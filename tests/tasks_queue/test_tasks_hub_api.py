@@ -533,7 +533,7 @@ def test_presign_s3_url_task_get_put(expires_in, method, with_path):
         res = presign_s3_url_task(params)
 
         assert isinstance(res, str)
-        assert f"/{bucket}/" in res
+        assert f"/{bucket}" in res
 
         if expires_in:
             assert f"X-Amz-Expires={expires_in}" in res
