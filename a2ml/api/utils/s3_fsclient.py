@@ -118,7 +118,8 @@ class BotoClient:
             endpoint_url=self.endpoint_url,
             config=boto3.session.Config(
                 signature_version='s3v4',
-                region_name=response.get('LocationConstraint')
+                region_name=response.get('LocationConstraint'),
+                s3={'addressing_style': 'virtual'},
             )
         )
 
