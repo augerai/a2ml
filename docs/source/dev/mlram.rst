@@ -50,6 +50,16 @@ Self-hosted model
 
         A2ML(ctx, "external").actuals('external_model_id', data=actual_records,columns=columns)
 
+To review distribution chart , send training features with target and actuals:
+
+    .. code-block:: python
+
+        ctx = Context()
+        actual_records = [['predicted_value_1', 'actual_value_1', 'value1', 'value2'], ['predicted_value_2', 'actual_value_2', 'value3', 'value4']]
+        columns = [target, 'actual', 'feature1', 'feature2']
+
+        A2ML(ctx, "external").actuals('external_model_id', data=actual_records,columns=columns)
+
 5. Call review to check if model retrain is required:
 
     .. code-block:: python
