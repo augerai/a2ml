@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ElementTree
 from .cluster import AugerClusterApi
 from .project_file import AugerProjectFileApi
 from ..exceptions import AugerException
+from .cluster_task import AugerClusterTaskApi
 
 from  a2ml.api.utils import fsclient
 from  a2ml.api.utils.file_uploader import FileUploader, NewlineProgressPercentage
@@ -144,10 +145,13 @@ class AugerDataSetApi(AugerProjectFileApi):
         res = self.rest_api.call('create_project_file_url', {
             'project_id': self.parent_api.object_id,
             'file_path': file_path,
-            'file_size': fsclient.get_file_size(file_to_upload)
+            'file_size': fsclient.get_file_size(file_to_upload),
+            'async': True
         })
-
-        if res is None:
+        cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])
+        cluster_task.wait_for_status(['pending', 'received', 'started', 'retry'])
+        res = cluster_task.properties().get('result')
+        if not res:
             raise AugerException(
                 'Error while uploading file to Auger Cloud...')
 
