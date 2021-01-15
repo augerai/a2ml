@@ -34,22 +34,25 @@ class ModelDeploy(object):
         if not pipeline_properties:
             pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
 
-        endpoint_api = None    
-        if not pipeline_properties.get('endpoint_pipelines'):
-            self.ctx.log('Creating review endpoint ...')
-            endpoint_api = AugerEndpointApi(self.ctx, None)
-            if not name:
-                name = fsclient.get_path_base_name(self.ctx.config.get('source'))
-            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
-            pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
-        else:
+        # endpoint_api = None    
+        # if not pipeline_properties.get('endpoint_pipelines'):
+        #     self.ctx.log('Creating review endpoint ...')
+        #     endpoint_api = AugerEndpointApi(self.ctx, None)
+        #     if not name:
+        #         name = fsclient.get_path_base_name(self.ctx.config.get('source'))
+        #     endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
+        #     pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
+        # else:
+        if pipeline_properties.get('endpoint_pipelines'):
             endpoint_api = AugerEndpointApi(self.ctx, None, 
                 pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
             session_id = endpoint_api.properties().get('primary_experiment_session_id')
             if session_id:
                 AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
 
-        AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+            AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+        else:
+            self.ctx.log('Model is not belong to any review endpoint. Skipping ...')
 
     def review(self, model_id):
         pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
@@ -91,6 +94,8 @@ class ModelDeploy(object):
                 error = retrain_status
             elif retrain_status == 'experiment_session_done':
                 status = 'completed'
+            elif retrain_status == 'external_pipeline_should_be_rebuilt':
+                status = 'retrain'
         else:
             status = 'completed'
 
@@ -113,7 +118,7 @@ class ModelDeploy(object):
         else:    
             self.project.start()
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create(model_id, review)
+                self.ctx, None).create(model_id, review, name)
 
         if pipeline_properties.get('status') == 'ready':
             if review:
