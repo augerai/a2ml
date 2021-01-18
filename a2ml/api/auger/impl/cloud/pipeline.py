@@ -11,16 +11,18 @@ class AugerPipelineApi(AugerBaseApi):
         super(AugerPipelineApi, self).__init__(
             ctx, experiment_api, None, pipeline_id)
 
-    def create(self, trial_id, review=True):
-        return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review},
+    def create(self, trial_id, review=True, name=None):
+        return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review, 'name': name},
             ['creating_files', 'packaging', 'deploying'])
 
-    def create_external(self, review, name, project_id):
+    def create_external(self, review, name, project_id, algorithm, score):
         return self._call_create({'name': name, 'is_review_model_enabled' : review, 
                 'project_id': project_id, 
                 'target_column': self.ctx.config.get('target'), 
-                'scoring': self.ctx.config.get('experiment/metric'), 
-                'task_type': self.ctx.config.get('model_type')
+                'score_name': self.ctx.config.get('experiment/metric'), 
+                'task_type': self.ctx.config.get('model_type'),
+                'algorithm_name': algorithm,
+                'score_value': score
             },
             ['creating_files', 'packaging', 'deploying'])            
 

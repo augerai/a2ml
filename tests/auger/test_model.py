@@ -21,7 +21,8 @@ class TestModel():
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.create', lambda self, model_id: {'signed_s3_model_path': 'None'})
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.pipeline_file.AugerPipelineFileApi.download', lambda *a, **kw: 'models/export-%s.zip' % '87C81FE615DE46D')
 
-        result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True, review=True, name="test")
+        result = AugerModel(ctx).deploy('87C81FE615DE46D', locally=True, review=True, 
+            name="test", algorithm="RandomForest", score=0.8)
         assert result['model_id'] == '87C81FE615DE46D'
 
     def test_undeploy_locally(self, log, project, ctx, authenticated, monkeypatch):

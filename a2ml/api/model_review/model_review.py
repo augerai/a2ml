@@ -65,8 +65,31 @@ class ModelReview(object):
         y_pred, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_predict)
         y_true, _ = ModelHelper.preprocess_target_ds(self.model_path, ds_true)
 
-        return ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
+        res = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
+        res['roi'] = self._calculate_roi(df_data, predicted_feature)
+
+        return res
+
+    def _calculate_roi(self, df_data, predicted_feature=None):
+        if not self.params.get('roi'):
+            return 0.0
+
+        data_filter = self.params['roi']['filter']
+        revenue = self.params['roi']['revenue']
+        investment = self.params['roi']['investment']
+
+        #TODO: replace P to target, A to a2ml_actual
+
+        df_filtered = df_data.query(data_filter)
+
+        investment_value = 1.0
+        revenue_value = 1.0
+
+        #TODO: perform operations
+        
+        return (revenue_value-investment_value)/investment_value
+            
     def add_external_model(self, target_column, scoring, task_type):
         ModelHelper.create_model_options_file(
             options_path=self.options_path,

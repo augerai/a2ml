@@ -37,7 +37,7 @@ class TestTasksApiAuger(BaseTest):
 
         params = self.params('auger')
         res = import_data_task.apply(params).result
-        self.assert_result(res, True, {'created': 'iris-13.csv'})
+        self.assert_result(res, True, {'created': 'iris.csv'})
 
     #TODO: fix spec
     # @vcr.use_cassette('auger/train/valid.yaml')

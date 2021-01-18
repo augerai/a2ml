@@ -21,11 +21,11 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False, review=True, name=None):
+    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None):
         if locally:
             return self.deploy_model_locally(model_id, review, name)
         else:
-            return self.deploy_model_in_cloud(model_id, review, name)
+            return self.deploy_model_in_cloud(model_id, review, name, algorithm, score)
 
     def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None, name=None):
         if not self.ctx.config.get('review'):
@@ -41,19 +41,23 @@ class ModelDeploy(object):
             if not name:
                 name = fsclient.get_path_base_name(self.ctx.config.get('source'))
             endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
-            pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
-        else:
-            endpoint_api = AugerEndpointApi(self.ctx, None, 
-                pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+            pipeline_properties['endpoint_pipelines'] = [endpoint_properties.get('id')]
+
+        if pipeline_properties.get('endpoint_pipelines'):
+            if endpoint_api is None:
+                endpoint_api = AugerEndpointApi(self.ctx, None, 
+                    pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+                
             session_id = endpoint_api.properties().get('primary_experiment_session_id')
             if session_id:
                 AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
 
-        AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+            AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+        else:
+            self.ctx.log('Model is not belong to any review endpoint. Skipping ...')
 
     def review(self, model_id):
         pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
-
         result = {}
         if not pipeline_properties.get('endpoint_pipelines'):
             return result
@@ -92,6 +96,8 @@ class ModelDeploy(object):
                 error = retrain_status
             elif retrain_status == 'experiment_session_done':
                 status = 'completed'
+            elif retrain_status == 'external_pipeline_should_be_rebuilt':
+                status = 'retrain'
         else:
             status = 'completed'
 
@@ -105,16 +111,16 @@ class ModelDeploy(object):
         }
         return result
             
-    def deploy_model_in_cloud(self, model_id, review, name):
+    def deploy_model_in_cloud(self, model_id, review, name, algorithm, score):
         self.ctx.log('Deploying model %s' % model_id)
 
         if self.ctx.is_external_provider():
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create_external(review, name, self.project.object_id)
+                self.ctx, None).create_external(review, name, self.project.object_id, algorithm, score)
         else:    
             self.project.start()
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create(model_id, review)
+                self.ctx, None).create(model_id, review, name)
 
         if pipeline_properties.get('status') == 'ready':
             if review:

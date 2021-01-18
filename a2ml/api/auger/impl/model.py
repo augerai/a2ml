@@ -18,8 +18,8 @@ class Model(object):
         self.project = project
         self.ctx = ctx
 
-    def deploy(self, model_id, locally=False, review=True, name=None):
-        return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review, name)
+    def deploy(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None):
+        return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review, name, algorithm, score)
 
     def review_alert(self, model_id, parameters):
         return ModelDeploy(self.ctx, self.project).create_update_review_alert(model_id, None, parameters)

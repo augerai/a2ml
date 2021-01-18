@@ -25,7 +25,7 @@ class A2MLModel(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None, name=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None, name=None, algorithm=None, score=None):
         """Deploy a model locally or to specified provider(s).
 
         Args:
@@ -34,6 +34,8 @@ class A2MLModel(BaseA2ML):
             review(bool): Should model support review based on actual data. The default is True.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
             name (str): Friendly name for the model. Used as name for Review Endpoint
+            algorithm (str): Self-hosted model(external provider) algorithm name.
+            score (float): Self-hosted model(external provider) score.
 
         Returns:
             ::
@@ -47,17 +49,17 @@ class A2MLModel(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).deploy(model_id='D881079E1ED14FB', locally=True)
+                model = A2MLModel(ctx).deploy(model_id='D881079E1ED14FB', name='FirstExperiment')
 
             .. code-block:: python
 
                 ctx = Context()
                 model = A2MLModel(ctx, 'external')
-                result = model.deploy(model_id=None, name="My external model.")
+                result = model.deploy(model_id=None, name="My external model.", algorithm='RandomForest', score=0.75)
                 model_id = result['model_id']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name, algorithm, score)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
@@ -254,18 +256,22 @@ class A2MLModel(BaseA2ML):
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
+            status(str): May be : started, error, completed, retrain
+            error(str): Description of error if status='error'
+            accuracy(float): Average accuracy of model(based on used metric) for review sensitivity period(see config.yml)
+        
             ::
 
                 {
                     'result': True,
-                    'data': {'status': 'completed', 'error': ''}
+                    'data': {'status': 'completed', 'error': '', 'accuracy': 0.76}
                 }
 
         Examples:
             .. code-block:: python
 
                 ctx = Context()
-                model = A2MLModel(ctx).review(model_id='D881079E1ED14FB')
+                result = A2MLModel(ctx).review(model_id='D881079E1ED14FB')
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('review', model_id)
 
