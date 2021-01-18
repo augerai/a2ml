@@ -389,7 +389,7 @@
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.deploy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">algorithm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy a model locally or to specified provider(s).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -404,6 +404,8 @@
 <li><p><strong>review</strong> (<em>bool</em>) -- Should model support review based on actual data. The default is True.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) -- Friendly name for the model. Used as name for Review Endpoint</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em>) -- Self-hosted model(external provider) algorithm name.</p></li>
+<li><p><strong>score</strong> (<em>float</em>) -- Self-hosted model(external provider) score.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -419,12 +421,12 @@
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span>
-<span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">)</span>
+<span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;A017AC8EAD094FD&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FirstExperiment&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;RandomForest&#39;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
 <span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -606,18 +608,24 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<dd class="field-even"><p><p>May be : started, error, completed, retrain
+error(str): Description of error if status='error'
+accuracy(float): Average accuracy of model(based on used metric) for review sensitivity period(see config.yml)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.76</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </p>
 </dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>status(str)</p>
+</dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1046,7 +1054,7 @@
 
 <dl class="py method">
 <dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">algorithm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy a model locally or to specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1056,6 +1064,8 @@
 <li><p><strong>review</strong> (<em>bool</em>) -- Should model support review based on actual data. The default is True.</p></li>
 <li><p><strong>provider</strong> (<em>str</em>) -- The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) -- Friendly name for the model. Used as name for Review Endpoint</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em>) -- Self-hosted model(external provider) algorithm name.</p></li>
+<li><p><strong>score</strong> (<em>float</em>) -- Self-hosted model(external provider) score.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1070,12 +1080,12 @@
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">locally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FirstExperiment&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My external model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;RandomForest&#39;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
 <span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -1280,18 +1290,24 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<dd class="field-even"><p><p>May be : started, error, completed, retrain
+error(str): Description of error if status='error'
+accuracy(float): Average accuracy of model(based on used metric) for review sensitivity period(see config.yml)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.76</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </p>
 </dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>status(str)</p>
+</dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;D881079E1ED14FB&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

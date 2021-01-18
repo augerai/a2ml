@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html lang="python3" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MLRAM &mdash; a2ml 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="194x194" href="/favicon-194x194.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20200622">
+  <link rel="manifest" href="/site.webmanifest?v=20200622">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg?v=20200528" color="#2980b9">
+  <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48" href="/favicon.ico?v=20200622">
+  <meta name="apple-mobile-web-app-title" content="A2ML">
+  <meta name="application-name" content="A2ML">
+  <meta name="msapplication-TileColor" content="#2980b9">
+  <meta name="msapplication-TileImage" content="/mstile-144x144.png?v=20200528">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:image" content="/og-image.png?v=20200622">
+   
+  <style>.wy-side-nav-search>a img.logo { width: 100px !important; height: 80px !important; }</style>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Community</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">a2ml</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>MLRAM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="https://github.com/augerai/a2ml" class="fa fa-github" target="_blank"> View on GitHub</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mlram">
+<h1>MLRAM<a class="headerlink" href="#mlram" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="auger-hosted-model">
+<h2>Auger-hosted model<a class="headerlink" href="#auger-hosted-model" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Import dataset and Train to get model</p></li>
+<li><p>Make sure review section is correct in config.yml</p></li>
+<li><p>Deploy model. It will add model to review section in Auger.ai</p></li>
+<li><p>Predict and send actuals. See actuals API</p></li>
+</ol>
+</div>
+<div class="section" id="self-hosted-model">
+<h2>Self-hosted model<a class="headerlink" href="#self-hosted-model" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Create A2ML application with external provider:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml new test_app -p external
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Specify the following parameters in config.yml:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the feature which is the target</span>
+<span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Can be regression, classification or timeseries</span>
+
+    <span class="l l-Scalar l-Scalar-Plain">experiment</span><span class="p p-Indicator">:</span>
+      <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;metric to calculate using actuals&gt;</span>
+
+<span class=" -Error">    </span><span class="nt">review</span><span class="p">:</span>
+            <span class="nt">alert</span><span class="p">:</span>
+                    <span class="l l-Scalar l-Scalar-Plain">&lt;See configuration section&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="3">
+<li><p>Deploy model without model id:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My self-hosted model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.76</span><span class="p">)</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Send actuals:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]</span>
+
+<span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;external&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>To review distribution chart , send training features with target and actuals:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">actual_records</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;predicted_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;value2&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;predicted_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;actual_value_2&#39;</span><span class="p">,</span> <span class="s1">&#39;value3&#39;</span><span class="p">,</span> <span class="s1">&#39;value4&#39;</span><span class="p">]]</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">,</span> <span class="s1">&#39;feature1&#39;</span><span class="p">,</span> <span class="s1">&#39;feature2&#39;</span><span class="p">]</span>
+
+<span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;external&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">actuals</span><span class="p">(</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">actual_records</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="5">
+<li><p>Call review to check if model retrain is required:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;retrain&#39;</span><span class="p">:</span>
+        <span class="c1">#Train new model using updated data</span>
+        <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My self-hosted model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.77</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, a2ml
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
