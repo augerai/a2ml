@@ -34,18 +34,20 @@ class ModelDeploy(object):
         if not pipeline_properties:
             pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
 
-        # endpoint_api = None    
-        # if not pipeline_properties.get('endpoint_pipelines'):
-        #     self.ctx.log('Creating review endpoint ...')
-        #     endpoint_api = AugerEndpointApi(self.ctx, None)
-        #     if not name:
-        #         name = fsclient.get_path_base_name(self.ctx.config.get('source'))
-        #     endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
-        #     pipeline_properties['endpoint_pipelines']= [endpoint_properties.get('id')]
-        # else:
+        endpoint_api = None    
+        if not pipeline_properties.get('endpoint_pipelines'):
+            self.ctx.log('Creating review endpoint ...')
+            endpoint_api = AugerEndpointApi(self.ctx, None)
+            if not name:
+                name = fsclient.get_path_base_name(self.ctx.config.get('source'))
+            endpoint_properties = endpoint_api.create(pipeline_properties.get('id'), name)
+            pipeline_properties['endpoint_pipelines'] = [endpoint_properties.get('id')]
+
         if pipeline_properties.get('endpoint_pipelines'):
-            endpoint_api = AugerEndpointApi(self.ctx, None, 
-                pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+            if endpoint_api is None:
+                endpoint_api = AugerEndpointApi(self.ctx, None, 
+                    pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
+                
             session_id = endpoint_api.properties().get('primary_experiment_session_id')
             if session_id:
                 AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
