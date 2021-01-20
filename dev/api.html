@@ -446,7 +446,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
@@ -518,7 +518,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
 <li><p><strong>actual_date_column</strong> (<em>str</em>) -- name of column in data which contains actual date</p></li>
@@ -1105,7 +1105,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>predicted_at</strong> -- Predict data date. Use for review of historical data.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em>) -- For classification models only. This will return class probabilities with response.</p></li>
@@ -1177,7 +1177,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_id</strong> (<em>str</em>) -- The deployed model id you want to use.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) -- The file with data to request predictions for.</p></li>
-<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method</p></li>
+<li><p><strong>data</strong> -- array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) -- list of column names if data is array of records</p></li>
 <li><p><strong>actuals_at</strong> -- Actuals date. Use for review of historical data.</p></li>
 <li><p><strong>actual_date_column</strong> (<em>str</em>) -- name of column in data which contains actual date</p></li>
