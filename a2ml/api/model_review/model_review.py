@@ -87,19 +87,19 @@ class ModelReview(object):
         revenue_value = 1.0
 
         #TODO: perform operations
-        
+
         return (revenue_value-investment_value)/investment_value
             
-    def add_external_model(self, target_column, scoring, task_type):
+    def add_external_model(self, target_column, scoring, task_type, binary_classification):
         ModelHelper.create_model_options_file(
             options_path=self.options_path,
             scoring=scoring,
             target_column=target_column,
             task_type=task_type,
+            binary_classification = binary_classification,
         )
 
         self._load_options()
-
 
         return True
 
@@ -129,7 +129,7 @@ class ModelReview(object):
         actuals_count = ds_actuals.count()
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
-        if not self.target_feature in ds_actuals.columns:
+        if provider is not None and not self.target_feature in ds_actuals.columns:
             missing_features = set(self.original_features) - set(ds_actuals.columns)
             if len(missing_features) > 0:
                 missing_features = ', '.join(sorted(list(missing_features)))

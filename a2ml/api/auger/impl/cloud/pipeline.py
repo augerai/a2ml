@@ -22,7 +22,8 @@ class AugerPipelineApi(AugerBaseApi):
                 'score_name': self.ctx.config.get('experiment/metric'), 
                 'task_type': self.ctx.config.get('model_type'),
                 'algorithm_name': algorithm,
-                'score_value': score
+                'score_value': score,
+                'binary_classification': self.ctx.config.get('binary_classification')
             },
             ['creating_files', 'packaging', 'deploying'])            
 

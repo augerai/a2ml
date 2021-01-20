@@ -437,7 +437,7 @@ class ModelHelper(object):
         return remove_dups_from_list(selected_cols)
 
     @staticmethod
-    def create_model_options_file(options_path, scoring, target_column, task_type):
+    def create_model_options_file(options_path, scoring, target_column, task_type, binary_classification):
         options = {}
         options["targetFeature"] = target_column
         options["task_type"] = task_type
@@ -448,6 +448,7 @@ class ModelHelper(object):
         if task_type == "classification":
             options["classification"] = True
 
+        options['binaryClassification'] = True if binary_classification else False
         fsclient.write_json_file(options_path, options)
 
         return options

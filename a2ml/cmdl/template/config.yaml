@@ -1,7 +1,7 @@
 ---
 # Overall project name
 name:
-# List of providers: auger, azure, google(not supported yet)
+# List of providers: auger, azure, external, google(not supported yet)
 providers: auger
 # Use Auger Cloud Use Auger Cloud for all providers
 use_auger_cloud: true
@@ -13,6 +13,8 @@ exclude:
 target:
 # Model type: classification|regression|timeseries
 model_type: classification
+# Is this binary classification? Used for self-hosted model. For all other models determine automatically based on dataset provided
+#binary_classification: True
 # Experiment settings
 experiment:
   ### Metric used to build Model
