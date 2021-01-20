@@ -32,7 +32,6 @@ class ModelUndeploy(object):
                 endpoint_api = AugerEndpointApi(self.ctx, None, pipeline_api.object_id)
                 endpoint_props = endpoint_api.properties()
                 endpoint_pipelines = sorted(endpoint_props.get('endpoint_pipelines', []), key=lambda k: k['id'])
-                print(endpoint_pipelines)
                 if endpoint_pipelines and endpoint_pipelines[0]['pipeline_id'] == model_id:
                     self.ctx.log("Undeploy Review endpoint and all models.")
                     for pipeline in endpoint_pipelines:

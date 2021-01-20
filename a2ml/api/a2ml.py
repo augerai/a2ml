@@ -223,7 +223,7 @@ class A2ML(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.            
-            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
             threshold(float): For classification models only. This will return class probabilities with response.
@@ -306,7 +306,7 @@ class A2ML(BaseA2ML):
         Args:
             model_id(str): The deployed model id you want to use.
             filename(str): The file with data to request predictions for.
-            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFramme to_dict method
+            data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method
             columns(list): list of column names if data is array of records
             actuals_at: Actuals date. Use for review of historical data.
             actual_date_column(str): name of column in data which contains actual date
