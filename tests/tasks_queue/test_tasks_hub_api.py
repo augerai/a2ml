@@ -450,6 +450,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 "scoring": "accuracy",
                 "score_name": "accuracy",
                 "scoreNames": ["accuracy"],
+                'binaryClassification': False,
             }
 
     def _build_actuals(self, dates=None):
