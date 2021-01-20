@@ -37,14 +37,14 @@ class Lexer:
         self.offset = 0
         self.curr_token = None
 
-    # @property
-    # def curr_token(self):
-    #     return self._curr_token
+    @property
+    def curr_token(self):
+        return self._curr_token
 
-    # @curr_token.setter
-    # def curr_token(self, value):
-    #     print("set:", value)
-    #     self._curr_token = value
+    @curr_token.setter
+    def curr_token(self, value):
+        print("set:", value)
+        self._curr_token = value
 
     def done(self):
         return self.offset == len(self.str)
@@ -96,8 +96,24 @@ class NumberNode:
     def __init__(self, number):
         self.number = number
 
-    def evaluate(self):
+    def evaluate(self, _variables):
         return self.number
+
+    def __str__(self):
+        return str(self.number)
+
+class VariableNode:
+    def __init__(self, name):
+        self.name = name
+
+    def evaluate(self, variables):
+        if self.name in variables:
+            return variables[self.name]
+        else:
+            raise ParseError("unknown variable: " + self.name)
+
+    def __str__(self):
+        return self.name
 
 class OperationNode:
     def __init__(self, operator, left, right=None):
@@ -105,9 +121,9 @@ class OperationNode:
         self.left = left
         self.right = right
 
-    def evaluate(self):
-        op1 = self.left.evaluate()
-        op2 = self.right.evaluate()
+    def evaluate(self, variables):
+        op1 = self.left.evaluate(variables)
+        op2 = self.right.evaluate(variables)
 
         if self.operator == PLUS:
             return op1 + op2
@@ -121,14 +137,20 @@ class OperationNode:
         if self.operator == DIVISION:
             return op1 / op2
 
+    def __str__(self):
+        return str(self.left) + " " + str(self.operator) + " " + str(self.right)
+
 class FuncNode:
     def __init__(self, arg_nodes, func):
         self.arg_nodes = arg_nodes
         self.func = func
 
-    def evaluate(self):
-        args = list(map(lambda node: node.evaluate(), self.arg_nodes))
+    def evaluate(self, variables):
+        args = list(map(lambda node: node.evaluate(variables), self.arg_nodes))
         return self.func(*args)
+
+    def __str__(self):
+        return str(self.func.__name__) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
 
 class ParseError(Exception):
     pass
@@ -192,50 +214,46 @@ class Parser:
             node = NumberNode(number=number)
 
             token = self.lexer.next_token()
-            if len(token) == 0:
-                raise ParseError("invalid token: " + token)
+            # if len(token) == 0:
+            #     raise ParseError("invalid token: " + token)
 
             return node
 
         if is_name(token[0]):
-            value = self.const_values.get(token)
+            func = self.func_values.get(token)
 
-            if value:
-                node = NumberNode(number=value)
-
+            if func:
                 token = self.lexer.next_token()
-                if len(token) == 0:
-                    raise ParseError("invalid token: " + token)
+                if token != OPENING_BRACKET:
+                    raise ParseError("( is expected, got:" + token)
+
+                arg_nodes = [self.parse_sum()]
+
+                while self.lexer.curr_token == COMMA:
+                    arg_nodes.append(self.parse_sum())
+
+                node = FuncNode(arg_nodes=arg_nodes, func=func)
+
+                # breakpoint()
+                if self.lexer.curr_token != CLOSING_BRACKET:
+                    raise ParseError(") is expected, got:" + token)
+                else:
+                    self.lexer.next_token()
+                    if len(token) == 0:
+                        raise ParseError("invalid token: " + token)
+
+                    return node
 
                 return node
             else:
-                func = self.func_values.get(token)
+                value = self.const_values.get(token)
 
-                if func:
-                    token = self.lexer.next_token()
-                    if token != OPENING_BRACKET:
-                        raise ParseError("( is expected, got:" + token)
-
-                    arg_nodes = [self.parse_sum()]
-
-                    while self.lexer.curr_token == COMMA:
-                        arg_nodes.append(self.parse_sum())
-
-                    node = FuncNode(arg_nodes=arg_nodes, func=func)
-
-                    # breakpoint()
-                    if self.lexer.curr_token != CLOSING_BRACKET:
-                        raise ParseError(") is expected, got:" + token)
-                    else:
-                        self.lexer.next_token()
-                        if len(token) == 0:
-                            raise ParseError("invalid token: " + token)
-
-                        return node
-
-                    return node
+                if value:
+                    self.lexer.next_token()
+                    return NumberNode(number=value)
                 else:
-                    raise ParseError("invalid name literal: " + token)
+                    self.lexer.next_token()
+                    return VariableNode(name=token)
 
         if token == OPENING_BRACKET:
             node = self.parse_sum()
