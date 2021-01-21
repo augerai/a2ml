@@ -47,7 +47,7 @@ class ModelDeploy(object):
             if endpoint_api is None:
                 endpoint_api = AugerEndpointApi(self.ctx, None, 
                     pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
-                
+
             session_id = endpoint_api.properties().get('primary_experiment_session_id')
             if session_id:
                 AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
@@ -82,13 +82,16 @@ class ModelDeploy(object):
             if retrain_status in error_states:
                 status = 'error'
                 error = retrain_status
-            else:            
-                redeploy_status = alert_item.get('action_results', {}).get('redeploy')
-                if redeploy_status in error_states:
-                    status = 'error'
-                    error = redeploy_status
-                elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
-                    status = 'completed'
+            else:
+                if retrain_status == 'external_pipeline_should_be_rebuilt':
+                    status = 'retrain'
+                else:    
+                    redeploy_status = alert_item.get('action_results', {}).get('redeploy')
+                    if redeploy_status in error_states:
+                        status = 'error'
+                        error = redeploy_status
+                    elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
+                        status = 'completed'
         elif alert.get('actions') == 'retrain':
             retrain_status = alert_item.get('action_results', {}).get('retrain')
             if retrain_status in error_states:
