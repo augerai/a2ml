@@ -5,7 +5,9 @@ name:
 providers: auger
 # Use Auger Cloud Use Auger Cloud for all providers
 use_auger_cloud: true
-# Local file name or remote url to the data source file
+# Local file name, remote url to the data source file or postgres url
+# Postgres url example: jdbc:postgresql://user:pwd@ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&offset=0&limit=100
+# Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)
 source:
 # List of columns to be excluded from the training data
 exclude:

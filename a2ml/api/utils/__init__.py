@@ -59,6 +59,17 @@ def url_encode(path):
 
     return quote(path, safe='#&%:/?*=\'')
 
+def parse_url(remote_path):
+    try:
+        from urllib.parse import urlparse, parse_qs, quote
+    except ImportError:
+        from urlparse import urlparse, parse_qs, quote
+
+    uri = urlparse(remote_path)
+    params = parse_qs(uri.query)
+
+    return uri.path, params
+
 def get_remote_file_info(remote_path):
     from urllib.request import urlopen
     import urllib

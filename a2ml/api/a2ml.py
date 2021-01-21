@@ -36,11 +36,16 @@ class A2ML(BaseA2ML):
 
             .. code-block:: yaml
 
-                # Local file name or remote url to the data source file
+                # Local file name, remote url to the data source file or postgres url
                 source: './dataset.csv'
 
+            .. code-block:: yaml
+
+                # Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)
+                source: jdbc:postgresql://user:pwd@ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&offset=0&limit=100
+
         Args:
-            source (str, optional): Local file name or remote url to the data source file or Pandas DataFrame
+            source (str, optional): Local file name, remote url to the data source file, Pandas DataFrame or postgres url
 
         Returns:
             Results for each provider. ::

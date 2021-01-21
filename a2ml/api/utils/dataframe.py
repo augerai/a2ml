@@ -9,7 +9,7 @@ import warnings
 
 from functools import wraps
 
-from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line, download_file, retry_helper
+from a2ml.api.utils import fsclient, get_uid, get_uid4, remove_dups_from_list, process_arff_line, download_file, retry_helper, parse_url
 from a2ml.api.utils.local_fsclient import LocalFSClient
 
 
@@ -197,14 +197,20 @@ class DataFrame(object):
                 import psycopg2
                 from psycopg2.extensions import parse_dsn
                 path = path.replace('sslfactory=org.postgresql.ssl.NonValidatingFactory&', '')
-                ary = path.split('tablename')
-                path = ary[0]
-                tablename = ary[1]
-                dataset_name = tablename
+                path, params = parse_url(path)
 
-                self.dbconn_args = parse_dsn(path[5:])
+                self.dbconn_args = parse_dsn(path)
                 conn = psycopg2.connect(**self.dbconn_args)
-                self.df = pd.read_sql("select * from %s"%tablename, con=conn)
+
+                sql_cmd = "select " + (",".join(features) if features else "*") +" from %s"%params['tablename'][0]
+                if 'limit' in params:
+                    sql_cmd += " LIMIT %s"%params['limit'][0]
+
+                if 'offset' in params:
+                    sql_cmd += " OFFSET %s"%params['offset'][0]
+
+                logging.info("Read data from remote DB: %s"%sql_cmd)
+                self.df = pd.read_sql(sql_cmd, con=conn)
             else:
                 path, remote_path = self._check_remote_path()
                 try:
