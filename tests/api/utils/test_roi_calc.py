@@ -88,6 +88,59 @@ class TestParser(unittest.TestCase):
         assert (0.6 + 0.7 + 0.75 + 3) * 100 == tree.evaluate_scalar(variables_list)
 
 class TestRoiCalculator:
+    def test_options_app(self):
+        calc = RoiCalculator(
+            filter="P >= 0.2",
+            revenue="@sum((1 + A) * $100)",
+            investment="@count * $100",
+        )
+
+        res = calc.calculate(
+            [
+                {"A": 0.1, "P": 0.1},
+                {"A": 0.1, "P": 0.15},
+                {"A": 0.5, "P": 0.2},
+                {"A": 0.3, "P": 0.3},
+            ]
+        )
+
+        assert 2 == res["count"]
+        assert res["filtered_rows"] == [
+            {"A": 0.5, "P": 0.2},
+            {"A": 0.3, "P": 0.3},
+        ]
+
+        assert (0.5 + 0.3 + 2) * 100 == res["revenue"]
+        assert 200 == res["investment"]
+        assert 0.4 == res["roi"]
+
+    def test_bike_rental(self):
+        calc = RoiCalculator(
+            revenue="@sum(min(A, P) * $10)",
+            investment="@sum($2 * max(P - 10, 0))",
+        )
+
+        res = calc.calculate(
+            [
+                {"A": 10, "P": 5},
+                {"A": 10, "P": 10},
+                {"A": 10, "P": 15},
+                {"A": 20, "P": 15},
+            ]
+        )
+
+        assert 4 == res["count"]
+        assert res["filtered_rows"] == [
+            {"A": 10, "P": 5},
+            {"A": 10, "P": 10},
+            {"A": 10, "P": 15},
+            {"A": 20, "P": 15},
+        ]
+
+        assert (5 + 10 + 10 + 15) * 10 == res["revenue"]
+        assert (0 + 0 + 5 + 5) * 2 == res["investment"]
+        assert 19 == res["roi"]
+
     def test_credit_analysis(self):
         calc = RoiCalculator(
             filter="P=True",

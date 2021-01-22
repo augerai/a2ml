@@ -11,6 +11,7 @@ CLOSING_BRACKET = ")"
 COMMA = ","
 AT = "@"
 DOLLAR = "$"
+DOT = "."
 
 LT = "<"
 EQ = "="
@@ -27,6 +28,9 @@ COMPARISON_OPS = set(["<", ">", "<=", ">=", "=", "!="])
 
 def is_digit(c):
     return c >= '0' and c <= '9'
+
+def is_decimal_separator(c):
+    return c == DOT
 
 def is_opearator(c):
     return c in OPERATORS
@@ -73,7 +77,7 @@ class Lexer:
         token = [c]
 
         if is_digit(c):
-            while self.offset < len(self.str) and is_digit(self.str[self.offset]):
+            while self.offset < len(self.str) and (is_digit(self.str[self.offset]) or is_decimal_separator(self.str[self.offset])):
                 token.append(self.str[self.offset])
                 self.offset += 1
 
@@ -121,7 +125,12 @@ class BaseNode:
             return res
 
 class NumberNode(BaseNode):
-    def __init__(self, number):
+    def __init__(self, token):
+        number = float(token)
+
+        if number.is_integer():
+            number = int(number)
+
         self.number = number
 
     def evaluate(self, rows):
@@ -271,11 +280,11 @@ class Parser:
 
         if is_digit(token[0]):
             self.lexer.next_token()
-            return NumberNode(number=int(token))
+            return NumberNode(token)
 
         if len(token) > 1 and token[0] == DOLLAR and is_digit(token[1]):
             self.lexer.next_token()
-            return NumberNode(number=int(token[1:]))
+            return NumberNode(token[1:])
 
         if is_name(token[0]):
             func_token = token
@@ -311,7 +320,7 @@ class Parser:
 
                 if value:
                     self.lexer.next_token()
-                    return NumberNode(number=value)
+                    return NumberNode(value)
                 else:
                     self.lexer.next_token()
                     return VariableNode(name=token)
@@ -336,6 +345,9 @@ class RoiCalculator:
     def lt(a, b):
         return a < b
 
+    def le(a, b):
+        return a <= b
+
     @staticmethod
     def eq(a, b):
         return a == b
@@ -343,6 +355,14 @@ class RoiCalculator:
     @staticmethod
     def gt(a, b):
         return a > b
+
+    @staticmethod
+    def ge(a, b):
+        return a >= b
+
+    @staticmethod
+    def ne(a, b):
+        return a != b
 
     @staticmethod
     def sum(value_and_predicate):
@@ -379,8 +399,11 @@ class RoiCalculator:
         "min": min,
         "max": max,
         "<": lt.__get__(object),
+        "<=": le.__get__(object),
         "=": eq.__get__(object),
         ">": gt.__get__(object),
+        ">=": ge.__get__(object),
+        "!=": ne.__get__(object),
         "@sum": sum.__get__(object),
         "@count": count.__get__(object),
     }
