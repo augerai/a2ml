@@ -10,6 +10,7 @@
    dev/configuration
    dev/authentication
    dev/quickstart
+   dev/mlram
    dev/api
    dev/cli
    dev/advanced

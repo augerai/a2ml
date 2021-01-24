@@ -36,7 +36,7 @@ All Providers
     * **name** The project name.
     * **providers** List of providers: auger, google, azure.
     * **use_auger_cloud** Use Auger Cloud for all providers true | false
-    * **source** Local file name or remote url to the data source file.
+    * **source** # Local file name, remote url to the data source file or postgres url. Postgres url example: jdbc:postgresql://user:pwd@ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&offset=0&limit=100. Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)
     * **exclude** List of columns to be excluded from the training data.
     * **target** Target column name.
     * **model_type**  Model type: classification|regression|timeseries.
@@ -111,9 +111,9 @@ Auger
     * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
 
       * **Supported models**
-      * **Classification** XGBClassifier,LGBMClassifier,SVC,SGDClassifier,AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,GradientBoostingClassifier,CatBoostClassifier
-      * **Regression** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
-      * **Timeseries** SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
+      * **Classification** XGBClassifier, LGBMClassifier, SVC, SGDClassifier, AdaBoostClassifier, DecisionTreeClassifier, ExtraTreesClassifier, RandomForestClassifier, GradientBoostingClassifier, CatBoostClassifier
+      * **Regression** SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor
+      * **Timeseries** SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor, TimeSeriesLSTM, VARXBaseRegressor, DeepTimeSeriesRegressor
 
     * **experiment.estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
     * **experiment.trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
@@ -175,9 +175,9 @@ Azure
     * **experiment.allowed_models** A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models
 
       * **Supported models**
-      * **Classification** AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
-      * **Regression** DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
-      * **Timeseries** AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
+      * **Classification** AveragedPerceptronClassifier, BernoulliNaiveBayes, DecisionTree, ExtremeRandomTrees,GradientBoosting, KNN, LightGBM, LinearSVM, LogisticRegression, MultinomialNaiveBayes, SGD, RandomForest, SVM, XGBoostClassifier
+      * **Regression** DecisionTree, ElasticNet, ExtremeRandomTrees, FastLinearRegressor, GradientBoosting, KNN, LassoLars, LightGBM, OnlineGradientDescentRegressor, RandomForest, SGD, XGBoostRegressor
+      * **Timeseries** AutoArima, Average, Naive, Prophet, SeasonalAverage, SeasonalNaive, TCNForecaster
 
     * **cluster.region** Name of cluster region. For example: eastus2
     * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 

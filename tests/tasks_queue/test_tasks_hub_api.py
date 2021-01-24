@@ -354,6 +354,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
             assert options == {
                 "targetFeature": "y",
                 "featureColumns": ["x_int", "x_double", "x_date", "x_bool", "x_str", "actual"],
+                "originalFeatureColumns": ["x_int", "x_double", "x_date", "x_bool", "x_str", 'y', "actual"],
                 "task_type": "classification",
                 "scoring": "accuracy",
                 "score_name": "accuracy",

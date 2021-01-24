@@ -19,7 +19,7 @@ class BaseA2ML(object):
             return ProviderRunner(ctx, provider)
 
     def get_runner(self, locally, model_id=None, provider=None):
-        if provider is None and model_id:
+        if provider is None and model_id and not self.ctx.is_external_provider():
             provider = self.ctx.get_model_provider(model_id)
 
         if provider:
