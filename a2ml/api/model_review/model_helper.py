@@ -460,6 +460,7 @@ class ModelHelper(object):
         if "targetFeature" in feature_columns:
             feature_columns.remove(options["targetFeature"])
         ds_actuals.options["featureColumns"] = feature_columns
+        ds_actuals.options["originalFeatureColumns"] = feature_columns
 
         summary = ds_actuals.getSummary()
         options = ds_actuals.update_options_by_dataset_statistics(summary["stat_data"])
