@@ -139,6 +139,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlram.html">MLRAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
@@ -248,7 +249,7 @@
 <li><p><strong>name</strong> The project name.</p></li>
 <li><p><strong>providers</strong> List of providers: auger, google, azure.</p></li>
 <li><p><strong>use_auger_cloud</strong> Use Auger Cloud for all providers true | false</p></li>
-<li><p><strong>source</strong> Local file name or remote url to the data source file.</p></li>
+<li><p><strong>source</strong> # Local file name, remote url to the data source file or postgres url. Postgres url example: <a class="reference external" href="jdbc:postgresql://user:pwd&#64;ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&amp;offset=0&amp;limit=100">jdbc:postgresql://user:pwd&#64;ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&amp;offset=0&amp;limit=100</a>. Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)</p></li>
 <li><p><strong>exclude</strong> List of columns to be excluded from the training data.</p></li>
 <li><p><strong>target</strong> Target column name.</p></li>
 <li><p><strong>model_type</strong>  Model type: classification|regression|timeseries.</p></li>
@@ -319,9 +320,9 @@
 <li><p><strong>experiment.allowed_models</strong> A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models</p>
 <ul>
 <li><p><strong>Supported models</strong></p></li>
-<li><p><strong>Classification</strong> XGBClassifier,LGBMClassifier,SVC,SGDClassifier,AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,GradientBoostingClassifier,CatBoostClassifier</p></li>
-<li><p><strong>Regression</strong> SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor</p></li>
-<li><p><strong>Timeseries</strong> SVR,XGBRegressor,LGBMRegressor,ElasticNet,SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor</p></li>
+<li><p><strong>Classification</strong> XGBClassifier, LGBMClassifier, SVC, SGDClassifier, AdaBoostClassifier, DecisionTreeClassifier, ExtraTreesClassifier, RandomForestClassifier, GradientBoostingClassifier, CatBoostClassifier</p></li>
+<li><p><strong>Regression</strong> SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor</p></li>
+<li><p><strong>Timeseries</strong> SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor, TimeSeriesLSTM, VARXBaseRegressor, DeepTimeSeriesRegressor</p></li>
 </ul>
 </li>
 <li><p><strong>experiment.estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
@@ -391,9 +392,9 @@
 <li><p><strong>experiment.allowed_models</strong> A list of model names to search for an experiment.If not specified, then all models supported for the task are used minus any specified in blocked_models</p>
 <ul>
 <li><p><strong>Supported models</strong></p></li>
-<li><p><strong>Classification</strong> AveragedPerceptronClassifier,BernoulliNaiveBayes,DecisionTree,ExtremeRandomTrees,GradientBoosting,KNN,LightGBM,LinearSVM,LogisticRegression,MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier</p></li>
-<li><p><strong>Regression</strong> DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor</p></li>
-<li><p><strong>Timeseries</strong> AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster</p></li>
+<li><p><strong>Classification</strong> AveragedPerceptronClassifier, BernoulliNaiveBayes, DecisionTree, ExtremeRandomTrees,GradientBoosting, KNN, LightGBM, LinearSVM, LogisticRegression, MultinomialNaiveBayes, SGD, RandomForest, SVM, XGBoostClassifier</p></li>
+<li><p><strong>Regression</strong> DecisionTree, ElasticNet, ExtremeRandomTrees, FastLinearRegressor, GradientBoosting, KNN, LassoLars, LightGBM, OnlineGradientDescentRegressor, RandomForest, SGD, XGBoostRegressor</p></li>
+<li><p><strong>Timeseries</strong> AutoArima, Average, Naive, Prophet, SeasonalAverage, SeasonalNaive, TCNForecaster</p></li>
 </ul>
 </li>
 <li><p><strong>cluster.region</strong> Name of cluster region. For example: eastus2</p></li>

@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="A2ML CLI" href="cli.html" />
-    <link rel="prev" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="MLRAM" href="mlram.html" />
   <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=20200622">
   <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=20200622">
   <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png?v=20200622">
@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlram.html">MLRAM</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">A2ML API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a2ml-module-a2ml-predit-api">a2ml module - A2ML PREDIT API</a></li>
@@ -242,14 +243,18 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Your context points to a config file where <code class="docutils literal notranslate"><span class="pre">source</span></code> is defined.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Local file name or remote url to the data source file</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Local file name, remote url to the data source file or postgres url</span>
 <span class="nt">source</span><span class="p">:</span> <span class="s">&#39;./dataset.csv&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)</span>
+<span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://user:pwd@ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&amp;offset=0&amp;limit=100</span>
 </pre></div>
 </div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file or Pandas DataFrame</p>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name, remote url to the data source file, Pandas DataFrame or postgres url</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -704,7 +709,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <dd><p>Create a new DataSet for the Project specified in the .yaml.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name or remote url to the data source file or Pandas DataFrame</p>
+<dd class="field-odd"><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) -- Local file name, remote url to the data source file, Pandas DataFrame or postgres url</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Results for each provider.</p>
@@ -1712,7 +1717,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
         <a href="cli.html" class="btn btn-neutral float-right" title="A2ML CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mlram.html" class="btn btn-neutral float-left" title="MLRAM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
