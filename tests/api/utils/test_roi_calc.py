@@ -88,6 +88,38 @@ class TestParser:
         assert True == tree.has_aggregation()
         assert (0.6 + 0.7 + 0.75 + 3) * 100 == tree.evaluate_scalar(variables_list)
 
+    @pytest.mark.parametrize(
+        "expression, result, exected_parsed_expression",
+        [
+            pytest.param("(1 < 2) and 3 >= 3", True, "logic_and(lt(1, 2), ge(3, 3))"),
+            pytest.param("1 >= 2 or 3 != 4", True, "logic_or(ge(1, 2), ne(3, 4))"),
+            pytest.param("0 or 2", 2, "logic_or(0, 2)"),
+            pytest.param("0 and 2", 0, "logic_and(0, 2)"),
+            pytest.param("not False", True, "logic_not(False)"),
+            pytest.param("not(False)", True, "logic_not(False)"),
+            pytest.param("not(not(2 = 2) or 1.2 > 1.1)", False, "logic_not(logic_or(logic_not(eq(2, 2)), gt(1.2, 1.1)))"),
+        ]
+    )
+    def test_logic_operators(self, expression, result, exected_parsed_expression):
+        func_values = {
+            "<": RoiCalculator.lt,
+            "<=": RoiCalculator.le,
+            "=": RoiCalculator.eq,
+            ">": RoiCalculator.gt,
+            ">=": RoiCalculator.ge,
+            "!=": RoiCalculator.ne,
+            "and": RoiCalculator.logic_and,
+            "or": RoiCalculator.logic_or,
+            "not": RoiCalculator.logic_not,
+        }
+
+        tree = Parser(expression, func_values=func_values, const_values=RoiCalculator.CONST_VALUES).parse()
+
+        assert exected_parsed_expression == str(tree)
+        assert [result] == tree.evaluate([{}])
+        assert [result, result] == tree.evaluate([{}, {}])
+
+
 class TestRoiCalculator:
     def test_options_app(self):
         calc = RoiCalculator(

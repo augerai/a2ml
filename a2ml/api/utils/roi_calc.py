@@ -18,6 +18,10 @@ EQ = "="
 GT = ">"
 EXCLAMATION = "!"
 
+NOT = "not"
+OR = "or"
+AND = "and"
+
 OPERATORS = set([PLUS, MINUS, MULTIPLICATION, DIVISION])
 BRACKETS = set([OPENING_BRACKET, CLOSING_BRACKET])
 COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
@@ -54,7 +58,17 @@ class Lexer:
     def __init__(self, str):
         self.str = str
         self.offset = 0
-        self.curr_token = None
+        self._curr_token = None
+        self.prev_token = None
+
+    @property
+    def curr_token(self):
+        return self._curr_token
+
+    @curr_token.setter
+    def curr_token(self, value):
+        self.prev_token = self.curr_token
+        self._curr_token = value
 
     def done(self):
         return self.offset == len(self.str)
@@ -102,6 +116,17 @@ class Lexer:
 
         return None
 
+    def next_token_preview(self):
+        curr_token = self.curr_token
+        offset = self.offset
+
+        next_token = self.next_token()
+
+        self.curr_token = curr_token
+        self.offset = offset
+
+        return next_token
+
     def all_tokens(self):
         res = []
 
@@ -124,20 +149,25 @@ class BaseNode:
         else:
             return sum(res)
 
-class NumberNode(BaseNode):
-    def __init__(self, token):
-        number = float(token)
+class ConstNode(BaseNode):
+    def __init__(self, value):
+        if isinstance(value, float):
+            number = float(value)
 
-        if number.is_integer():
-            number = int(number)
+            if number.is_integer():
+                number = int(number)
 
-        self.number = number
+            self.value = number
+        elif value == True or value == False:
+            self.value = value
+        else:
+            raise ValueError(f"unsupported const type: '{value}'")
 
     def evaluate(self, rows):
-        return [self.number] * len(rows)
+        return [self.value] * len(rows)
 
     def __str__(self):
-        return str(self.number)
+        return str(self.value)
 
 class VariableNode(BaseNode):
     def __init__(self, name):
@@ -215,10 +245,26 @@ class Parser:
         self.func_values = func_values or {}
 
     def parse(self):
-        return self.parse_comparison()
+        return self.parse_logic_expression()
 
-    def parse_comparison(self):
-        left = self.parse_sum()
+    def parse_logic_expression(self, next_token=True):
+        left = self.parse_comparison(next_token)
+        node = None
+
+        while True:
+            token = self.lexer.curr_token
+
+            if token == OR:
+                func = self.func_values[token]
+                node = FuncNode(func=func, arg_nodes=[node or left, self.parse_logic_expression(next_token)])
+            elif token == AND:
+                func = self.func_values[token]
+                node = FuncNode(func=func, arg_nodes=[node or left, self.parse_comparison(next_token)])
+            else:
+                return node or left
+
+    def parse_comparison(self, next_token):
+        left = self.parse_sum(next_token)
         node = None
 
         while True:
@@ -229,12 +275,12 @@ class Parser:
                     left = node
 
                 func = self.func_values[token]
-                node = FuncNode(func=func, arg_nodes=[left, self.parse_sum()])
+                node = FuncNode(func=func, arg_nodes=[left, self.parse_sum(next_token)])
             else:
                 return node or left
 
-    def parse_sum(self):
-        left = self.parse_product()
+    def parse_sum(self, next_token):
+        left = self.parse_product(next_token)
         node = None
 
         while True:
@@ -246,15 +292,15 @@ class Parser:
                 else:
                     node = OperationNode(operator=token[0], left=left)
 
-                node.right = self.parse_product()
+                node.right = self.parse_product(next_token)
             else:
                 if node:
                     return node
                 else:
                     return left
 
-    def parse_product(self):
-        left = self.parse_term()
+    def parse_product(self, next_token):
+        left = self.parse_term(next_token)
         node = None
 
         while True:
@@ -266,25 +312,29 @@ class Parser:
                 else:
                     node = OperationNode(operator=token[0], left=left)
 
-                node.right = self.parse_term()
+                node.right = self.parse_term(next_token)
             else:
                 if node:
                     return node
                 else:
                     return left
 
-    def parse_term(self):
-        token = self.lexer.next_token()
+    def parse_term(self, next_token):
+        if next_token:
+            token = self.lexer.next_token()
+        else:
+            token = self.lexer.curr_token
+
         if len(token) == 0:
             raise ParseError("invalid token: " + token)
 
         if is_digit(token[0]):
             self.lexer.next_token()
-            return NumberNode(token)
+            return ConstNode(float(token))
 
         if len(token) > 1 and token[0] == DOLLAR and is_digit(token[1]):
             self.lexer.next_token()
-            return NumberNode(token[1:])
+            return ConstNode(float(token[1:]))
 
         if is_name(token[0]):
             func_token = token
@@ -293,10 +343,10 @@ class Parser:
             if func:
                 token = self.lexer.next_token()
                 if token == OPENING_BRACKET:
-                    arg_nodes = [self.parse_comparison()]
+                    arg_nodes = [self.parse_logic_expression()]
 
                     while self.lexer.curr_token == COMMA:
-                        arg_nodes.append(self.parse_comparison())
+                        arg_nodes.append(self.parse_logic_expression())
 
                     node = FuncNode(arg_nodes=arg_nodes, func=func, agg=func_token[0] == AT)
 
@@ -313,20 +363,24 @@ class Parser:
                 elif func_token[0] == AT:
                     # Allow agg func without brackets (empty parameters)
                     return FuncNode(arg_nodes=[], func=func, agg=True)
+                elif self.lexer.prev_token == NOT:
+                    # Do not read next token because it's already read
+                    return FuncNode(arg_nodes=[self.parse_logic_expression(False)], func=func)
                 else:
                     raise ParseError("( is expected, got:" + token)
             else:
-                value = self.const_values.get(token)
-
-                if value:
+                if token in self.const_values:
                     self.lexer.next_token()
-                    return NumberNode(value)
+                    return ConstNode(self.const_values.get(token))
+                elif token == NOT:
+                    func = self.func_values[token]
+                    return FuncNode(func=func, arg_nodes=[self.parse_logic_expression()])
                 else:
                     self.lexer.next_token()
                     return VariableNode(name=token)
 
         if token == OPENING_BRACKET:
-            node = self.parse_comparison()
+            node = self.parse_logic_expression()
             token = self.lexer.curr_token
 
             if token != CLOSING_BRACKET:
@@ -365,6 +419,18 @@ class RoiCalculator:
         return a != b
 
     @staticmethod
+    def logic_and(a, b):
+        return a and b
+
+    @staticmethod
+    def logic_or(a, b):
+        return a or b
+
+    @staticmethod
+    def logic_not(a):
+        return not a
+
+    @staticmethod
     def sum(value_and_predicate):
         res = 0
 
@@ -398,12 +464,18 @@ class RoiCalculator:
     FUNC_VALUES = {
         "min": min,
         "max": max,
+        # Comparison
         "<": lt.__get__(object),
         "<=": le.__get__(object),
         "=": eq.__get__(object),
         ">": gt.__get__(object),
         ">=": ge.__get__(object),
         "!=": ne.__get__(object),
+        # Logical
+        "and": logic_and.__get__(object),
+        "or": logic_or.__get__(object),
+        "not": logic_not.__get__(object),
+        # Agg (multi-row)
         "@sum": sum.__get__(object),
         "@count": count.__get__(object),
     }
