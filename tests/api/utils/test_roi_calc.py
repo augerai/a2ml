@@ -29,25 +29,26 @@ class TestLexer(unittest.TestCase):
 
         assert ['A', '>', 'P', 'and', 'B1', '==', 'B2', 'and', 'C1', '!=', 'C2', 'and', 'D1', '>=', 'D2'] == res
 
-@pytest.mark.parametrize(
-    "expression, result, exected_parsed_expression",
-    [
-        pytest.param("1 + (2*2 - 3)", 2, "(1 + ((2 * 2) - 3))"),
-        pytest.param("1 - (2*2 - 3)", 0, "(1 - ((2 * 2) - 3))"),
-        pytest.param("1 - 2*10 - 1", -20, "((1 - (2 * 10)) - 1)"),
-        pytest.param("(2 + 2) * 2", 8, "((2 + 2) * 2)"),
-        pytest.param("2 + 2 * 2", 6, "(2 + (2 * 2))"),
-        pytest.param("2 + 2 / 2", 3, "(2 + (2 / 2))"),
-    ]
-)
-def test_parser_with_arithmetic(expression, result, exected_parsed_expression):
-    tree = Parser(expression).parse()
 
-    assert exected_parsed_expression == str(tree)
-    assert [result] == tree.evaluate([{}])
-    assert [result, result] == tree.evaluate([{}, {}])
+class TestParser:
+    @pytest.mark.parametrize(
+        "expression, result, exected_parsed_expression",
+        [
+            pytest.param("1 + (2*2 - 3)", 2, "(1 + ((2 * 2) - 3))"),
+            pytest.param("1 - (2*2 - 3)", 0, "(1 - ((2 * 2) - 3))"),
+            pytest.param("1 - 2*10 - 1", -20, "((1 - (2 * 10)) - 1)"),
+            pytest.param("(2 + 2) * 2", 8, "((2 + 2) * 2)"),
+            pytest.param("2 + 2 * 2", 6, "(2 + (2 * 2))"),
+            pytest.param("2 + 2 / 2", 3, "(2 + (2 / 2))"),
+        ]
+    )
+    def test_parser_with_arithmetic(self, expression, result, exected_parsed_expression):
+        tree = Parser(expression).parse()
 
-class TestParser(unittest.TestCase):
+        assert exected_parsed_expression == str(tree)
+        assert [result] == tree.evaluate([{}])
+        assert [result, result] == tree.evaluate([{}, {}])
+
     def test_bike_rental_investment(self):
         expression = "2 * max(P - 10, 0)"
         variables = { "P": 20, "A": 10 }
@@ -114,11 +115,15 @@ class TestRoiCalculator:
         assert 200 == res["investment"]
         assert 0.4 == res["roi"]
 
-    def test_bike_rental(self):
-        calc = RoiCalculator(
-            revenue="@sum(min(A, P) * $10)",
-            investment="@sum($2 * max(P - 10, 0))",
-        )
+    @pytest.mark.parametrize(
+        "revenue, investment",
+        [
+            pytest.param("@sum(min(A, P) * $10)", "@sum($2 * max(P - 10, 0))"),
+            pytest.param("min(A, P) * $10", "$2 * max(P - 10, 0)"),
+        ]
+    )
+    def test_bike_rental(self, revenue, investment):
+        calc = RoiCalculator(revenue=revenue, investment=investment)
 
         res = calc.calculate(
             [

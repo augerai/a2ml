@@ -122,7 +122,7 @@ class BaseNode:
         if self.has_aggregation():
             return res[0]
         else:
-            return res
+            return sum(res)
 
 class NumberNode(BaseNode):
     def __init__(self, token):
