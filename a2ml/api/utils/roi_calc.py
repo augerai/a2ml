@@ -171,7 +171,10 @@ class ConstNode(BaseNode):
 
 class VariableNode(BaseNode):
     def __init__(self, name):
-        self.name = name
+        if name.startswith("$"):
+            self.name = name[1:]
+        else:
+            self.name = name
 
     def evaluate(self, rows):
         res = []

@@ -119,6 +119,25 @@ class TestParser:
         assert [result] == tree.evaluate([{}])
         assert [result, result] == tree.evaluate([{}, {}])
 
+    @pytest.mark.parametrize(
+        "expression, result, exected_parsed_expression",
+        [
+            pytest.param("$price * 1.4 - $12", 58, "((price * 1.4) - 12)"),
+            pytest.param("($price * 1.4 - $12) * (1 - $taxes)", 49.3, "(((price * 1.4) - 12) * (1 - taxes))"),
+            pytest.param("($price * 1.4 - A) * (1 - $taxes)", 51, "(((price * 1.4) - A) * (1 - taxes))"),
+        ]
+    )
+    def test_feature_values(self, expression, result, exected_parsed_expression):
+        variables = {
+            "price": 50,
+            "taxes": 0.15,
+            "A": 10,
+        }
+
+        tree = Parser(expression).parse()
+
+        assert exected_parsed_expression == str(tree)
+        assert result == tree.evaluate([variables])[0]
 
 class TestRoiCalculator:
     def test_options_app(self):
