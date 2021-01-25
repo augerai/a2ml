@@ -4,35 +4,37 @@ import unittest
 from a2ml.api.utils.roi_calc import Lexer, Parser, RoiCalculator
 
 
-class TestLexer(unittest.TestCase):
-    def test_bike_rental_investment(self):
-        lexer = Lexer("$2*max(P-10,0)")
+class TestLexer():
+    @pytest.mark.parametrize(
+        "expression, exected_result",
+        [
+            pytest.param(
+                "$2*max(P-10,0)",
+                "$2 * max ( P - 10 , 0 )",
+            ),
+            pytest.param(
+                "$2 * max(P - 10, 0)",
+                "$2 * max ( P - 10 , 0 )",
+            ),
+            pytest.param(
+                "@sum((1 + A) * $100)",
+                "@sum ( ( 1 + A ) * $100 )",
+            ),
+            pytest.param(
+                "A > P and B1 == B2 and C1 != C2 and D1 >= D2",
+                "A > P and B1 == B2 and C1 != C2 and D1 >= D2",
+            ),
+            pytest.param(
+                "1...$10",
+                "1... $10",
+            ),
+        ]
+    )
+    def test_bike_rental_investment(self, expression, exected_result):
+        lexer = Lexer(expression)
         res = lexer.all_tokens()
 
-        assert ['$2', '*', 'max', '(', 'P', '-', '10', ',', '0', ')'] == res
-
-    def test_bike_rental_investment_with_spaces(self):
-        lexer = Lexer("$2 * max(P - 10, 0)")
-        res = lexer.all_tokens()
-
-        assert ['$2', '*', 'max', '(', 'P', '-', '10', ',', '0', ')'] == res
-
-    def test_options_app_revenue(self):
-        lexer = Lexer("@sum((1 + A) * $100)")
-        res = lexer.all_tokens()
-
-        assert ['@sum', '(', '(', '1', '+', 'A', ')', '*', '$100', ')'] == res
-
-    def test_some_filter(self):
-        lexer = Lexer("A > P and B1 == B2 and C1 != C2 and D1 >= D2")
-        res = lexer.all_tokens()
-
-        assert ['A', '>', 'P', 'and', 'B1', '==', 'B2', 'and', 'C1', '!=', 'C2', 'and', 'D1', '>=', 'D2'] == res
-
-    def test_invalid_float_expr(self):
-        lexer = Lexer("1...$10")
-        res = lexer.all_tokens()
-        assert ['1...', '$10'] == res
+        assert exected_result.split(" ") == res
 
 class TestParser:
     @pytest.mark.parametrize(
@@ -56,8 +58,7 @@ class TestParser:
     def test_bike_rental_investment(self):
         expression = "2 * max(P - 10, 0)"
         variables = { "P": 20, "A": 10 }
-        func_values = { "max": max }
-        parser = Parser(expression, func_values=func_values)
+        parser = Parser(expression)
         tree = parser.parse()
 
         assert "(2 * max((P - 10), 0))" == str(tree)
@@ -84,7 +85,7 @@ class TestParser:
             { "P": 0.45, "A": 0.75 },
         ]
 
-        func_values = { "@sum": RoiCalculator.sum }
+        func_values = { "@sum": Parser.sum }
         parser = Parser(expression, func_values=func_values)
         tree = parser.parse()
 
@@ -105,19 +106,7 @@ class TestParser:
         ]
     )
     def test_logic_operators(self, expression, result, exected_parsed_expression):
-        func_values = {
-            "<": RoiCalculator.lt,
-            "<=": RoiCalculator.le,
-            "=": RoiCalculator.eq,
-            ">": RoiCalculator.gt,
-            ">=": RoiCalculator.ge,
-            "!=": RoiCalculator.ne,
-            "and": RoiCalculator.logic_and,
-            "or": RoiCalculator.logic_or,
-            "not": RoiCalculator.logic_not,
-        }
-
-        tree = Parser(expression, func_values=func_values, const_values=RoiCalculator.CONST_VALUES).parse()
+        tree = Parser(expression).parse()
 
         assert exected_parsed_expression == str(tree)
         assert [result] == tree.evaluate([{}])
@@ -160,12 +149,7 @@ class TestParser:
         ]
     )
     def test_validate(self, expression, expected_result):
-        func_values = {
-            "min": min,
-            "@sum": RoiCalculator.sum,
-        }
-
-        result = Parser(expression, func_values=func_values).validate()
+        result = Parser(expression).validate()
 
         if expected_result == True:
             assert True == result.is_valid, result.error

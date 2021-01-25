@@ -312,15 +312,105 @@ class Parser:
             self.is_valid = is_valid
             self.error = error
 
+    @staticmethod
+    def lt(a, b):
+        return a < b
+
+    def le(a, b):
+        return a <= b
+
+    @staticmethod
+    def eq(a, b):
+        return a == b
+
+    @staticmethod
+    def gt(a, b):
+        return a > b
+
+    @staticmethod
+    def ge(a, b):
+        return a >= b
+
+    @staticmethod
+    def ne(a, b):
+        return a != b
+
+    @staticmethod
+    def logic_and(a, b):
+        return a and b
+
+    @staticmethod
+    def logic_or(a, b):
+        return a or b
+
+    @staticmethod
+    def logic_not(a):
+        return not a
+
+    @staticmethod
+    def sum(value_and_predicate):
+        res = 0
+
+        for item in value_and_predicate:
+            predicate = True
+            value = item[0]
+
+            if len(item) == 2:
+                value, predicate = item
+
+            if predicate:
+                res += value
+
+        return res
+
+    @staticmethod
+    def count(value_and_predicate):
+        res = 0
+
+        for item in value_and_predicate:
+            predicate = True
+
+            if len(item) == 2:
+                _, predicate = item
+
+            if predicate:
+                res += 1
+
+        return res
+
+    FUNC_VALUES = {
+        "min": min,
+        "max": max,
+        # Comparison
+        "<": lt.__get__(object),
+        "<=": le.__get__(object),
+        "=": eq.__get__(object),
+        ">": gt.__get__(object),
+        ">=": ge.__get__(object),
+        "!=": ne.__get__(object),
+        # Logical
+        "and": logic_and.__get__(object),
+        "or": logic_or.__get__(object),
+        "not": logic_not.__get__(object),
+        # Agg (multi-row)
+        "@sum": sum.__get__(object),
+        "@count": count.__get__(object),
+    }
+
+    CONST_VALUES = {
+        "True": True,
+        "False": False,
+    }
+
     def __init__(self, str, const_values=None, func_values=None):
         self.lexer = Lexer(str)
-        self.const_values = const_values or {}
-        self.func_values = func_values or {}
+        self.const_values = const_values or self.CONST_VALUES
+        self.func_values = func_values or self.FUNC_VALUES
 
     def parse(self):
         return self.parse_logic_expression()
 
-    def validate(self):
+    def validate(self, force_raise=False):
         try:
             tree = self.parse()
             tree.validate()
@@ -331,8 +421,11 @@ class Parser:
                 self.lexer.reset()
                 return self.ValidationResult()
         except (AstError, ValueError) as e:
-            position = getattr(e, 'position', None) or self.lexer.offset
-            return self.ValidationResult(False, str(e) + f" at position {position}")
+            if force_raise:
+                raise e
+            else:
+                position = getattr(e, 'position', None) or self.lexer.offset
+                return self.ValidationResult(False, str(e) + f" at position {position}")
 
     def parse_logic_expression(self, next_token=True):
         left = self.parse_comparison(next_token)
@@ -489,96 +582,6 @@ class Parser:
         raise ParserError("term is expected, got: " + token)
 
 class RoiCalculator:
-    @staticmethod
-    def lt(a, b):
-        return a < b
-
-    def le(a, b):
-        return a <= b
-
-    @staticmethod
-    def eq(a, b):
-        return a == b
-
-    @staticmethod
-    def gt(a, b):
-        return a > b
-
-    @staticmethod
-    def ge(a, b):
-        return a >= b
-
-    @staticmethod
-    def ne(a, b):
-        return a != b
-
-    @staticmethod
-    def logic_and(a, b):
-        return a and b
-
-    @staticmethod
-    def logic_or(a, b):
-        return a or b
-
-    @staticmethod
-    def logic_not(a):
-        return not a
-
-    @staticmethod
-    def sum(value_and_predicate):
-        res = 0
-
-        for item in value_and_predicate:
-            predicate = True
-            value = item[0]
-
-            if len(item) == 2:
-                value, predicate = item
-
-            if predicate:
-                res += value
-
-        return res
-
-    @staticmethod
-    def count(value_and_predicate):
-        res = 0
-
-        for item in value_and_predicate:
-            predicate = True
-
-            if len(item) == 2:
-                _, predicate = item
-
-            if predicate:
-                res += 1
-
-        return res
-
-    FUNC_VALUES = {
-        "min": min,
-        "max": max,
-        # Comparison
-        "<": lt.__get__(object),
-        "<=": le.__get__(object),
-        "=": eq.__get__(object),
-        ">": gt.__get__(object),
-        ">=": ge.__get__(object),
-        "!=": ne.__get__(object),
-        # Logical
-        "and": logic_and.__get__(object),
-        "or": logic_or.__get__(object),
-        "not": logic_not.__get__(object),
-        # Agg (multi-row)
-        "@sum": sum.__get__(object),
-        "@count": count.__get__(object),
-    }
-
-    CONST_VALUES = {
-        "True": True,
-        "False": False,
-    }
-
     def __init__(self, revenue=None, investment=None, filter=None):
         self.revenue = revenue
         self.investment = investment
@@ -590,8 +593,8 @@ class RoiCalculator:
 
     def build_ast(self, expression):
         if expression:
-            parser = Parser(expression, const_values=self.CONST_VALUES, func_values=self.FUNC_VALUES)
-            parser.validate()
+            parser = Parser(expression)
+            parser.validate(force_raise=True)
             return parser.parse()
 
     def calculate(self, rows):
