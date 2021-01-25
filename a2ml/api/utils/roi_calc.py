@@ -54,9 +54,20 @@ def is_symbol(c):
 def is_whitespaces(c):
     return c in WHITESPACES
 
+class AstError(Exception):
+    def __init__(self, msg, position=None):
+        self.position = position
+        super().__init__(msg)
+
+class LexerError(AstError):
+    pass
+
 class Lexer:
     def __init__(self, str):
         self.str = str
+        self.reset()
+
+    def reset(self):
         self.offset = 0
         self._curr_token = None
         self.prev_token = None
@@ -80,7 +91,7 @@ class Lexer:
         c = self.str[self.offset]
         self.offset += 1
 
-        while is_whitespaces(c):
+        while self.offset < len(self.str) and is_whitespaces(c):
             c = self.str[self.offset]
             self.offset += 1
 
@@ -114,7 +125,10 @@ class Lexer:
             self.curr_token = "".join(token)
             return self.curr_token
 
-        return None
+        if self.done():
+            return None
+        else:
+            raise LexerError(f"unknown character '{c}'")
 
     def next_token_preview(self):
         curr_token = self.curr_token
@@ -134,12 +148,25 @@ class Lexer:
             res.append(self.next_token())
 
         return res
-class ParseError(Exception):
+
+class ParserError(AstError):
+    pass
+
+class ExpressionError(AstError):
     pass
 
 class BaseNode:
+    def __init__(self, position):
+        self.position = position
+
     def has_aggregation(self):
         return False
+
+    def has_variables(self):
+        return False
+
+    def has_scalar_variables(self):
+        return self.has_variables() and not self.has_aggregation()
 
     def evaluate_scalar(self, rows):
         res = self.evaluate(rows)
@@ -150,9 +177,14 @@ class BaseNode:
             return sum(res)
 
 class ConstNode(BaseNode):
-    def __init__(self, value):
-        if isinstance(value, float):
-            number = float(value)
+    def __init__(self, value, position=None):
+        super().__init__(position)
+
+        if isinstance(value, float) or isinstance(value, str):
+            try:
+                number = float(value)
+            except ValueError as e:
+                raise ParserError(str(e), position=self.position)
 
             if number.is_integer():
                 number = int(number)
@@ -161,16 +193,21 @@ class ConstNode(BaseNode):
         elif value == True or value == False:
             self.value = value
         else:
-            raise ValueError(f"unsupported const type: '{value}'")
+            raise ParserError(f"unsupported const type: '{value}'", position=self.position)
 
     def evaluate(self, rows):
         return [self.value] * len(rows)
+
+    def validate(self):
+        return True
 
     def __str__(self):
         return str(self.value)
 
 class VariableNode(BaseNode):
-    def __init__(self, name):
+    def __init__(self, name, position=None):
+        super().__init__(position)
+
         if name.startswith("$"):
             self.name = name[1:]
         else:
@@ -184,14 +221,22 @@ class VariableNode(BaseNode):
                 res.append(variables[self.name])
             else:
                 row = json.dumps(variables)
-                raise ParseError(f"unknown variable: '{self.name}' in row #{index} '{row}'")
+                raise ParserError(f"unknown variable: '{self.name}' in row #{index} '{row}'")
         return res
+
+    def validate(self):
+        return True
+
+    def has_variables(self):
+        return True
 
     def __str__(self):
         return self.name
 
 class OperationNode(BaseNode):
-    def __init__(self, operator, left, right=None):
+    def __init__(self, operator, left, right=None, position=None):
+        super().__init__(position)
+
         self.operator = operator
         self.left = left
         self.right = right
@@ -215,19 +260,33 @@ class OperationNode(BaseNode):
     def has_aggregation(self):
         return self.left.has_aggregation() or self.right.has_aggregation()
 
+    def has_variables(self):
+        return self.left.has_variables() or self.right.has_variables()
+
+    def has_scalar_variables(self):
+        return self.left.has_scalar_variables() or self.right.has_scalar_variables()
+
+    def validate(self):
+        if self.left.has_aggregation() != self.right.has_aggregation() and self.has_scalar_variables():
+            raise ExpressionError(
+                f"can't execute '{self.operator}' on aggregation func result and scalar variable",
+                position=self.position,
+            )
+        else:
+            return True
+
     def __str__(self):
         return "(" + str(self.left) + " " + str(self.operator) + " " + str(self.right) + ")"
 
 class FuncNode(BaseNode):
-    def __init__(self, arg_nodes, func, agg=False):
+    def __init__(self, arg_nodes, func, agg=False, position=None):
+        super().__init__(position)
+
         self.arg_nodes = arg_nodes
         self.func = func
         self.agg = agg
 
     def evaluate(self, rows):
-        # breakpoint()
-        # args_list = list(map(lambda node: node.evaluate(rows), self.arg_nodes))
-        # args_list = [node.evaluate(rows) for node in self.arg_nodes]
         args_list = [list(map(lambda node: node.evaluate([row])[0], self.arg_nodes)) for row in rows]
 
         if self.agg:
@@ -238,10 +297,21 @@ class FuncNode(BaseNode):
     def has_aggregation(self):
         return self.agg or any(map(lambda n: n.has_aggregation(), self.arg_nodes))
 
+    def has_variables(self):
+        return self.agg or any(map(lambda n: n.has_variables(), self.arg_nodes))
+
+    def validate(self):
+        return all(map(lambda n: n.validate(), self.arg_nodes))
+
     def __str__(self):
         return str(self.func.__name__) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
 
 class Parser:
+    class ValidationResult:
+        def __init__(self, is_valid=True, error=None):
+            self.is_valid = is_valid
+            self.error = error
+
     def __init__(self, str, const_values=None, func_values=None):
         self.lexer = Lexer(str)
         self.const_values = const_values or {}
@@ -249,6 +319,20 @@ class Parser:
 
     def parse(self):
         return self.parse_logic_expression()
+
+    def validate(self):
+        try:
+            tree = self.parse()
+            tree.validate()
+
+            if not self.lexer.done():
+                raise ParserError("is not completely parsed")
+            else:
+                self.lexer.reset()
+                return self.ValidationResult()
+        except (AstError, ValueError) as e:
+            position = getattr(e, 'position', None) or self.lexer.offset
+            return self.ValidationResult(False, str(e) + f" at position {position}")
 
     def parse_logic_expression(self, next_token=True):
         left = self.parse_comparison(next_token)
@@ -291,9 +375,9 @@ class Parser:
 
             if token == PLUS or token == MINUS:
                 if node:
-                    node = OperationNode(operator=token[0], left=node)
+                    node = OperationNode(operator=token[0], left=node, position=self.lexer.offset)
                 else:
-                    node = OperationNode(operator=token[0], left=left)
+                    node = OperationNode(operator=token[0], left=left, position=self.lexer.offset)
 
                 node.right = self.parse_product(next_token)
             else:
@@ -311,9 +395,9 @@ class Parser:
 
             if token == MULTIPLICATION or token == DIVISION:
                 if node:
-                    node = OperationNode(operator=token[0], left=node)
+                    node = OperationNode(operator=token[0], left=node, position=self.lexer.offset)
                 else:
-                    node = OperationNode(operator=token[0], left=left)
+                    node = OperationNode(operator=token[0], left=left, position=self.lexer.offset)
 
                 node.right = self.parse_term(next_token)
             else:
@@ -328,16 +412,19 @@ class Parser:
         else:
             token = self.lexer.curr_token
 
+        if token == None:
+            raise ParserError(f"unexpected end of expression")
+
         if len(token) == 0:
-            raise ParseError("invalid token: " + token)
+            raise ParserError("invalid token: " + token)
 
         if is_digit(token[0]):
             self.lexer.next_token()
-            return ConstNode(float(token))
+            return ConstNode(token, position=self.lexer.offset - len(token))
 
         if len(token) > 1 and token[0] == DOLLAR and is_digit(token[1]):
             self.lexer.next_token()
-            return ConstNode(float(token[1:]))
+            return ConstNode(token[1:], position=self.lexer.offset - len(token))
 
         if is_name(token[0]):
             func_token = token
@@ -354,11 +441,11 @@ class Parser:
                     node = FuncNode(arg_nodes=arg_nodes, func=func, agg=func_token[0] == AT)
 
                     if self.lexer.curr_token != CLOSING_BRACKET:
-                        raise ParseError(") is expected, got:" + token)
+                        raise ParserError(") is expected, got:" + token)
                     else:
                         self.lexer.next_token()
                         if len(token) == 0:
-                            raise ParseError("invalid token: " + token)
+                            raise ParserError("invalid token: " + token)
 
                         return node
 
@@ -370,32 +457,36 @@ class Parser:
                     # Do not read next token because it's already read
                     return FuncNode(arg_nodes=[self.parse_logic_expression(False)], func=func)
                 else:
-                    raise ParseError("( is expected, got:" + token)
+                    raise ParserError("( is expected, got:" + token)
             else:
                 if token in self.const_values:
                     self.lexer.next_token()
-                    return ConstNode(self.const_values.get(token))
+                    return ConstNode(self.const_values.get(token), position=self.lexer.offset - len(token))
                 elif token == NOT:
                     func = self.func_values[token]
                     return FuncNode(func=func, arg_nodes=[self.parse_logic_expression()])
                 else:
                     self.lexer.next_token()
-                    return VariableNode(name=token)
+
+                    if self.lexer.curr_token == OPENING_BRACKET:
+                        raise ParserError(f"unknown function '{func_token}'")
+                    else:
+                        return VariableNode(name=token)
 
         if token == OPENING_BRACKET:
             node = self.parse_logic_expression()
             token = self.lexer.curr_token
 
             if token != CLOSING_BRACKET:
-                raise ParseError(") is expected, got:" + token)
+                raise ParserError(") is expected, got:" + token)
             else:
                 self.lexer.next_token()
                 if len(token) == 0:
-                    raise ParseError("invalid token: " + token)
+                    raise ParserError("invalid token: " + token)
 
                 return node
 
-        raise ParseError("term is expected, got: " + token)
+        raise ParserError("term is expected, got: " + token)
 
 class RoiCalculator:
     @staticmethod
@@ -500,6 +591,7 @@ class RoiCalculator:
     def build_ast(self, expression):
         if expression:
             parser = Parser(expression, const_values=self.CONST_VALUES, func_values=self.FUNC_VALUES)
+            parser.validate()
             return parser.parse()
 
     def calculate(self, rows):

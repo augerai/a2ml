@@ -29,6 +29,10 @@ class TestLexer(unittest.TestCase):
 
         assert ['A', '>', 'P', 'and', 'B1', '==', 'B2', 'and', 'C1', '!=', 'C2', 'and', 'D1', '>=', 'D2'] == res
 
+    def test_invalid_float_expr(self):
+        lexer = Lexer("1...$10")
+        res = lexer.all_tokens()
+        assert ['1...', '$10'] == res
 
 class TestParser:
     @pytest.mark.parametrize(
@@ -138,6 +142,36 @@ class TestParser:
 
         assert exected_parsed_expression == str(tree)
         assert result == tree.evaluate([variables])[0]
+
+
+    @pytest.mark.parametrize(
+        "expression, expected_result",
+        [
+            pytest.param("11", True),
+            pytest.param("1 + ", "unexpected end of expression at position 4"),
+            pytest.param("min()", "term is expected, got: ) at position 5"),
+            pytest.param("/ 2", "term is expected, got: / at position 1"),
+            pytest.param("somefunc(1)", "unknown function 'somefunc' at position 9"),
+            pytest.param("some_func(1)", "unknown character '_' at position 5"),
+            pytest.param("some!func(1)", "is not completely parsed at position 5"),
+            pytest.param("@sum(1 + P) + A", "can't execute '+' on aggregation func result and scalar variable at position 13"),
+            pytest.param("@sum(1 + P) + $10", True),
+            pytest.param("1...$10", "could not convert string to float: '1...' at position 3"),
+        ]
+    )
+    def test_validate(self, expression, expected_result):
+        func_values = {
+            "min": min,
+            "@sum": RoiCalculator.sum,
+        }
+
+        result = Parser(expression, func_values=func_values).validate()
+
+        if expected_result == True:
+            assert True == result.is_valid, result.error
+        else:
+            assert False == result.is_valid
+            assert expected_result == result.error
 
 class TestRoiCalculator:
     def test_options_app(self):
