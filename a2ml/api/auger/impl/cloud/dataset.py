@@ -194,6 +194,13 @@ class AugerDataSetApi(AugerProjectFileApi):
                         'HTTP error [%s] "%s" while uploading file'
                             ' to Auger Cloud...' % (res.status_code, res.content))
 
-    def _get_data_set_name(self, file_name):
-        fname, fext = os.path.splitext(file_name)
-        return self._get_uniq_object_name(fname, fext)
+    def _get_data_set_name(self, filename):
+        dot_index = filename.find('.')
+        if dot_index>=0:
+            fname = filename[:dot_index]
+            fext = filename[dot_index:]
+        else:
+            fname = filename
+
+        # fname, fext = os.path.splitext(file_name)
+        return self._get_uniq_object_name(fname, "")
