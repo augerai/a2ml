@@ -46,6 +46,7 @@ class TestParser:
             pytest.param("(2 + 2) * 2", 8, "((2 + 2) * 2)"),
             pytest.param("2 + 2 * 2", 6, "(2 + (2 * 2))"),
             pytest.param("2 + 2 / 2", 3, "(2 + (2 / 2))"),
+            pytest.param("@if(2 > 3, 9 / 2, 7 / 2)", 3.5, "logic_if(gt(2, 3), (9 / 2), (7 / 2))"),
         ]
     )
     def test_parser_with_arithmetic(self, expression, result, exected_parsed_expression):
@@ -68,8 +69,7 @@ class TestParser:
     def test_bike_rental_revenue(self):
         expression = "min(A, P) * $10"
         variables = { "P": 20, "A": 10 }
-        func_values = { "min": min }
-        parser = Parser(expression, func_values=func_values)
+        parser = Parser(expression)
         tree = parser.parse()
 
         assert "(min(A, P) * 10)" == str(tree)
@@ -85,8 +85,7 @@ class TestParser:
             { "P": 0.45, "A": 0.75 },
         ]
 
-        func_values = { "@sum": Parser.sum }
-        parser = Parser(expression, func_values=func_values)
+        parser = Parser(expression)
         tree = parser.parse()
 
         assert "sum(((1 + A) * 100))" == str(tree)
@@ -118,6 +117,11 @@ class TestParser:
             pytest.param("$price * 1.4 - $12", 58, "((price * 1.4) - 12)"),
             pytest.param("($price * 1.4 - $12) * (1 - $taxes)", 49.3, "(((price * 1.4) - 12) * (1 - taxes))"),
             pytest.param("($price * 1.4 - A) * (1 - $taxes)", 51, "(((price * 1.4) - A) * (1 - taxes))"),
+            pytest.param(
+                "@if($price > $100, $taxes + 0.1, $taxes + 0.05)",
+                0.2,
+                "logic_if(gt(price, 100), (taxes + 0.1), (taxes + 0.05))"
+            ),
         ]
     )
     def test_feature_values(self, expression, result, exected_parsed_expression):
@@ -146,6 +150,7 @@ class TestParser:
             pytest.param("@sum(1 + P) + A", "can't execute '+' on aggregation func result and scalar variable at position 13"),
             pytest.param("@sum(1 + P) + $10", True),
             pytest.param("1...$10", "could not convert string to float: '1...' at position 3"),
+            pytest.param("import os; os.system('ls -l')", "is not completely parsed at position 9"),
         ]
     )
     def test_validate(self, expression, expected_result):

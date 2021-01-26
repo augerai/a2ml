@@ -378,6 +378,13 @@ class Parser:
 
         return res
 
+    @staticmethod
+    def logic_if(predicate, true_value, false_value):
+        if predicate:
+            return true_value
+        else:
+            return false_value
+
     FUNC_VALUES = {
         "min": min,
         "max": max,
@@ -395,6 +402,7 @@ class Parser:
         # Agg (multi-row)
         "@sum": sum.__get__(object),
         "@count": count.__get__(object),
+        "@if": logic_if.__get__(object)
     }
 
     CONST_VALUES = {
@@ -531,7 +539,7 @@ class Parser:
                     while self.lexer.curr_token == COMMA:
                         arg_nodes.append(self.parse_logic_expression())
 
-                    node = FuncNode(arg_nodes=arg_nodes, func=func, agg=func_token[0] == AT)
+                    node = FuncNode(arg_nodes=arg_nodes, func=func, agg=(func_token[0] == AT and func_token != "@if"))
 
                     if self.lexer.curr_token != CLOSING_BRACKET:
                         raise ParserError(") is expected, got:" + token)
