@@ -304,7 +304,7 @@ class A2ML(BaseA2ML):
                   - Iris-setosa
                 * - Iris-virginica
                   - Iris-virginica
-                * It may also contain train features to retrain while Review
+                * It may also contain train features to retrain while Review(if target missed) and for distribution chart
 
             This method support only one provider
 
