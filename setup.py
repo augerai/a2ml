@@ -45,7 +45,7 @@ install_requires = [
     'smart_open==1.9.0',  # version for azure
     'jsonpickle',
     'websockets',
-    'liac-arff',
+    'liac-arff==2.4.0',
     'xlrd==1.2.0'
 ]
 
