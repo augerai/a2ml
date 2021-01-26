@@ -443,7 +443,7 @@ def test_score_actuals_dict_wo_prediction_and_missing_features():
 
     actuals = [{ 'actual': 'versicolor', 'sepal_length': 1.0, 'petal_length': 2.0 }]
 
-    with pytest.raises(Exception, match=r"missing features to make prediction\: petal_width, sepal_width"):
+    with pytest.raises(Exception, match=r"Missing features to make prediction: petal_width, sepal_width. Please, provide target 'species' or all training features to run predict."):
       ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
 
 def test_score_actuals_dict_only_actual():
@@ -455,7 +455,7 @@ def test_score_actuals_dict_only_actual():
 
     with pytest.raises(
       Exception,
-      match=r"missing features to make prediction\: petal_length, petal_width, sepal_length, sepal_width"
+      match=r"Missing features to make prediction: petal_length, petal_width, sepal_length, sepal_width. Please, provide target 'species' or all training features to run predict."
     ):
       ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
 

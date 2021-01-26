@@ -40,7 +40,7 @@ class TestDataSet():
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.dataset.AugerDataSetApi._upload_to_cloud', lambda *args: 's3://iris.csv')
 
         result = AugerDataset(ctx).create(source='iris.csv')
-        assert result.get('created') == 'iris-1.csv'
+        assert result.get('created') == 'iris-1'
 
     def test_delete(self, log, project, ctx, authenticated, monkeypatch):
         PAYLOAD = copy.deepcopy(PAYLOAD_DEFAULT)
