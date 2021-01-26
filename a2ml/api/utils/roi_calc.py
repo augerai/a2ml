@@ -159,22 +159,12 @@ class BaseNode:
     def __init__(self, position):
         self.position = position
 
-    def has_aggregation(self):
-        return False
-
     def has_variables(self):
         return False
 
-    def has_scalar_variables(self):
-        return self.has_variables() and not self.has_aggregation()
-
-    def evaluate_scalar(self, rows):
+    def evaluate_sum(self, rows):
         res = self.evaluate(rows)
-
-        if self.has_aggregation():
-            return res[0]
-        else:
-            return sum(res)
+        return sum(res)
 
 class ConstNode(BaseNode):
     def __init__(self, value, position=None):
@@ -257,48 +247,29 @@ class OperationNode(BaseNode):
         if self.operator == DIVISION:
             return [a / b for a, b in zip(op1, op2)]
 
-    def has_aggregation(self):
-        return self.left.has_aggregation() or self.right.has_aggregation()
-
     def has_variables(self):
         return self.left.has_variables() or self.right.has_variables()
 
-    def has_scalar_variables(self):
-        return self.left.has_scalar_variables() or self.right.has_scalar_variables()
-
     def validate(self):
-        if self.left.has_aggregation() != self.right.has_aggregation() and self.has_scalar_variables():
-            raise ExpressionError(
-                f"can't execute '{self.operator}' on aggregation func result and scalar variable",
-                position=self.position,
-            )
-        else:
-            return True
+        return True
 
     def __str__(self):
         return "(" + str(self.left) + " " + str(self.operator) + " " + str(self.right) + ")"
 
 class FuncNode(BaseNode):
-    def __init__(self, arg_nodes, func, agg=False, position=None):
+    def __init__(self, arg_nodes, func, position=None):
         super().__init__(position)
 
         self.arg_nodes = arg_nodes
         self.func = func
-        self.agg = agg
 
     def evaluate(self, rows):
         args_list = [list(map(lambda node: node.evaluate([row])[0], self.arg_nodes)) for row in rows]
 
-        if self.agg:
-            return [self.func(args_list)] * len(rows)
-        else:
-            return [self.func(*args) for args in args_list]
-
-    def has_aggregation(self):
-        return self.agg or any(map(lambda n: n.has_aggregation(), self.arg_nodes))
+        return [self.func(*args) for args in args_list]
 
     def has_variables(self):
-        return self.agg or any(map(lambda n: n.has_variables(), self.arg_nodes))
+        return any(map(lambda n: n.has_variables(), self.arg_nodes))
 
     def validate(self):
         return all(map(lambda n: n.validate(), self.arg_nodes))
@@ -348,37 +319,6 @@ class Parser:
         return not a
 
     @staticmethod
-    def sum(value_and_predicate):
-        res = 0
-
-        for item in value_and_predicate:
-            predicate = True
-            value = item[0]
-
-            if len(item) == 2:
-                value, predicate = item
-
-            if predicate:
-                res += value
-
-        return res
-
-    @staticmethod
-    def count(value_and_predicate):
-        res = 0
-
-        for item in value_and_predicate:
-            predicate = True
-
-            if len(item) == 2:
-                _, predicate = item
-
-            if predicate:
-                res += 1
-
-        return res
-
-    @staticmethod
     def logic_if(predicate, true_value, false_value):
         if predicate:
             return true_value
@@ -386,6 +326,7 @@ class Parser:
             return false_value
 
     FUNC_VALUES = {
+        # Math
         "min": min,
         "max": max,
         # Comparison
@@ -399,9 +340,6 @@ class Parser:
         "and": logic_and.__get__(object),
         "or": logic_or.__get__(object),
         "not": logic_not.__get__(object),
-        # Agg (multi-row)
-        "@sum": sum.__get__(object),
-        "@count": count.__get__(object),
         "@if": logic_if.__get__(object)
     }
 
@@ -539,7 +477,7 @@ class Parser:
                     while self.lexer.curr_token == COMMA:
                         arg_nodes.append(self.parse_logic_expression())
 
-                    node = FuncNode(arg_nodes=arg_nodes, func=func, agg=(func_token[0] == AT and func_token != "@if"))
+                    node = FuncNode(arg_nodes=arg_nodes, func=func)
 
                     if self.lexer.curr_token != CLOSING_BRACKET:
                         raise ParserError(") is expected, got:" + token)
@@ -551,9 +489,6 @@ class Parser:
                         return node
 
                     return node
-                elif func_token[0] == AT:
-                    # Allow agg func without brackets (empty parameters)
-                    return FuncNode(arg_nodes=[], func=func, agg=True)
                 elif self.lexer.prev_token == NOT:
                     # Do not read next token because it's already read
                     return FuncNode(arg_nodes=[self.parse_logic_expression(False)], func=func)
@@ -611,8 +546,8 @@ class RoiCalculator:
         if self.filter_ast:
             filtered_rows = [row for row, marked in zip(rows, self.filter_ast.evaluate(rows)) if marked]
 
-        revenue = self.revenue_ast.evaluate_scalar(filtered_rows)
-        investment = self.investment_ast.evaluate_scalar(filtered_rows)
+        revenue = self.revenue_ast.evaluate_sum(filtered_rows)
+        investment = self.investment_ast.evaluate_sum(filtered_rows)
         roi = (revenue - investment) / investment
 
         return {

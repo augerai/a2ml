@@ -17,8 +17,8 @@ class TestLexer():
                 "$2 * max ( P - 10 , 0 )",
             ),
             pytest.param(
-                "@sum((1 + A) * $100)",
-                "@sum ( ( 1 + A ) * $100 )",
+                "@if(A > B, (1 + A) * $100, 0)",
+                "@if ( A > B , ( 1 + A ) * $100 , 0 )",
             ),
             pytest.param(
                 "A > P and B1 == B2 and C1 != C2 and D1 >= D2",
@@ -63,7 +63,6 @@ class TestParser:
         tree = parser.parse()
 
         assert "(2 * max((P - 10), 0))" == str(tree)
-        assert False == tree.has_aggregation()
         assert [20] == tree.evaluate([variables])
 
     def test_bike_rental_revenue(self):
@@ -73,11 +72,10 @@ class TestParser:
         tree = parser.parse()
 
         assert "(min(A, P) * 10)" == str(tree)
-        assert False == tree.has_aggregation()
         assert [100] == tree.evaluate([variables])
 
     def test_options_app_revenue(self):
-        expression = "@sum((1 + A) * $100)"
+        expression = "(1 + A) * $100"
 
         variables_list = [
             { "P": 0.50, "A": 0.6 },
@@ -88,9 +86,8 @@ class TestParser:
         parser = Parser(expression)
         tree = parser.parse()
 
-        assert "sum(((1 + A) * 100))" == str(tree)
-        assert True == tree.has_aggregation()
-        assert (0.6 + 0.7 + 0.75 + 3) * 100 == tree.evaluate_scalar(variables_list)
+        assert "((1 + A) * 100)" == str(tree)
+        assert [160, 170, 175] == tree.evaluate(variables_list)
 
     @pytest.mark.parametrize(
         "expression, result, exected_parsed_expression",
@@ -147,8 +144,6 @@ class TestParser:
             pytest.param("somefunc(1)", "unknown function 'somefunc' at position 9"),
             pytest.param("some_func(1)", "unknown character '_' at position 5"),
             pytest.param("some!func(1)", "is not completely parsed at position 5"),
-            pytest.param("@sum(1 + P) + A", "can't execute '+' on aggregation func result and scalar variable at position 13"),
-            pytest.param("@sum(1 + P) + $10", True),
             pytest.param("1...$10", "could not convert string to float: '1...' at position 3"),
             pytest.param("import os; os.system('ls -l')", "is not completely parsed at position 9"),
         ]
@@ -166,8 +161,8 @@ class TestRoiCalculator:
     def test_options_app(self):
         calc = RoiCalculator(
             filter="P >= 0.2",
-            revenue="@sum((1 + A) * $100)",
-            investment="@count * $100",
+            revenue="(1 + A) * $100",
+            investment="$100",
         )
 
         res = calc.calculate(
@@ -189,15 +184,11 @@ class TestRoiCalculator:
         assert 200 == res["investment"]
         assert 0.4 == res["roi"]
 
-    @pytest.mark.parametrize(
-        "revenue, investment",
-        [
-            pytest.param("@sum(min(A, P) * $10)", "@sum($2 * max(P - 10, 0))"),
-            pytest.param("min(A, P) * $10", "$2 * max(P - 10, 0)"),
-        ]
-    )
-    def test_bike_rental(self, revenue, investment):
-        calc = RoiCalculator(revenue=revenue, investment=investment)
+    def test_bike_rental(self):
+        calc = RoiCalculator(
+            revenue="min(A, P) * $10",
+            investment="$2 * max(P - 10, 0)"
+        )
 
         res = calc.calculate(
             [
@@ -223,8 +214,8 @@ class TestRoiCalculator:
     def test_credit_analysis(self):
         calc = RoiCalculator(
             filter="P=True",
-            revenue="@sum($1050, A=True)",
-            investment="@count * $1000",
+            revenue="@if(A=True, $1050, $0)",
+            investment="$1000",
         )
 
         res = calc.calculate(
