@@ -21,8 +21,8 @@ class TestLexer():
                 "@if ( A > B , ( 1 + A ) * $100 , 0 )",
             ),
             pytest.param(
-                "A > P and B1 == B2 and C1 != C2 and D1 >= D2",
-                "A > P and B1 == B2 and C1 != C2 and D1 >= D2",
+                "A > P and B1 == B2 and C1 != C2 and D1 >= D_2",
+                "A > P and B1 == B2 and C1 != C2 and D1 >= D_2",
             ),
             pytest.param(
                 "1...$10",
@@ -142,14 +142,16 @@ class TestParser:
             pytest.param("min()", "term is expected, got: ) at position 5"),
             pytest.param("/ 2", "term is expected, got: / at position 1"),
             pytest.param("somefunc(1)", "unknown function 'somefunc' at position 9"),
-            pytest.param("some_func(1)", "unknown character '_' at position 5"),
-            pytest.param("some!func(1)", "is not completely parsed at position 5"),
+            pytest.param("some_func(1)", "unknown function 'some_func' at position 10"),
+            pytest.param("some!func(1)", "unknown variable 'some' at position 1"),
             pytest.param("1...$10", "could not convert string to float: '1...' at position 3"),
-            pytest.param("import os; os.system('ls -l')", "is not completely parsed at position 9"),
+            pytest.param("import os; os.system('ls -l')", "unknown variable 'import' at position 3"),
+            pytest.param("$a + $b", True),
+            pytest.param("$a + $b + $c", "unknown variable 'c' at position 10"),
         ]
     )
     def test_validate(self, expression, expected_result):
-        result = Parser(expression).validate()
+        result = Parser(expression).validate(known_vars=["a", "b"])
 
         if expected_result == True:
             assert True == result.is_valid, result.error
@@ -163,6 +165,7 @@ class TestCalculator:
             filter="P >= 0.2",
             revenue="(1 + A) * $100",
             investment="$100",
+            known_vars=["A", "P"],
         )
 
         res = calc.calculate(
@@ -187,7 +190,8 @@ class TestCalculator:
     def test_bike_rental(self):
         calc = Calculator(
             revenue="min(A, P) * $10",
-            investment="$2 * max(P - 10, 0)"
+            investment="$2 * max(P - 10, 0)",
+            known_vars=["A", "P"],
         )
 
         res = calc.calculate(
@@ -216,6 +220,7 @@ class TestCalculator:
             filter="P=True",
             revenue="@if(A=True, $1050, $0)",
             investment="$1000",
+            known_vars=["A", "P"],
         )
 
         res = calc.calculate(

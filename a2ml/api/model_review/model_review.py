@@ -74,9 +74,10 @@ class ModelReview(object):
 
     def validate_roi_syntax(self, expressions):
         res = []
+        known_vars = ["A", "P", self.target_feature] + self.original_features
 
         for expression in expressions:
-            validation_result = roi_calc.Parser(expression).validate()
+            validation_result = roi_calc.Parser(expression).validate(known_vars=known_vars)
             res.append(
                 {
                     "expression": expression,
@@ -112,7 +113,7 @@ class ModelReview(object):
             scoring=scoring,
             target_column=target_column,
             task_type=task_type,
-            binary_classification = binary_classification,
+            binary_classification=binary_classification,
         )
 
         self._load_options()

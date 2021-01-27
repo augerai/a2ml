@@ -12,6 +12,7 @@ COMMA = ","
 AT = "@"
 DOLLAR = "$"
 DOT = "."
+UNDERSCORE = "_"
 
 LT = "<"
 EQ = "="
@@ -27,6 +28,7 @@ BRACKETS = set([OPENING_BRACKET, CLOSING_BRACKET])
 COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
 SYMBOLS = set([COMMA])
 WHITESPACES = set([" ", "\t", "\n", "\r"])
+NAME_PART = set([AT, DOLLAR, UNDERSCORE])
 
 COMPARISON_OPS = set(["<", ">", "<=", ">=", "=", "!="])
 
@@ -46,7 +48,7 @@ def is_round_bracket(c):
     return c in BRACKETS
 
 def is_name(c):
-    return (c >= 'A' and c <= 'Z') or (c >= 'a' and c <= 'z') or c == AT or c == DOLLAR
+    return (c >= 'A' and c <= 'Z') or (c >= 'a' and c <= 'z') or c in NAME_PART
 
 def is_symbol(c):
     return c in SYMBOLS
@@ -188,7 +190,7 @@ class ConstNode(BaseNode):
     def evaluate(self, rows):
         return [self.value] * len(rows)
 
-    def validate(self):
+    def validate(self, known_vars):
         return True
 
     def __str__(self):
@@ -211,11 +213,17 @@ class VariableNode(BaseNode):
                 res.append(variables[self.name])
             else:
                 row = json.dumps(variables)
-                raise ParserError(f"unknown variable: '{self.name}' in row #{index} '{row}'")
+                raise ParserError(
+                    f"unknown variable: '{self.name}' in row #{index} '{row}'",
+                    position=self.position,
+                )
         return res
 
-    def validate(self):
-        return True
+    def validate(self, known_vars):
+        if self.name in known_vars:
+            return True
+        else:
+            raise ParserError(f"unknown variable '{self.name}'", position=self.position)
 
     def has_variables(self):
         return True
@@ -250,8 +258,8 @@ class OperationNode(BaseNode):
     def has_variables(self):
         return self.left.has_variables() or self.right.has_variables()
 
-    def validate(self):
-        return True
+    def validate(self, known_vars):
+        return self.left.validate(known_vars) and self.right.validate(known_vars)
 
     def __str__(self):
         return "(" + str(self.left) + " " + str(self.operator) + " " + str(self.right) + ")"
@@ -271,8 +279,8 @@ class FuncNode(BaseNode):
     def has_variables(self):
         return any(map(lambda n: n.has_variables(), self.arg_nodes))
 
-    def validate(self):
-        return all(map(lambda n: n.validate(), self.arg_nodes))
+    def validate(self, known_vars):
+        return all(map(lambda n: n.validate(known_vars), self.arg_nodes))
 
     def __str__(self):
         return str(self.func.__name__) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
@@ -356,10 +364,10 @@ class Parser:
     def parse(self):
         return self.parse_logic_expression()
 
-    def validate(self, force_raise=False):
+    def validate(self, force_raise=False, known_vars=[]):
         try:
             tree = self.parse()
-            tree.validate()
+            tree.validate(known_vars=known_vars)
 
             if not self.lexer.done():
                 raise ParserError("is not completely parsed")
@@ -507,7 +515,7 @@ class Parser:
                     if self.lexer.curr_token == OPENING_BRACKET:
                         raise ParserError(f"unknown function '{func_token}'")
                     else:
-                        return VariableNode(name=token)
+                        return VariableNode(name=token, position=self.lexer.offset - len(token))
 
         if token == OPENING_BRACKET:
             node = self.parse_logic_expression()
@@ -525,10 +533,11 @@ class Parser:
         raise ParserError("term is expected, got: " + token)
 
 class Calculator:
-    def __init__(self, revenue=None, investment=None, filter=None):
+    def __init__(self, revenue=None, investment=None, filter=None, known_vars=[]):
         self.revenue = revenue
         self.investment = investment
         self.filter = filter
+        self.known_vars = known_vars
 
         self.revenue_ast = self.build_ast(self.revenue)
         self.investment_ast = self.build_ast(self.investment)
@@ -537,7 +546,7 @@ class Calculator:
     def build_ast(self, expression):
         if expression:
             parser = Parser(expression)
-            parser.validate(force_raise=True)
+            parser.validate(force_raise=True, known_vars=self.known_vars)
             return parser.parse()
 
     def calculate(self, rows):

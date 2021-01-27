@@ -485,6 +485,7 @@ def add_external_model_task(params):
         target_column=params.get('target_column'),
         scoring=params.get('scoring'),
         task_type=params.get('task_type'),
+        binary_classification=params.get('binary_classification', False),
     )
 
 @celeryApp.task(ignore_result=True)

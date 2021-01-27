@@ -789,20 +789,30 @@ def test_validate_roi_syntax():
     expressions = [
         "(1 + A) * $100",
         "somefunc(1)",
+        "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P",
+        "$some_feature + A",
     ]
 
     model_path = 'tests/fixtures/test_validate_roi_syntax'
     res = ModelReview({'model_path': model_path}).validate_roi_syntax(expressions)
 
-    assert len(res) == 2
+    assert len(res) == 4
 
     assert res[0]["expression"] == expressions[0]
-    assert res[0]["is_valid"] == True
+    assert res[0]["is_valid"] == True, res[0]["error"]
     assert res[0]["error"] == None
 
     assert res[1]["expression"] == expressions[1]
-    assert res[1]["is_valid"] == False
+    assert res[1]["is_valid"] == False, res[1]["error"]
     assert res[1]["error"] == "unknown function 'somefunc' at position 9"
+
+    assert res[2]["expression"] == expressions[2]
+    assert res[2]["is_valid"] == True, res[2]["error"]
+    assert res[2]["error"] == None
+
+    assert res[3]["expression"] == expressions[3]
+    assert res[3]["is_valid"] == False, res[3]["error"]
+    assert res[3]["error"] == "unknown variable 'some_feature' at position 2"
 
 def write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)
