@@ -524,7 +524,7 @@ class Parser:
 
         raise ParserError("term is expected, got: " + token)
 
-class RoiCalculator:
+class Calculator:
     def __init__(self, revenue=None, investment=None, filter=None):
         self.revenue = revenue
         self.investment = investment

@@ -785,6 +785,25 @@ def test_delete_actuals(with_predictions, begin_date, end_date, expected_files_l
     files_left = os.listdir(predictions_path) if os.path.exists(predictions_path) else []
     assert sorted(files_left) == sorted(expected_files_left)
 
+def test_validate_roi_syntax():
+    expressions = [
+        "(1 + A) * $100",
+        "somefunc(1)",
+    ]
+
+    model_path = 'tests/fixtures/test_validate_roi_syntax'
+    res = ModelReview({'model_path': model_path}).validate_roi_syntax(expressions)
+
+    assert len(res) == 2
+
+    assert res[0]["expression"] == expressions[0]
+    assert res[0]["is_valid"] == True
+    assert res[0]["error"] == None
+
+    assert res[1]["expression"] == expressions[1]
+    assert res[1]["is_valid"] == False
+    assert res[1]["error"] == "unknown function 'somefunc' at position 9"
+
 def write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)
     date = str(date or datetime.date.today())

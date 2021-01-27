@@ -1,7 +1,7 @@
 import pytest
 import unittest
 
-from a2ml.api.utils.roi_calc import Lexer, Parser, RoiCalculator
+from a2ml.api.utils.roi_calc import Lexer, Parser, Calculator
 
 
 class TestLexer():
@@ -157,9 +157,9 @@ class TestParser:
             assert False == result.is_valid
             assert expected_result == result.error
 
-class TestRoiCalculator:
+class TestCalculator:
     def test_options_app(self):
-        calc = RoiCalculator(
+        calc = Calculator(
             filter="P >= 0.2",
             revenue="(1 + A) * $100",
             investment="$100",
@@ -185,7 +185,7 @@ class TestRoiCalculator:
         assert 0.4 == res["roi"]
 
     def test_bike_rental(self):
-        calc = RoiCalculator(
+        calc = Calculator(
             revenue="min(A, P) * $10",
             investment="$2 * max(P - 10, 0)"
         )
@@ -212,7 +212,7 @@ class TestRoiCalculator:
         assert 19 == res["roi"]
 
     def test_credit_analysis(self):
-        calc = RoiCalculator(
+        calc = Calculator(
             filter="P=True",
             revenue="@if(A=True, $1050, $0)",
             investment="$1000",

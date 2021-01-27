@@ -8,6 +8,7 @@ import logging
 from a2ml.api.utils import get_uid, convert_to_date, merge_dicts, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.a2ml import A2ML, Context
+import a2ml.api.utils.roi_calc as roi_calc
 
 from .model_helper import ModelHelper
 from .probabilistic_counter import ProbabilisticCounter
@@ -71,6 +72,21 @@ class ModelReview(object):
 
         return res
 
+    def validate_roi_syntax(self, expressions):
+        res = []
+
+        for expression in expressions:
+            validation_result = roi_calc.Parser(expression).validate()
+            res.append(
+                {
+                    "expression": expression,
+                    "is_valid": validation_result.is_valid,
+                    "error": validation_result.error,
+                }
+            )
+
+        return res
+
     def _calculate_roi(self, df_data, predicted_feature=None):
         if not self.params.get('roi'):
             return 0.0
@@ -89,7 +105,7 @@ class ModelReview(object):
         #TODO: perform operations
 
         return (revenue_value-investment_value)/investment_value
-            
+
     def add_external_model(self, target_column, scoring, task_type, binary_classification):
         ModelHelper.create_model_options_file(
             options_path=self.options_path,

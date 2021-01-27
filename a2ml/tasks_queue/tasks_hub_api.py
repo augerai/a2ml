@@ -485,7 +485,6 @@ def add_external_model_task(params):
         target_column=params.get('target_column'),
         scoring=params.get('scoring'),
         task_type=params.get('task_type'),
-        binary_classification=params.get('binary_classification'),
     )
 
 @celeryApp.task(ignore_result=True)
@@ -493,6 +492,7 @@ def add_external_model_task(params):
 def undeploy_model_task(params):
     ctx = _create_provider_context(params)
     provider = params.get('provider', 'auger')
+    ctx = _read_hub_experiment_session(ctx, params)
 
     model_id = params.get('hub_info', {}).get('pipeline_id')
     if not model_id:
@@ -502,7 +502,9 @@ def undeploy_model_task(params):
         raise Exception("undeploy_model_task: hub_info/pipeline_id should be provided.")
 
     ctx.config.set('undeploy/service_only', params.get('service_only', False), provider)
+    ctx.config.clean_changes()
     res = A2MLModel(ctx).undeploy(model_id = model_id, locally=params.get('locally', False))
+    _update_hub_objects(ctx, params.get('provider'), params)
 
     return res
 
@@ -677,3 +679,10 @@ def presign_s3_url_task(params):
             expires_in=params.get('expires_in'),
             max_content_length=params.get('max_content_length'),
         )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def validate_roi_syntax_task(params):
+    return ModelReview(params).validate_roi_syntax(
+        expressions=params["expressions"],
+    )
