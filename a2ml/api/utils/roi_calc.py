@@ -14,6 +14,7 @@ AT = "@"
 DOLLAR = "$"
 DOT = "."
 UNDERSCORE = "_"
+QUOT = '"'
 
 LT = "<"
 EQ = "="
@@ -29,12 +30,15 @@ BRACKETS = set([OPENING_BRACKET, CLOSING_BRACKET])
 COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
 SYMBOLS = set([COMMA])
 WHITESPACES = set([" ", "\t", "\n", "\r"])
-NAME_PART = set([AT, DOLLAR, UNDERSCORE])
+NAME_PART = set([AT, DOLLAR, UNDERSCORE, QUOT])
 
 COMPARISON_OPS = set(["<", ">", "<=", ">=", "=", "!="])
 
 def is_digit(c):
     return c >= '0' and c <= '9'
+
+def is_quot(c):
+    return c == QUOT
 
 def is_decimal_separator(c):
     return c == DOT
@@ -173,7 +177,9 @@ class ConstNode(BaseNode):
     def __init__(self, value, position=None):
         super().__init__(position)
 
-        if isinstance(value, float) or isinstance(value, str):
+        if isinstance(value, str) and is_quot(value[0]) and is_quot(value[-1]):
+            self.value = value[1:-1]
+        elif isinstance(value, float) or isinstance(value, str):
             try:
                 number = float(value)
             except ValueError as e:
@@ -195,7 +201,10 @@ class ConstNode(BaseNode):
         return True
 
     def __str__(self):
-        return str(self.value)
+        if isinstance(self.value, str):
+            return '"' + str(self.value) + '"'
+        else:
+            return str(self.value)
 
 class VariableNode(BaseNode):
     def __init__(self, name, position=None):
@@ -473,7 +482,7 @@ class Parser:
         if len(token) == 0:
             raise ParserError("invalid token: " + token)
 
-        if is_digit(token[0]):
+        if is_digit(token[0]) or is_quot(token[0]):
             self.lexer.next_token()
             return ConstNode(token, position=self.lexer.offset - len(token))
 

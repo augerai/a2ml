@@ -29,6 +29,10 @@ class TestLexer():
                 "1...$10",
                 "1... $10",
             ),
+            pytest.param(
+                '"str1"+"str2"',
+                '"str1" + "str2"'
+            ),
         ]
     )
     def test_bike_rental_investment(self, expression, exected_result):
@@ -48,6 +52,7 @@ class TestParser:
             pytest.param("2 + 2 * 2", 6, "(2 + (2 * 2))"),
             pytest.param("2 + 2 / 2", 3, "(2 + (2 / 2))"),
             pytest.param("@if(2 > 3, 9 / 2, 7 / 2)", 3.5, "logic_if(gt(2, 3), (9 / 2), (7 / 2))"),
+            pytest.param('@if("s1" = "s2", $5, $10)', 10, 'logic_if(eq("s1", "s2"), 5, 10)')
         ]
     )
     def test_parser_with_arithmetic(self, expression, result, exected_parsed_expression):
