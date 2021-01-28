@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 
 PLUS = "+"
 MINUS = "-"
@@ -164,8 +165,8 @@ class BaseNode:
     def has_variables(self):
         return False
 
-    def evaluate_sum(self, rows):
-        res = self.evaluate(rows)
+    def evaluate_sum(self, rows, vars_mapping={}):
+        res = self.evaluate(rows, vars_mapping)
         return sum(res)
 
 class ConstNode(BaseNode):
@@ -187,7 +188,7 @@ class ConstNode(BaseNode):
         else:
             raise ParserError(f"unsupported const type: '{value}'", position=self.position)
 
-    def evaluate(self, rows):
+    def evaluate(self, rows, vars_mapping={}):
         return [self.value] * len(rows)
 
     def validate(self, known_vars):
@@ -205,16 +206,23 @@ class VariableNode(BaseNode):
         else:
             self.name = name
 
-    def evaluate(self, rows):
+    def evaluate(self, rows, vars_mapping={}):
         res = []
 
         for index, variables in enumerate(rows):
-            if self.name in variables:
-                res.append(variables[self.name])
+            var_name = vars_mapping.get(self.name, self.name)
+            if var_name in variables:
+                res.append(variables[var_name])
             else:
                 row = json.dumps(variables)
+
+                unknown_var = [self.name]
+                if self.name != var_name:
+                    unknown_var.append(var_name)
+                unknown_var = " -> ".join(unknown_var)
+
                 raise ParserError(
-                    f"unknown variable: '{self.name}' in row #{index} '{row}'",
+                    f"unknown variable: '{unknown_var}' in row #{index} '{row}'",
                     position=self.position,
                 )
         return res
@@ -239,9 +247,9 @@ class OperationNode(BaseNode):
         self.left = left
         self.right = right
 
-    def evaluate(self, rows):
-        op1 = self.left.evaluate(rows)
-        op2 = self.right.evaluate(rows)
+    def evaluate(self, rows, vars_mapping={}):
+        op1 = self.left.evaluate(rows, vars_mapping)
+        op2 = self.right.evaluate(rows, vars_mapping)
 
         if self.operator == PLUS:
             return [a + b for a, b in zip(op1, op2)]
@@ -271,8 +279,8 @@ class FuncNode(BaseNode):
         self.arg_nodes = arg_nodes
         self.func = func
 
-    def evaluate(self, rows):
-        args_list = [list(map(lambda node: node.evaluate([row])[0], self.arg_nodes)) for row in rows]
+    def evaluate(self, rows, vars_mapping={}):
+        args_list = [list(map(lambda node: node.evaluate([row], vars_mapping)[0], self.arg_nodes)) for row in rows]
 
         return [self.func(*args) for args in args_list]
 
@@ -533,11 +541,12 @@ class Parser:
         raise ParserError("term is expected, got: " + token)
 
 class Calculator:
-    def __init__(self, revenue=None, investment=None, filter=None, known_vars=[]):
+    def __init__(self, revenue=None, investment=None, filter=None, known_vars=[], vars_mapping={}):
         self.revenue = revenue
         self.investment = investment
         self.filter = filter
-        self.known_vars = known_vars
+        self.known_vars = known_vars + list(vars_mapping.keys())
+        self.vars_mapping = vars_mapping
 
         self.revenue_ast = self.build_ast(self.revenue)
         self.investment_ast = self.build_ast(self.investment)
@@ -550,13 +559,16 @@ class Calculator:
             return parser.parse()
 
     def calculate(self, rows):
+        if isinstance(rows, pd.DataFrame):
+            rows = list(map(lambda x: x[1].to_dict(), rows.iterrows()))
+
         filtered_rows = rows
 
         if self.filter_ast:
-            filtered_rows = [row for row, marked in zip(rows, self.filter_ast.evaluate(rows)) if marked]
+            filtered_rows = [row for row, marked in zip(rows, self.filter_ast.evaluate(rows, self.vars_mapping)) if marked]
 
-        revenue = self.revenue_ast.evaluate_sum(filtered_rows)
-        investment = self.investment_ast.evaluate_sum(filtered_rows)
+        revenue = self.revenue_ast.evaluate_sum(filtered_rows, self.vars_mapping)
+        investment = self.investment_ast.evaluate_sum(filtered_rows, self.vars_mapping)
         roi = (revenue - investment) / investment
 
         return {

@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 import unittest
 
@@ -236,6 +237,36 @@ class TestCalculator:
         assert res["filtered_rows"] == [
             {"A": True, "P": True},
             {"A": False, "P": True},
+        ]
+
+        assert 1050 == res["revenue"]
+        assert 2000 == res["investment"]
+        assert -0.475 == res["roi"]
+
+    def test_credit_analysis_with_pandas_df(self):
+        calc = Calculator(
+            filter="P=True",
+            revenue="@if(A=True, $1050, $0)",
+            investment="$1000",
+            known_vars=["a2ml_actual", "class"],
+            vars_mapping={"A": "a2ml_actual", "P": "class"}
+        )
+
+        res = calc.calculate(
+            pd.DataFrame(
+                [
+                    {"a2ml_actual": True, "class": True},
+                    {"a2ml_actual": True, "class": False},
+                    {"a2ml_actual": False, "class": True},
+                    {"a2ml_actual": False, "class": False},
+                ]
+            )
+        )
+
+        assert 2 == res["count"]
+        assert res["filtered_rows"] == [
+            {"a2ml_actual": True, "class": True},
+            {"a2ml_actual": False, "class": True},
         ]
 
         assert 1050 == res["revenue"]
