@@ -205,7 +205,7 @@ class ModelReview(object):
             wild=True, remove_folder_name=False, meta_info=True
         )
 
-        all_files.sort(key=lambda f: f['last_modified'], reverse=True)
+        all_files.sort(key=lambda f: f['path'][0:10], reverse=True)
 
         if date_col and date_col in train_features:
             new_files = []
