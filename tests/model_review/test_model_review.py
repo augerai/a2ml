@@ -329,10 +329,23 @@ def test_score_actuals_dict_full():
       },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals, return_count=True)
+    roi = {
+        'filter': '$petal_width > 0 and $sepal_width > 1 and $sepal_length * $sepal_width >= 5',
+        'revenue': '@if(A="virginica", $150, @if(A = "versicolor", $100, $0))',
+        'investment': '$50',
+    }
+
+    res = ModelReview({'model_path': model_path, 'roi': roi}).add_actuals(
+        None,
+        actuals_path=None,
+        data=actuals,
+        return_count=True,
+    )
+
     assert res['score']['accuracy'] == 0.5
     assert res['baseline_score']['accuracy'] == 0.5
     assert res['count'] == 2
+    assert res['score']['roi'] == (250 - 100) / 100
 
     for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
@@ -708,8 +721,15 @@ def test_score_actuals_another_result_first():
     },
   ]
 
-  res = ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
+  roi = {
+    'filter': 'P="good"',
+    'revenue': '@if(A="good", $1050, $0)',
+    'investment': '$1000',
+  }
+
+  res = ModelReview({'model_path': model_path, 'roi': roi}).add_actuals(None, data=actuals)
   assert res['accuracy'] == 1
+  assert res['roi'] == (1050 - 1000) / 1000
 
 def test_build_review_data():
     model_path = "tests/fixtures/test_build_review_data/iris"
