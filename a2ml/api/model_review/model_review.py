@@ -291,6 +291,7 @@ class ModelReview(object):
                 date_stat, "_*_data.feather.zstd"):
                 all_files += files
 
+            print(all_files)    
             base_stat = ModelReview._get_distribution_stats_files(all_files, features, categoricalFeatures, mapper)
             if base_stat:
                 actuals_stats['base_stat'] = base_stat
