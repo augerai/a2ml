@@ -426,6 +426,7 @@ class ModelReview(object):
             wild=True, remove_folder_name=True, meta_info=True
         )
         first_date = None
+        print(all_files)
         if all_files:
             all_files.sort(key=lambda f: f['last_modified'], reverse=True)
             idxDate = all_files[0]['path'].find("_")
