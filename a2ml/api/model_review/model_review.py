@@ -291,7 +291,6 @@ class ModelReview(object):
                 date_stat, "_*_data.feather.zstd"):
                 all_files += files
 
-            print(all_files)    
             base_stat = ModelReview._get_distribution_stats_files(all_files, features, categoricalFeatures, mapper)
             if base_stat:
                 actuals_stats['base_stat'] = base_stat
@@ -423,15 +422,14 @@ class ModelReview(object):
     @staticmethod
     def _get_first_date_from_files(path):
         all_files = fsclient.list_folder(path,
-            wild=True, remove_folder_name=True, meta_info=True
+            wild=True, remove_folder_name=True, meta_info=False
         )
         first_date = None
-        print(all_files)
         if all_files:
-            all_files.sort(key=lambda f: f['last_modified'], reverse=True)
-            idxDate = all_files[0]['path'].find("_")
+            all_files.sort(key=lambda f: f[0:10], reverse=False)
+            idxDate = all_files[0].find("_")
             if idxDate:
-                first_date = all_files[0]['path'][0:idxDate]
+                first_date = all_files[0][0:idxDate]
 
         return first_date
                 
