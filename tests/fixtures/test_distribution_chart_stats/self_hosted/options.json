@@ -1,0 +1,1 @@
+{"uid": "88D3545326EC445", "error": null, "ratio": 1.0, "score": 0.9665032679738562, "scoring": "accuracy", "targetFeature": "species", "task_type": "classification", "score_name": "accuracy", "algorithm_name": "lightgbm.LGBMClassifier", "originalFeatureColumns": ["sepal_length", "sepal_width", "petal_length", "petal_width"], "data_folds_path": [], "support_review_model": true}

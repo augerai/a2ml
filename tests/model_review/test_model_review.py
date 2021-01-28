@@ -89,6 +89,49 @@ def test_score_model_performance_daily_fn_fp():
     assert date_res['baseline_scores']['FN'] == 1
 
 
+def test_distribution_chart_stats_selfhosted_model():
+    model_path = 'tests/fixtures/test_distribution_chart_stats/self_hosted'
+    date_from = datetime.date(2020, 10, 22)
+    date_to = datetime.date(2020, 10, 22)
+
+    res = ModelReview(_load_metric_task_params(model_path)).distribution_chart_stats(date_from, date_to)
+
+    assert type(res) is dict
+    assert type(res[str(date_to)]) is dict
+
+    assert res["base_stat"] == {'actual_species': {'dist': {'versicolor': 1, 'virginica': 1}, 'imp': 0}, 'predicted_species': {'dist': {'virginica': 2}, 'imp': 0}, 'sepal_length': {'avg': 4.0, 'std_dev': 1.4142135623730951, 'imp': 0}, 'sepal_width': {'avg': 3.0, 'std_dev': 1.4142135623730951, 'imp': 0}, 'petal_length': {'avg': 2.0, 'std_dev': 1.4142135623730951, 'imp': 0}, 'petal_width': {'avg': 1.0, 'std_dev': 0.0, 'imp': 0}}
+
+    assert res[str(date_to)] == {
+      "actual_species": {
+        "dist": { "virginica": 2, "versicolor": 2 },
+        "imp": 0
+      },
+      "predicted_species": {
+        "dist": { "virginica": 4 },
+        "imp": 0
+      },
+      "sepal_length": {
+        "avg": 4.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "sepal_width": {
+        "avg": 3.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "petal_length": {
+        "avg": 2.0,
+        "std_dev": 1.4142135623730951,
+        "imp": 0
+      },
+      "petal_width": {
+        "avg": 1.0,
+        "std_dev": 0.0,
+        "imp": 0
+      }
+    }
+
 def test_distribution_chart_stats_for_categorical_target():
     model_path = 'tests/fixtures/test_distribution_chart_stats/iris'
     date_from = datetime.date(2020, 10, 22)
