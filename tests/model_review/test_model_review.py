@@ -372,10 +372,23 @@ def test_score_actuals_dict_full():
       },
     ]
 
-    res = ModelReview({'model_path': model_path}).add_actuals(None, actuals_path=None, data=actuals, return_count=True)
+    roi = {
+        'filter': '$petal_width > 0 and $sepal_width > 1 and $sepal_length * $sepal_width >= 5',
+        'revenue': '@if(A="virginica", $150, @if(A = "versicolor", $100, $0))',
+        'investment': '$50',
+    }
+
+    res = ModelReview({'model_path': model_path, 'roi': roi}).add_actuals(
+        None,
+        actuals_path=None,
+        data=actuals,
+        return_count=True,
+    )
+
     assert res['score']['accuracy'] == 0.5
     assert res['baseline_score']['accuracy'] == 0.5
     assert res['count'] == 2
+    assert res['score']['roi'] == (250 - 100) / 100
 
     for (_date, _path, actuals) in assert_actual_file(model_path, with_features=True):
       assert actuals[0]['a2ml_predicted'] == 'virginica'
@@ -751,8 +764,15 @@ def test_score_actuals_another_result_first():
     },
   ]
 
-  res = ModelReview({'model_path': model_path}).add_actuals(None, data=actuals)
+  roi = {
+    'filter': 'P="good"',
+    'revenue': '@if(A="good", $1050, $0)',
+    'investment': '$1000',
+  }
+
+  res = ModelReview({'model_path': model_path, 'roi': roi}).add_actuals(None, data=actuals)
   assert res['accuracy'] == 1
+  assert res['roi'] == (1050 - 1000) / 1000
 
 def test_build_review_data():
     model_path = "tests/fixtures/test_build_review_data/iris"
@@ -827,6 +847,35 @@ def test_delete_actuals(with_predictions, begin_date, end_date, expected_files_l
     # assert
     files_left = os.listdir(predictions_path) if os.path.exists(predictions_path) else []
     assert sorted(files_left) == sorted(expected_files_left)
+
+def test_validate_roi_syntax():
+    expressions = [
+        "(1 + A) * $100",
+        "somefunc(1)",
+        "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P",
+        "$some_feature + A",
+    ]
+
+    model_path = 'tests/fixtures/test_validate_roi_syntax'
+    res = ModelReview({'model_path': model_path}).validate_roi_syntax(expressions)
+
+    assert len(res) == 4
+
+    assert res[0]["expression"] == expressions[0]
+    assert res[0]["is_valid"] == True, res[0]["error"]
+    assert res[0]["error"] == None
+
+    assert res[1]["expression"] == expressions[1]
+    assert res[1]["is_valid"] == False, res[1]["error"]
+    assert res[1]["error"] == "unknown function 'somefunc' at position 9"
+
+    assert res[2]["expression"] == expressions[2]
+    assert res[2]["is_valid"] == True, res[2]["error"]
+    assert res[2]["error"] == None
+
+    assert res[3]["expression"] == expressions[3]
+    assert res[3]["is_valid"] == False, res[3]["error"]
+    assert res[3]["error"] == "unknown variable 'some_feature' at position 2"
 
 def write_actuals(model_path, actuals, with_features=True, date=None):
     df = pd.DataFrame(data=actuals)

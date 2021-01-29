@@ -8,6 +8,7 @@ import logging
 from a2ml.api.utils import get_uid, convert_to_date, merge_dicts, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.a2ml import A2ML, Context
+import a2ml.api.utils.roi_calc as roi_calc
 
 from .model_helper import ModelHelper
 from .probabilistic_counter import ProbabilisticCounter
@@ -67,36 +68,53 @@ class ModelReview(object):
 
         res = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
-        res['roi'] = self._calculate_roi(df_data, predicted_feature)
+        roi = self._calculate_roi(df_data, predicted_feature)
+        if roi != None:
+            res['roi'] = roi
+
+        return res
+
+    def validate_roi_syntax(self, expressions):
+        res = []
+        known_vars = ["A", "P", self.target_feature] + self.original_features
+
+        for expression in expressions:
+            validation_result = roi_calc.Parser(expression).validate(known_vars=known_vars)
+            res.append(
+                {
+                    "expression": expression,
+                    "is_valid": validation_result.is_valid,
+                    "error": validation_result.error,
+                }
+            )
 
         return res
 
     def _calculate_roi(self, df_data, predicted_feature=None):
         if not self.params.get('roi'):
-            return 0.0
+            return None
 
-        data_filter = self.params['roi']['filter']
-        revenue = self.params['roi']['revenue']
-        investment = self.params['roi']['investment']
+        predicted_feature = predicted_feature or self.target_feature
+        known_vars = [predicted_feature] + self.original_features
 
-        #TODO: replace P to target, A to a2ml_actual
+        calc = roi_calc.Calculator(
+            filter=self.params['roi']['filter'],
+            revenue=self.params['roi']['revenue'],
+            investment=self.params['roi']['investment'],
+            known_vars=known_vars,
+            vars_mapping={"A": "a2ml_actual", "P": predicted_feature},
+        )
 
-        df_filtered = df_data.query(data_filter)
+        res = calc.calculate(df_data)
+        return res["roi"]
 
-        investment_value = 1.0
-        revenue_value = 1.0
-
-        #TODO: perform operations
-
-        return (revenue_value-investment_value)/investment_value
-            
     def add_external_model(self, target_column, scoring, task_type, binary_classification):
         ModelHelper.create_model_options_file(
             options_path=self.options_path,
             scoring=scoring,
             target_column=target_column,
             task_type=task_type,
-            binary_classification = binary_classification,
+            binary_classification=binary_classification,
         )
 
         self._load_options()

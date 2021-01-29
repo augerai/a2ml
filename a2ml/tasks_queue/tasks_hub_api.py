@@ -485,7 +485,7 @@ def add_external_model_task(params):
         target_column=params.get('target_column'),
         scoring=params.get('scoring'),
         task_type=params.get('task_type'),
-        binary_classification=params.get('binary_classification'),
+        binary_classification=params.get('binary_classification', False),
     )
 
 @celeryApp.task(ignore_result=True)
@@ -677,3 +677,10 @@ def presign_s3_url_task(params):
             expires_in=params.get('expires_in'),
             max_content_length=params.get('max_content_length'),
         )
+
+@celeryApp.task(ignore_result=True)
+@process_task_result
+def validate_roi_syntax_task(params):
+    return ModelReview(params).validate_roi_syntax(
+        expressions=params["expressions"],
+    )
