@@ -419,10 +419,15 @@ class TestTasksHubApiAuger(unittest.TestCase):
 
         with patch('a2ml.tasks_queue.tasks_hub_api.send_result_to_hub') as mock_requests:
             res = distribution_chart_stats_task(params)
-            assert 2 == len(res)
+            print(res)
+            assert 3 == len(res)
             assert 2 == len(res[str(date_to)])
             assert "actual_y" in res[str(date_to)]
             assert "predicted_y" in res[str(date_to)]
+
+            assert 2 == len(res['base_stat'])
+            assert "actual_y" in res['base_stat']
+            assert "predicted_y" in res['base_stat']
 
     def test_add_external_model_task(self):
         setattr(add_external_model_task, "start_time", time.time())

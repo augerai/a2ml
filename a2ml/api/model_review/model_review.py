@@ -223,7 +223,7 @@ class ModelReview(object):
             wild=True, remove_folder_name=False, meta_info=True
         )
 
-        all_files.sort(key=lambda f: f['last_modified'], reverse=True)
+        all_files.sort(key=lambda f: f['path'][0:10], reverse=True)
 
         if date_col and date_col in train_features:
             new_files = []
@@ -302,6 +302,17 @@ class ModelReview(object):
             date_from, date_to, "_*_data.feather.zstd", features, categoricalFeatures, mapper
         )
 
+        if not self.options.get('data_path'):
+            all_files = []
+            date_stat = convert_to_date(date_to) - datetime.timedelta(days=1)
+            for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, None, 
+                date_stat, "_*_data.feather.zstd"):
+                all_files += files
+
+            base_stat = ModelReview._get_distribution_stats_files(all_files, features, categoricalFeatures, mapper)
+            if base_stat:
+                actuals_stats['base_stat'] = base_stat
+
         return actuals_stats
 
     def set_support_review_model_flag(self, flag_value):
@@ -320,58 +331,70 @@ class ModelReview(object):
         fsclient.remove_folder(os.path.join(self.model_path, "predictions"))
         return True
 
+    @staticmethod
+    def _get_distribution_stats_files(files, features, categoricalFeatures=[], feature_mapper={},
+        feature_importances={}):
+
+        if not files:
+            return None
+
+        stats = {}
+
+        for feature in features:
+            stats[feature] = {
+                'count': 0,
+                'sum': 0,
+                'sq_sum': 0,
+                'dist': None,
+                'imp': feature_importances.get(feature, 0)
+            }
+
+        df_list = []
+        for (file, df) in DataFrame.load_from_files(files):
+            df_list.append(df)
+
+        # First pass: calc sum and count in each column for average
+        for df in df_list:
+            for feature in features:
+                if feature in df.columns:
+                    stats[feature]['count'] += df.df[feature].count()
+
+                    if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
+                        feature in categoricalFeatures:
+                        stats[feature]['dist'] = merge_dicts(
+                            stats[feature]['dist'] or {},
+                            dict(df.df[feature].value_counts()),
+                            lambda v, ov: v + ov
+                        )
+                    else:
+                        stats[feature]['sum'] += df.df[feature].sum()
+
+        # Calc average
+        for feature in features:
+            if stats[feature]['count'] > 0 and stats[feature]['dist'] == None:
+                stats[feature]['average'] = stats[feature]['sum'] / stats[feature]['count']
+
+        # Second pass: sum of squares of value and average for std dev
+        for df in df_list:
+            for feature in features:
+                if 'average' in stats[feature] and feature in df.columns:
+                    avg = stats[feature]['average']
+                    stats[feature]['sq_sum'] += ((df.df[feature] - avg)**2).sum()
+
+        # Calc std dev
+        return ModelReview._calc_stddev_for_features(stats, features, feature_mapper)
+
     def _distribution_stats(self, date_from, date_to, path_suffix, features,
         categoricalFeatures=[], feature_mapper={}):
         res = {}
         feature_importances = self.get_feature_importances()
 
         for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, date_from, date_to, path_suffix):
-            stats = {}
 
-            for feature in features:
-                stats[feature] = {
-                    'count': 0,
-                    'sum': 0,
-                    'sq_sum': 0,
-                    'dist': None,
-                    'imp': feature_importances.get(feature, 0)
-                }
-
-            df_list = []
-            for (file, df) in DataFrame.load_from_files(files):
-                df_list.append(df)
-
-            # First pass: calc sum and count in each column for average
-            for df in df_list:
-                for feature in features:
-                    if feature in df.columns:
-                        stats[feature]['count'] += df.df[feature].count()
-
-                        if df.df[feature].dtype.name in ['category', 'string', 'object'] or \
-                            feature in categoricalFeatures:
-                            stats[feature]['dist'] = merge_dicts(
-                                stats[feature]['dist'] or {},
-                                dict(df.df[feature].value_counts()),
-                                lambda v, ov: v + ov
-                            )
-                        else:
-                            stats[feature]['sum'] += df.df[feature].sum()
-
-            # Calc average
-            for feature in features:
-                if stats[feature]['count'] > 0 and stats[feature]['dist'] == None:
-                    stats[feature]['average'] = stats[feature]['sum'] / stats[feature]['count']
-
-            # Second pass: sum of squares of value and average for std dev
-            for df in df_list:
-                for feature in features:
-                    if 'average' in stats[feature] and feature in df.columns:
-                        avg = stats[feature]['average']
-                        stats[feature]['sq_sum'] += ((df.df[feature] - avg)**2).sum()
-
+            stats = ModelReview._get_distribution_stats_files(files, features, categoricalFeatures, feature_mapper, feature_importances)
             # Calc std dev
-            if len(files) > 0:
-                res[str(curr_date)] = ModelReview._calc_stddev_for_features(stats, features, feature_mapper)
+            if stats:
+                res[str(curr_date)] = stats
 
         return res
 
@@ -415,16 +438,37 @@ class ModelReview(object):
         return res
 
     @staticmethod
-    def _prediction_files_by_day(model_path, date_from, date_to, path_suffix):
-        if (date_from and not date_to) or (not date_from and date_to):
-            # TODO: list all files by suffix, sort them by prefix date and return range of files
-            raise Exception("Arguments error: please provide both start and end dates or do not pass any.")
+    def _get_first_date_from_files(path):
+        all_files = fsclient.list_folder(path,
+            wild=True, remove_folder_name=True, meta_info=False
+        )
+        first_date = None
+        if all_files:
+            all_files.sort(key=lambda f: f[0:10], reverse=False)
+            idxDate = all_files[0].find("_")
+            if idxDate:
+                first_date = all_files[0][0:idxDate]
 
-        if date_from:
-            date_from = convert_to_date(date_from)
-            date_to = convert_to_date(date_to)
+        return first_date
+                
+    @staticmethod
+    def _prediction_files_by_day(model_path, date_from, date_to, path_suffix):
+        if (date_from and not date_to):# or (not date_from and date_to):
+            # TODO: list all files by suffix, sort them by prefix date and return range of files
+            raise Exception("Arguments error: please provide both start and end dates or date_to only or do not pass any.")
+
+        if date_from or date_to:
+            if date_from:
+                date_from = convert_to_date(date_from)
+            else:
+                date_from = ModelReview._get_first_date_from_files(
+                    os.path.join(model_path, "predictions/*" + path_suffix))
+                if not date_from:
+                    return
+                date_from = convert_to_date(date_from)
 
             curr_date = date_from
+            date_to = convert_to_date(date_to)
 
             while curr_date <= date_to:
                 path = os.path.join(model_path, "predictions/" + str(curr_date) + "*" + path_suffix)
