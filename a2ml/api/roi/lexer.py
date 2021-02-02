@@ -1,23 +1,31 @@
 EQ = "="
+EQ2 = "=="
 GT = ">"
 LT = "<"
-EXCLAMATION = "!"
-SEMI = ";"
-DOT = "."
+NE = "!="
+GTE = ">="
+LTE = "<="
+
 PLUS = "+"
 MINUS = "-"
 MUL = "*"
 POWER = "**"
 DIV = "/"
 INT_DIV = "//"
+MODULO = "%"
+
 LPAREN = "("
 RPAREN = ")"
-PIPE = "|"
-CARET = "^"
-AMPERSAND = "&"
-TILDE = "~"
-PERCENT = "%"
+BIT_OR = "|"
+BIT_XOR = "^"
+BIT_AND = "&"
+BIT_NOT = "~"
+BIT_LSHIFT = "<<"
+BIT_RSHIFT = ">>"
 
+EXCLAMATION = "!"
+SEMI = ";"
+DOT = "."
 AT = "@"
 UNDER = "_"
 LCURCLY = "{"
@@ -28,20 +36,29 @@ COMMA = ","
 DQUOTE = '"'
 DOLLAR = "$"
 
-INT_CONST = 'INT_CONST'
-FLOAT_CONST = 'FLOAT_CONST'
+INT_CONST = "INT_CONST"
+FLOAT_CONST = "FLOAT_CONST"
+STR_CONST = "STR_CONST"
+CONST = "CONST"
 ID = "ID"
-STRING = "STRING"
 AND = "and"
 OR = "or"
 NOT = "not"
+
+EOF = "EOF"
 
 COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
 KEYWORDS = set([AND, OR, NOT])
 
 SYMBOLS = set(
-    [SEMI, DOT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, COMMA, PIPE, AMPERSAND, CARET, TILDE, PERCENT]
+    [SEMI, DOT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, COMMA, BIT_OR, BIT_AND, BIT_XOR, BIT_NOT, MODULO]
 )
+
+CONSTANTS = {
+    "None": None,
+    "True": True,
+    "False": False,
+}
 
 class AstError(Exception):
     def __init__(self, msg, position=None):
@@ -108,7 +125,7 @@ class Lexer:
             self.advance()
 
             while self.current_char.isdigit():
-                token += current_char
+                token += self.current_char
                 self.advance()
 
             return Token(float(token), FLOAT_CONST)
@@ -125,6 +142,8 @@ class Lexer:
 
         if token in KEYWORDS:
             return Token(token)
+        elif token in CONSTANTS:
+            return Token(CONSTANTS[token], CONST)
         else:
             return Token(token, ID)
 
@@ -138,7 +157,7 @@ class Lexer:
 
         self.advance()
 
-        return Token(token, STRING)
+        return Token(token, STR_CONST)
 
     def dollar_literal(self):
         self.advance()
@@ -227,12 +246,14 @@ class Lexer:
 
             raise LexerError(f"unexpected char: '{self.current_char}' code={ord(self.current_char)} pos=#{self.pos}")
 
+        return Token(EOF)
+
     def all_tokens(self):
         res = []
         token = self.next_token()
 
-        while token:
-            res.append(token.value)
+        while token.type != EOF:
+            res.append(token)
             token = self.next_token()
 
         return res
