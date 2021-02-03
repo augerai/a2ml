@@ -59,7 +59,7 @@ class TestLexer():
                 ],
             ),
             pytest.param(
-                "A > P and B1 == B2 and C1 != C2 and D1 >= D_2",
+                "A > P and B1 == B2 and C1 != C2 and D1 >= D_2 =",
                 [
                     ("A", ID),
                     (">", GT),
@@ -76,6 +76,7 @@ class TestLexer():
                     ("D1", ID),
                     (">=", GTE),
                     ("D_2", ID),
+                    ("==", EQ2),
                 ],
             ),
             pytest.param(
@@ -118,7 +119,7 @@ class TestLexer():
                 ],
             ),
             pytest.param(
-                "1 % 7 ** 8.0 or None or False or not True",
+                "1 % 7 ** 8.0 or None or False or not True in",
                 [
                     (1, INT_CONST),
                     ("%", MODULO),
@@ -132,6 +133,7 @@ class TestLexer():
                     ("or", OR),
                     ("not", NOT),
                     (True, CONST),
+                    ("in", IN),
                 ],
             ),
         ]

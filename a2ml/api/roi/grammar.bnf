@@ -23,8 +23,6 @@ compare_op_bitwise_or_pair:
     | gt_bitwise_or
     | notin_bitwise_or
     | in_bitwise_or
-    | isnot_bitwise_or
-    | is_bitwise_or
 
 eq_bitwise_or: '==' bitwise_or
 
@@ -37,8 +35,6 @@ gte_bitwise_or: '>=' bitwise_or
 gt_bitwise_or: '>' bitwise_or
 notin_bitwise_or: 'not' 'in' bitwise_or
 in_bitwise_or: 'in' bitwise_or
-isnot_bitwise_or: 'is' 'not' bitwise_or
-is_bitwise_or: 'is' bitwise_or
 
 bitwise_or:
     | bitwise_or '|' bitwise_xor

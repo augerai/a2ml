@@ -44,11 +44,12 @@ ID = "ID"
 AND = "and"
 OR = "or"
 NOT = "not"
+IN = "in"
 
 EOF = "EOF"
 
 COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
-KEYWORDS = set([AND, OR, NOT])
+KEYWORDS = set([AND, OR, NOT, IN])
 
 SYMBOLS = set(
     [SEMI, DOT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, COMMA, BIT_OR, BIT_AND, BIT_XOR, BIT_NOT, MODULO]
@@ -59,6 +60,14 @@ CONSTANTS = {
     "True": True,
     "False": False,
 }
+
+# Lexical Grammar:
+#
+# NUMBER         → DIGIT+ ( "." DIGIT+ )? ;
+# STRING         → "\"" <any char except "\"">* "\"" ;
+# IDENTIFIER     → (ALPHA | "@") ( ALPHA | DIGIT )* ;
+# ALPHA          → "a" ... "z" | "A" ... "Z" | "_" ;
+# DIGIT          → "0" ... "9" ;
 
 class AstError(Exception):
     def __init__(self, msg, position=None):
@@ -84,7 +93,7 @@ class Lexer:
 
     @staticmethod
     def is_name_start(c):
-        return c and (c.isalnum() or c == UNDER or c == AT)
+        return c and (c.isalpha() or c == UNDER or c == AT)
 
     @staticmethod
     def is_name_part(c):
@@ -182,6 +191,10 @@ class Lexer:
         while self.current_char in COMPARISON_SYMBOLS:
             token += self.current_char
             self.advance()
+
+        # Temporary treat "="" as an "=="
+        if token == EQ:
+            token = EQ2
 
         return Token(token)
 
