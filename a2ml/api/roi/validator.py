@@ -5,14 +5,13 @@ class ValidationError(AstError):
     pass
 
 class Validator(NodeVisitor):
-    def __init__(self, parser, known_vars, known_funcs):
-        super().__init__(parser)
+    def __init__(self, root, known_vars, known_funcs):
+        super().__init__(root)
         self.known_vars = known_vars
         self.known_funcs = known_funcs
 
     def validate(self):
-        root = self.parser.parse()
-        return self.evaluate(root)
+        return self.evaluate(self.root)
 
     def evaluate_no_op_node(self, node):
         return True

@@ -18,9 +18,9 @@ from a2ml.api.roi.validator import Validator, ValidationError
     ]
 )
 def test_validate(expression, expected_result):
-    parser = Parser(Lexer(expression))
+    root = Parser(Lexer(expression)).parse()
     validator = Validator(
-        parser,
+        root,
         known_vars=["$a", "$b"],
         known_funcs={
             "min": [2, 3, 4, 5],

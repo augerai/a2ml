@@ -1,6 +1,6 @@
 class NodeVisitor(object):
-    def __init__(self, parser):
-        self.parser = parser
+    def __init__(self, root):
+        self.root = root
 
     def snake_case(self, str):
         res = ''
