@@ -24,9 +24,10 @@ class ConstNode(BaseNode):
             return str(self.value)
 
 class VarNode(BaseNode):
-    def __init__(self, token):
+    def __init__(self, token, position=None):
         self.token = token
         self.name = token.value
+        self.position = position
 
     def __str__(self):
         return str(self.name)
@@ -49,9 +50,10 @@ class UnaryOpNode(BaseNode):
         return f"({self.op} {self.node})"
 
 class FuncNode(BaseNode):
-    def __init__(self, token, arg_nodes):
+    def __init__(self, token, arg_nodes, position=None):
         self.func_name = token.value
         self.arg_nodes = arg_nodes
+        self.position = position
 
     def __str__(self):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
@@ -262,7 +264,7 @@ class Parser:
             if self.current_token.type == LPAREN:
                 return self.func_call_statement()
             else:
-                return VarNode(self.prev_token)
+                return VarNode(self.prev_token, self.lexer.pos - len(self.prev_token.value))
         elif self.current_token.type in (CONST, STR_CONST, INT_CONST, FLOAT_CONST):
             token = self.current_token
             self.eat(self.current_token.type)
@@ -272,6 +274,7 @@ class Parser:
 
     def func_call_statement(self):
         name_token = self.prev_token
+        pos = self.lexer.pos - len(name_token.value) - 1
         self.eat(LPAREN)
 
         arg_nodes = []
@@ -285,5 +288,4 @@ class Parser:
 
         self.eat(RPAREN)
 
-        return FuncNode(name_token, arg_nodes)
-
+        return FuncNode(name_token, arg_nodes, pos)
