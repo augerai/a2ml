@@ -141,8 +141,8 @@ class Lexer:
         else:
             return Token(int(token), INT_CONST)
 
-    def name_token(self):
-        token = self.current_char
+    def name_token(self, prefix=None):
+        token = (prefix or '') + self.current_char
         self.advance()
 
         while Lexer.is_name_part(self.current_char):
@@ -174,7 +174,7 @@ class Lexer:
         if self.current_char.isdigit():
             return self.number_token()
         else:
-            return self.name_token()
+            return self.name_token(DOLLAR)
 
     def colon_op(self):
         self.advance()

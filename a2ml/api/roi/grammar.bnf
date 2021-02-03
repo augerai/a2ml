@@ -84,8 +84,12 @@ primary:
 
 atom:
     | NAME
+    | func_call_statement
     | 'True'
     | 'False'
     | 'None'
     | STRING
     | NUMBER
+
+func_call_statement:
+    | NAME '(' (expression (',' expression)*)? ')'

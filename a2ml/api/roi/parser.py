@@ -50,7 +50,7 @@ class UnaryOpNode(BaseNode):
 
 class FuncNode(BaseNode):
     def __init__(self, token, arg_nodes):
-        self.func_name = token.name
+        self.func_name = token.value
         self.arg_nodes = arg_nodes
 
     def __str__(self):
@@ -62,8 +62,13 @@ class Parser:
         self.current_token = self.lexer.next_token()
 
     def error(self, msg=None):
-        msg = msg or "Invalid syntax token"
-        raise ParserError(f"{msg}: {self.current_token}")
+        if self.current_token.type == EOF:
+            raise ParserError(f"unexpected end of expression at position {self.lexer.pos}")
+        else:
+            msg = msg or "invalid token"
+            value = self.current_token.value
+            pos = self.lexer.pos - len(value)
+            raise ParserError(f"{msg} '{value}' at position {pos}")
 
     def eat(self, token_type):
         # compare the current token type with the passed token
@@ -135,7 +140,7 @@ class Parser:
         if self.current_token.type == IN:
             return self.in_bitwise_or(left)
         else:
-            raise self.error("Unknown op")
+            raise self.error("unknown op")
 
     def eq_bitwise_or(self, left):
         self.eat(EQ2)
@@ -254,10 +259,31 @@ class Parser:
     def atom(self):
         if self.current_token.type == ID:
             self.eat(ID)
-            return VarNode(self.prev_token)
+            if self.current_token.type == LPAREN:
+                return self.func_call_statement()
+            else:
+                return VarNode(self.prev_token)
         elif self.current_token.type in (CONST, STR_CONST, INT_CONST, FLOAT_CONST):
             token = self.current_token
             self.eat(self.current_token.type)
             return ConstNode(token)
         else:
-            self.error("Unknown atom")
+            self.error("unknown atom")
+
+    def func_call_statement(self):
+        name_token = self.prev_token
+        self.eat(LPAREN)
+
+        arg_nodes = []
+
+        if self.current_token.type != RPAREN:
+            arg_nodes.append(self.expression())
+
+            while self.current_token.type == COMMA:
+                self.eat(COMMA)
+                arg_nodes.append(self.expression())
+
+        self.eat(RPAREN)
+
+        return FuncNode(name_token, arg_nodes)
+

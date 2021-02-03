@@ -136,6 +136,16 @@ class TestLexer():
                     ("in", IN),
                 ],
             ),
+            pytest.param(
+                "A + P - $A",
+                [
+                    ("A", ID),
+                    ("+", PLUS),
+                    ("P", ID),
+                    ("-", MINUS),
+                    ("$A", ID),
+                ],
+            ),
         ]
     )
     def test_lexer_values(self, expression, expected_result):
