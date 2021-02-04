@@ -1,3 +1,4 @@
+import random
 from inspect import getfullargspec
 
 from a2ml.api.roi.lexer import *
@@ -14,7 +15,7 @@ class Interpreter(NodeVisitor):
         self.expression = expression
         self.vars_mapping = vars_mapping
 
-    def run(self, variables):
+    def run(self, variables={}):
         known_vars = self.get_kwnown_vars(variables) | set(self.vars_mapping.keys())
         validator = Validator(self.expression, known_vars, self.known_funcs())
         validation_result = validator.validate(force_raise=True)
@@ -51,12 +52,12 @@ class Interpreter(NodeVisitor):
     # Builtin functions
 
     @staticmethod
-    def min(_, arg1, arg2, *args):
-        return min(arg1, arg2, *args)
+    def abs(_, x):
+        return abs(x)
 
     @staticmethod
-    def max(_, arg1, arg2, *args):
-        return max(arg1, arg2, *args)
+    def len(_, x):
+        return len(x)
 
     @staticmethod
     def logic_if(interpreter, predicate, true_value, false_value):
@@ -66,14 +67,41 @@ class Interpreter(NodeVisitor):
             return interpreter.evaluate(false_value)
 
     @staticmethod
+    def min(_, arg1, arg2, *args):
+        return min(arg1, arg2, *args)
+
+    @staticmethod
+    def max(_, arg1, arg2, *args):
+        return max(arg1, arg2, *args)
+
+    @staticmethod
+    def randint(_, a, b):
+        return random.randint(a, b)
+
+    @staticmethod
+    def random(_):
+        return random.random()
+
+    @staticmethod
+    def round(_, x, ndigits=None):
+        return round(x, ndigits)
+
+    @staticmethod
     def func_values():
         return {
-            # Math
-            "min": Interpreter.min,
-            "max": Interpreter.max,
-
             # Logic
             "if": Interpreter.logic_if,
+
+            # Math
+            "abs": Interpreter.abs,
+            "min": Interpreter.min,
+            "max": Interpreter.max,
+            "round": Interpreter.round,
+            "randint": Interpreter.randint,
+            "random": Interpreter.random,
+
+            # Str
+            "len": Interpreter.len,
         }
 
     @staticmethod
@@ -83,14 +111,16 @@ class Interpreter(NodeVisitor):
 
         for func_name, func in funcs.items():
             spec = getfullargspec(func)
-            min_count = len(spec.args) - 1
+
+            # -1 for interpreter it self
+            # -len(spec.defaults) for default arg values
+            min_count = len(spec.args) - 1 - len(spec.defaults or [])
+            max_count = len(spec.args) - 1
 
             if spec.varargs:
-                args_count = range(min_count, Interpreter.MAX_ARGS_COUNT + 1)
-            else:
-                args_count = [min_count]
+                max_count = Interpreter.MAX_ARGS_COUNT
 
-            res[func_name] = args_count
+            res[func_name] = range(min_count, max_count + 1)
 
         return res
 

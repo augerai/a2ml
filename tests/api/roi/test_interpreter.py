@@ -23,6 +23,12 @@ from a2ml.api.roi.interpreter import Interpreter
         pytest.param("100 >> 1", 100 >> 1),
         pytest.param("+2 + -3", -1),
         pytest.param("~5", ~5),
+        pytest.param("min(1, 2, 3)", 1),
+        pytest.param("max(1, 2, 3)", 3),
+        pytest.param("abs(-1.5)", 1.5),
+        pytest.param('len("some string")', 11),
+        pytest.param("round(1.23456)", 1),
+        pytest.param("round(1.23456, 3)", 1.235),
         pytest.param("$price * 1.4 - $12", 58),
         pytest.param("($price * 1.4 - $12) * (1 - $taxes)", 49.3),
         pytest.param("($price * 1.4 - A) * (1 - $taxes)", 51),
@@ -39,6 +45,22 @@ def test_interpreter_with_scalar(expression, exected_result):
     interpreter = Interpreter(expression)
 
     assert interpreter.run(variables) == exected_result
+
+@pytest.mark.parametrize(
+    "expression, exected_result",
+    [
+        pytest.param("random()", (0, 1)),
+        pytest.param("randint(1, 10)", (1, 10)),
+    ]
+)
+def test_interpreter_random_func(expression, exected_result):
+    interpreter = Interpreter(expression)
+
+    res = interpreter.run()
+
+    assert res >= exected_result[0]
+    assert res <= exected_result[1]
+
 
 @pytest.mark.parametrize(
     "expression, exected_result",
