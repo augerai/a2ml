@@ -1,3 +1,4 @@
+import math
 import random
 from inspect import getfullargspec
 
@@ -26,15 +27,7 @@ class BaseInterpreter(object):
     def generic_evaluate(self, node):
         raise Exception('No {} method'.format(self.node_method_name(node)))
 
-        # Builtin functions
-
-    @staticmethod
-    def abs(_, x):
-        return abs(x)
-
-    @staticmethod
-    def len(_, x):
-        return len(x)
+    # Builtin functions
 
     @staticmethod
     def logic_if(interpreter, predicate, true_value, false_value):
@@ -42,6 +35,10 @@ class BaseInterpreter(object):
             return interpreter.evaluate(true_value)
         else:
             return interpreter.evaluate(false_value)
+
+    @staticmethod
+    def log(_, x):
+        return math.log(x)
 
     @staticmethod
     def min(_, arg1, arg2, *args):
@@ -60,10 +57,6 @@ class BaseInterpreter(object):
         return random.random()
 
     @staticmethod
-    def round(_, x, ndigits=None):
-        return round(x, ndigits)
-
-    @staticmethod
     def func_values():
         return {
             # Logic
@@ -71,16 +64,32 @@ class BaseInterpreter(object):
             "@if": BaseInterpreter.logic_if,
 
             # Math
-            "abs": BaseInterpreter.abs,
-            "min": BaseInterpreter.min,
-            "max": BaseInterpreter.max,
-            "round": BaseInterpreter.round,
-            "randint": BaseInterpreter.randint,
-            "random": BaseInterpreter.random,
+            "abs": abs,
+            "ceil": math.ceil,
+            "cos": math.cos,
+            "exp": math.exp,
+            "floor": math.floor,
+            "log10": math.log10,
+            "log2": math.log2,
+            "round": round,
+            "sin": math.sin,
+            "sqrt": math.sqrt,
+            "tan": math.tan,
 
             # Str
-            "len": BaseInterpreter.len,
+            "len": len,
+
+            # For these builtin functions getfullargspec doesn't work so redefine them as a staticmethods
+            "log": BaseInterpreter.log,
+            "max": BaseInterpreter.max,
+            "min": BaseInterpreter.min,
+            "randint": BaseInterpreter.randint,
+            "random": BaseInterpreter.random,
         }
+
+    @staticmethod
+    def is_static_func(func):
+        return func.__qualname__.startswith(f"{BaseInterpreter.__name__}.")
 
     @staticmethod
     def known_funcs():
@@ -88,12 +97,18 @@ class BaseInterpreter(object):
         funcs = BaseInterpreter.func_values()
 
         for func_name, func in funcs.items():
+            # All static functions defined in BaseInterpreter accept interpreter instance as 1 parameter
+            if BaseInterpreter.is_static_func(func):
+                self_arg_count = 1
+            else:
+                self_arg_count = 0
+
             spec = getfullargspec(func)
 
             # -1 for interpreter it self
             # -len(spec.defaults) for default arg values
-            min_count = len(spec.args) - 1 - len(spec.defaults or [])
-            max_count = len(spec.args) - 1
+            min_count = len(spec.args) - self_arg_count - len(spec.defaults or [])
+            max_count = len(spec.args) - self_arg_count
 
             if spec.varargs:
                 max_count = BaseInterpreter.MAX_ARGS_COUNT

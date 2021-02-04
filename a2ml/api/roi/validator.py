@@ -1,6 +1,6 @@
+from a2ml.api.roi.base_interpreter import BaseInterpreter
 from a2ml.api.roi.lexer import AstError, Lexer
 from a2ml.api.roi.parser import Parser
-from a2ml.api.roi.base_interpreter import BaseInterpreter
 
 class ValidationError(AstError):
     pass
@@ -50,6 +50,7 @@ class Validator(BaseInterpreter):
     def evaluate_func_node(self, node):
         if node.func_name in self.known_funcs:
             args_count = len(node.arg_nodes)
+
             if args_count in self.known_funcs[node.func_name]:
                 return all(map(lambda node: self.evaluate(node), node.arg_nodes))
             else:

@@ -119,11 +119,19 @@ class Interpreter(BaseInterpreter):
 
     def evaluate_func_node(self, node):
         func = self.func_values()[node.func_name]
-        if node.func_name in ("if", "@if"):
-            return func(self, *node.arg_nodes)
+
+        # breakpoint()
+        if Interpreter.is_static_func(func):
+            func_args = [self]
         else:
-            args = list(map(lambda node: self.evaluate(node), node.arg_nodes))
-            return func(self, *args)
+            func_args = []
+
+        if node.func_name in ("if", "@if"):
+            func_args += node.arg_nodes
+        else:
+            func_args += list(map(lambda n: self.evaluate(n), node.arg_nodes))
+
+        return func(*func_args)
 
     def error(self, msg):
         raise InterpreterError(msg)

@@ -1,3 +1,4 @@
+import math
 import pytest
 
 from a2ml.api.roi.lexer import Lexer
@@ -29,6 +30,12 @@ from a2ml.api.roi.interpreter import Interpreter
         pytest.param('len("some string")', 11),
         pytest.param("round(1.23456)", 1),
         pytest.param("round(1.23456, 3)", 1.235),
+        pytest.param("ceil(1.2)", 2),
+        pytest.param("floor(1.2)", 1),
+        pytest.param("exp(5)", math.exp(5)),
+        pytest.param("log(5)", math.log(5)),
+        pytest.param("log2(5)", math.log2(5)),
+        pytest.param("log10(5)", math.log10(5)),
         pytest.param("$price * 1.4 - $12", 58),
         pytest.param("($price * 1.4 - $12) * (1 - $taxes)", 49.3),
         pytest.param("($price * 1.4 - A) * (1 - $taxes)", 51),
