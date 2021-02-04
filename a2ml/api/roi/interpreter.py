@@ -1,23 +1,18 @@
-import random
-from inspect import getfullargspec
-
 from a2ml.api.roi.lexer import *
-from a2ml.api.roi.node_visitor import NodeVisitor
+from a2ml.api.roi.base_interpreter import BaseInterpreter
 from a2ml.api.roi.validator import Validator
 
 class InterpreterError(AstError):
     pass
 
-class Interpreter(NodeVisitor):
-    MAX_ARGS_COUNT = 255
-
+class Interpreter(BaseInterpreter):
     def __init__(self, expression, vars_mapping={}):
         self.expression = expression
         self.vars_mapping = vars_mapping
 
     def run(self, variables={}):
         known_vars = self.get_kwnown_vars(variables) | set(self.vars_mapping.keys())
-        validator = Validator(self.expression, known_vars, self.known_funcs())
+        validator = Validator(self.expression, known_vars)
         validation_result = validator.validate(force_raise=True)
         self.root = validation_result.tree
 
@@ -48,81 +43,6 @@ class Interpreter(NodeVisitor):
             return res
         else:
             return set(variables.keys())
-
-    # Builtin functions
-
-    @staticmethod
-    def abs(_, x):
-        return abs(x)
-
-    @staticmethod
-    def len(_, x):
-        return len(x)
-
-    @staticmethod
-    def logic_if(interpreter, predicate, true_value, false_value):
-        if interpreter.evaluate(predicate):
-            return interpreter.evaluate(true_value)
-        else:
-            return interpreter.evaluate(false_value)
-
-    @staticmethod
-    def min(_, arg1, arg2, *args):
-        return min(arg1, arg2, *args)
-
-    @staticmethod
-    def max(_, arg1, arg2, *args):
-        return max(arg1, arg2, *args)
-
-    @staticmethod
-    def randint(_, a, b):
-        return random.randint(a, b)
-
-    @staticmethod
-    def random(_):
-        return random.random()
-
-    @staticmethod
-    def round(_, x, ndigits=None):
-        return round(x, ndigits)
-
-    @staticmethod
-    def func_values():
-        return {
-            # Logic
-            "if": Interpreter.logic_if,
-
-            # Math
-            "abs": Interpreter.abs,
-            "min": Interpreter.min,
-            "max": Interpreter.max,
-            "round": Interpreter.round,
-            "randint": Interpreter.randint,
-            "random": Interpreter.random,
-
-            # Str
-            "len": Interpreter.len,
-        }
-
-    @staticmethod
-    def known_funcs():
-        res = {}
-        funcs = Interpreter.func_values()
-
-        for func_name, func in funcs.items():
-            spec = getfullargspec(func)
-
-            # -1 for interpreter it self
-            # -len(spec.defaults) for default arg values
-            min_count = len(spec.args) - 1 - len(spec.defaults or [])
-            max_count = len(spec.args) - 1
-
-            if spec.varargs:
-                max_count = Interpreter.MAX_ARGS_COUNT
-
-            res[func_name] = range(min_count, max_count + 1)
-
-        return res
 
     def evaluate_no_op_node(self, node):
         pass
@@ -199,7 +119,7 @@ class Interpreter(NodeVisitor):
 
     def evaluate_func_node(self, node):
         func = self.func_values()[node.func_name]
-        if node.func_name == "if":
+        if node.func_name in ("if", "@if"):
             return func(self, *node.arg_nodes)
         else:
             args = list(map(lambda node: self.evaluate(node), node.arg_nodes))

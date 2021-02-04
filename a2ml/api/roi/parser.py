@@ -260,11 +260,12 @@ class Parser:
 
     def atom(self):
         if self.current_token.type == ID:
+            pos = self.lexer.pos - len(self.current_token.value)
             self.eat(ID)
             if self.current_token.type == LPAREN:
                 return self.func_call_statement()
             else:
-                return VarNode(self.prev_token, self.lexer.pos - len(self.prev_token.value))
+                return VarNode(self.prev_token, pos)
         elif self.current_token.type in (CONST, STR_CONST, INT_CONST, FLOAT_CONST):
             token = self.current_token
             self.eat(self.current_token.type)

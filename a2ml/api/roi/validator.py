@@ -1,6 +1,6 @@
 from a2ml.api.roi.lexer import AstError, Lexer
 from a2ml.api.roi.parser import Parser
-from a2ml.api.roi.node_visitor import NodeVisitor
+from a2ml.api.roi.base_interpreter import BaseInterpreter
 
 class ValidationError(AstError):
     pass
@@ -11,11 +11,11 @@ class ValidationResult:
         self.error = error
         self.tree = tree
 
-class Validator(NodeVisitor):
-    def __init__(self, expression, known_vars, known_funcs):
+class Validator(BaseInterpreter):
+    def __init__(self, expression, known_vars):
         self.expression = expression
         self.known_vars = known_vars
-        self.known_funcs = known_funcs
+        self.known_funcs = BaseInterpreter.known_funcs()
 
     def validate(self, force_raise=True):
         try:
@@ -53,12 +53,16 @@ class Validator(NodeVisitor):
             if args_count in self.known_funcs[node.func_name]:
                 return all(map(lambda node: self.evaluate(node), node.arg_nodes))
             else:
-                counts = list(map(str, self.known_funcs[node.func_name]))
+                expected_args_count = self.known_funcs[node.func_name]
+                if isinstance(expected_args_count, range):
+                    expected = f"from {expected_args_count.start} to {expected_args_count.stop - 1}"
+                else:
+                    counts = list(map(str, ))
 
-                if len(counts) > 1:
-                    counts = counts[0:-2] + [counts[-2] + " or " + counts[-1]]
+                    if len(counts) > 1:
+                        counts = counts[0:-2] + [counts[-2] + " or " + counts[-1]]
 
-                expected = ", ".join(counts)
+                    expected = ", ".join(counts)
 
                 raise ValidationError(
                     f"invalid arguments count on '{node.func_name}' function, expected {expected} got {args_count} at position {node.position}"

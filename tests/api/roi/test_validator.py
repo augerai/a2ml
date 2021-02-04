@@ -8,11 +8,11 @@ from a2ml.api.roi.validator import Validator, ValidationError
     "expression, expected_result",
     [
         pytest.param("min(1, 2, 3)", True),
-        pytest.param("min(1)", "invalid arguments count on 'min' function, expected 2, 3, 4 or 5 got 1 at position 1"),
+        pytest.param("min(1)", "invalid arguments count on 'min' function, expected from 2 to 255 got 1 at position 1"),
         pytest.param("somefunc(1)", "unknown function 'somefunc' at position 1"),
         pytest.param("1 + somefunc(1)", "unknown function 'somefunc' at position 5"),
-        pytest.param("some_func()", "invalid arguments count on 'some_func' function, expected 1 got 0 at position 1"),
-        pytest.param("some_func(1)", True),
+        pytest.param("max()", "invalid arguments count on 'max' function, expected from 2 to 255 got 0 at position 1"),
+        pytest.param("round(1.75)", True),
         pytest.param("$a + $b", True),
         pytest.param("$a + $b + $c", "unknown variable '\$c' at position 10"),
     ]
@@ -21,10 +21,6 @@ def test_validate(expression, expected_result):
     validator = Validator(
         expression,
         known_vars=["$a", "$b"],
-        known_funcs={
-            "min": [2, 3, 4, 5],
-            "some_func": [1],
-        }
     )
 
     if expected_result == True:
