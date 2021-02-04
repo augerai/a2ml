@@ -37,8 +37,8 @@ class BaseInterpreter(object):
             return interpreter.evaluate(false_value)
 
     @staticmethod
-    def log(_, x):
-        return math.log(x)
+    def log(_, x, base=math.e):
+        return math.log(x, base)
 
     @staticmethod
     def min(_, arg1, arg2, *args):
