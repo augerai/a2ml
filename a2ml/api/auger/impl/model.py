@@ -45,7 +45,15 @@ class Model(object):
                 raise AugerException('Model should be deployed locally.')
 
             model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).add_actuals(
+            params = {
+                'model_path': os.path.join(model_path, "model"),
+                'roi': {
+                    'filter': str(self.ctx.config.get('review/roi_filter')),
+                    'revenue': str(self.ctx.config.get('review/roi_revenue')),
+                    'investment': str(self.ctx.config.get('review/roi_investment')),
+                }
+            }
+            return ModelReview(params).add_actuals(
               self.ctx,
               actuals_path=filename,
               data=data,

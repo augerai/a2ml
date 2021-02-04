@@ -38,7 +38,7 @@ Self-hosted model
 	    ctx = Context()
 	    a2ml = A2ML(ctx)
 	    result = a2ml.deploy(model_id=None, name="My self-hosted model.", algorithm="RandomForest", score=0.76)
-	    model_id = result['model_id']
+	    model_id = result['data']['model_id']
     
 4. Send actuals:
 

@@ -449,6 +449,7 @@ class ModelHelper(object):
             options["classification"] = True
 
         options['binaryClassification'] = True if binary_classification else False
+        options['external_model'] = True
         fsclient.write_json_file(options_path, options)
 
         return options

@@ -53,6 +53,8 @@ class ModelDeploy(object):
                 AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
 
             AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
+
+            endpoint_api.update_roi() 
         else:
             self.ctx.log('Model is not belong to any review endpoint. Skipping ...')
 

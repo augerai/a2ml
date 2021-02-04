@@ -36,7 +36,7 @@ install_requires = [
     'scipy==1.5.2',
     'asyncio',
     'boto3',
-    'auger-hub-api-client==0.7.2',
+    'auger-hub-api-client==0.7.3',
     'click',
     'shortuuid',
     'docutils<0.16,>=0.10',
