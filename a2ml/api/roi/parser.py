@@ -1,6 +1,4 @@
-from a2ml.api.roi.lexer import *
-
-COMPARE_OP_BITWISE_OR_PAIR_OPS = set([EQ, EQ2, NE, LTE, LT, GTE, GT, NOT, IN])
+from a2ml.api.roi.lexer import AstError, Token
 
 class ParserError(AstError):
     pass
@@ -59,12 +57,28 @@ class FuncNode(BaseNode):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
 
 class Parser:
+    CONSTANTS = set([Token.CONST, Token.STR_CONST, Token.INT_CONST, Token.FLOAT_CONST])
+
+    COMPARE_OP_BITWISE_OR_PAIR_OPS = set(
+        [
+            Token.EQ,
+            Token.EQ2,
+            Token.NE,
+            Token.LTE,
+            Token.LT,
+            Token.GTE,
+            Token.GT,
+            Token.NOT,
+            Token.IN
+        ]
+    )
+
     def __init__(self, lexer):
         self.lexer = lexer
         self.current_token = self.lexer.next_token()
 
     def error(self, msg=None):
-        if self.current_token.type == EOF:
+        if self.current_token.type == Token.EOF:
             raise ParserError(f"unexpected end of expression at position {self.lexer.pos}")
         else:
             msg = msg or "invalid token"
@@ -86,7 +100,7 @@ class Parser:
     def parse(self):
         root = self.disjunction()
 
-        if self.current_token.type != EOF:
+        if self.current_token.type != Token.EOF:
             self.error()
 
         return root
@@ -94,8 +108,8 @@ class Parser:
     def disjunction(self):
         left = self.conjunction()
 
-        while self.current_token.type == OR:
-            self.eat(OR)
+        while self.current_token.type == Token.OR:
+            self.eat(Token.OR)
             left = BinaryOpNode(left, self.prev_token, self.conjunction())
 
         return left
@@ -103,15 +117,15 @@ class Parser:
     def conjunction(self):
         left = self.inversion()
 
-        while self.current_token.type == AND:
-            self.eat(AND)
+        while self.current_token.type == Token.AND:
+            self.eat(Token.AND)
             left = BinaryOpNode(left, self.prev_token, self.inversion())
 
         return left
 
     def inversion(self):
-        if self.current_token.type == NOT:
-            self.eat(NOT)
+        if self.current_token.type == Token.NOT:
+            self.eat(Token.NOT)
             return UnaryOpNode(self.prev_token, self.inversion())
         else:
             return self.comparison()
@@ -119,68 +133,68 @@ class Parser:
     def comparison(self):
         left = self.bitwise_or()
 
-        if self.current_token.type in COMPARE_OP_BITWISE_OR_PAIR_OPS:
+        if self.current_token.type in Parser.COMPARE_OP_BITWISE_OR_PAIR_OPS:
             left = self.compare_op_bitwise_or_pair(left)
 
         return left
 
     def compare_op_bitwise_or_pair(self, left):
-        if self.current_token.type == EQ or self.current_token.type == EQ2:
+        if self.current_token.type in (Token.EQ, Token.EQ2):
             return self.eq_bitwise_or(left)
-        elif self.current_token.type == NE:
+        elif self.current_token.type == Token.NE:
             return self.noteq_bitwise_or(left)
-        elif self.current_token.type == LTE:
+        elif self.current_token.type == Token.LTE:
             return self.lte_bitwise_or(left)
-        elif self.current_token.type == LT:
+        elif self.current_token.type == Token.LT:
             return self.lt_bitwise_or(left)
-        elif self.current_token.type == GTE:
+        elif self.current_token.type == Token.GTE:
             return self.gte_bitwise_or(left)
-        elif self.current_token.type == GT:
+        elif self.current_token.type == Token.GT:
             return self.gt_bitwise_or(left)
-        elif self.current_token.type == NOT:
+        elif self.current_token.type == Token.NOT:
             return self.notin_bitwise_or(left)
-        if self.current_token.type == IN:
+        if self.current_token.type == Token.IN:
             return self.in_bitwise_or(left)
         else:
             raise self.error("unknown op")
 
     def eq_bitwise_or(self, left):
-        self.eat(EQ2)
+        self.eat(Token.EQ2)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def noteq_bitwise_or(self, left):
-        self.eat(NE)
+        self.eat(Token.NE)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def lte_bitwise_or(self, left):
-        self.eat(LTE)
+        self.eat(Token.LTE)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def lt_bitwise_or(self, left):
-        self.eat(LT)
+        self.eat(Token.LT)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def gte_bitwise_or(self, left):
-        self.eat(GTE)
+        self.eat(Token.GTE)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def gt_bitwise_or(self, left):
-        self.eat(GT)
+        self.eat(Token.GT)
         return BinaryOpNode(left, self.prev_token, self.bitwise_or())
 
     def notin_bitwise_or(self, left):
-        self.eat(NOT)
+        self.eat(Token.NOT)
         return UnaryOpNode(self.prev_token, self.in_bitwise_or(left))
 
     def in_bitwise_or(self, left):
-        self.eat(IN)
+        self.eat(Token.IN)
         return UnaryOpNode(self.prev_token, self.bitwise_or())
 
     def bitwise_or(self):
         left = self.bitwise_xor()
 
-        while self.current_token.type == BIT_OR:
-            self.eat(BIT_OR)
+        while self.current_token.type == Token.BIT_OR:
+            self.eat(Token.BIT_OR)
             left = BinaryOpNode(left, self.prev_token, self.bitwise_xor())
 
         return left
@@ -188,8 +202,8 @@ class Parser:
     def bitwise_xor(self):
         left = self.bitwise_and()
 
-        while self.current_token.type == BIT_XOR:
-            self.eat(BIT_XOR)
+        while self.current_token.type == Token.BIT_XOR:
+            self.eat(Token.BIT_XOR)
             left = BinaryOpNode(left, self.prev_token, self.bitwise_and())
 
         return left
@@ -197,8 +211,8 @@ class Parser:
     def bitwise_and(self):
         left = self.shift_expr()
 
-        while self.current_token.type == BIT_AND:
-            self.eat(BIT_AND)
+        while self.current_token.type == Token.BIT_AND:
+            self.eat(Token.BIT_AND)
             left = BinaryOpNode(left, self.prev_token, self.shift_expr())
 
         return left
@@ -206,7 +220,7 @@ class Parser:
     def shift_expr(self):
         left = self.sum()
 
-        while self.current_token.type in (BIT_LSHIFT, BIT_RSHIFT):
+        while self.current_token.type in (Token.BIT_LSHIFT, Token.BIT_RSHIFT):
             self.eat(self.current_token.type)
             left = BinaryOpNode(left, self.prev_token, self.sum())
 
@@ -215,7 +229,7 @@ class Parser:
     def sum(self):
         left = self.term()
 
-        while self.current_token.type in (PLUS, MINUS):
+        while self.current_token.type in (Token.PLUS, Token.MINUS):
             self.eat(self.current_token.type)
             left = BinaryOpNode(left, self.prev_token, self.term())
 
@@ -224,14 +238,14 @@ class Parser:
     def term(self):
         left = self.factor()
 
-        while self.current_token.type in (MUL, DIV, INT_DIV, MODULO):
+        while self.current_token.type in (Token.MUL, Token.DIV, Token.INT_DIV, Token.MODULO):
             self.eat(self.current_token.type)
             left = BinaryOpNode(left, self.prev_token, self.factor())
 
         return left
 
     def factor(self):
-        if self.current_token.type in (PLUS, MINUS, BIT_NOT):
+        if self.current_token.type in (Token.PLUS, Token.MINUS, Token.BIT_NOT):
             self.eat(self.current_token.type)
             return UnaryOpNode(self.prev_token, self.factor())
         else:
@@ -240,8 +254,8 @@ class Parser:
     def power(self):
         base = self.primary()
 
-        if self.current_token.type == POWER:
-            self.eat(POWER)
+        if self.current_token.type == Token.POWER:
+            self.eat(Token.POWER)
             base = BinaryOpNode(base, self.prev_token, self.factor())
 
         return base
@@ -250,23 +264,23 @@ class Parser:
         return self.disjunction()
 
     def primary(self):
-        if self.current_token.type == LPAREN:
-            self.eat(LPAREN)
+        if self.current_token.type == Token.LPAREN:
+            self.eat(Token.LPAREN)
             expr = self.expression()
-            self.eat(RPAREN)
+            self.eat(Token.RPAREN)
             return expr
         else:
             return self.atom()
 
     def atom(self):
-        if self.current_token.type == ID:
+        if self.current_token.type == Token.ID:
             pos = self.lexer.pos - len(self.current_token.value)
-            self.eat(ID)
-            if self.current_token.type == LPAREN:
+            self.eat(Token.ID)
+            if self.current_token.type == Token.LPAREN:
                 return self.func_call_statement()
             else:
                 return VarNode(self.prev_token, pos)
-        elif self.current_token.type in (CONST, STR_CONST, INT_CONST, FLOAT_CONST):
+        elif self.current_token.type in Parser.CONSTANTS:
             token = self.current_token
             self.eat(self.current_token.type)
             return ConstNode(token)
@@ -276,17 +290,17 @@ class Parser:
     def func_call_statement(self):
         name_token = self.prev_token
         pos = self.lexer.pos - len(name_token.value) - 1
-        self.eat(LPAREN)
+        self.eat(Token.LPAREN)
 
         arg_nodes = []
 
-        if self.current_token.type != RPAREN:
+        if self.current_token.type != Token.RPAREN:
             arg_nodes.append(self.expression())
 
-            while self.current_token.type == COMMA:
-                self.eat(COMMA)
+            while self.current_token.type == Token.COMMA:
+                self.eat(Token.COMMA)
                 arg_nodes.append(self.expression())
 
-        self.eat(RPAREN)
+        self.eat(Token.RPAREN)
 
         return FuncNode(name_token, arg_nodes, pos)

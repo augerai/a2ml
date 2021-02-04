@@ -1,5 +1,5 @@
-from a2ml.api.roi.lexer import *
 from a2ml.api.roi.base_interpreter import BaseInterpreter
+from a2ml.api.roi.lexer import AstError, Token
 from a2ml.api.roi.validator import Validator
 
 class InterpreterError(AstError):
@@ -58,47 +58,47 @@ class Interpreter(BaseInterpreter):
         left = self.evaluate(node.left)
         right = self.evaluate(node.right)
 
-        if node.op == MUL:
+        if node.op == Token.MUL:
             return left * right
-        elif node.op == DIV:
+        elif node.op == Token.DIV:
             return left / right
-        elif node.op == INT_DIV:
+        elif node.op == Token.INT_DIV:
             return left // right
-        elif node.op == MODULO:
+        elif node.op == Token.MODULO:
             return left % right
-        elif node.op == PLUS:
+        elif node.op == Token.PLUS:
             return left + right
-        elif node.op == MINUS:
+        elif node.op == Token.MINUS:
             return left - right
-        elif node.op == POWER:
+        elif node.op == Token.POWER:
             return left ** right
-        elif node.op == GT:
+        elif node.op == Token.GT:
             return left > right
-        elif node.op == GTE:
+        elif node.op == Token.GTE:
             return left >= right
-        elif node.op == LT:
+        elif node.op == Token.LT:
             return left < right
-        elif node.op == LTE:
+        elif node.op == Token.LTE:
             return left <= right
-        elif node.op == EQ2 or node.op == EQ:
+        elif node.op == Token.EQ2 or node.op == Token.EQ:
             return left == right
-        elif node.op == NE:
+        elif node.op == Token.NE:
             return left != right
-        elif node.op == BIT_XOR:
+        elif node.op == Token.BIT_XOR:
             return left ^ right
-        elif node.op == BIT_OR:
+        elif node.op == Token.BIT_OR:
             return left | right
-        elif node.op == BIT_AND:
+        elif node.op == Token.BIT_AND:
             return left & right
-        elif node.op == BIT_LSHIFT:
+        elif node.op == Token.BIT_LSHIFT:
             return left << right
-        elif node.op == BIT_RSHIFT:
+        elif node.op == Token.BIT_RSHIFT:
             return left >> right
-        elif node.op == IN:
+        elif node.op == Token.IN:
             return left in right
-        elif node.op == OR:
+        elif node.op == Token.OR:
             return left or right
-        elif node.op == AND:
+        elif node.op == Token.AND:
             return left and right
         else:
             raise self.error(f"unknown binary operator '{node.op}'")
@@ -106,13 +106,13 @@ class Interpreter(BaseInterpreter):
     def evaluate_unary_op_node(self, node):
         value = self.evaluate(node.node)
 
-        if node.op == PLUS:
+        if node.op == Token.PLUS:
             return value
-        elif node.op == MINUS:
+        elif node.op == Token.MINUS:
             return -value
-        elif node.op == BIT_NOT:
+        elif node.op == Token.BIT_NOT:
             return ~value
-        elif node.op == NOT:
+        elif node.op == Token.NOT:
             return not value
         else:
             raise self.error(f"unknown unary operator '{node.op}'")
