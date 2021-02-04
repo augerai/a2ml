@@ -1,7 +1,4 @@
 class NodeVisitor(object):
-    def __init__(self, root):
-        self.root = root
-
     def snake_case(self, str):
         res = ''
 

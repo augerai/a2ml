@@ -82,7 +82,6 @@ class TestParser:
         ]
     )
     def test_validate(self, expression, expected_result):
-
         if expected_result == True:
             result = Parser(Lexer(expression)).parse()
             assert isinstance(result, BaseNode)

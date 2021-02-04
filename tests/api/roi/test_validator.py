@@ -18,9 +18,8 @@ from a2ml.api.roi.validator import Validator, ValidationError
     ]
 )
 def test_validate(expression, expected_result):
-    root = Parser(Lexer(expression)).parse()
     validator = Validator(
-        root,
+        expression,
         known_vars=["$a", "$b"],
         known_funcs={
             "min": [2, 3, 4, 5],
@@ -29,7 +28,8 @@ def test_validate(expression, expected_result):
     )
 
     if expected_result == True:
-        assert validator.validate() == True
+        res = validator.validate()
+        assert res.is_valid == True
     else:
         with pytest.raises(ValidationError, match=expected_result):
             result = validator.validate()

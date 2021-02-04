@@ -1,17 +1,33 @@
-from a2ml.api.roi.lexer import AstError
+from a2ml.api.roi.lexer import AstError, Lexer
+from a2ml.api.roi.parser import Parser
 from a2ml.api.roi.node_visitor import NodeVisitor
 
 class ValidationError(AstError):
     pass
 
+class ValidationResult:
+    def __init__(self, is_valid=True, error=None, tree=None):
+        self.is_valid = is_valid
+        self.error = error
+        self.tree = tree
+
 class Validator(NodeVisitor):
-    def __init__(self, root, known_vars, known_funcs):
-        super().__init__(root)
+    def __init__(self, expression, known_vars, known_funcs):
+        self.expression = expression
         self.known_vars = known_vars
         self.known_funcs = known_funcs
 
-    def validate(self):
-        return self.evaluate(self.root)
+    def validate(self, force_raise=True):
+        try:
+            parser = Parser(Lexer(self.expression))
+            self.root = parser.parse()
+            self.evaluate(self.root)
+            return ValidationResult(is_valid=True, tree=self.root)
+        except AstError as e:
+            if force_raise:
+                raise e
+            else:
+                return ValidationResult(is_valid=False, error=str(e), tree=self.root)
 
     def evaluate_no_op_node(self, node):
         return True

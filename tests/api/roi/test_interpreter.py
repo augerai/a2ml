@@ -29,14 +29,29 @@ from a2ml.api.roi.interpreter import Interpreter
         pytest.param("if($price > $100, $taxes + 0.1, $taxes + 0.05)", 0.2),
     ]
 )
-def test_feature_values(expression, exected_result):
+def test_interpreter_with_scalar(expression, exected_result):
     variables = {
         "$price": 50,
         "$taxes": 0.15,
         "A": 10,
     }
 
-    tree = Parser(Lexer(expression)).parse()
-    interpreter = Interpreter(tree, variables)
+    interpreter = Interpreter(expression)
 
-    assert interpreter.run() == exected_result
+    assert interpreter.run(variables) == exected_result
+
+@pytest.mark.parametrize(
+    "expression, exected_result",
+    [
+        pytest.param("$a + $b", [5, 10]),
+    ]
+)
+def test_interpreter_with_list(expression, exected_result):
+    variables = [
+        { "$a": 2, "$b": 3 },
+        { "$a": 4, "$b": 6 },
+    ]
+
+    interpreter = Interpreter(expression)
+
+    assert interpreter.run(variables) == exected_result
