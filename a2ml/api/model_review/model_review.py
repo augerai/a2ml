@@ -79,7 +79,11 @@ class ModelReview(object):
         known_vars = ["A", "P", self.target_feature] + self.original_features
 
         for expression in expressions:
-            validation_result = roi_calc.Parser(expression).validate(known_vars=known_vars)
+            if len(expression) > 0:
+                validation_result = roi_calc.Parser(expression).validate(known_vars=known_vars)
+            else:
+                validation_result = roi_calc.Parser.ValidationResult()
+
             res.append(
                 {
                     "expression": expression,
@@ -305,7 +309,7 @@ class ModelReview(object):
         if not self.options.get('data_path'):
             all_files = []
             date_stat = convert_to_date(date_to) - datetime.timedelta(days=1)
-            for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, None, 
+            for (curr_date, files) in ModelReview._prediction_files_by_day(self.model_path, None,
                 date_stat, "_*_data.feather.zstd"):
                 all_files += files
 
@@ -450,7 +454,7 @@ class ModelReview(object):
                 first_date = all_files[0][0:idxDate]
 
         return first_date
-                
+
     @staticmethod
     def _prediction_files_by_day(model_path, date_from, date_to, path_suffix):
         if (date_from and not date_to):# or (not date_from and date_to):
