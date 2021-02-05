@@ -43,8 +43,9 @@ class ModelUndeploy(object):
                     self.ctx.log("Undeploy model and remove from Review endpoint.")
                     for pipeline in endpoint_pipelines:
                         if pipeline.get('pipeline_id') == model_id:
+                            # AugerEndpointPipelineApi(self.ctx, pipeline.get('id')).delete()
                             AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
-                            AugerEndpointPipelineApi(self.ctx, pipeline.get('id')).delete()
+                            
                             break
             else:
                 pipeline_api.remove(model_id)                    

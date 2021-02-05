@@ -17,10 +17,14 @@ class AugerEndpointApi(AugerBaseApi):
     def update_roi(self):
         roi_names = ['review/roi_filter', 'review/roi_investment', 'review/roi_revenue']
         roi_values = []
+        roi_exists = False
         for name in roi_names:
+            if self.ctx.config.get(name):
+                roi_exists = True
+                
             roi_values.append(self.ctx.config.get(name))
 
-        if roi_values:
+        if roi_exists:
             res = self.rest_api.hub_client.create_endpoint_roi_validation(
                 endpoint_id=self.object_id,
                 expressions=roi_values,
