@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html lang="python3" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ROI formulas language &mdash; a2ml 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png?v=20200622">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="194x194" href="/favicon-194x194.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=20200622">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20200622">
+  <link rel="manifest" href="/site.webmanifest?v=20200622">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg?v=20200528" color="#2980b9">
+  <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48" href="/favicon.ico?v=20200622">
+  <meta name="apple-mobile-web-app-title" content="A2ML">
+  <meta name="application-name" content="A2ML">
+  <meta name="msapplication-TileColor" content="#2980b9">
+  <meta name="msapplication-TileImage" content="/mstile-144x144.png?v=20200528">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:image" content="/og-image.png?v=20200622">
+   
+  <style>.wy-side-nav-search>a img.logo { width: 100px !important; height: 80px !important; }</style>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlram.html">MLRAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Community</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">a2ml</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>ROI formulas language</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="https://github.com/augerai/a2ml" class="fa fa-github" target="_blank"> View on GitHub</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="roi-formulas-language">
+<h1>ROI formulas language<a class="headerlink" href="#roi-formulas-language" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>ROI expression syntax is similar to Python, it has math and logial expressions, it can refer prediction, actual and feature values, it can call some builtin functions and constants.</p>
+<p>All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).
+Filter expression drop all rows that don't match. Filter is optional.
+Investment expression is calculated for each row of data then it's aggregated by days.
+Same for revenue expression.
+Then ROI is calculated as a <code class="docutils literal notranslate"><span class="pre">(revenue</span> <span class="pre">-</span> <span class="pre">investment)</span> <span class="pre">/</span> <span class="pre">investment</span></code></p>
+<p>Examples:</p>
+<p>filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&gt;=</span> <span class="pre">0.20</span></code>
+investment: <code class="docutils literal notranslate"><span class="pre">$100</span></code>
+revenue: <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">A)</span> <span class="pre">*</span> <span class="pre">$100</span></code></p>
+<p>or</p>
+<p>filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">True</span></code>
+investment: <code class="docutils literal notranslate"><span class="pre">$loan_amount</span></code>
+revenue: <code class="docutils literal notranslate"><span class="pre">if(A</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">$loan_amount</span> <span class="pre">*</span> <span class="pre">((1</span> <span class="pre">+</span> <span class="pre">$interest_percent</span> <span class="pre">/</span> <span class="pre">100)</span> <span class="pre">**</span> <span class="pre">$period_years),</span> <span class="pre">$0)</span></code></p>
+<p>Expressions can be nested with parentheses, the operators precedence <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#operator-precedence">same as in Python</a></p>
+</div>
+<div class="section" id="if-expression">
+<h2>If expression<a class="headerlink" href="#if-expression" title="Permalink to this headline">¶</a></h2>
+<p>ROI syntax has one flow control expression</p>
+<p><code class="docutils literal notranslate"><span class="pre">if(P</span> <span class="pre">&gt;</span> <span class="pre">0.2,</span> <span class="pre">$1050,</span> <span class="pre">$0)</span></code></p>
+<p>in this case if prediction value is greater than 0.2 if expression returns 1050, else 0</p>
+</div>
+<div class="section" id="numbers">
+<h2>Numbers<a class="headerlink" href="#numbers" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">123</span></code> integer numbers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">123.456</span></code> float numbers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-123.456</span></code> numbers can be negative</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$50.99</span></code> numbers can start with dollar sign to express money</p></li>
+</ul>
+</div>
+<div class="section" id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> predicted value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> actual value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$feature1</span></code> value of feature with name <code class="docutils literal notranslate"><span class="pre">feature1</span></code>, name should start with alphabetical char or underscore, name can contain digits</p></li>
+</ul>
+</div>
+<div class="section" id="builtin-operators">
+<h2>Builtin operators<a class="headerlink" href="#builtin-operators" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="math-operators">
+<h3>Math operators:<a class="headerlink" href="#math-operators" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">+</span></code> addition</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-</span></code> subtraction and unary minus</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">*</span></code> multiplication</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/</span></code> divison</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">//</span></code> floor division</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%</span></code> modulus</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">**</span></code> exponentiation</p></li>
+</ul>
+</div>
+<div class="section" id="bitwise-operators">
+<h3>Bitwise operators:<a class="headerlink" href="#bitwise-operators" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|</span></code> or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">^</span></code> xor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~</span></code> unary not</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> zero fill left shift</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code> signed right shift</p></li>
+</ul>
+</div>
+<div class="section" id="logical-operators">
+<h3>Logical operators:<a class="headerlink" href="#logical-operators" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">or</span></code> logical or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">and</span></code> logical and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">not</span></code> logical unary not</p></li>
+</ul>
+</div>
+<div class="section" id="comparison-operators">
+<h3>Comparison operators:<a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">==</span></code> equal</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">!=</span></code> not equal</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code> greater than</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> greater than or equal to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;</span></code> less than</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> less than or equal</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="builtin-constants">
+<h2>Builtin constants<a class="headerlink" href="#builtin-constants" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - None value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code> - True value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> - False value</p></li>
+</ul>
+</div>
+<div class="section" id="builtin-functions">
+<h2>Builtin functions<a class="headerlink" href="#builtin-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="abs-x-number-number">
+<h3>abs(x : number) : number<a class="headerlink" href="#abs-x-number-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the absolute value of a number</p>
+</div>
+<div class="section" id="ceil-x-float-integer">
+<h3>ceil(x : float) : integer<a class="headerlink" href="#ceil-x-float-integer" title="Permalink to this headline">¶</a></h3>
+<p>Return the ceiling of <code class="docutils literal notranslate"><span class="pre">x</span></code>, the smallest integer greater than or equal to <code class="docutils literal notranslate"><span class="pre">x</span></code></p>
+</div>
+<div class="section" id="cos-x-number-float">
+<h3>cos(x : number) : float<a class="headerlink" href="#cos-x-number-float" title="Permalink to this headline">¶</a></h3>
+<p>Return the arc cosine of <code class="docutils literal notranslate"><span class="pre">x</span></code>, in radians. The result is between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">pi</span></code>.</p>
+</div>
+<div class="section" id="exp-x-number-float">
+<h3>exp(x : number) : float<a class="headerlink" href="#exp-x-number-float" title="Permalink to this headline">¶</a></h3>
+<p>Return <code class="docutils literal notranslate"><span class="pre">e</span></code> raised to the power <code class="docutils literal notranslate"><span class="pre">x</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">2.718281…</span></code> is the base of natural logarithms.</p>
+</div>
+<div class="section" id="floor-x-floor-float">
+<h3>floor(x : floor) : float<a class="headerlink" href="#floor-x-floor-float" title="Permalink to this headline">¶</a></h3>
+<p>Return the floor of <code class="docutils literal notranslate"><span class="pre">x</span></code>, the largest integer less than or equal to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</div>
+<div class="section" id="if-boolean-predicate-true-expression-false-expression">
+<h3>if(&lt;boolean predicate&gt;, &lt;true expression&gt;, &lt;false expression&gt;)<a class="headerlink" href="#if-boolean-predicate-true-expression-false-expression" title="Permalink to this headline">¶</a></h3>
+<p>Evaludate predicate, if it's True returns result of true expression else result of false expression</p>
+</div>
+<div class="section" id="len-s-string-integer">
+<h3>len(s : string) : integer<a class="headerlink" href="#len-s-string-integer" title="Permalink to this headline">¶</a></h3>
+<p>Return the length (the number of chars) of an string.</p>
+</div>
+<div class="section" id="log-x-number-base-number-float">
+<h3>log(x : number, [base : number]) : float<a class="headerlink" href="#log-x-number-base-number-float" title="Permalink to this headline">¶</a></h3>
+<p>With one argument, return the natural logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> (to base <code class="docutils literal notranslate"><span class="pre">e</span></code>).
+With two arguments, return the logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> to the given base, calculated as <code class="docutils literal notranslate"><span class="pre">log(x)/log(base)</span></code>.</p>
+</div>
+<div class="section" id="log10-x-number-float">
+<h3>log10(x : number) : float<a class="headerlink" href="#log10-x-number-float" title="Permalink to this headline">¶</a></h3>
+<p>Return the base-10 logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code>. This is usually more accurate than <code class="docutils literal notranslate"><span class="pre">log(x,</span> <span class="pre">10)</span></code>.</p>
+</div>
+<div class="section" id="log2-x-number-float">
+<h3>log2(x : number) : float<a class="headerlink" href="#log2-x-number-float" title="Permalink to this headline">¶</a></h3>
+<p>Return the base-2 logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code>. This is usually more accurate than <code class="docutils literal notranslate"><span class="pre">log(x,</span> <span class="pre">2)</span></code>.</p>
+</div>
+<div class="section" id="max-arg1-number-arg2-number-args-number">
+<h3>max(arg1 : number, arg2 : number, <a href="#id1"><span class="problematic" id="id2">*</span></a>args) : number<a class="headerlink" href="#max-arg1-number-arg2-number-args-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the largest of two or more arguments.</p>
+</div>
+<div class="section" id="min-arg1-number-arg2-number-args-number">
+<h3>min(arg1 : number, arg2 : number, <a href="#id3"><span class="problematic" id="id4">*</span></a>args) : number<a class="headerlink" href="#min-arg1-number-arg2-number-args-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the smallest of two or more arguments.</p>
+</div>
+<div class="section" id="randint-a-integer-b-integer-integer">
+<h3>randint(a : integer, b : integer) : integer<a class="headerlink" href="#randint-a-integer-b-integer-integer" title="Permalink to this headline">¶</a></h3>
+<p>Return a random integer <code class="docutils literal notranslate"><span class="pre">N</span></code> such that <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&lt;=</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">b</span></code>.</p>
+</div>
+<div class="section" id="random-float">
+<h3>random() : float<a class="headerlink" href="#random-float" title="Permalink to this headline">¶</a></h3>
+<p>Return the next random floating point number in the range <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0)</span></code>.</p>
+</div>
+<div class="section" id="round-number-float-ndigits-integer-integer">
+<h3>round(number : float [, ndigits : integer]) : integer<a class="headerlink" href="#round-number-float-ndigits-integer-integer" title="Permalink to this headline">¶</a></h3>
+<p>Return <code class="docutils literal notranslate"><span class="pre">number</span></code> rounded to <code class="docutils literal notranslate"><span class="pre">ndigits</span></code> precision after the decimal point. If <code class="docutils literal notranslate"><span class="pre">ndigits</span></code> is omitted or is <code class="docutils literal notranslate"><span class="pre">None</span></code>, it returns the nearest integer to its input.</p>
+</div>
+<div class="section" id="sin-x-number-number">
+<h3>sin(x : number) : number<a class="headerlink" href="#sin-x-number-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the sine of <code class="docutils literal notranslate"><span class="pre">x</span></code> radians.</p>
+</div>
+<div class="section" id="sqrt-x-number-number">
+<h3>sqrt(x : number) : number<a class="headerlink" href="#sqrt-x-number-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the square root of <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</div>
+<div class="section" id="tan-x-number-number">
+<h3>tan(x : number) : number<a class="headerlink" href="#tan-x-number-number" title="Permalink to this headline">¶</a></h3>
+<p>Return the tangent of <code class="docutils literal notranslate"><span class="pre">x</span></code> radians.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, a2ml
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
