@@ -868,7 +868,7 @@ def test_validate_roi_syntax():
 
     assert res[1]["expression"] == expressions[1]
     assert res[1]["is_valid"] == False, res[1]["error"]
-    assert res[1]["error"] == "unknown function 'somefunc' at position 9"
+    assert res[1]["error"] == "unknown function 'somefunc' at position 1"
 
     assert res[2]["expression"] == expressions[2]
     assert res[2]["is_valid"] == True, res[2]["error"]
@@ -876,7 +876,7 @@ def test_validate_roi_syntax():
 
     assert res[3]["expression"] == expressions[3]
     assert res[3]["is_valid"] == False, res[3]["error"]
-    assert res[3]["error"] == "unknown variable 'some_feature' at position 2"
+    assert res[3]["error"] == "unknown variable '$some_feature' at position 1"
 
     assert res[4]["expression"] == expressions[4]
     assert res[4]["is_valid"] == True, res[4]["error"]
