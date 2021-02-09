@@ -85,6 +85,28 @@ class TestCalculator:
         assert 2000 == res["investment"]
         assert -0.475 == res["roi"]
 
+    def test_credit_analysis_zero_div(self):
+        calc = Calculator(
+            filter="P=True",
+            revenue="if(A=True, $1050, $0)",
+            investment="$1000",
+            known_vars=["A", "P"],
+        )
+
+        res = calc.calculate(
+            [
+                {"A": True, "P": False},
+                {"A": False, "P": False},
+            ]
+        )
+
+        assert 0 == res["count"]
+        assert res["filtered_rows"] == []
+
+        assert 0 == res["revenue"]
+        assert 0 == res["investment"]
+        assert 0 == res["roi"]
+
     def test_credit_analysis_with_pandas_df(self):
         calc = Calculator(
             filter="P=True",
