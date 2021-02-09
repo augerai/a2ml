@@ -655,3 +655,32 @@ def test_presign_s3_url_task_for_multipart_upload(build_client_mock, monkeypatch
 
             assert None == res["config"]["endpoint"]
 
+def test_validate_roi_syntax_task():
+    expressions = [
+        "(1 + A) * $100",
+        "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P",
+        "$some_feature + A",
+    ]
+
+    model_path = 'tests/fixtures/test_validate_roi_syntax'
+
+    params = {
+        "expressions": expressions,
+        "model_path": model_path,
+    }
+
+    res = validate_roi_syntax_task(params)
+
+    assert len(res) == 3
+
+    assert res[0]["expression"] == expressions[0]
+    assert res[0]["is_valid"] == True, res[0]["error"]
+    assert res[0]["error"] == None
+
+    assert res[1]["expression"] == expressions[1]
+    assert res[1]["is_valid"] == True, res[1]["error"]
+    assert res[1]["error"] == None
+
+    assert res[2]["expression"] == expressions[2]
+    assert res[2]["is_valid"] == False, res[2]["error"]
+    assert res[2]["error"] == "unknown variable '$some_feature' at position 1"

@@ -8,7 +8,10 @@ import logging
 from a2ml.api.utils import get_uid, convert_to_date, merge_dicts, fsclient
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.a2ml import A2ML, Context
-import a2ml.api.utils.roi_calc as roi_calc
+from a2ml.api.roi.calculator import Calculator as RoiCalculator
+from a2ml.api.roi.validator import Validator as RoiValidator
+from a2ml.api.roi.validator import ValidationResult as RoiValidationResult
+from a2ml.api.roi.interpreter import Interpreter as RoiInterpreter
 
 from .model_helper import ModelHelper
 from .probabilistic_counter import ProbabilisticCounter
@@ -76,13 +79,14 @@ class ModelReview(object):
 
     def validate_roi_syntax(self, expressions):
         res = []
-        known_vars = ["A", "P", self.target_feature] + self.original_features
+        known_vars = ["A", "P", "$" + self.target_feature] + list(map(lambda name: "$" + name, self.original_features))
 
         for expression in expressions:
             if len(expression) > 0:
-                validation_result = roi_calc.Parser(expression).validate(known_vars=known_vars)
+                validator = RoiValidator(expression, known_vars=known_vars)
+                validation_result = validator.validate(force_raise=False)
             else:
-                validation_result = roi_calc.Parser.ValidationResult()
+                validation_result = RoiValidationResult()
 
             res.append(
                 {
@@ -101,12 +105,16 @@ class ModelReview(object):
         predicted_feature = predicted_feature or self.target_feature
         known_vars = [predicted_feature] + self.original_features
 
-        calc = roi_calc.Calculator(
+        vars_mapping = {"A": "a2ml_actual", "P": predicted_feature}
+        for known_var in known_vars:
+            vars_mapping["$" + known_var] = known_var
+
+        calc = RoiCalculator(
             filter=self.params['roi']['filter'],
             revenue=self.params['roi']['revenue'],
             investment=self.params['roi']['investment'],
             known_vars=known_vars,
-            vars_mapping={"A": "a2ml_actual", "P": predicted_feature},
+            vars_mapping=vars_mapping,
         )
 
         res = calc.calculate(df_data)
