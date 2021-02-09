@@ -28,6 +28,8 @@ Self-hosted model
 	  metric: <metric to calculate using actuals>
 
 	review:
+        roi:
+            <See configuration section>    
 		alert:
 			<See configuration section>
 
