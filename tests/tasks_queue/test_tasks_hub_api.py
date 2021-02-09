@@ -453,6 +453,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 "targetFeature": "y",
                 "task_type": "classification",
                 "classification": True,
+                'external_model': True,
                 "scoring": "accuracy",
                 "score_name": "accuracy",
                 "scoreNames": ["accuracy"],

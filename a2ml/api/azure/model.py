@@ -47,7 +47,7 @@ class AzureModel(object):
             'scoreNames': [self.ctx.config.get('experiment/metric')],
             'scoring': self.ctx.config.get('experiment/metric'),
             "score_name": self.ctx.config.get('experiment/metric'),
-            "review_metric": self.ctx.config.get('experiment/review_metric'),
+            "review_metric": self.ctx.config.get('review/metric'),
             "originalFeatureColumns": model_features,
             "model_type": self.ctx.config.get("model_type")
         }

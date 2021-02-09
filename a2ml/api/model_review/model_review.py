@@ -139,7 +139,7 @@ class ModelReview(object):
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
-        if external_model:
+        if external_model or self.options.get('external_model'):
             options = self.options.copy()
 
             if 'hub_info' in options:
