@@ -83,6 +83,8 @@ class AugerExperimentApi(AugerBaseApi):
             options['exit_score'] = config.get('experiment/exit_score')
         if config.get('experiment/review_metric'):
             options['review_metric'] = config.get('experiment/review_metric')
+        if config.get('experiment/score_top_count'):
+            options['score_top_count'] = config.get('experiment/score_top_count')
 
         split_options = {}
         if config.get('experiment/validation_size'):

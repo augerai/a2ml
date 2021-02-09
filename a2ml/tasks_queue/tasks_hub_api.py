@@ -188,8 +188,7 @@ def _read_hub_experiment_session(ctx, params):
         evaluation_options.get('max_n_trials', 100))
     ctx.config.set('experiment/use_ensemble',
         evaluation_options.get('use_ensemble', True))
-    ctx.config.set('experiment/metric',
-        evaluation_options.get('scoring'), provider)
+    ctx.config.set('experiment/metric', evaluation_options.get('scoring'))
 
     if evaluation_options.get('algorithms_to_exlude'):
         ctx.config.set('experiment/blocked_models', evaluation_options.get('algorithms_to_exlude'))
@@ -197,6 +196,8 @@ def _read_hub_experiment_session(ctx, params):
         ctx.config.set('experiment/allowed_models', evaluation_options.get('allowed_algorithms'))
     if evaluation_options.get('exit_score'):
         ctx.config.set('experiment/exit_score', evaluation_options.get('exit_score'))
+    if evaluation_options.get('score_top_count'):
+        ctx.config.set('experiment/score_top_count', evaluation_options.get('score_top_count'))
 
     return ctx
 
