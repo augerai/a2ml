@@ -48,9 +48,9 @@ class Model(object):
             params = {
                 'model_path': os.path.join(model_path, "model"),
                 'roi': {
-                    'filter': str(self.ctx.config.get('review/roi_filter')),
-                    'revenue': str(self.ctx.config.get('review/roi_revenue')),
-                    'investment': str(self.ctx.config.get('review/roi_investment')),
+                    'filter': str(self.ctx.config.get('review/roi/filter')),
+                    'revenue': str(self.ctx.config.get('review/roi/revenue')),
+                    'investment': str(self.ctx.config.get('review/roi/investment')),
                 }
             }
             return ModelReview(params).add_actuals(

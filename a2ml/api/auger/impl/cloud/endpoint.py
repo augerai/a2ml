@@ -15,13 +15,13 @@ class AugerEndpointApi(AugerBaseApi):
         return self._call_create({'pipeline_id': pipeline_id, 'name': name},[])
 
     def update_roi(self):
-        roi_names = ['review/roi_filter', 'review/roi_investment', 'review/roi_revenue']
+        roi_names = ['review/roi/filter', 'review/roi/investment', 'review/roi/revenue']
         roi_values = []
         roi_exists = False
         for name in roi_names:
             if self.ctx.config.get(name):
                 roi_exists = True
-                
+
             roi_values.append(self.ctx.config.get(name))
 
         if roi_exists:

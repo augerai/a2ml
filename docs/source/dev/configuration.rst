@@ -23,13 +23,29 @@ All Providers
     target: 
     model_type:
     experiment:
-      metric:    
+      metric:
       cross_validation_folds: 
       max_total_time: 
       max_eval_time: 
       max_n_trials: 
       use_ensemble: 
       validation_source: 
+
+    review:
+      metric:
+
+    roi:
+      filter:
+      revenue:
+      investment:
+
+      alert:
+        active: True
+        type: model_accuracy
+        threshold: 0.7
+        sensitivity: 72
+        action: retrain_deploy
+        notification: user
 
   **Attributes**
 
@@ -55,6 +71,34 @@ All Providers
     * **experiment.use_ensemble** Try to improve model performance by creating ensembles from the trial models true | false.
     * **experiment.validation_source** Path to validation dataset. If not set your source dataset will be split to validate.
 
+    * **review.metric**  Optional metric used for MLRAM review, can be any experiment metric + roi. By default same as experiment metric
+
+    * **review.roi.filter**  Filter syntax - see <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query" target="_blank">Pandas.DataFrame.query</a>
+    * **review.roi.revenue**  Revenue can contain formuala for calculating revenue based on fields from actual. See ROI formulas language for the syntax
+    * **review.roi.investment**  Investment can contain formuala for calculating investment based on fields from actual. See ROI formulas language for the syntax  
+
+      * **Filter and formulas special fields**
+      * **P** predicted value
+      * **A** actual value
+
+    * **review.alert.active**  Activate/Deactivate Review Alert (True/False)
+    * **review.alert.type** 
+
+      * **Supported Review Alert types**
+      * **model_accuracy** Decrease in Model Accuracy: the model accuracy threshold allowed before trigger is initiated. Default threshold: 0.7. Default sensitivity: 72
+      * **feature_average_range** Feature Average Out-Of-Range: Trigger an alert if average feature value during time period goes beyond the standard deviation range calculated during training period by the specified number of times or more. Default threshold: 1. Default sensitivity: 168
+      * **runtime_errors_burst** Burst Of Runtime Errors: Trigger an alert if runtime error count exceeds threshold. Default threshold: 5. Default sensitivity: 1
+
+    * **review.alert.threshold** Float
+    * **review.alert.sensitivity** The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+    * **review.alert.action** 
+
+      * **Supported Review Alert actions**
+      * **no** no action should be executed
+      * **retrain** Use new predictions and actuals as test set to retrain the model.
+      * **retrain_deploy** Deploy retrained model and make it active model of this endpoint.
+
+    * **review.alert.notification** Send message via selected notification channel. (no/user/organization)
 
 Provider Specfic
 ----------------
@@ -85,20 +129,12 @@ Auger
       estimate_trial_time: False
       trials_per_worker: 2
       class_weight:
+      score_top_count:
       oversampling:
         name:
         params:
           sampling_strategy:
           k_neighbors:
-
-    review:
-      alert:
-        active: True
-        type: model_accuracy
-        threshold: 0.7
-        sensitivity: 72
-        action: retrain_deploy
-        notification: user
 
   **Attributes**
     
@@ -118,6 +154,7 @@ Auger
     * **experiment.estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
     * **experiment.trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
     * **experiment.class_weight** Balanced | Balanced Subsample. Class Weights associated with classes. If None, all classes are supposed to have weight one. The Balanced mode automatically adjusts weights inversely proportional to class frequencies in the input data. The Balanced Subsample mode is the same as Balanced except that weights are computed based on the bootstrap sample for every tree grown.
+    * **experiment.score_top_count** Number of top N values(sorted in descending order) to calculate metrics while train values. For regression only.
     * **experiment.oversampling.name** SMOTE, RandomOverSampler, ADASYN, SMOTEENN, SMOTETomek. Oversampling Methods to adjust the class distribution of a data set
     * **experiment.oversampling.params.sampling_strategy**  auto, minority, majority, not minority, not majority, all
     * **experiment.oversampling.params.k_neighbors**  Integer value of k_neighbors
@@ -125,25 +162,6 @@ Auger
     .. note::
 
       For more information on |oversampling|
-
-    * **review.alert.active**  Activate/Deactivate Review Alert (True/False)
-    * **review.alert.type** 
-
-      * **Supported Review Alert types**
-      * **model_accuracy** Decrease in Model Accuracy: the model accuracy threshold allowed before trigger is initiated. Default threshold: 0.7. Default sensitivity: 72
-      * **feature_average_range** Feature Average Out-Of-Range: Trigger an alert if average feature value during time period goes beyond the standard deviation range calculated during training period by the specified number of times or more. Default threshold: 1. Default sensitivity: 168
-      * **runtime_errors_burst** Burst Of Runtime Errors: Trigger an alert if runtime error count exceeds threshold. Default threshold: 5. Default sensitivity: 1
-
-    * **review.alert.threshold** Float
-    * **review.alert.sensitivity** The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
-    * **review.alert.action** 
-
-      * **Supported Review Alert actions**
-      * **no** no action should be executed
-      * **retrain** Use new predictions and actuals as test set to retrain the model.
-      * **retrain_deploy** Deploy retrained model and make it active model of this endpoint.
-
-    * **review.alert.notification** Send message via selected notification channel. (no/user/organization)
     
 Azure
 ^^^^^
