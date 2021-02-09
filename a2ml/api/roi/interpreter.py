@@ -11,7 +11,7 @@ class Interpreter(BaseInterpreter):
         self.vars_mapping = vars_mapping
 
     def run(self, variables={}):
-        known_vars = self.get_kwnown_vars(variables) | set(self.vars_mapping.keys())
+        known_vars = self.get_known_vars(variables) | set(self.vars_mapping.keys())
         validator = Validator(self.expression, known_vars)
         validation_result = validator.validate(force_raise=True)
         self.root = validation_result.tree
@@ -33,14 +33,17 @@ class Interpreter(BaseInterpreter):
     if variables is a dict just return all keys
     if variables is a list of dicts extract keys from each line and return their intersection
     '''
-    def get_kwnown_vars(self, variables):
+    def get_known_vars(self, variables):
         if isinstance(variables, list):
-            res = set(variables[0])
+            if len(variables) > 0:
+                res = set(variables[0])
 
-            for vars in variables:
-                res = res.intersection(set(vars.keys()))
+                for vars in variables:
+                    res = res.intersection(set(vars.keys()))
 
-            return res
+                return res
+            else:
+                return set()
         else:
             return set(variables.keys())
 

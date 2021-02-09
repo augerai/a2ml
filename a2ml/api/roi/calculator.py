@@ -30,9 +30,17 @@ class Calculator:
         if self.filter_interpreter:
             filtered_rows = [row for row, marked in zip(rows, self.filter_interpreter.run(rows)) if marked]
 
-        revenue = sum(self.revenue_interpreter.run(filtered_rows))
-        investment = sum(self.investment_interpreter.run(filtered_rows))
-        roi = (revenue - investment) / investment
+        if len(filtered_rows) > 0:
+            revenue = sum(self.revenue_interpreter.run(filtered_rows))
+            investment = sum(self.investment_interpreter.run(filtered_rows))
+        else:
+            revenue = 0
+            investment = 0
+
+        if investment > 0:
+            roi = (revenue - investment) / investment
+        else:
+            roi = 0
 
         return {
             "count": len(filtered_rows),
