@@ -36,6 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced" href="advanced.html" />
+    <link rel="prev" title="A2ML CLI" href="cli.html" />
   <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png?v=20200622">
   <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png?v=20200622">
   <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png?v=20200622">
@@ -110,7 +112,7 @@
             
             
               <p class="caption"><span class="caption-text">Development</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
@@ -118,6 +120,42 @@
 <li class="toctree-l1"><a class="reference internal" href="mlram.html">MLRAM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ROI formulas language</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#syntax">Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#if-expression">If expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numbers">Numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variables">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#builtin-operators">Builtin operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#math-operators">Math operators:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bitwise-operators">Bitwise operators:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-operators">Logical operators:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-operators">Comparison operators:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#builtin-constants">Builtin constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#builtin-functions">Builtin functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#abs-x-number-number">abs(x : number) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ceil-x-float-integer">ceil(x : float) : integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cos-x-number-float">cos(x : number) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exp-x-number-float">exp(x : number) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#floor-x-floor-float">floor(x : floor) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-boolean-predicate-true-expression-false-expression">if(&lt;boolean predicate&gt;, &lt;true expression&gt;, &lt;false expression&gt;)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#len-s-string-integer">len(s : string) : integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log-x-number-base-number-float">log(x : number, [base : number]) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log10-x-number-float">log10(x : number) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log2-x-number-float">log2(x : number) : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#max-arg1-number-arg2-number-args-number">max(arg1 : number, arg2 : number, *args) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#min-arg1-number-arg2-number-args-number">min(arg1 : number, arg2 : number, *args) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#randint-a-integer-b-integer-integer">randint(a : integer, b : integer) : integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-float">random() : float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#round-number-float-ndigits-integer-integer">round(number : float [, ndigits : integer]) : integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sin-x-number-number">sin(x : number) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sqrt-x-number-number">sqrt(x : number) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tan-x-number-number">tan(x : number) : number</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Community</span></p>
@@ -369,6 +407,15 @@ With two arguments, return the logarithm of <code class="docutils literal notran
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="advanced.html" class="btn btn-neutral float-right" title="Advanced" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cli.html" class="btn btn-neutral float-left" title="A2ML CLI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

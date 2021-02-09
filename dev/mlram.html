@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">A2ML CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roi_language.html">ROI formulas language</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Community</span></p>
@@ -226,7 +227,9 @@
       <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;metric to calculate using actuals&gt;</span>
 
 <span class=" -Error">    </span><span class="nt">review</span><span class="p">:</span>
-            <span class="nt">alert</span><span class="p">:</span>
+    <span class="nt">roi</span><span class="p">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">&lt;See configuration section&gt;</span>
+            <span class="l l-Scalar l-Scalar-Plain">alert</span><span class="p p-Indicator">:</span>
                     <span class="l l-Scalar l-Scalar-Plain">&lt;See configuration section&gt;</span>
 </pre></div>
 </div>
@@ -237,7 +240,7 @@
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My self-hosted model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.76</span><span class="p">)</span>
-<span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
+<span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div></blockquote>
