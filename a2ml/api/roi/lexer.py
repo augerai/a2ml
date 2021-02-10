@@ -77,9 +77,10 @@ class Token:
         "True": True,
         "False": False,
     }
-    def __init__(self, value, type=None):
+    def __init__(self, value, type=None, position=None):
         self.value = value
         self.type = type or value
+        self.position = position
 
     def __str__(self):
         return f"{self.type} -> {self.value}"
@@ -89,6 +90,9 @@ class Lexer:
         self.str = str
         self.pos = 0
         self.advance()
+
+    def build_token(self, value, type=None):
+        return Token(value, type, position=self.token_start_pos)
 
     @staticmethod
     def is_name_start(c):
@@ -136,9 +140,9 @@ class Lexer:
                 token += self.current_char
                 self.advance()
 
-            return Token(float(token), Token.FLOAT_CONST)
+            return self.build_token(float(token), Token.FLOAT_CONST)
         else:
-            return Token(int(token), Token.INT_CONST)
+            return self.build_token(int(token), Token.INT_CONST)
 
     def name_token(self, prefix=None):
         token = (prefix or '') + self.current_char
@@ -149,11 +153,11 @@ class Lexer:
             self.advance()
 
         if token in Token.KEYWORDS:
-            return Token(token)
+            return self.build_token(token)
         elif token in Token.CONSTANTS:
-            return Token(Token.CONSTANTS[token], Token.CONST)
+            return self.build_token(Token.CONSTANTS[token], Token.CONST)
         else:
-            return Token(token, Token.ID)
+            return self.build_token(token, Token.ID)
 
     def string_literal(self):
         token = ''
@@ -165,7 +169,7 @@ class Lexer:
 
         self.advance()
 
-        return Token(token, Token.STR_CONST)
+        return self.build_token(token, Token.STR_CONST)
 
     def dollar_literal(self):
         self.advance()
@@ -180,9 +184,9 @@ class Lexer:
 
         if self.current_char == Token.EQ:
             self.advance()
-            return Token(Token.ASSIGN)
+            return self.build_token(Token.ASSIGN)
 
-        return Token(Token.COLON)
+        return self.build_token(Token.COLON)
 
     def comparison_op(self):
         token = ''
@@ -195,30 +199,30 @@ class Lexer:
         if token == Token.EQ:
             token = Token.EQ2
 
-        return Token(token)
+        return self.build_token(token)
 
     def div_op(self):
         self.advance()
 
         if self.current_char == Token.DIV:
             self.advance()
-            return Token(Token.INT_DIV)
+            return self.build_token(Token.INT_DIV)
         else:
-            return Token(Token.DIV)
+            return self.build_token(Token.DIV)
 
     def mul_or_power_op(self):
         self.advance()
 
         if self.current_char == Token.MUL:
             self.advance()
-            return Token(Token.POWER)
+            return self.build_token(Token.POWER)
         else:
-            return Token(Token.MUL)
+            return self.build_token(Token.MUL)
 
     def symbol(self):
         sym = self.current_char
         self.advance()
-        return Token(sym)
+        return self.build_token(sym)
 
     def next_token(self):
         self.skip_whitespaces()
@@ -228,6 +232,8 @@ class Lexer:
                 self.skip_comment()
                 self.skip_whitespaces()
                 continue
+
+            self.token_start_pos = self.pos
 
             if self.current_char.isdigit():
                 return self.number_token()
@@ -258,7 +264,7 @@ class Lexer:
 
             raise LexerError(f"unexpected char: '{self.current_char}' code={ord(self.current_char)} pos=#{self.pos}")
 
-        return Token(Token.EOF)
+        return self.build_token(Token.EOF)
 
     def all_tokens(self):
         res = []

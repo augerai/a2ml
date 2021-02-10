@@ -105,7 +105,13 @@ class ModelReview(object):
         predicted_feature = predicted_feature or self.target_feature
         known_vars = [predicted_feature] + self.original_features
 
-        vars_mapping = {"A": "a2ml_actual", "P": predicted_feature}
+        vars_mapping = {
+            "A": "a2ml_actual",
+            "actual": "a2ml_actual",
+            "P": predicted_feature,
+            "prediction": predicted_feature,
+        }
+
         for known_var in known_vars:
             vars_mapping["$" + known_var] = known_var
 
