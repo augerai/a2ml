@@ -7,23 +7,23 @@ Syntax
 
 ROI expression syntax is similar to Python, it has math and logial expressions, it can refer prediction, actual and feature values, it can call some builtin functions and constants.
 
-All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).
-Filter expression drop all rows that don't match. Filter is optional.
-Investment expression is calculated for each row of data then it's aggregated by days.
-Same for revenue expression.
-Then ROI is calculated as a ``(revenue - investment) / investment``
+| All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).
+| Filter expression drop all rows that don't match. Filter is optional.
+| Investment expression is calculated for each row of data then it's aggregated by days.
+| Same for revenue expression.
+| Then ROI is calculated as a ``(revenue - investment) / investment``
 
 Examples:
 
-filter: ``P >= 0.20``
-investment: ``$100``
-revenue: ``(1 + A) * $100``
+| filter: ``P >= 0.20``
+| investment: ``$100``
+| revenue: ``(1 + A) * $100``
 
 or
 
-filter: ``P = True``
-investment: ``$loan_amount``
-revenue: ``if(A = True, $loan_amount * ((1 + $interest_percent / 100) ** $period_years), $0)``
+| filter: ``P = True``
+| investment: ``$loan_amount``
+| revenue: ``if(A = True, $loan_amount * ((1 + $interest_percent / 100) ** $period_years), $0)``
 
 Expressions can be nested with parentheses, the operators precedence `same as in Python <https://docs.python.org/3/reference/expressions.html#operator-precedence>`_
 
@@ -46,8 +46,8 @@ Numbers
 Variables
 -----------------
 
-* ``P`` predicted value
-* ``A`` actual value
+* ``P`` or ``prediction`` predicted value
+* ``A`` or ``actual`` actual value
 * ``$feature1`` value of feature with name ``feature1``, name should start with alphabetical char or underscore, name can contain digits
 
 Builtin operators
@@ -130,8 +130,8 @@ Return the length (the number of chars) of an string.
 
 log(x : number, [base : number]) : float
 ^^^^^^^
-With one argument, return the natural logarithm of ``x`` (to base ``e``).
-With two arguments, return the logarithm of ``x`` to the given base, calculated as ``log(x)/log(base)``.
+| With one argument, return the natural logarithm of ``x`` (to base ``e``).
+| With two arguments, return the logarithm of ``x`` to the given base, calculated as ``log(x)/log(base)``.
 
 log10(x : number) : float
 ^^^^^^^

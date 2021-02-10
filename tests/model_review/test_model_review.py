@@ -853,7 +853,7 @@ def test_validate_roi_syntax():
         "(1 + A) * $100",
         "somefunc(1)",
         "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P",
-        "$some_feature + A",
+        "$some_feature + actual",
         "",
     ]
 
