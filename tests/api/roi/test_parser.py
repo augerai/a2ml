@@ -69,7 +69,7 @@ class TestParser:
         "expression, expected_result",
         [
             pytest.param("11", True),
-            pytest.param("1 + ", "unexpected end of expression at position 4"),
+            pytest.param("1 + ", "unexpected end of expression at position 3"),
             pytest.param("min()", True),
             pytest.param("/ 2", "unknown atom '/' at position 1"),
             pytest.param("some_func(1)", True),

@@ -16,6 +16,7 @@ class Validator(BaseInterpreter):
         self.expression = expression
         self.known_vars = known_vars
         self.known_funcs = BaseInterpreter.known_funcs()
+        self.root = None
 
     def validate(self, force_raise=True):
         try:
@@ -39,7 +40,7 @@ class Validator(BaseInterpreter):
         if node.name in self.known_vars:
             return True
         else:
-            raise ValidationError(f"unknown variable '{node.name}' at position {node.position}")
+            raise ValidationError(f"unknown variable '{node.name}' at position {node.position()}")
 
     def evaluate_binary_op_node(self, node):
         return self.evaluate(node.left) and self.evaluate(node.right)
@@ -66,8 +67,8 @@ class Validator(BaseInterpreter):
                     expected = ", ".join(counts)
 
                 raise ValidationError(
-                    f"invalid arguments count on '{node.func_name}' function, expected {expected} got {args_count} at position {node.position}"
+                    f"invalid arguments count on '{node.func_name}' function, expected {expected} got {args_count} at position {node.position()}"
                 )
         else:
-            raise ValidationError(f"unknown function '{node.func_name}' at position {node.position}")
+            raise ValidationError(f"unknown function '{node.func_name}' at position {node.position()}")
 

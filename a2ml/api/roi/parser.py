@@ -4,7 +4,11 @@ class ParserError(AstError):
     pass
 
 class BaseNode:
-    pass
+    def __init__(self, token):
+        self.token = token
+
+    def position(self):
+        return self.token.position
 
 class NoOpNode(BaseNode):
     def __str__(self):
@@ -12,7 +16,7 @@ class NoOpNode(BaseNode):
 
 class ConstNode(BaseNode):
     def __init__(self, token):
-        self.token = token
+        super().__init__(token)
         self.value = token.value
 
     def __str__(self):
@@ -22,16 +26,16 @@ class ConstNode(BaseNode):
             return str(self.value)
 
 class VarNode(BaseNode):
-    def __init__(self, token, position=None):
-        self.token = token
+    def __init__(self, token):
+        super().__init__(token)
         self.name = token.value
-        self.position = position
 
     def __str__(self):
         return str(self.name)
 
 class BinaryOpNode(BaseNode):
     def __init__(self, left, token, right):
+        super().__init__(token)
         self.left = left
         self.op = token.type
         self.right = right
@@ -41,6 +45,7 @@ class BinaryOpNode(BaseNode):
 
 class UnaryOpNode(BaseNode):
     def __init__(self, token, node):
+        super().__init__(token)
         self.op = token.type
         self.node = node
 
@@ -48,10 +53,10 @@ class UnaryOpNode(BaseNode):
         return f"({self.op} {self.node})"
 
 class FuncNode(BaseNode):
-    def __init__(self, token, arg_nodes, position=None):
+    def __init__(self, token, arg_nodes):
+        super().__init__(token)
         self.func_name = token.value
         self.arg_nodes = arg_nodes
-        self.position = position
 
     def __str__(self):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
@@ -79,11 +84,11 @@ class Parser:
 
     def error(self, msg=None):
         if self.current_token.type == Token.EOF:
-            raise ParserError(f"unexpected end of expression at position {self.lexer.pos}")
+            raise ParserError(f"unexpected end of expression at position {self.current_token.position}")
         else:
             msg = msg or "invalid token"
             value = self.current_token.value
-            pos = self.lexer.pos - len(value)
+            pos = self.current_token.position
             raise ParserError(f"{msg} '{value}' at position {pos}")
 
     def eat(self, token_type):
@@ -274,12 +279,11 @@ class Parser:
 
     def atom(self):
         if self.current_token.type == Token.ID:
-            pos = self.lexer.pos - len(self.current_token.value)
             self.eat(Token.ID)
             if self.current_token.type == Token.LPAREN:
                 return self.func_call_statement()
             else:
-                return VarNode(self.prev_token, pos)
+                return VarNode(self.prev_token)
         elif self.current_token.type in Parser.CONSTANTS:
             token = self.current_token
             self.eat(self.current_token.type)
@@ -289,7 +293,6 @@ class Parser:
 
     def func_call_statement(self):
         name_token = self.prev_token
-        pos = self.lexer.pos - len(name_token.value) - 1
         self.eat(Token.LPAREN)
 
         arg_nodes = []
@@ -303,4 +306,4 @@ class Parser:
 
         self.eat(Token.RPAREN)
 
-        return FuncNode(name_token, arg_nodes, pos)
+        return FuncNode(name_token, arg_nodes)
