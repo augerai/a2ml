@@ -233,19 +233,25 @@
 <div class="section" id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
 <p>ROI expression syntax is similar to Python, it has math and logial expressions, it can refer prediction, actual and feature values, it can call some builtin functions and constants.</p>
-<p>All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).
-Filter expression drop all rows that don't match. Filter is optional.
-Investment expression is calculated for each row of data then it's aggregated by days.
-Same for revenue expression.
-Then ROI is calculated as a <code class="docutils literal notranslate"><span class="pre">(revenue</span> <span class="pre">-</span> <span class="pre">investment)</span> <span class="pre">/</span> <span class="pre">investment</span></code></p>
+<div class="line-block">
+<div class="line">All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).</div>
+<div class="line">Filter expression drop all rows that don't match. Filter is optional.</div>
+<div class="line">Investment expression is calculated for each row of data then it's aggregated by days.</div>
+<div class="line">Same for revenue expression.</div>
+<div class="line">Then ROI is calculated as a <code class="docutils literal notranslate"><span class="pre">(revenue</span> <span class="pre">-</span> <span class="pre">investment)</span> <span class="pre">/</span> <span class="pre">investment</span></code></div>
+</div>
 <p>Examples:</p>
-<p>filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&gt;=</span> <span class="pre">0.20</span></code>
-investment: <code class="docutils literal notranslate"><span class="pre">$100</span></code>
-revenue: <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">A)</span> <span class="pre">*</span> <span class="pre">$100</span></code></p>
+<div class="line-block">
+<div class="line">filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&gt;=</span> <span class="pre">0.20</span></code></div>
+<div class="line">investment: <code class="docutils literal notranslate"><span class="pre">$100</span></code></div>
+<div class="line">revenue: <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">A)</span> <span class="pre">*</span> <span class="pre">$100</span></code></div>
+</div>
 <p>or</p>
-<p>filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">True</span></code>
-investment: <code class="docutils literal notranslate"><span class="pre">$loan_amount</span></code>
-revenue: <code class="docutils literal notranslate"><span class="pre">if(A</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">$loan_amount</span> <span class="pre">*</span> <span class="pre">((1</span> <span class="pre">+</span> <span class="pre">$interest_percent</span> <span class="pre">/</span> <span class="pre">100)</span> <span class="pre">**</span> <span class="pre">$period_years),</span> <span class="pre">$0)</span></code></p>
+<div class="line-block">
+<div class="line">filter: <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">True</span></code></div>
+<div class="line">investment: <code class="docutils literal notranslate"><span class="pre">$loan_amount</span></code></div>
+<div class="line">revenue: <code class="docutils literal notranslate"><span class="pre">if(A</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">$loan_amount</span> <span class="pre">*</span> <span class="pre">((1</span> <span class="pre">+</span> <span class="pre">$interest_percent</span> <span class="pre">/</span> <span class="pre">100)</span> <span class="pre">**</span> <span class="pre">$period_years),</span> <span class="pre">$0)</span></code></div>
+</div>
 <p>Expressions can be nested with parentheses, the operators precedence <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#operator-precedence">same as in Python</a></p>
 </div>
 <div class="section" id="if-expression">
@@ -266,8 +272,8 @@ revenue: <code class="docutils literal notranslate"><span class="pre">if(A</span
 <div class="section" id="variables">
 <h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> predicted value</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> actual value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> or <code class="docutils literal notranslate"><span class="pre">prediction</span></code> predicted value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> or <code class="docutils literal notranslate"><span class="pre">actual</span></code> actual value</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$feature1</span></code> value of feature with name <code class="docutils literal notranslate"><span class="pre">feature1</span></code>, name should start with alphabetical char or underscore, name can contain digits</p></li>
 </ul>
 </div>
@@ -356,8 +362,10 @@ revenue: <code class="docutils literal notranslate"><span class="pre">if(A</span
 </div>
 <div class="section" id="log-x-number-base-number-float">
 <h3>log(x : number, [base : number]) : float<a class="headerlink" href="#log-x-number-base-number-float" title="Permalink to this headline">¶</a></h3>
-<p>With one argument, return the natural logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> (to base <code class="docutils literal notranslate"><span class="pre">e</span></code>).
-With two arguments, return the logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> to the given base, calculated as <code class="docutils literal notranslate"><span class="pre">log(x)/log(base)</span></code>.</p>
+<div class="line-block">
+<div class="line">With one argument, return the natural logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> (to base <code class="docutils literal notranslate"><span class="pre">e</span></code>).</div>
+<div class="line">With two arguments, return the logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> to the given base, calculated as <code class="docutils literal notranslate"><span class="pre">log(x)/log(base)</span></code>.</div>
+</div>
 </div>
 <div class="section" id="log10-x-number-float">
 <h3>log10(x : number) : float<a class="headerlink" href="#log10-x-number-float" title="Permalink to this headline">¶</a></h3>
