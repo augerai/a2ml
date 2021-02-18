@@ -69,12 +69,16 @@ class AugerExperimentSessionApi(AugerBaseApi):
                 'algorithm': item.get('hyperparameter').\
                     get('algorithm_name').split('.')[-1],
                 item.get('score_name'):\
-                    '{0:.4f}'.format(item.get('score_value'))
+                    '{0:.4f}'.format(item.get('score_value')),
+                'score': float(item.get('score_value'))
             })
 
         if score_name:
             leaderboard.sort(key=lambda t: list(t.values())[-1], reverse=False)
-            
+        
+        for item in leaderboard:
+            del item['score']
+                
         return leaderboard
 
     def update_settings(self):
