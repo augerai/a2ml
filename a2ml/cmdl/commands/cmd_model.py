@@ -24,7 +24,7 @@ def cmdl(ctx):
 @click.option('--score', '-s', required=False, type=float, 
     help='Self-hosted model(external provider) score.')
 @pass_context
-def deploy(ctx, provider, model_id, locally, no_review, name):
+def deploy(ctx, provider, model_id, locally, no_review, name, algorithm, score):
     """Deploy trained model."""
     A2MLModel(ctx, provider).deploy(model_id, locally, not no_review, name=name, algorithm=algorithm, score=score)
 
