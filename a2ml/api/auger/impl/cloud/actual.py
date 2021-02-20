@@ -53,9 +53,11 @@ class AugerActualApi(AugerBaseApi):
             params['pipeline_id'] = self.parent_api.object_id
 
         res = self.rest_api.call( 'delete_%ss' % self.api_request_path, params)
-        if isinstance(res, list):
+        if res and isinstance(res, list):
             res = res[0]
-        cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])
-        cluster_task.wait_for_status(['pending', 'received', 'started', 'retry'])
+
+        if res:    
+            cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])
+            cluster_task.wait_for_status(['pending', 'received', 'started', 'retry'])
 
         return True
