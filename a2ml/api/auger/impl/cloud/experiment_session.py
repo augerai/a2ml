@@ -64,17 +64,24 @@ class AugerExperimentSessionApi(AugerBaseApi):
         leaderboard, score_name = [], None
         for item in iter(trial_api.list()):
             score_name = item.get('score_name')
-            leaderboard.append({
+            l_item = {
                 'model id': item.get('id'),
                 'algorithm': item.get('hyperparameter').\
                     get('algorithm_name').split('.')[-1],
                 item.get('score_name'):\
-                    '{0:.4f}'.format(item.get('score_value')),
-                'score': float(item.get('score_value'))
-            })
+                    '{0:.4f}'.format(item.get('score_value'))
+            }
+            review_metric = self.ctx.config.get('review/metric')
+            if review_metric:
+                l_item[review_metric] = \
+                    '{0:.4f}'.format(item.get('raw_data', {}).get('all_scores', {}).get(review_metric, 0.0))
+
+            l_item['score'] = float(item.get('score_value'))
+
+            leaderboard.append(l_item)
 
         if score_name:
-            leaderboard.sort(key=lambda t: list(t.values())[-1], reverse=False)
+            leaderboard.sort(key=lambda t: t['score'], reverse=False)
         
         for item in leaderboard:
             del item['score']

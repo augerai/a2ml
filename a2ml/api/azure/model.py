@@ -20,7 +20,7 @@ class AzureModel(object):
 
     @error_handler
     @authenticated
-    def deploy(self, model_id, locally, review, name=None):
+    def deploy(self, model_id, locally, review, name=None, algorithm=None, score=None):
         if locally:
             is_loaded, model_path = self.verify_local_model(model_id)
             if is_loaded:
