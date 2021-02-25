@@ -1,6 +1,6 @@
 import types
 
-def print_table(log, table_list, headers=None):
+def print_table(log, table_list, headers=None, hor_lines=True):
     if isinstance(table_list, types.GeneratorType):
         table_list = list(table_list)
 
@@ -16,13 +16,20 @@ def print_table(log, table_list, headers=None):
     # maximun size of the col for each element
     col_size = [max(map(len, col)) for col in zip(*row_list)]
     # insert seperating line before every line, and extra one for ending.
-    for i in range(0, len(row_list) + 1)[::-1]:
-        row_list.insert(i, ['-' * i for i in col_size])
-    # two format for each content line and each seperating line
+    if hor_lines:
+        for i in range(0, len(row_list) + 1)[::-1]:
+            row_list.insert(i, ['-' * i for i in col_size])
+    else:
+        i = 1
+        row_list.insert(i, ['-' * i for i in col_size])        
+    # two format for each content line and each separating line
     format_str = ' | '.join(["{{:<{}}}".format(i) for i in col_size])
     format_sep = '-+-'.join(["{{:<{}}}".format(i) for i in col_size])
-    for item in row_list:
-        if item[0][0] == '-':
-            log(format_sep.format(*item))
+    for idx, item in enumerate(row_list):
+        if hor_lines:
+            if idx%2==0: #item[0][0] == '-':
+                log(format_sep.format(*item))
+            else:
+                log(format_str.format(*item))
         else:
-            log(format_str.format(*item))
+            log(format_str.format(*item))        

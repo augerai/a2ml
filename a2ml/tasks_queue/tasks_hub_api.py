@@ -198,6 +198,10 @@ def _read_hub_experiment_session(ctx, params):
         ctx.config.set('experiment/exit_score', evaluation_options.get('exit_score'))
     if evaluation_options.get('score_top_count'):
         ctx.config.set('experiment/score_top_count', evaluation_options.get('score_top_count'))
+    if evaluation_options.get('retrain_policy_type'):
+        ctx.config.set('experiment/retrain_policy_type', evaluation_options.get('retrain_policy_type'))
+    if evaluation_options.get('retrain_policy_value'):
+        ctx.config.set('experiment/retrain_policy_value', evaluation_options.get('retrain_policy_value'))
 
     return ctx
 
@@ -609,9 +613,15 @@ def build_review_data_task(params):
     if ctx.config.get_list('experiment/date_time'):
         date_col = ctx.config.get_list('experiment/date_time')[0]
 
+    retrain_policy = None
+    if ctx.config.get('experiment/retrain_policy_type'):    
+        retrain_policy = {'type': ctx.config.get('experiment/retrain_policy_type'), 'value':ctx.config.get('experiment/retrain_policy_value')}
+
     return ModelReview(params).build_review_data(
         data_path=params.get('data_path'),
-        date_col = date_col
+        date_col = date_col,
+        retrain_policy = retrain_policy,
+        date_to=params.get('date_to')
     )
 
 @celeryApp.task(ignore_result=True)

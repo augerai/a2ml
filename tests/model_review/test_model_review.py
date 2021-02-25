@@ -795,6 +795,17 @@ def test_build_review_data():
     for review_data_path in glob.glob('tests/fixtures/test_build_review_data/iris_class_review_*.parquet'):
       os.remove(review_data_path)
 
+def test_build_review_data_policy():
+    model_path = "tests/fixtures/test_distribution_chart_stats/bikesharing"
+    data_path = "tests/fixtures/test_distribution_chart_stats/bikesharing/bike_sharing_day.csv_review_date_2012-12-10_F935B3B26F1E470.parquet"
+
+    res = ModelReview({'model_path': model_path}).build_review_data(data_path=data_path,
+      date_col='dteday', retrain_policy={'type': 'days_limit', 'value': 20}, date_to='2012-12-22')
+    review_df = DataFrame({}).load_from_file(res)
+
+    #print(len(review_df))
+    assert len(review_df) == 21
+    assert 'review_date_2012-12-22_' in res
 # def test_build_review_data_2():
 #     model_path = 'tests/fixtures/test_distribution_chart_stats/bikesharing'
 
