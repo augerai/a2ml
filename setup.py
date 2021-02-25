@@ -78,7 +78,7 @@ extras = {
         'xgboost<=0.90',
         # https://github.com/Azure/azure-sdk-for-python/issues/13871
         #'azure-mgmt-resource==10.2.0',
-        'azureml-sdk[automl]~=1.18.0'
+        'azureml-sdk[automl]~=1.22.0'
     ],
     'google': [
         'google-cloud-automl'
