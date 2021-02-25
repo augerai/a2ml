@@ -81,10 +81,15 @@ class AugerExperimentApi(AugerBaseApi):
             options["allowed_algorithms"] = config.get_list('experiment/allowed_models')
         if config.get('experiment/exit_score'):
             options['exit_score'] = config.get('experiment/exit_score')
-        if config.get('review/metric'):
-            options['review_metric'] = config.get('review/metric')
         if config.get('experiment/score_top_count'):
             options['score_top_count'] = config.get('experiment/score_top_count')
+
+        if config.get('review/metric'):
+            options['review_metric'] = config.get('review/metric')            
+        if config.get('review/alert/retrain_policy/type'):
+            options['retrain_policy_type'] = config.get('review/alert/retrain_policy/type')
+        if config.get('review/alert/retrain_policy/value'):
+            options['retrain_policy_value'] = config.get('review/alert/retrain_policy/value')
 
         split_options = {}
         if config.get('experiment/validation_size'):

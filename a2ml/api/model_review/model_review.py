@@ -229,7 +229,8 @@ class ModelReview(object):
                         path = file if type(file) == str else file['path']
                         fsclient.remove_file(path)
 
-    def build_review_data(self, data_path=None, output=None, date_col=None):
+    def build_review_data(self, data_path=None, output=None, date_col=None, retrain_policy=None,
+        date_to=None):
         if not data_path:
             data_path = self.options['data_path']
 
@@ -242,23 +243,39 @@ class ModelReview(object):
         )
 
         all_files.sort(key=lambda f: f['path'][0:10], reverse=True)
-
-        if date_col and date_col in train_features:
+        if date_to:
             new_files = []
+            date_to_date = convert_to_date(date_to)
+            for idx, file in enumerate(all_files):
+                file_date = os.path.basename(file['path']).split("_")[0]
+                if convert_to_date(file_date) > date_to_date:
+                    continue
+                new_files.append(file)
+            all_files = new_files
+
+        start_date = None
+        if '_review_date_' in data_path:
+            start = data_path.index('_review_date_')+len('_review_date_')
+            end = data_path.index('_', start)
+            start_date = convert_to_date(data_path[start:end])
+                
+        if not start_date and date_col and date_col in train_features:
             try:
                 start_date = convert_to_date(ds_train.df[date_col].max())
                 logging.info("build_review_data with date_col: %s = %s"%(date_col,start_date))
-
-                for idx, file in enumerate(all_files):
-                    file_date = os.path.basename(file['path']).split("_")[0]
-                    if convert_to_date(file_date) <= start_date:
-                        continue
-
-                    new_files.append(file)
-
-                all_files = new_files
             except Exception as e:
                 logging.error("Getting latest date from data path %s failed: %s"%(data_path,e))
+
+        if start_date:
+            new_files = []            
+            for idx, file in enumerate(all_files):
+                file_date = os.path.basename(file['path']).split("_")[0]
+                if convert_to_date(file_date) <= start_date:
+                    continue
+
+                new_files.append(file)
+
+            all_files = new_files
 
         logging.info("build_review_data adding files: %s"%all_files)
         for (file, ds_actuals) in DataFrame.load_from_files(all_files):
@@ -268,11 +285,20 @@ class ModelReview(object):
                 #ds_train.drop_duplicates()
 
         #ds_train.dropna()
+        if retrain_policy:
+            if retrain_policy.get('type') == 'days_limit' and date_col and date_col in train_features:
+                start_date = convert_to_date(ds_train.df[date_col].max())
+                end_date = start_date - datetime.timedelta(days=int(retrain_policy.get('value')))
+                ds_train.df.query("%s>='%s'"%(date_col, end_date), inplace=True)
 
         if not output:
             directory = os.path.dirname(data_path)
             file_name = os.path.basename(data_path).split('_review_')[0]
-            output = os.path.join(directory, file_name + "_review_%s.parquet"%(get_uid()))
+            date_suffix = ""
+            if date_to:
+                date_suffix = "date_%s_"%date_to
+
+            output = os.path.join(directory, file_name + "_review_%s%s.parquet"%(date_suffix, get_uid()))
 
         ds_train.saveToFile(output)
         return output
@@ -290,6 +316,7 @@ class ModelReview(object):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
             if df_actuals.count() > 0:
+                print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
