@@ -55,7 +55,7 @@ All Providers
     * **source** # Local file name, remote url to the data source file or postgres url. Postgres url example: jdbc:postgresql://user:pwd@ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&offset=0&limit=100. Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)
     * **exclude** List of columns to be excluded from the training data.
     * **target** Target column name.
-    * **model_type**  Model type: classification|regression|timeseries.
+    * **model_type**  Model type: classification|regression.
     * **experiment.metric**  Score used to optimize ML model.
 
       * **Classification** accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted
@@ -73,7 +73,7 @@ All Providers
 
     * **review.metric**  Optional metric used for MLRAM review, can be any experiment metric + roi. By default same as experiment metric
 
-    * **review.roi.filter**  Filter syntax - see <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query" target="_blank">Pandas.DataFrame.query</a>
+    * **review.roi.filter**  Filter to select records to calculate ROI. See ROI formulas language for the syntax
     * **review.roi.revenue**  Revenue can contain formuala for calculating revenue based on fields from actual. See ROI formulas language for the syntax
     * **review.roi.investment**  Investment can contain formuala for calculating investment based on fields from actual. See ROI formulas language for the syntax  
 
@@ -149,7 +149,6 @@ Auger
       * **Supported models**
       * **Classification** XGBClassifier, LGBMClassifier, SVC, SGDClassifier, AdaBoostClassifier, DecisionTreeClassifier, ExtraTreesClassifier, RandomForestClassifier, GradientBoostingClassifier, CatBoostClassifier
       * **Regression** SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor
-      * **Timeseries** SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor, TimeSeriesLSTM, VARXBaseRegressor, DeepTimeSeriesRegressor
 
     * **experiment.estimate_trial_time** Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.
     * **experiment.trials_per_worker** Use it if you have a lot of failed trials. Set it to value < 8 to give trial fit process more memory. Default is None.
@@ -195,7 +194,6 @@ Azure
       * **Supported models**
       * **Classification** AveragedPerceptronClassifier, BernoulliNaiveBayes, DecisionTree, ExtremeRandomTrees,GradientBoosting, KNN, LightGBM, LinearSVM, LogisticRegression, MultinomialNaiveBayes, SGD, RandomForest, SVM, XGBoostClassifier
       * **Regression** DecisionTree, ElasticNet, ExtremeRandomTrees, FastLinearRegressor, GradientBoosting, KNN, LassoLars, LightGBM, OnlineGradientDescentRegressor, RandomForest, SGD, XGBoostRegressor
-      * **Timeseries** AutoArima, Average, Naive, Prophet, SeasonalAverage, SeasonalNaive, TCNForecaster
 
     * **cluster.region** Name of cluster region. For example: eastus2
     * **cluster.min_nodes** Minimum number of nodes allocated for cluster. Minimum is 0. 

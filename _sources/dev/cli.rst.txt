@@ -32,7 +32,7 @@ This includes both general options that apply to all vendors and vendor specific
     source_format: csv(default), parquet. Set it if source is url or file has no extension
     exclude: features from the dataset to exclude from the model
     target: the feature which is the target
-    model_type: Can be regression, classification or timeseries
+    model_type: Can be regression or classification
     budget: the time budget in milliseconds to train
 
 **Vendor Specfic**

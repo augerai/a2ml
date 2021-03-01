@@ -269,7 +269,7 @@
 <li><p><strong>source</strong> # Local file name, remote url to the data source file or postgres url. Postgres url example: <a class="reference external" href="jdbc:postgresql://user:pwd&#64;ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&amp;offset=0&amp;limit=100">jdbc:postgresql://user:pwd&#64;ec2-54-204-21-226.compute-1.amazonaws.com:5432/dbname?tablename=table1&amp;offset=0&amp;limit=100</a>. Postgres url parameters: dbname, tablename, offset(OPTIONAL), limit(OPTIONAL)</p></li>
 <li><p><strong>exclude</strong> List of columns to be excluded from the training data.</p></li>
 <li><p><strong>target</strong> Target column name.</p></li>
-<li><p><strong>model_type</strong>  Model type: classification|regression|timeseries.</p></li>
+<li><p><strong>model_type</strong>  Model type: classification|regression.</p></li>
 <li><p><strong>experiment.metric</strong>  Score used to optimize ML model.</p>
 <ul>
 <li><p><strong>Classification</strong> accuracy, precision_weighted, AUC_weighted, norm_macro_recall, average_precision_score_weighted</p></li>
@@ -286,7 +286,7 @@
 <li><p><strong>experiment.use_ensemble</strong> Try to improve model performance by creating ensembles from the trial models true | false.</p></li>
 <li><p><strong>experiment.validation_source</strong> Path to validation dataset. If not set your source dataset will be split to validate.</p></li>
 <li><p><strong>review.metric</strong>  Optional metric used for MLRAM review, can be any experiment metric + roi. By default same as experiment metric</p></li>
-<li><p><strong>review.roi.filter</strong>  Filter syntax - see &lt;a href=&quot;<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query">https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query</a>&quot; target=&quot;_blank&quot;&gt;Pandas.DataFrame.query&lt;/a&gt;</p></li>
+<li><p><strong>review.roi.filter</strong>  Filter to select records to calculate ROI. See ROI formulas language for the syntax</p></li>
 <li><p><strong>review.roi.revenue</strong>  Revenue can contain formuala for calculating revenue based on fields from actual. See ROI formulas language for the syntax</p></li>
 <li><p><strong>review.roi.investment</strong>  Investment can contain formuala for calculating investment based on fields from actual. See ROI formulas language for the syntax</p>
 <ul>
@@ -361,7 +361,6 @@
 <li><p><strong>Supported models</strong></p></li>
 <li><p><strong>Classification</strong> XGBClassifier, LGBMClassifier, SVC, SGDClassifier, AdaBoostClassifier, DecisionTreeClassifier, ExtraTreesClassifier, RandomForestClassifier, GradientBoostingClassifier, CatBoostClassifier</p></li>
 <li><p><strong>Regression</strong> SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor</p></li>
-<li><p><strong>Timeseries</strong> SVR,XGBRegressor, LGBMRegressor, ElasticNet, SGDRegressor, AdaBoostRegressor, DecisionTreeRegressor, ExtraTreesRegressor, RandomForestRegressor, GradientBoostingRegressor, CatBoostRegressor, TimeSeriesLSTM, VARXBaseRegressor, DeepTimeSeriesRegressor</p></li>
 </ul>
 </li>
 <li><p><strong>experiment.estimate_trial_time</strong> Use it if you have a lot of timeouted trials. Set it to True will predict the training time of each individual model to avoid timeouts. Default is False.</p></li>
@@ -412,7 +411,6 @@
 <li><p><strong>Supported models</strong></p></li>
 <li><p><strong>Classification</strong> AveragedPerceptronClassifier, BernoulliNaiveBayes, DecisionTree, ExtremeRandomTrees,GradientBoosting, KNN, LightGBM, LinearSVM, LogisticRegression, MultinomialNaiveBayes, SGD, RandomForest, SVM, XGBoostClassifier</p></li>
 <li><p><strong>Regression</strong> DecisionTree, ElasticNet, ExtremeRandomTrees, FastLinearRegressor, GradientBoosting, KNN, LassoLars, LightGBM, OnlineGradientDescentRegressor, RandomForest, SGD, XGBoostRegressor</p></li>
-<li><p><strong>Timeseries</strong> AutoArima, Average, Naive, Prophet, SeasonalAverage, SeasonalNaive, TCNForecaster</p></li>
 </ul>
 </li>
 <li><p><strong>cluster.region</strong> Name of cluster region. For example: eastus2</p></li>
