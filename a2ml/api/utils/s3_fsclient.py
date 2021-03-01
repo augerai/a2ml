@@ -16,7 +16,7 @@ AWS_S3_HOST = "s3.amazonaws.com"
 
 def retry_handler(decorated):
     def wrapper(self, *args, **kwargs):
-        return retry_helper(lambda: decorated(self, *args, **kwargs), ['InvalidAccessKeyId'])
+        return retry_helper(lambda: decorated(self, *args, **kwargs), ['InvalidAccessKeyId', 'NoSuchKey'])
 
     return wrapper
 
