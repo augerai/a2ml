@@ -15,7 +15,6 @@ experiment:
   # MultinomialNaiveBayes,SGD,RandomForest,SVM,XGBoostClassifier
   # *Regression: DecisionTree,ElasticNet,ExtremeRandomTrees,FastLinearRegressor,
   # GradientBoosting,KNN,LassoLars,LightGBM,OnlineGradientDescentRegressor,RandomForest,SGD,XGBoostRegressor
-  # *Timeseries: AutoArima,Average,Naive,Prophet,SeasonalAverage,SeasonalNaive,TCNForecaster
 
   # A list of model names to ignore for an experiment  
   #blocked_models:  
