@@ -13,7 +13,7 @@ source:
 exclude:
 # Target column name
 target:
-# Model type: classification|regression|timeseries
+# Model type: classification|regression
 model_type: classification
 # Is this binary classification? Used for self-hosted model. For all other models determine automatically based on dataset provided
 #binary_classification: True
@@ -62,12 +62,12 @@ review:
   # ROI calculation
   # Filter and formulas can contain any fields from actuals. P - predicted value, A- actual. 
   roi:
-    # Filter syntax - see Pandas.DataFrame.query method: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query
+    # Filter to select records to calculate ROI. See ROI formulas language for the syntax
     #filter: P=1
     # Revenue can contain formuala for calculating revenue based on fields from actual. See ROI formulas language for the syntax
-    #revenue: "@if(A=True,1050, 0)"
+    #revenue: "if(A=True,$1050, 0)"
     # Investment can contain formuala for calculating investment based on fields from actual. See ROI formulas language for the syntax  
-    #investment: 1000
+    #investment: $1000
 
   alert:
     # Activate/Deactivate Review Alert

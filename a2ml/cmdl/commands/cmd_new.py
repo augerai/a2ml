@@ -81,7 +81,7 @@ class NewCmd(object):
 @click.option('--source', '-s',  default='', type=click.STRING,
     help='Data source local file or remote url.')
 @click.option('--model-type', '-mt', default='classification',
-    type=click.Choice(['classification','regression','timeseries']),
+    type=click.Choice(['classification','regression']),
     help='Model Type.')
 @click.option('--target', '-t',  default='', type=click.STRING,
     help='Target column name in data source.')
