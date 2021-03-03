@@ -24,6 +24,7 @@ class TestModelHelper(unittest.TestCase):
     def test_calculate_scores(self):
         model_path = 'tests/fixtures/test_predict_by_model/iris'
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
+        options['score_top_count'] = True
 
         y_test, _ = ModelHelper.preprocess_target(model_path,
             records=[["setosa"], ["versicolor"], ["virginica"], ["setosa"], ["versicolor"], ["virginica"]],

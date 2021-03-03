@@ -62,10 +62,12 @@ def actuals(ctx, provider, filename, model_id, locally):
 @click.argument('model-id', required=True, type=click.STRING)
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
+@click.option('--name', '-n', required=False, type=click.STRING, 
+    help='Model friendly name.Used as name for Review Endpoint')
 @pass_context
-def review_alert(ctx, provider, model_id):
+def review_alert(ctx, provider, model_id, name):
     """Predict with deployed model."""
-    A2MLModel(ctx, provider).review_alert(model_id)
+    A2MLModel(ctx, provider).review_alert(model_id, name=name)
 
 @click.command('review', short_help='Review information about deployed model.')
 @click.argument('model-id', required=True, type=click.STRING)
