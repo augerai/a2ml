@@ -14,6 +14,9 @@ class AugerEndpointApi(AugerBaseApi):
     def create(self, pipeline_id, name):
         return self._call_create({'pipeline_id': pipeline_id, 'name': name},[])
 
+    def update(self, name):
+        return self._call_update({ 'id': self.object_id, 'name': name})
+
     def update_roi(self):
         roi_names = ['review/roi/filter', 'review/roi/investment', 'review/roi/revenue']
         roi_values = []

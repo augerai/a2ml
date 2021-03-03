@@ -249,4 +249,13 @@ def retry_helper(func, retry_errors=[], num_try=10, delay=10, ctx=None):
                 time.sleep(delay*nTry)
             else:
                 raise                
-                
+
+def sort_arrays(ar1, ar2, top_n=None, desc=True):
+    p = ar1.argsort()
+    if desc:
+        p = p[::-1]
+    if top_n:
+        p = p[:top_n]
+
+    return ar1[p], ar2[p]
+

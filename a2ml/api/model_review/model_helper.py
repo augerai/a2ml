@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import json
 
-from a2ml.api.utils import get_uid, get_uid4, fsclient, remove_dups_from_list
+from a2ml.api.utils import get_uid, get_uid4, fsclient, remove_dups_from_list, sort_arrays
 from a2ml.api.utils.dataframe import DataFrame
 
 
@@ -184,6 +184,12 @@ class ModelHelper(object):
             else:
                 logging.error("calculate_scores: no scaling found for target fold group: %s"%options['fold_group'])
 
+        if options.get("score_top_count"):
+            if y_pred is None:
+                y_pred = estimator.predict(X_test)
+
+            y_pred, y_test = sort_arrays(y_pred, y_test, options.get("score_top_count"))
+            
         all_scores = {}
         if y_pred is not None:
             if options.get('binaryClassification'):

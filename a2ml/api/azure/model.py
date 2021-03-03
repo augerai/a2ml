@@ -554,7 +554,7 @@ def get_df(data):
 
     @error_handler
     @authenticated
-    def review_alert(self, model_id, parameters):
+    def review_alert(self, model_id, parameters, name):
         raise AzureException("Not Implemented. Set use_auger_cloud: True in config.yml")
 
     @error_handler

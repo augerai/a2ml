@@ -204,7 +204,7 @@ class A2MLModel(BaseA2ML):
         return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, data, columns, actuals_at, actual_date_column, locally)
 
     @show_result
-    def review_alert(self, model_id, parameters = None, locally=False, provider=None):
+    def review_alert(self, model_id, parameters = None, locally=False, provider=None, name=None):
         """Update Review parameters.
 
         Args:
@@ -230,6 +230,7 @@ class A2MLModel(BaseA2ML):
 
             locally(bool): Process review locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+            name (str): Friendly name for the model. Used as name for Review Endpoint
 
         Returns:
             ::
@@ -244,7 +245,7 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx).review_alert(model_id='D881079E1ED14FB')
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('review_alert', model_id, parameters)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('review_alert', model_id, parameters, name)
 
     @show_result
     def review(self, model_id, locally=False, provider=None):
