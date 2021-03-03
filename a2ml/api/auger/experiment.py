@@ -98,9 +98,9 @@ class AugerExperiment(object):
                 message += ". Details: " + result['error_details']
 
         if message:
-            self.ctx.log(message)
+            self.ctx.log("%s. Completed: %s"%(message, trials_count))
         else:
-            self.ctx.log('Search status is %s' % status)
+            self.ctx.log('Search status is %s. Completed: %s' % (status, trials_count))
 
         
         return result

@@ -83,6 +83,8 @@ class AugerExperimentApi(AugerBaseApi):
             options['exit_score'] = config.get('experiment/exit_score')
         if config.get('experiment/score_top_count'):
             options['score_top_count'] = config.get('experiment/score_top_count')
+        if config.get('experiment/build_metrics_in_trial', None) is not None:
+            options['build_metrics_in_trial'] = config.get('experiment/build_metrics_in_trial')
 
         if config.get('review/metric'):
             options['review_metric'] = config.get('review/metric')            
