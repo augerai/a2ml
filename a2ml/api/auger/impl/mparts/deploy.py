@@ -21,11 +21,11 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None):
+    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None):
         if locally:
-            return self.deploy_model_locally(model_id, review, name)
+            return self.deploy_model_locally(model_id, review, name, data_path)
         else:
-            return self.deploy_model_in_cloud(model_id, review, name, algorithm, score)
+            return self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path)
 
     def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None, name=None):
         if not self.ctx.config.get('review'):
@@ -121,7 +121,7 @@ class ModelDeploy(object):
         }
         return result
             
-    def deploy_model_in_cloud(self, model_id, review, name, algorithm, score):
+    def deploy_model_in_cloud(self, model_id, review, name, algorithm, score, data_path):
         self.ctx.log('Deploying model %s' % model_id)
 
         if self.ctx.is_external_provider():
@@ -129,8 +129,12 @@ class ModelDeploy(object):
                 self.ctx, None).create_external(review, name, self.project.object_id, algorithm, score)
         else:    
             self.project.start()
+            data_url = None
+            if data_path:
+                _, _, data_url, _ = ModelPredict(self.ctx)._process_input(data_path, None, None)
+
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create(model_id, review, name)
+                self.ctx, None).create(model_id, review, name, data_url)
 
         if pipeline_properties.get('status') == 'ready':
             if review:
@@ -144,7 +148,7 @@ class ModelDeploy(object):
 
         return pipeline_properties.get('id')
 
-    def deploy_model_locally(self, model_id, review, name):
+    def deploy_model_locally(self, model_id, review, name, data_path):
         is_loaded, model_path, model_name = self.verify_local_model(model_id)
         #TODO: support review flag
         if not is_loaded:

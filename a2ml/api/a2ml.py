@@ -175,7 +175,8 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None, name=None, algorithm=None, score=None):
+    def deploy(self, model_id, locally=False, review=True, provider=None, 
+            name=None, algorithm=None, score=None, data_path=None):
         """Deploy a model locally or to specified provider(s).
 
         Note:
@@ -190,6 +191,7 @@ class A2ML(BaseA2ML):
             name (str): Friendly name for the model. Used as name for Review Endpoint
             algorithm (str): Self-hosted model(external provider) algorithm name.
             score (float): Self-hosted model(external provider) score.
+            data_path (str): Data path to fit model when deploy. Return new deployed model-id
 
         Returns:
             ::
@@ -214,7 +216,8 @@ class A2ML(BaseA2ML):
                 model_id = result['model_id']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', model_id, locally, review, name, algorithm, score)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', 
+            model_id, locally, review, name, algorithm, score, data_path)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
