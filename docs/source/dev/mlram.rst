@@ -22,7 +22,7 @@ Self-hosted model
   .. code-block:: YAML
 
     target: the feature which is the target
-    model_type: Can be regression, classification or timeseries
+    model_type: Can be regression or classification
 
 	experiment:
 	  metric: <metric to calculate using actuals>

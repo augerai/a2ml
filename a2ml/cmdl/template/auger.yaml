@@ -20,10 +20,6 @@ experiment:
   # *Regression: SVR,XGBRegressor,LGBMRegressor,ElasticNet,
   # SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,
   # RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor
-  # *Timeseries: SVR,XGBRegressor,LGBMRegressor,ElasticNet,
-  # SGDRegressor,AdaBoostRegressor,DecisionTreeRegressor,ExtraTreesRegressor,
-  # RandomForestRegressor,GradientBoostingRegressor,CatBoostRegressor,
-  # TimeSeriesLSTM,VARXBaseRegressor,DeepTimeSeriesRegressor
 
   # A list of model names to ignore for an experiment  
   #blocked_models:  
