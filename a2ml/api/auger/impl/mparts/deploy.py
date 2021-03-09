@@ -122,6 +122,8 @@ class ModelDeploy(object):
         return result
             
     def deploy_model_in_cloud(self, model_id, review, name, algorithm, score, data_path):
+        from .predict import ModelPredict
+
         self.ctx.log('Deploying model %s' % model_id)
 
         if self.ctx.is_external_provider():
