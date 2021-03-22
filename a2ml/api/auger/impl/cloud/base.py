@@ -134,6 +134,7 @@ class AugerBaseApi(object):
         if has_return_object:
             if object_properties:
                 self.object_id = object_properties.get('id')
+                self.object_name = object_properties.get('name') #name can be changed by hub                
                 if progress:
                     self.wait_for_status(progress)
             return self.properties()
