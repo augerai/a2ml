@@ -109,11 +109,11 @@ def test_interpreter_with_list(expression, exected_result):
 )
 def test_interpreter_top_expressions(expression, exected_result):
     variables = [
-        { "P": 0.6, "$symbol": "T", "$spread": 0.5 },   # 0.25 -> 0.35
-        { "P": 0.7, "$symbol": "T", "$spread": 1 },     # 0.5 ->  0.2
-        { "P": 0.9, "$symbol": "A", "$spread": 0.5 },   # 0.25 -> 0.65
-        { "P": 0.5, "$symbol": "A", "$spread": 0.9 },   # 0.45 -> 0.05
-        { "P": 0.7, "$symbol": "A", "$spread": 0.8 },   # 0.4 -> 0.3
+        { "P": 0.6, "$symbol": "T", "$spread": 0.5 },
+        { "P": 0.7, "$symbol": "T", "$spread": 1 },
+        { "P": 0.9, "$symbol": "A", "$spread": 0.5 },
+        { "P": 0.5, "$symbol": "A", "$spread": 0.9 },
+        { "P": 0.7, "$symbol": "A", "$spread": 0.8 },
     ]
 
     interpreter = Interpreter(expression)

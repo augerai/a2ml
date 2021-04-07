@@ -36,6 +36,27 @@ ROI syntax has one flow control expression
 
 in this case if prediction value is greater than 0.2 if expression returns 1050, else 0
 
+Top expression
+-----------------
+
+This expression allows to filter rows by some aggregates
+
+``top 2 by P per $symbol`` - group all rows by ``$symbol`` and return top 2 by ``P`` rows per each group.
+
+``top 10 by P from (bottom 5 by $spread per $symbol)`` - first it finds 5 records with lowest ``$spread`` per each ``$symbol``, then it returns top 10 by ``P`` from these records
+
+Full syntax:
+
+(top | bottom) NUMBER by expression [per expression] [where expression] [from (top_expression)]
+
+``top`` - sort in descending order
+``bottom`` - sort in ascending order
+``NUMBER`` - number of values to select
+``by expression`` - define a value for sorting
+``per expression`` (optional) - define a grouping
+``where expression`` (optional) - define addition filter
+``from (top_expression)`` (optional) - define nested top expression
+
 Numbers
 -----------------
 * ``123`` integer numbers

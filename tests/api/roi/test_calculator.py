@@ -30,6 +30,33 @@ class TestCalculator:
         assert 200 == res["investment"]
         assert 0.4 == res["roi"]
 
+    def test_options_app_with_top(self):
+        calc = Calculator(
+            filter="top 2 by P where P >= 0.1 from (bottom 1 by $spread per $symbol)",
+            revenue="(1 + A) * $100",
+            investment="$100",
+            known_vars=["A", "P", "spread", "symbol"],
+        )
+
+        res = calc.calculate(
+            [
+                {"A": 0.1, "P": 0.10, "$spread": 0.3, "$symbol": "A"},
+                {"A": 0.1, "P": 0.15, "$spread": 0.4, "$symbol": "A"},
+                {"A": 0.5, "P": 0.20, "$spread": 0.5, "$symbol": "T"},
+                {"A": 0.3, "P": 0.30, "$spread": 0.3, "$symbol": "T"},
+            ]
+        )
+
+        assert 2 == res["count"]
+        assert res["filtered_rows"] == [
+            {"A": 0.1, "P": 0.10, "$spread": 0.3, "$symbol": "A"},
+            {"A": 0.3, "P": 0.30, "$spread": 0.3, "$symbol": "T"},
+        ]
+
+        assert (0.1 + 0.3 + 2) * 100 == res["revenue"]
+        assert 200 == res["investment"]
+        assert 0.2 == res["roi"]
+
     def test_bike_rental(self):
         calc = Calculator(
             revenue="min(A, P) * $10",
