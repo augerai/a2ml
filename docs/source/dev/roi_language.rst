@@ -43,6 +43,10 @@ Numbers
 * ``-123.456`` numbers can be negative
 * ``$50.99`` numbers can start with dollar sign to express money
 
+String literals
+-----------------
+* ``"some value"``
+
 Variables
 -----------------
 

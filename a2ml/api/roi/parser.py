@@ -6,6 +6,7 @@ class ParserError(AstError):
 class BaseNode:
     def __init__(self, token):
         self.token = token
+        self.require_aggregation = False
 
     def position(self):
         return self.token.position
@@ -65,11 +66,26 @@ class TopNode(BaseNode):
     def __init__(self, token):
         super().__init__(token)
         self.top = token.value == Token.TOP
-        self.limit = None
-        self.order_expr = None
-        self.group_expr = None
-        self.where_expr = None
-        self.nested_expr = None
+        self.limit_node = None
+        self.order_node = None
+        self.group_node = None
+        self.where_node = None
+        self.nested_node = None
+        self.require_aggregation = True
+
+    def child_nodes(self):
+        res = [self.limit_node, self.order_node]
+
+        if self.group_node:
+            res.append(self.group_node)
+
+        if self.where_node:
+            res.append(self.where_node)
+
+        if self.nested_node:
+            res.append(self.nested_node)
+
+        return res
 
     def __str__(self):
         res = []
@@ -79,20 +95,20 @@ class TopNode(BaseNode):
         else:
             res.append(Token.BOTTOM)
 
-        res.append(str(self.limit))
+        res.append(str(self.limit_node))
         res.append(Token.BY)
-        res.append(str(self.order_expr))
+        res.append(str(self.order_node))
 
-        if self.group_expr:
+        if self.group_node:
             res.append(Token.PER)
-            res.append(str(self.group_expr))
+            res.append(str(self.group_node))
 
-        if self.where_expr:
+        if self.where_node:
             res.append(Token.WHERE)
-            res.append(str(self.where_expr))
+            res.append(str(self.where_node))
 
-        if self.nested_expr:
-            res.append("(" + str(self.nested_expr) + ")")
+        if self.nested_node:
+            res.append("from (" + str(self.nested_node) + ")")
 
         return " ".join(res)
 
@@ -357,22 +373,23 @@ class Parser:
         else:
             self.eat(Token.BOTTOM)
 
-        node.limit = self.const_node(Token.INT_CONST)
+        node.limit_node = self.const_node(Token.INT_CONST)
 
         self.eat(Token.BY)
-        node.order_expr = self.expression()
+        node.order_node = self.expression()
 
         if self.current_token.type == Token.PER:
             self.eat(Token.PER)
-            node.group_expr = self.expression()
+            node.group_node = self.expression()
 
         if self.current_token.type == Token.WHERE:
             self.eat(Token.WHERE)
-            node.where_expr = self.expression()
+            node.where_node = self.expression()
 
-        if self.current_token.type == Token.LPAREN:
+        if self.current_token.type == Token.FROM:
+            self.eat(Token.FROM)
             self.eat(Token.LPAREN)
-            node.nested_expr = self.top_expression()
+            node.nested_node = self.top_expression()
             self.eat(Token.RPAREN)
 
         return node

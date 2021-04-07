@@ -96,7 +96,7 @@ func_call_statement:
     | NAME '(' (expression (',' expression)*)? ')'
 
 top_expression:
-    | top_expression_type' NUMBER 'by' expression ['per' expression] ['where' expression] ['(' top_expression ')']
+    | top_expression_type' NUMBER 'by' expression ['per' expression] ['where' expression] ['from' '(' top_expression ')']
 
 top_expression_type:
     | 'top'

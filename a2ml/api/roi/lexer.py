@@ -68,11 +68,12 @@ class Token:
     BY = "by"
     PER = "per"
     WHERE = "where"
+    FROM = "from"
 
     EOF = "EOF"
 
     COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
-    KEYWORDS = set([AND, OR, NOT, IN, TOP, BOTTOM, BY, PER, WHERE])
+    KEYWORDS = set([AND, OR, NOT, IN, TOP, BOTTOM, BY, PER, WHERE, FROM])
 
     SYMBOLS = set(
         [SEMI, DOT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, COMMA, BIT_OR, BIT_AND, BIT_XOR, BIT_NOT, MODULO]

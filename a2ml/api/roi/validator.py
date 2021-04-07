@@ -72,3 +72,6 @@ class Validator(BaseInterpreter):
         else:
             raise ValidationError(f"unknown function '{node.func_name}' at position {node.position()}")
 
+    def evaluate_top_node(self, node):
+        return all(map(lambda n: self.evaluate(n), node.child_nodes()))
+
