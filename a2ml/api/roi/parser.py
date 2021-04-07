@@ -61,6 +61,42 @@ class FuncNode(BaseNode):
     def __str__(self):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
 
+class TopNode(BaseNode):
+    def __init__(self, token):
+        super().__init__(token)
+        self.top = token.value == Token.TOP
+        self.limit = None
+        self.order_expr = None
+        self.group_expr = None
+        self.where_expr = None
+        self.nested_expr = None
+
+    def __str__(self):
+        res = []
+
+        if self.top:
+            res.append(Token.TOP)
+        else:
+            res.append(Token.BOTTOM)
+
+        res.append(str(self.limit))
+        res.append(Token.BY)
+        res.append(str(self.order_expr))
+
+        if self.group_expr:
+            res.append(Token.PER)
+            res.append(str(self.group_expr))
+
+        if self.where_expr:
+            res.append(Token.WHERE)
+            res.append(str(self.where_expr))
+
+        if self.nested_expr:
+            res.append("(" + str(self.nested_expr) + ")")
+
+        return " ".join(res)
+
+
 class Parser:
     CONSTANTS = set([Token.CONST, Token.STR_CONST, Token.INT_CONST, Token.FLOAT_CONST])
 
@@ -274,6 +310,8 @@ class Parser:
             expr = self.expression()
             self.eat(Token.RPAREN)
             return expr
+        elif self.current_token.type in (Token.TOP, Token.BOTTOM):
+            return self.top_expression()
         else:
             return self.atom()
 
@@ -285,11 +323,14 @@ class Parser:
             else:
                 return VarNode(self.prev_token)
         elif self.current_token.type in Parser.CONSTANTS:
-            token = self.current_token
-            self.eat(self.current_token.type)
-            return ConstNode(token)
+            return self.const_node()
         else:
             self.error("unknown atom")
+
+    def const_node(self, token_type=None):
+        token = self.current_token
+        self.eat(token_type or self.current_token.type)
+        return ConstNode(token)
 
     def func_call_statement(self):
         name_token = self.prev_token
@@ -307,3 +348,31 @@ class Parser:
         self.eat(Token.RPAREN)
 
         return FuncNode(name_token, arg_nodes)
+
+    def top_expression(self):
+        node = TopNode(self.current_token)
+
+        if node.top:
+            self.eat(Token.TOP)
+        else:
+            self.eat(Token.BOTTOM)
+
+        node.limit = self.const_node(Token.INT_CONST)
+
+        self.eat(Token.BY)
+        node.order_expr = self.expression()
+
+        if self.current_token.type == Token.PER:
+            self.eat(Token.PER)
+            node.group_expr = self.expression()
+
+        if self.current_token.type == Token.WHERE:
+            self.eat(Token.WHERE)
+            node.where_expr = self.expression()
+
+        if self.current_token.type == Token.LPAREN:
+            self.eat(Token.LPAREN)
+            node.nested_expr = self.top_expression()
+            self.eat(Token.RPAREN)
+
+        return node
