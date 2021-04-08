@@ -146,6 +146,24 @@ class TestLexer():
                     ("$A", Token.ID),
                 ],
             ),
+            pytest.param(
+                "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
+                [
+                    ("top", Token.TOP),
+                    (5, Token.INT_CONST),
+                    ("by", Token.BY),
+                    ("P", Token.ID),
+                    ("from", Token.FROM),
+                    ("(", Token.LPAREN),
+                    ("bottom", Token.BOTTOM),
+                    (1, Token.INT_CONST),
+                    ("by", Token.BY),
+                    ("$spread_pct", Token.ID),
+                    ("per", Token.PER),
+                    ("$symbol", Token.ID),
+                    (")", Token.RPAREN),
+                ],
+            ),
         ]
     )
     def test_lexer_values(self, expression, expected_result):

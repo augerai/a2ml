@@ -6,6 +6,7 @@ class ParserError(AstError):
 class BaseNode:
     def __init__(self, token):
         self.token = token
+        self.require_aggregation = False
 
     def position(self):
         return self.token.position
@@ -60,6 +61,57 @@ class FuncNode(BaseNode):
 
     def __str__(self):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
+
+class TopNode(BaseNode):
+    def __init__(self, token):
+        super().__init__(token)
+        self.top = token.value == Token.TOP
+        self.limit_node = None
+        self.order_node = None
+        self.group_node = None
+        self.where_node = None
+        self.nested_node = None
+        self.require_aggregation = True
+
+    def child_nodes(self):
+        res = [self.limit_node, self.order_node]
+
+        if self.group_node:
+            res.append(self.group_node)
+
+        if self.where_node:
+            res.append(self.where_node)
+
+        if self.nested_node:
+            res.append(self.nested_node)
+
+        return res
+
+    def __str__(self):
+        res = []
+
+        if self.top:
+            res.append(Token.TOP)
+        else:
+            res.append(Token.BOTTOM)
+
+        res.append(str(self.limit_node))
+        res.append(Token.BY)
+        res.append(str(self.order_node))
+
+        if self.group_node:
+            res.append(Token.PER)
+            res.append(str(self.group_node))
+
+        if self.where_node:
+            res.append(Token.WHERE)
+            res.append(str(self.where_node))
+
+        if self.nested_node:
+            res.append("from (" + str(self.nested_node) + ")")
+
+        return " ".join(res)
+
 
 class Parser:
     CONSTANTS = set([Token.CONST, Token.STR_CONST, Token.INT_CONST, Token.FLOAT_CONST])
@@ -274,6 +326,8 @@ class Parser:
             expr = self.expression()
             self.eat(Token.RPAREN)
             return expr
+        elif self.current_token.type in (Token.TOP, Token.BOTTOM):
+            return self.top_expression()
         else:
             return self.atom()
 
@@ -285,11 +339,14 @@ class Parser:
             else:
                 return VarNode(self.prev_token)
         elif self.current_token.type in Parser.CONSTANTS:
-            token = self.current_token
-            self.eat(self.current_token.type)
-            return ConstNode(token)
+            return self.const_node()
         else:
             self.error("unknown atom")
+
+    def const_node(self, token_type=None):
+        token = self.current_token
+        self.eat(token_type or self.current_token.type)
+        return ConstNode(token)
 
     def func_call_statement(self):
         name_token = self.prev_token
@@ -307,3 +364,32 @@ class Parser:
         self.eat(Token.RPAREN)
 
         return FuncNode(name_token, arg_nodes)
+
+    def top_expression(self):
+        node = TopNode(self.current_token)
+
+        if node.top:
+            self.eat(Token.TOP)
+        else:
+            self.eat(Token.BOTTOM)
+
+        node.limit_node = self.const_node(Token.INT_CONST)
+
+        self.eat(Token.BY)
+        node.order_node = self.expression()
+
+        if self.current_token.type == Token.PER:
+            self.eat(Token.PER)
+            node.group_node = self.expression()
+
+        if self.current_token.type == Token.WHERE:
+            self.eat(Token.WHERE)
+            node.where_node = self.expression()
+
+        if self.current_token.type == Token.FROM:
+            self.eat(Token.FROM)
+            self.eat(Token.LPAREN)
+            node.nested_node = self.top_expression()
+            self.eat(Token.RPAREN)
+
+        return node

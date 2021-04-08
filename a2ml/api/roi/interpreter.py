@@ -1,9 +1,20 @@
+import numpy as np
+
+from operator import attrgetter
+from itertools import groupby
+
 from a2ml.api.roi.base_interpreter import BaseInterpreter
 from a2ml.api.roi.lexer import AstError, Token
 from a2ml.api.roi.validator import Validator
 
 class InterpreterError(AstError):
     pass
+
+class TopRecord:
+    def __init__(self, i, group_key, order_value):
+        self.i = i
+        self.group_key = group_key
+        self.order_value = order_value
 
 class Interpreter(BaseInterpreter):
     def __init__(self, expression, vars_mapping={}):
@@ -17,16 +28,23 @@ class Interpreter(BaseInterpreter):
         self.root = validation_result.tree
 
         if isinstance(variables, list):
-            res = []
-
-            for vars in variables:
-                self.variables = vars
-                res.append(self.evaluate(self.root))
-
-            return res
+            self.rows = variables
+            return self.evaluate_for_list(self.root)
         else:
             self.variables = variables
             return self.evaluate(self.root)
+
+    def evaluate_for_list(self, node):
+        if node.require_aggregation:
+            return self.evaluate(node)
+        else:
+            res = []
+
+            for vars in self.rows:
+                self.variables = vars
+                res.append(self.evaluate(node))
+
+            return res
 
     '''
     Extract names from variable list
@@ -123,7 +141,6 @@ class Interpreter(BaseInterpreter):
     def evaluate_func_node(self, node):
         func = self.func_values()[node.func_name]
 
-        # breakpoint()
         if Interpreter.is_static_func(func):
             func_args = [self]
         else:
@@ -135,6 +152,37 @@ class Interpreter(BaseInterpreter):
             func_args += list(map(lambda n: self.evaluate(n), node.arg_nodes))
 
         return func(*func_args)
+
+    def evaluate_top_node(self, node):
+        # True - means row matches top expression, False - row doesn't match
+        selected = np.array([True for _ in range(len(self.rows))])
+
+        if node.nested_node:
+            selected &= self.evaluate(node.nested_node)
+
+        if node.where_node:
+            selected &= self.evaluate_for_list(node.where_node)
+
+        if node.group_node:
+            group_keys = self.evaluate_for_list(node.group_node)
+        else:
+            group_keys = np.zeros(len(self.rows))
+
+        order_values = self.evaluate_for_list(node.order_node)
+
+        table = [TopRecord(i, group_keys[i], order_values[i]) for i, is_in in enumerate(selected) if is_in]
+        table.sort(key=attrgetter('group_key'))
+
+        limit = self.evaluate(node.limit_node)
+        result = np.array([False for _ in range(len(self.rows))])
+
+        for key, records in groupby(table, attrgetter('group_key')):
+            records = list(records)
+            records.sort(reverse=node.top, key=attrgetter('order_value'))
+            for ri in range(min(len(records), limit)):
+                result[records[ri].i] = True
+
+        return result
 
     def error(self, msg):
         raise InterpreterError(msg)

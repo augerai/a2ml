@@ -17,6 +17,8 @@ from a2ml.api.roi.validator import AstError, Validator, ValidationError
         pytest.param("$a + $b", True),
         pytest.param("$a + $b + $c", "unknown variable '\$c' at position 11"),
         pytest.param("10 20", "invalid token '20' at position 4"),
+        pytest.param("top 1 by from", "unknown atom 'from' at position 10"),
+        pytest.param("top 1 by $a from", "unexpected end of expression at position 13"),
     ]
 )
 def test_validate(expression, expected_result):

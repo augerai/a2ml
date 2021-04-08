@@ -74,6 +74,7 @@ def test_interpreter_random_func(expression, exected_result):
     "expression, exected_result",
     [
         pytest.param("$a + $b", [5, 10]),
+        pytest.param("$a + $b > 5", [False, True]),
     ]
 )
 def test_interpreter_with_list(expression, exected_result):
@@ -85,3 +86,36 @@ def test_interpreter_with_list(expression, exected_result):
     interpreter = Interpreter(expression)
 
     assert interpreter.run(variables) == exected_result
+
+@pytest.mark.parametrize(
+    "expression, exected_result",
+    [
+        pytest.param("top 1 by P per $symbol", [False, True, True, False, False]),
+        pytest.param("bottom 1 by P per $symbol", [True, False, False, True, False]),
+        pytest.param(
+            "top 2 by P from (bottom 1 by $spread per $symbol)",
+            [True, False, True, False, False]
+        ),
+        pytest.param(
+            "top 2 by P from (bottom 1 by $spread per $symbol where P > 0.7)",
+            [False, False, True, False, False],
+        ),
+        pytest.param(
+            "top 3 by P - $spread / 2 per $symbol < \"Z\" where P ** 2 > 0",
+            [True, False, True, False, True],
+        ),
+
+    ]
+)
+def test_interpreter_top_expressions(expression, exected_result):
+    variables = [
+        { "P": 0.6, "$symbol": "T", "$spread": 0.5 },
+        { "P": 0.7, "$symbol": "T", "$spread": 1 },
+        { "P": 0.9, "$symbol": "A", "$spread": 0.5 },
+        { "P": 0.5, "$symbol": "A", "$spread": 0.9 },
+        { "P": 0.7, "$symbol": "A", "$spread": 0.8 },
+    ]
+
+    interpreter = Interpreter(expression)
+
+    assert interpreter.run(variables).tolist() == exected_result

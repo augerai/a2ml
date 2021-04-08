@@ -81,6 +81,7 @@ expression:
 primary:
     | '(' expression ')'
     | atom
+    | top_expression
 
 atom:
     | NAME
@@ -93,3 +94,10 @@ atom:
 
 func_call_statement:
     | NAME '(' (expression (',' expression)*)? ')'
+
+top_expression:
+    | top_expression_type' NUMBER 'by' expression ['per' expression] ['where' expression] ['from' '(' top_expression ')']
+
+top_expression_type:
+    | 'top'
+    | 'bottom'

@@ -27,6 +27,14 @@ class TestParser:
             pytest.param("@if(2 > 3, 9 / 2, 7 / 2)", "@if((2 > 3), (9 / 2), (7 / 2))"),
             pytest.param('@if("s1" = "s2", $5, $10)', '@if(("s1" == "s2"), 5, 10)'),
             pytest.param("sum(min(1, P), rand())", "sum(min(1, P), rand())"),
+            pytest.param(
+                "top 5 by P where P > 0.4 from (bottom 1 by $spread_pct per $symbol)",
+                "top 5 by P where (P > 0.4) from (bottom 1 by $spread_pct per $symbol)",
+            ),
+            pytest.param(
+                "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
+                "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
+            ),
         ]
     )
     def test_parser_with_arithmetic(self, expression, exected_parsed_expression):
