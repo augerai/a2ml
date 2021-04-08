@@ -123,7 +123,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ROI formulas language</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#syntax">Syntax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#if-expression">If expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#top-expression">Top expression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#numbers">Numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#string-literals">String literals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#variables">Variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#builtin-operators">Builtin operators</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#math-operators">Math operators:</a></li>
@@ -260,6 +262,21 @@
 <p><code class="docutils literal notranslate"><span class="pre">if(P</span> <span class="pre">&gt;</span> <span class="pre">0.2,</span> <span class="pre">$1050,</span> <span class="pre">$0)</span></code></p>
 <p>in this case if prediction value is greater than 0.2 if expression returns 1050, else 0</p>
 </div>
+<div class="section" id="top-expression">
+<h2>Top expression<a class="headerlink" href="#top-expression" title="Permalink to this headline">¶</a></h2>
+<p>This expression allows to filter rows by some aggregates</p>
+<p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">2</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">per</span> <span class="pre">$symbol</span></code> - group all rows by <code class="docutils literal notranslate"><span class="pre">$symbol</span></code> and return top 2 by <code class="docutils literal notranslate"><span class="pre">P</span></code> rows per each group.</p>
+<p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">10</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">from</span> <span class="pre">(bottom</span> <span class="pre">5</span> <span class="pre">by</span> <span class="pre">$spread</span> <span class="pre">per</span> <span class="pre">$symbol)</span></code> - first it finds 5 records with lowest <code class="docutils literal notranslate"><span class="pre">$spread</span></code> per each <code class="docutils literal notranslate"><span class="pre">$symbol</span></code>, then it returns top 10 by <code class="docutils literal notranslate"><span class="pre">P</span></code> from these records</p>
+<p>Full syntax:</p>
+<p>(top | bottom) NUMBER by expression [per expression] [where expression] [from (top_expression)]</p>
+<p><code class="docutils literal notranslate"><span class="pre">top</span></code> - sort in descending order
+<code class="docutils literal notranslate"><span class="pre">bottom</span></code> - sort in ascending order
+<code class="docutils literal notranslate"><span class="pre">NUMBER</span></code> - number of values to select
+<code class="docutils literal notranslate"><span class="pre">by</span> <span class="pre">expression</span></code> - define a value for sorting
+<code class="docutils literal notranslate"><span class="pre">per</span> <span class="pre">expression</span></code> (optional) - define a grouping
+<code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">expression</span></code> (optional) - define addition filter
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">(top_expression)</span></code> (optional) - define nested top expression</p>
+</div>
 <div class="section" id="numbers">
 <h2>Numbers<a class="headerlink" href="#numbers" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -267,6 +284,12 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">123.456</span></code> float numbers</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-123.456</span></code> numbers can be negative</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$50.99</span></code> numbers can start with dollar sign to express money</p></li>
+</ul>
+</div>
+<div class="section" id="string-literals">
+<h2>String literals<a class="headerlink" href="#string-literals" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;some</span> <span class="pre">value&quot;</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="variables">
