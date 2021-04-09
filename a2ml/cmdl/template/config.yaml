@@ -15,7 +15,7 @@ exclude:
 target:
 # Model type: classification|regression
 model_type: classification
-# Is this binary classification? Used for self-hosted model. For all other models determine automatically based on dataset provided
+# Is this binary classification? Used for Monitored model. For all other models determine automatically based on dataset provided
 #binary_classification: True
 # Experiment settings
 experiment:

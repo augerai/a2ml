@@ -14,9 +14,9 @@ from a2ml.api.utils.context import pass_context
 @click.option('--name', '-n', required=False, type=click.STRING, 
     help='Model friendly name.Used as name for Review Endpoint')
 @click.option('--algorithm', '-a', required=False, type=click.STRING, 
-    help='Self-hosted model(external provider) algorithm name.')
+    help='Monitored model(external provider) algorithm name.')
 @click.option('--score', '-s', required=False, type=float, 
-    help='Self-hosted model(external provider) score.')
+    help='Monitored model(external provider) score.')
 @click.option('--data-path', '-d', type=click.STRING, required=False,
     help='Data path to fit model when deploy. Return new deployed model-id')
 @pass_context

@@ -85,6 +85,16 @@ class AugerExperimentApi(AugerBaseApi):
             options['score_top_count'] = config.get('experiment/score_top_count')
         if config.get('experiment/build_metrics_in_trial', None) is not None:
             options['build_metrics_in_trial'] = config.get('experiment/build_metrics_in_trial')
+        if config.get('experiment/optimizer_batch_size', None) is not None:
+            options['optimizer_batch_size'] = config.get('experiment/optimizer_batch_size')
+        if config.get('experiment/cpu_per_mt_algorithm', None) is not None:
+            options['cpu_per_mt_algorithm'] = config.get('experiment/cpu_per_mt_algorithm')
+        if config.get('experiment/optimizers_names', None) is not None:
+            options['optimizers_names'] = config.get('experiment/optimizers_names')
+        if config.get('experiment/optimizers', None) is not None:
+            options['optimizers'] = config.get('experiment/optimizers')
+        if config.get('experiment/search_space', None) is not None:
+            options['search_space'] = config.get('experiment/search_space')
 
         if config.get('review/metric'):
             options['review_metric'] = config.get('review/metric')            
