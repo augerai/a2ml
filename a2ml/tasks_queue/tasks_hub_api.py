@@ -614,7 +614,7 @@ def build_review_data_task(params):
         date_col = ctx.config.get_list('experiment/date_time')[0]
 
     retrain_policy = None
-    if ctx.config.get('experiment/retrain_policy_type'):    
+    if ctx.config.get('experiment/retrain_policy_type'):
         retrain_policy = {'type': ctx.config.get('experiment/retrain_policy_type'), 'value':ctx.config.get('experiment/retrain_policy_value')}
 
     return ModelReview(params).build_review_data(
@@ -694,4 +694,5 @@ def presign_s3_url_task(params):
 def validate_roi_syntax_task(params):
     return ModelReview(params).validate_roi_syntax(
         expressions=params["expressions"],
+        features=params.get("features", []),
     )
