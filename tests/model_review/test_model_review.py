@@ -863,13 +863,13 @@ def test_validate_roi_syntax():
     expressions = [
         "(1 + A) * $100",
         "somefunc(1)",
-        "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P",
+        "$sepal_length + $sepal_width + $petal_length + $petal_width + $species + A + P + $spread",
         "$some_feature + actual",
         "",
     ]
 
     model_path = 'tests/fixtures/test_validate_roi_syntax'
-    res = ModelReview({'model_path': model_path}).validate_roi_syntax(expressions)
+    res = ModelReview({'model_path': model_path}).validate_roi_syntax(expressions, ["spread"])
 
     assert len(res) == 5
 

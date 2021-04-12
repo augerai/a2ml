@@ -77,9 +77,11 @@ class ModelReview(object):
 
         return res
 
-    def validate_roi_syntax(self, expressions):
+    def validate_roi_syntax(self, expressions, features=[]):
         res = []
-        known_vars = ["A", "P", "$" + self.target_feature] + list(map(lambda name: "$" + name, self.original_features))
+        known_vars = ["A", "P", "$" + self.target_feature] + list(
+            map(lambda name: "$" + name, set(self.original_features + features))
+        )
 
         for expression in expressions:
             if len(expression) > 0:
@@ -258,7 +260,7 @@ class ModelReview(object):
             start = data_path.index('_review_date_')+len('_review_date_')
             end = data_path.index('_', start)
             start_date = convert_to_date(data_path[start:end])
-                
+
         if not start_date and date_col and date_col in train_features:
             try:
                 start_date = convert_to_date(ds_train.df[date_col].max())
@@ -267,7 +269,7 @@ class ModelReview(object):
                 logging.error("Getting latest date from data path %s failed: %s"%(data_path,e))
 
         if start_date:
-            new_files = []            
+            new_files = []
             for idx, file in enumerate(all_files):
                 file_date = os.path.basename(file['path']).split("_")[0]
                 if convert_to_date(file_date) <= start_date:
