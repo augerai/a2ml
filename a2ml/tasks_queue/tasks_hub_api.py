@@ -576,6 +576,7 @@ def score_model_performance_daily_task(params):
     return ModelReview(params).score_model_performance_daily(
         date_from=params.get('date_from'),
         date_to=params.get('date_to'),
+        extra_features=params.get("features", []),
     )
 
 @celeryApp.task(ignore_result=True)

@@ -53,7 +53,7 @@ class ModelReview(object):
         self.original_features = self.options.get("originalFeatureColumns", [])
 
 
-    def _do_score_actual(self, df_data, predicted_feature=None):
+    def _do_score_actual(self, df_data, predicted_feature=None, extra_features=[]):
         ds_true = DataFrame({})
 
         ds_predict = DataFrame({})
@@ -71,7 +71,7 @@ class ModelReview(object):
 
         res = ModelHelper.calculate_scores(self.options, y_test=y_true, y_pred=y_pred, raise_main_score=False)
 
-        roi = self._calculate_roi(df_data, predicted_feature)
+        roi = self._calculate_roi(df_data, predicted_feature, extra_features)
         if roi != None:
             res['roi'] = roi
 
@@ -100,12 +100,12 @@ class ModelReview(object):
 
         return res
 
-    def _calculate_roi(self, df_data, predicted_feature=None):
+    def _calculate_roi(self, df_data, predicted_feature=None, extra_features=[]):
         if not self.params.get('roi'):
             return None
 
         predicted_feature = predicted_feature or self.target_feature
-        known_vars = [predicted_feature] + self.original_features
+        known_vars = list(set([predicted_feature] + self.original_features + extra_features))
 
         vars_mapping = {
             "A": "a2ml_actual",
@@ -143,7 +143,7 @@ class ModelReview(object):
 
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
-        actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger'
+        actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger',
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
@@ -306,7 +306,7 @@ class ModelReview(object):
         return output
 
     # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to):
+    def score_model_performance_daily(self, date_from, date_to, extra_features=[]):
         #To support baseline_target
         features = None #[self.target_feature, 'a2ml_predicted']
         res = {}
@@ -322,11 +322,11 @@ class ModelReview(object):
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
-                scores = self._do_score_actual(df_actuals.df)
+                scores = self._do_score_actual(df_actuals.df, extra_features=extra_features)
 
                 baseline_score = {}
                 if "baseline_target" in df_actuals.columns:
-                    baseline_score = self._do_score_actual(df_actuals.df, "baseline_target")
+                    baseline_score = self._do_score_actual(df_actuals.df, "baseline_target", extra_features)
 
                 res[str(curr_date)] = {
                     'scores': scores,
