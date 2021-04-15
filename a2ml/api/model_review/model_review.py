@@ -95,6 +95,7 @@ class ModelReview(object):
                     "expression": expression,
                     "is_valid": validation_result.is_valid,
                     "error": validation_result.error,
+                    "warning": validation_result.warning,
                 }
             )
 
