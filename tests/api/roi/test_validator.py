@@ -6,22 +6,22 @@ from a2ml.api.roi.parser import Parser
 from a2ml.api.roi.validator import AstError, Validator, ValidationError
 
 @pytest.mark.parametrize(
-    "expression, expected_result",
+    "expression, expected_result, message",
     [
-        pytest.param("min(1, 2, 3)", True),
-        pytest.param("min(1)", "invalid arguments count on 'min' function, expected from 2 to 255 got 1 at position 1"),
-        pytest.param("somefunc(1)", "unknown function 'somefunc' at position 1"),
-        pytest.param("1 + somefunc(1)", "unknown function 'somefunc' at position 5"),
-        pytest.param("max()", "invalid arguments count on 'max' function, expected from 2 to 255 got 0 at position 1"),
-        pytest.param("round(1.75)", True),
-        pytest.param("$a + $b", True),
-        pytest.param("$a + $b + $c", "unknown variable '\$c' at position 11"),
-        pytest.param("10 20", "invalid token '20' at position 4"),
-        pytest.param("top 1 by from", "unknown atom 'from' at position 10"),
-        pytest.param("top 1 by $a from", "unexpected end of expression at position 13"),
+        pytest.param("min(1, 2, 3)", True, None),
+        pytest.param("min(1)", "error", "invalid arguments count on 'min' function, expected from 2 to 255 got 1 at position 1"),
+        pytest.param("somefunc(1)", "error", "unknown function 'somefunc' at position 1"),
+        pytest.param("1 + somefunc(1)", "error", "unknown function 'somefunc' at position 5"),
+        pytest.param("max()", "error", "invalid arguments count on 'max' function, expected from 2 to 255 got 0 at position 1"),
+        pytest.param("round(1.75)", True, None),
+        pytest.param("$a + $b", True, None),
+        pytest.param("$a + $b + $c", "warning", "unknown variable '\$c' at position 11"),
+        pytest.param("10 20", "error", "invalid token '20' at position 4"),
+        pytest.param("top 1 by from", "error", "unknown atom 'from' at position 10"),
+        pytest.param("top 1 by $a from", "error", "unexpected end of expression at position 13"),
     ]
 )
-def test_validate(expression, expected_result):
+def test_validate(expression, expected_result, message):
     validator = Validator(
         expression,
         known_vars=["$a", "$b"],
@@ -32,14 +32,25 @@ def test_validate(expression, expected_result):
     if expected_result == True:
         assert res.is_valid == True
         assert res.error is None
-    else:
+        assert res.warning is None
+    elif expected_result == "warning":
+        assert res.is_valid == True
+        assert re.match(message, res.warning)
+    elif expected_result == "error":
         assert res.is_valid == False
-        assert re.match(expected_result, res.error)
+        assert re.match(message, res.error)
+    else:
+        raise ValueError(expected_result)
 
     # Validate with force_raise = True
     if expected_result == True:
         res = validator.validate()
+    elif expected_result == "warning":
         assert res.is_valid == True
-    else:
-        with pytest.raises(AstError, match=expected_result):
+        res = validator.validate()
+        assert re.match(message, res.warning)
+    elif expected_result == "error":
+        with pytest.raises(AstError, match=message):
             result = validator.validate()
+    else:
+        raise ValueError(expected_result)

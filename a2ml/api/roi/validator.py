@@ -5,10 +5,14 @@ from a2ml.api.roi.parser import Parser
 class ValidationError(AstError):
     pass
 
+class ValidationWarning(AstError):
+    pass
+
 class ValidationResult:
-    def __init__(self, is_valid=True, error=None, tree=None):
+    def __init__(self, is_valid=True, error=None, warning=None, tree=None):
         self.is_valid = is_valid
         self.error = error
+        self.warning = warning
         self.tree = tree
 
 class Validator(BaseInterpreter):
@@ -24,6 +28,8 @@ class Validator(BaseInterpreter):
             self.root = parser.parse()
             self.evaluate(self.root)
             return ValidationResult(is_valid=True, tree=self.root)
+        except ValidationWarning as e:
+            return ValidationResult(is_valid=True, warning=str(e), tree=self.root)
         except AstError as e:
             if force_raise:
                 raise e
@@ -40,7 +46,12 @@ class Validator(BaseInterpreter):
         if node.name in self.known_vars:
             return True
         else:
-            raise ValidationError(f"unknown variable '{node.name}' at position {node.position()}")
+            msg = f"unknown variable '{node.name}' at position {node.position()}"
+
+            if node.name.startswith('$'):
+                raise ValidationWarning(msg)
+            else:
+                raise ValidationError(msg)
 
     def evaluate_binary_op_node(self, node):
         return self.evaluate(node.left) and self.evaluate(node.right)

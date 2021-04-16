@@ -1,3 +1,4 @@
+import json
 import numpy as np
 
 from operator import attrgetter
@@ -8,6 +9,9 @@ from a2ml.api.roi.lexer import AstError, Token
 from a2ml.api.roi.validator import Validator
 
 class InterpreterError(AstError):
+    pass
+
+class MissedVariable(InterpreterError):
     pass
 
 class TopRecord:
@@ -73,7 +77,11 @@ class Interpreter(BaseInterpreter):
 
     def evaluate_var_node(self, node):
         var_name = self.vars_mapping.get(node.name, node.name)
-        return self.variables[var_name]
+        if var_name in self.variables:
+            return self.variables[var_name]
+        else:
+            raise MissedVariable(f"missed var `{var_name}` in row `{json.dumps(self.variables)}`")
+
 
     def evaluate_binary_op_node(self, node):
         left = self.evaluate(node.left)
