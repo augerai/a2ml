@@ -1,6 +1,8 @@
 import pandas as pd
+import pytest
 
 from a2ml.api.roi.calculator import Calculator
+from a2ml.api.roi.interpreter import MissedVariable
 
 class TestCalculator:
     def test_options_app(self):
@@ -56,6 +58,24 @@ class TestCalculator:
         assert (0.1 + 0.3 + 2) * 100 == res["revenue"]
         assert 200 == res["investment"]
         assert 0.2 == res["roi"]
+
+    def test_options_app_with_missing_values(self):
+        calc = Calculator(
+            filter="top 2 by P where P >= 0.1 from (bottom 1 by $spread per $symbol)",
+            revenue="(1 + A) * $100",
+            investment="$100",
+            known_vars=["A", "P", "spread", "symbol"],
+        )
+
+        with pytest.raises(MissedVariable, match='missed var `\$symbol` in row `{"A": 0.3, "P": 0.3, "\$spread": 0.3}'):
+            calc.calculate(
+                [
+                    {"A": 0.1, "P": 0.10, "$symbol": "A"},
+                    {"A": 0.1, "P": 0.15, "$spread": 0.4, "$symbol": "A"},
+                    {"A": 0.5, "P": 0.20, "$spread": 0.5, "$symbol": "T"},
+                    {"A": 0.3, "P": 0.30, "$spread": 0.3},
+                ]
+            )
 
     def test_bike_rental(self):
         calc = Calculator(
