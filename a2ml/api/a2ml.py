@@ -175,7 +175,7 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None, 
+    def deploy(self, model_id, locally=False, review=True, provider=None,
             name=None, algorithm=None, score=None, data_path=None):
         """Deploy a model locally or to specified provider(s).
 
@@ -216,11 +216,11 @@ class A2ML(BaseA2ML):
                 model_id = result['model_id']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy', 
+        return self.get_runner(locally, model_id, provider).execute_one_provider('deploy',
             model_id, locally, review, name, algorithm, score, data_path)
 
     @show_result
-    def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None, 
+    def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None,
             threshold=None, output=None, locally=False, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
@@ -230,7 +230,7 @@ class A2ML(BaseA2ML):
 
         Args:
             model_id(str): The deployed model id you want to use.
-            filename(str): The file with data to request predictions for.            
+            filename(str): The file with data to request predictions for.
             data: array of records [[target, actual]] or Pandas DataFrame (target, actual) or dict created with Pandas DataFrame to_dict('list') method
             columns(list): list of column names if data is array of records
             predicted_at: Predict data date. Use for review of historical data.
@@ -297,7 +297,7 @@ class A2ML(BaseA2ML):
             It is assumed you have predictions against this model first.
 
             .. list-table:: actuals.csv
-                :widths: 50 50
+                :widths: 50 50 50
                 :header-rows: 1
 
                 * - target: predicted value
@@ -305,9 +305,12 @@ class A2ML(BaseA2ML):
                   - baseline_target: predicted value for baseline model (OPTIONAL)
                 * - Iris-setosa
                   - Iris-setosa
+                  - Iris-setosa
                 * - Iris-virginica
                   - Iris-virginica
-                * It may also contain train features to retrain while Review(if target missed) and for distribution chart
+                  - Iris-virginica
+
+            It may also contain train features to retrain while Review(if target missed) and for distribution chart
 
             This method support only one provider
 
@@ -403,7 +406,7 @@ class A2ML(BaseA2ML):
             status(str): May be : started, error, completed, retrain
             error(str): Description of error if status='error'
             accuracy(float): Average accuracy of model(based on used metric) for review sensitivity period(see config.yml)
-            
+
             ::
 
                 {
