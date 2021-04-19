@@ -183,3 +183,28 @@ class TestCalculator:
         assert 1050 == res["revenue"]
         assert 2000 == res["investment"]
         assert -0.475 == res["roi"]
+
+    def test_with_non_known_var(self):
+        calc = Calculator(
+            filter="",
+            revenue="$revenue",
+            investment="$cost",
+            known_vars=["revenue"], # cost is non known (not in features but in dataset)
+        )
+
+        res = calc.calculate(
+            [
+                {"revenue": 5, "cost": 1},
+                {"revenue": 10, "cost": 2},
+            ]
+        )
+
+        assert 2 == res["count"]
+        assert res["filtered_rows"] == [
+            {"revenue": 5, "cost": 1},
+                {"revenue": 10, "cost": 2},
+        ]
+
+        assert 15 == res["revenue"]
+        assert 3 == res["investment"]
+        assert 4 == res["roi"]
