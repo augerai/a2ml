@@ -78,6 +78,8 @@ class ModelDeploy(object):
 
         alert_items = sorted(alert_items, key=lambda k: k['id'], reverse=True)
         alert_item = alert_items[0]
+        action_results = alert_item.get('action_results')
+
         error_states = ['review_data_build_failed', 'project_file_processing_failed', 'experiment_session_failed', 'pipeline_creating_failed']
 
         alert = AugerReviewAlertApi(self.ctx, None, alert_item['review_alert_id']).properties()
@@ -85,29 +87,31 @@ class ModelDeploy(object):
         error = ""
 
         if alert.get('actions') == 'retrain_deploy':
-            retrain_status = alert_item.get('action_results', {}).get('retrain')
-            if retrain_status in error_states:
-                status = 'error'
-                error = retrain_status
-            else:
-                if retrain_status == 'external_pipeline_should_be_rebuilt':
-                    status = 'retrain'
-                else:    
-                    redeploy_status = alert_item.get('action_results', {}).get('redeploy')
-                    if redeploy_status in error_states:
-                        status = 'error'
-                        error = redeploy_status
-                    elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
-                        status = 'completed'
+            if action_results:
+                retrain_status = action_results.get('retrain')
+                if retrain_status in error_states:
+                    status = 'error'
+                    error = retrain_status
+                else:
+                    if retrain_status == 'external_pipeline_should_be_rebuilt':
+                        status = 'retrain'
+                    else:    
+                        redeploy_status = action_results.get('redeploy')
+                        if redeploy_status in error_states:
+                            status = 'error'
+                            error = redeploy_status
+                        elif redeploy_status == 'endpoint_updated' or redeploy_status == 'endpoint_has_better_pipeline':
+                            status = 'completed'
         elif alert.get('actions') == 'retrain':
-            retrain_status = alert_item.get('action_results', {}).get('retrain')
-            if retrain_status in error_states:
-                status = 'error'
-                error = retrain_status
-            elif retrain_status == 'experiment_session_done':
-                status = 'completed'
-            elif retrain_status == 'external_pipeline_should_be_rebuilt':
-                status = 'retrain'
+            if action_results:
+                retrain_status = action_results.get('retrain')
+                if retrain_status in error_states:
+                    status = 'error'
+                    error = retrain_status
+                elif retrain_status == 'experiment_session_done':
+                    status = 'completed'
+                elif retrain_status == 'external_pipeline_should_be_rebuilt':
+                    status = 'retrain'
         else:
             status = 'completed'
 

@@ -2,14 +2,14 @@
 MLRAM
 ************
 
-Auger-hosted model
+Auger model
 ===================
 1. Import dataset and Train to get model
 2. Make sure review section is correct in config.yml
 3. Deploy model. It will add model to review section in Auger.ai
 4. Predict and send actuals. See actuals API
 
-Self-hosted model
+Monitored model
 ===================
 1. Create A2ML application with external provider:
 
@@ -39,7 +39,7 @@ Self-hosted model
 
 	    ctx = Context()
 	    a2ml = A2ML(ctx)
-	    result = a2ml.deploy(model_id=None, name="My self-hosted model.", algorithm="RandomForest", score=0.76)
+	    result = a2ml.deploy(model_id=None, name="My Monitored model.", algorithm="RandomForest", score=0.76)
 	    model_id = result['data']['model_id']
     
 4. Send actuals:
@@ -70,5 +70,5 @@ To review distribution chart , send training features with target and actuals:
         result = A2ML(ctx).review(model_id='external_model_id')
         if result['data']['status'] == 'retrain':
         	#Train new model using updated data
-        	a2ml.deploy(model_id=None, name="My self-hosted model.", algorithm="RandomForest", score=0.77)
+        	a2ml.deploy(model_id=None, name="My Monitored model.", algorithm="RandomForest", score=0.77)
 

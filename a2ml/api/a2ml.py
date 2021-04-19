@@ -189,8 +189,8 @@ class A2ML(BaseA2ML):
             review(bool): Should model support review based on actual data. The default is True.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
             name (str): Friendly name for the model. Used as name for Review Endpoint
-            algorithm (str): Self-hosted model(external provider) algorithm name.
-            score (float): Self-hosted model(external provider) score.
+            algorithm (str): Monitored model(external provider) algorithm name.
+            score (float): Monitored model(external provider) score.
             data_path (str): Data path to fit model when deploy. Return new deployed model-id
 
         Returns:

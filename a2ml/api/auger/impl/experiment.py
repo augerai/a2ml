@@ -35,8 +35,8 @@ class Experiment(AugerExperimentApi):
                 self.object_id = None
                 self.object_name = None
                 self.ctx.log('Current experiment setup with different DataSet. '
-                    'Will create new Experimet...')
-
+                    'Will create new Experiment. data_set_id: %s, experiment_data_set: %s'%(data_set_id,experiment_data_set))
+                
         self.dataset.project.start()
 
         if (self.object_name is None) or (not self.is_exists):
