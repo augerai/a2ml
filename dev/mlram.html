@@ -118,8 +118,8 @@
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MLRAM</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#auger-hosted-model">Auger-hosted model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#self-hosted-model">Self-hosted model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auger-model">Auger model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitored-model">Monitored model</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">A2ML API</a></li>
@@ -199,8 +199,8 @@
             
   <div class="section" id="mlram">
 <h1>MLRAM<a class="headerlink" href="#mlram" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="auger-hosted-model">
-<h2>Auger-hosted model<a class="headerlink" href="#auger-hosted-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="auger-model">
+<h2>Auger model<a class="headerlink" href="#auger-model" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Import dataset and Train to get model</p></li>
 <li><p>Make sure review section is correct in config.yml</p></li>
@@ -208,8 +208,8 @@
 <li><p>Predict and send actuals. See actuals API</p></li>
 </ol>
 </div>
-<div class="section" id="self-hosted-model">
-<h2>Self-hosted model<a class="headerlink" href="#self-hosted-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="monitored-model">
+<h2>Monitored model<a class="headerlink" href="#monitored-model" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Create A2ML application with external provider:</p></li>
 </ol>
@@ -239,7 +239,7 @@
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">a2ml</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My self-hosted model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.76</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Monitored model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.76</span><span class="p">)</span>
 <span class="n">model_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;model_id&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -274,7 +274,7 @@
 <span class="n">result</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;retrain&#39;</span><span class="p">:</span>
         <span class="c1">#Train new model using updated data</span>
-        <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My self-hosted model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.77</span><span class="p">)</span>
+        <span class="n">a2ml</span><span class="o">.</span><span class="n">deploy</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Monitored model.&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RandomForest&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.77</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
