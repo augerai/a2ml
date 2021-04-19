@@ -79,6 +79,9 @@ class Interpreter(BaseInterpreter):
         var_name = self.vars_mapping.get(node.name, node.name)
         if var_name in self.variables:
             return self.variables[var_name]
+        elif var_name.startswith("$") and var_name[1:] in self.variables:
+            # for non-known vars try to just look up in row
+            return self.variables[var_name[1:]]
         else:
             raise MissedVariable(f"missed var `{var_name}` in row `{json.dumps(self.variables)}`")
 
