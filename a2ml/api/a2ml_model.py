@@ -145,7 +145,7 @@ class A2MLModel(BaseA2ML):
                 :widths: 50 50 50
                 :header-rows: 1
 
-                * - target: predicted value
+                * - target: predicted value. If missed - predict called automatically
                   - actual
                   - baseline_target: predicted value for baseline model (OPTIONAL)
                 * - Iris-setosa
@@ -155,7 +155,7 @@ class A2MLModel(BaseA2ML):
                   - Iris-virginica
                   - Iris-virginica
 
-            It may also contain train features to retrain while Review(if target missed) and for distribution chart
+            It may also contain train features to predict(if target missed), retrain model while Review and for distribution chart
 
             This method support only one provider
 
