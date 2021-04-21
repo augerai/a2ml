@@ -332,7 +332,6 @@ class ModelReview(object):
                 res[str(curr_date)] = {
                     'scores': scores,
                     'score_name': self.options.get('score_name'),
-                    'review_metric': self.options.get('review_metric'),
                     'baseline_scores': baseline_score
                 }
 
