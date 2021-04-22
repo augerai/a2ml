@@ -50,8 +50,12 @@ class ModelDeploy(object):
                 endpoint_api = AugerEndpointApi(self.ctx, None, 
                     pipeline_properties['endpoint_pipelines'][0].get('endpoint_id'))
 
+            params = {'review_metric': self.ctx.config.get('review/metric')}    
             if name and update_name:
-                endpoint_api.update(name)
+                params['name'] = name
+
+            if params:    
+                endpoint_api.update(params)
 
             session_id = endpoint_api.properties().get('primary_experiment_session_id')
             if session_id:

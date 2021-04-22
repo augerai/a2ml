@@ -25,8 +25,7 @@ class AugerReviewAlertApi(AugerBaseApi):
             'threshold': float(parameters.get('threshold', config.get('review/alert/threshold'))),
             'sensitivity': int(parameters.get('sensitivity', config.get('review/alert/sensitivity'))),
             'actions': parameters.get('action', config.get('review/alert/action')),
-            'notifications': parameters.get('notification', config.get('review/alert/notification')),
-            'review_metric': parameters.get('review_metric', config.get('review/metric'))
+            'notifications': parameters.get('notification', config.get('review/alert/notification'))
         }
 
         if params['actions'] == 'no':
