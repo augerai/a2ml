@@ -256,6 +256,7 @@
     <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">model_accuracy</span>
     <span class="nt">threshold</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.7</span>
     <span class="nt">sensitivity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">72</span>
+    <span class="nt">threshold_policy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">all_values</span>
     <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">retrain_deploy</span>
     <span class="nt">notification</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">user</span>
 </pre></div>
@@ -306,6 +307,14 @@
 </li>
 <li><p><strong>review.alert.threshold</strong> Float</p></li>
 <li><p><strong>review.alert.sensitivity</strong> The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.</p></li>
+<li><p><strong>review.alert.threshold_policy</strong></p>
+<ul>
+<li><p><strong>Supported Review Alert threshold policies</strong></p></li>
+<li><p><strong>all_values</strong> Trigger an alert when all values in sensitivity below threshold.</p></li>
+<li><p><strong>average_value</strong> Trigger an alert when average of values in sensitivity below threshold.</p></li>
+<li><p><strong>any_value</strong> Trigger an alert when any value in sensitivity below threshold.</p></li>
+</ul>
+</li>
 <li><p><strong>review.alert.action</strong></p>
 <ul>
 <li><p><strong>Supported Review Alert actions</strong></p></li>

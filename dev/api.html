@@ -526,7 +526,7 @@
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>target: predicted value</p></th>
+<tr class="row-odd"><th class="head"><p>target: predicted value. If missed - predict called automatically</p></th>
 <th class="head"><p>actual</p></th>
 <th class="head"><p>baseline_target: predicted value for baseline model (OPTIONAL)</p></th>
 </tr>
@@ -542,7 +542,7 @@
 </tr>
 </tbody>
 </table>
-<p>It may also contain train features to retrain while Review(if target missed) and for distribution chart</p>
+<p>It may also contain train features to predict(if target missed), retrain model while Review and for distribution chart</p>
 <p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
@@ -1211,7 +1211,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>target: predicted value</p></th>
+<tr class="row-odd"><th class="head"><p>target: predicted value. If missed - predict called automatically</p></th>
 <th class="head"><p>actual</p></th>
 <th class="head"><p>baseline_target: predicted value for baseline model (OPTIONAL)</p></th>
 </tr>
@@ -1227,7 +1227,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </tr>
 </tbody>
 </table>
-<p>It may also contain train features to retrain while Review(if target missed) and for distribution chart</p>
+<p>It may also contain train features to predict(if target missed), retrain model while Review and for distribution chart</p>
 <p>This method support only one provider</p>
 </div>
 <dl class="field-list simple">
@@ -1303,6 +1303,15 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </li>
 <li><p>threshold (float)</p></li>
 <li><p>sensitivity (int): The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.</p></li>
+<li><p>threshold_policy (all_values/average_value/any_value)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>all_values: Default value. Trigger an alert when all values in sensitivity below threshold</p></li>
+<li><p>average_value: Trigger an alert when average of values in sensitivity below threshold</p></li>
+<li><p>any_value: Trigger an alert when any value in sensitivity below threshold</p></li>
+</ul>
+</div></blockquote>
+</li>
 <li><p>action (no/retrain/retrain_deploy)</p>
 <blockquote>
 <div><ul class="simple">

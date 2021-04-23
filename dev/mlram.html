@@ -210,6 +210,7 @@
 </div>
 <div class="section" id="monitored-model">
 <h2>Monitored model<a class="headerlink" href="#monitored-model" title="Permalink to this headline">¶</a></h2>
+<p>See application example: <a class="reference external" href="https://github.com/augerai/mlram_apps">https://github.com/augerai/mlram_apps</a></p>
 <ol class="arabic simple">
 <li><p>Create A2ML application with external provider:</p></li>
 </ol>
@@ -270,7 +271,10 @@
 <ol class="arabic" start="5">
 <li><p>Call review to check if model retrain is required:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># If call just after actuals, wait some time till server process the data</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">review</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s1">&#39;external_model_id&#39;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;retrain&#39;</span><span class="p">:</span>
         <span class="c1">#Train new model using updated data</span>
