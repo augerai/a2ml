@@ -1,0 +1,1837 @@
+{
+  "top_n": 20,
+  "date_to": "2021-03-01",
+  "hub_info": {
+    "pipeline_id": "DE8F8E8F4FE74D2",
+    "project_file": {
+      "id": 3314,
+      "url": "s3://auger-mt-org-cinpns/workspace/projects/alex-mt-test-experimantal/files/cross_sell_sorted_50k-362df5.csv_review_date_2021-01-05_709A76C69D0B431.parquet",
+      "name": "cross_sell_sorted_50k-r18",
+      "object": "project_file",
+      "status": "processed",
+      "deleted": false,
+      "industry": null,
+      "image_url": null,
+      "providers": [
+        "auger",
+        "azure"
+      ],
+      "created_at": "2021-03-01T15:17:20.510Z",
+      "project_id": 732,
+      "updated_at": "2021-03-01T15:17:41.881Z",
+      "description": null,
+      "content_type": null,
+      "error_message": null,
+      "providers_data": {
+        "auger": null,
+        "azure": {
+          "url": "cross_sell_sorted_50k-362df5.csv_review_date_2021-01-05_709A76C69D0B431.parquet"
+        }
+      }
+    },
+    "project_name": "alex-mt-test-experimantal",
+    "project_path": "s3://auger-mt-org-cinpns/workspace/projects/alex-mt-test-experimantal",
+    "experiment_id": "b1044cf807df7593",
+    "prediction_id": null,
+    "cluster_task_id": 162276,
+    "experiment_name": "cross_sell_sorted_50k-r18",
+    "project_file_id": 3314,
+    "experiment_session": {
+      "id": "8b17254b8c6fac1f",
+      "number": 1,
+      "object": "experiment_session",
+      "status": "completed",
+      "deleted": false,
+      "message": null,
+      "runtime": 441.105379665,
+      "providers": [
+        "auger"
+      ],
+      "created_at": "2021-03-01T15:17:42.073Z",
+      "model_type": "classification",
+      "project_id": 732,
+      "started_at": "2021-03-01T15:18:40.918Z",
+      "updated_at": "2021-03-01T15:26:52.652Z",
+      "completed_at": "2021-03-01T15:26:02.024Z",
+      "search_space": null,
+      "error_message": null,
+      "experiment_id": "b1044cf807df7593",
+      "model_settings": {
+        "status": "completed",
+        "end_time": "2021-03-01 15:26:01.126096",
+        "timeouts": [],
+        "start_time": "2021-03-01 15:19:30.018530",
+        "error_trials": [
+          {
+            "AE893C9024F8425": {
+              "uid": "AE893C9024F8425",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2714462280273438,
+              "algorithm_params": {
+                "gamma": 0.001567157788102896,
+                "max_depth": 4,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.06576848564909829,
+                "subsample": 0.8024826121936706,
+                "n_estimators": 297,
+                "learning_rate": 0.01,
+                "colsample_bytree": 0.6340039501713277,
+                "min_child_weight": 10
+              },
+              "create_trial_time": "2021-03-01 15:24:19.818939",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.6360.0000.009410324binary:logistic0.0000.800",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "99BAD305B0954CE": {
+              "uid": "99BAD305B0954CE",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2093508243560791,
+              "algorithm_params": {
+                "gamma": 0.002300390290445548,
+                "max_depth": 10,
+                "objective": "binary:logistic",
+                "reg_alpha": 5.14015078893428,
+                "subsample": 0.7534713606945561,
+                "n_estimators": 93,
+                "learning_rate": 0.1516494606740668,
+                "colsample_bytree": 1.0,
+                "min_child_weight": 3
+              },
+              "create_trial_time": "2021-03-01 15:24:02.646723",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "1.0000.0000.151103108binary:logistic5.0000.755",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "168088D50A4546F": {
+              "uid": "168088D50A4546F",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2044963836669922,
+              "algorithm_params": {
+                "gamma": 0.001,
+                "max_depth": 6,
+                "objective": "binary:logistic",
+                "reg_alpha": 24.67547939732857,
+                "subsample": 0.8610328595010177,
+                "n_estimators": 198,
+                "learning_rate": 0.08520207506525711,
+                "colsample_bytree": 0.6468106871631532,
+                "min_child_weight": 10
+              },
+              "create_trial_time": "2021-03-01 15:23:42.917753",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.6480.0000.084610216binary:logistic25.0000.860",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "F45964B13C4E427": {
+              "uid": "F45964B13C4E427",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.1984620094299316,
+              "algorithm_params": {
+                "gamma": 0.1424133701094753,
+                "max_depth": 9,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.002853897448110441,
+                "subsample": 0.694921113387209,
+                "n_estimators": 94,
+                "learning_rate": 0.1150649156101629,
+                "colsample_bytree": 0.9543389616149732,
+                "min_child_weight": 7
+              },
+              "create_trial_time": "2021-03-01 15:23:23.397025",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.9560.1000.11697108binary:logistic0.0000.695",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "59DF2B952BC2454": {
+              "uid": "59DF2B952BC2454",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.1994962692260742,
+              "algorithm_params": {
+                "gamma": 0.02963713729743175,
+                "max_depth": 6,
+                "objective": "binary:logistic",
+                "reg_alpha": 2.483582179279331,
+                "subsample": 0.7118404396622796,
+                "n_estimators": 163,
+                "learning_rate": 0.05009530651932095,
+                "colsample_bytree": 0.9704825910681609,
+                "min_child_weight": 2
+              },
+              "create_trial_time": "2021-03-01 15:23:05.635009",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.9720.0000.04962162binary:logistic2.0000.710",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "F52A3BE3E2084C1": {
+              "uid": "F52A3BE3E2084C1",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2652220726013184,
+              "algorithm_params": {
+                "gamma": 0.001590860800898974,
+                "max_depth": 10,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.001,
+                "subsample": 0.5921128171329102,
+                "n_estimators": 150,
+                "learning_rate": 0.1320588476420201,
+                "colsample_bytree": 0.7925030096624693,
+                "min_child_weight": 1
+              },
+              "create_trial_time": "2021-03-01 15:22:50.076141",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.7920.0000.133101162binary:logistic0.0000.590",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "5A5D961EFC80494": {
+              "uid": "5A5D961EFC80494",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.skopt_async_optimizer.SkOptAsyncOptimizer",
+              "evaluation_time": 0.323688268661499,
+              "algorithm_params": {
+                "gamma": 0.001391416576489402,
+                "max_depth": 5,
+                "objective": "binary:logistic",
+                "reg_alpha": 39.49454877003236,
+                "subsample": 0.6846197495200825,
+                "n_estimators": 165,
+                "learning_rate": 0.2781770094661666,
+                "colsample_bytree": 0.9827339904848617,
+                "min_child_weight": 5
+              },
+              "create_trial_time": "2021-03-01 15:22:41.219367",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.9840.0000.27855162binary:logistic39.0000.685",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "556DA31FF4C748E": {
+              "uid": "556DA31FF4C748E",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2370810508728027,
+              "algorithm_params": {
+                "gamma": 0.1226231097135818,
+                "max_depth": 3,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.1754180276398535,
+                "subsample": 0.5504818961006337,
+                "n_estimators": 254,
+                "learning_rate": 0.01273156430317761,
+                "colsample_bytree": 0.7216129543257909,
+                "min_child_weight": 10
+              },
+              "create_trial_time": "2021-03-01 15:22:36.890957",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.7200.1000.012310270binary:logistic0.0000.550",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "881D0BAEA755442": {
+              "uid": "881D0BAEA755442",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2580125331878662,
+              "algorithm_params": {
+                "gamma": 0.01424714025961906,
+                "max_depth": 6,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.8364606460742172,
+                "subsample": 0.8525731963634824,
+                "n_estimators": 189,
+                "learning_rate": 0.08520207506525711,
+                "colsample_bytree": 0.6468106871631532,
+                "min_child_weight": 10
+              },
+              "create_trial_time": "2021-03-01 15:22:24.934371",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.6480.0000.084610216binary:logistic1.0000.855",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "FA00632574814E8": {
+              "uid": "FA00632574814E8",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.3045649528503418,
+              "algorithm_params": {
+                "gamma": 0.006884133524961368,
+                "max_depth": 9,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.002853897448110441,
+                "subsample": 0.694921113387209,
+                "n_estimators": 139,
+                "learning_rate": 0.1060958197738394,
+                "colsample_bytree": 0.9543389616149732,
+                "min_child_weight": 1
+              },
+              "create_trial_time": "2021-03-01 15:22:10.423957",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.9560.0000.10791162binary:logistic0.0000.695",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "D001C2FFB15D41F": {
+              "uid": "D001C2FFB15D41F",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2858669757843018,
+              "algorithm_params": {
+                "gamma": 0.1178477872293986,
+                "max_depth": 4,
+                "objective": "binary:logistic",
+                "reg_alpha": 2.483582179279331,
+                "subsample": 0.7118404396622796,
+                "n_estimators": 163,
+                "learning_rate": 0.03327601932889581,
+                "colsample_bytree": 0.9704825910681609,
+                "min_child_weight": 7
+              },
+              "create_trial_time": "2021-03-01 15:21:47.952124",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.9720.1000.03247162binary:logistic2.0000.710",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "5C6BA417BD504B4": {
+              "uid": "5C6BA417BD504B4",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.2581624984741211,
+              "algorithm_params": {
+                "gamma": 0.001590860800898974,
+                "max_depth": 8,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.06576848564909829,
+                "subsample": 0.6233243417683763,
+                "n_estimators": 84,
+                "learning_rate": 0.1763093568657118,
+                "colsample_bytree": 0.8208780567428855,
+                "min_child_weight": 9
+              },
+              "create_trial_time": "2021-03-01 15:21:20.739915",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.8200.0000.17789108binary:logistic0.0000.625",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "6F5F834A4CFE402": {
+              "uid": "6F5F834A4CFE402",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.3225507736206055,
+              "algorithm_params": {
+                "gamma": 0.001089365251411603,
+                "max_depth": 6,
+                "objective": "binary:logistic",
+                "reg_alpha": 5.14015078893428,
+                "subsample": 0.8968312453104341,
+                "n_estimators": 254,
+                "learning_rate": 0.01273156430317761,
+                "colsample_bytree": 0.7877680873972378,
+                "min_child_weight": 10
+              },
+              "create_trial_time": "2021-03-01 15:20:22.507181",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.7880.0000.012610270binary:logistic5.0000.895",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          },
+          {
+            "B9FF5AE523344E8": {
+              "uid": "B9FF5AE523344E8",
+              "error": "feature_names must be string, and may not contain [, ] or <",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 12,
+              "dataset_nrows": 61999,
+              "algorithm_name": "xgboost.XGBClassifier",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 0.307049036026001,
+              "algorithm_params": {
+                "gamma": 0.01424714025961906,
+                "max_depth": 6,
+                "objective": "binary:logistic",
+                "reg_alpha": 0.02854590901274293,
+                "subsample": 0.506223847153682,
+                "n_estimators": 189,
+                "learning_rate": 0.08520207506525711,
+                "colsample_bytree": 0.6468106871631532,
+                "min_child_weight": 6
+              },
+              "create_trial_time": "2021-03-01 15:19:53.899522",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.6480.0000.08466216binary:logistic0.0000.505",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          }
+        ],
+        "failed_trials": [
+          {
+            "89B74A90E112409": {
+              "uid": "89B74A90E112409",
+              "error": "SIGKILL trial because it crashed or killed by memory.",
+              "ratio": 1.0,
+              "score": 0,
+              "budget": null,
+              "scoring": "roc_auc",
+              "ensemble": false,
+              "task_type": "classification",
+              "all_scores": {},
+              "fold_times": [
+                0
+              ],
+              "score_name": "roc_auc",
+              "trialClass": null,
+              "fold_scores": [],
+              "metrics_time": 0,
+              "dataset_ncols": 0,
+              "dataset_nrows": 0,
+              "algorithm_name": "auger_ml.algorithms.svm.SVC",
+              "estimated_time": 0,
+              "optimizer_name": "optimizers_service.optimizers.de_optimizer.DEEliminationOptimizer",
+              "evaluation_time": 257.951785326004,
+              "algorithm_params": {
+                "C": 0.0584536117023463,
+                "gamma": 1.822222520849437,
+                "degree": 2,
+                "kernel": "rbf",
+                "probability": true
+              },
+              "create_trial_time": "2021-03-01 15:19:58.124547",
+              "estimated_timeout": false,
+              "dataset_manifest_id": "382030a8e51d98b1",
+              "algorithm_params_hash": "0.00021.750rbfTrue",
+              "experiment_session_id": "8b17254b8c6fac1f"
+            }
+          }
+        ],
+        "featuresCount": 10,
+        "timeouts_stat": {},
+        "featureColumns": [
+          "Gender",
+          "Age",
+          "Driving_License",
+          "Region_Code",
+          "Previously_Insured",
+          "Vehicle_Age",
+          "Vehicle_Damage",
+          "Annual_Premium",
+          "Policy_Sales_Channel",
+          "Vintage"
+        ],
+        "timeouts_count": 0,
+        "error_trials_stat": {
+          "xgbclassifier": 14
+        },
+        "total_evaluations": 30,
+        "error_trials_count": 14,
+        "evaluation_options": {
+          "scoring": "roc_auc",
+          "ensemble": true,
+          "data_path": "s3://auger-mt-org-cinpns/workspace/projects/alex-mt-test-experimantal/files/cross_sell_sorted_50k-362df5.csv_review_date_2021-01-05_709A76C69D0B431.parquet",
+          "optimizers": {
+            "auger_ml.warmstart_optimizer.WarmStartOptimizer": {
+              "num_trials": 0
+            },
+            "auger_ml.optimizers.de_optimizer.DEEliminationOptimizer": {
+              "phi": 0.5,
+              "rho": 0.7
+            },
+            "auger_ml.optimizers.skopt_async_optimizer.SkOptAsyncOptimizer": {
+              "acq_func": "gp_hedge",
+              "batch_size": 5,
+              "acq_optimizer": "sampling",
+              "base_estimator": "GP"
+            }
+          },
+          "scoreNames": [
+            "accuracy",
+            "average_precision",
+            "neg_log_loss",
+            "roc_auc",
+            "gini",
+            "f1",
+            "precision",
+            "recall",
+            "f1_micro",
+            "f1_macro",
+            "f1_weighted",
+            "precision_micro",
+            "precision_macro",
+            "precision_weighted",
+            "recall_micro",
+            "recall_macro",
+            "recall_weighted",
+            "cohen_kappa_score",
+            "matthews_corrcoef"
+          ],
+          "start_time": "2021-03-01 15:19:30.018530",
+          "content_type": "text/csv",
+          "max_n_trials": 30,
+          "search_space": {
+            "xgboost.XGBClassifier": {
+              "gamma": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  10
+                ],
+                "tunable": true
+              },
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "objective": {
+                "type": "categorical",
+                "values": [
+                  "binary:logistic"
+                ],
+                "tunable": false
+              },
+              "reg_alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  60,
+                  600
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "colsample_bytree": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.6,
+                  1
+                ],
+                "tunable": true
+              },
+              "min_child_weight": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              }
+            },
+            "lightgbm.LGBMClassifier": {
+              "silent": {
+                "type": "categorical",
+                "values": [
+                  -1
+                ],
+                "tunable": false
+              },
+              "verbose": {
+                "type": "categorical",
+                "values": [
+                  -1
+                ],
+                "tunable": false
+              },
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "reg_alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "num_leaves": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  16,
+                  64
+                ],
+                "tunable": true
+              },
+              "reg_lambda": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  100,
+                  1600
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "colsample_bytree": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.6,
+                  1
+                ],
+                "tunable": true
+              }
+            },
+            "auger_ml.algorithms.svm.SVC": {
+              "C": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.0001,
+                  25
+                ],
+                "tunable": true
+              },
+              "gamma": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.0001,
+                  25
+                ],
+                "tunable": true
+              },
+              "degree": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  5
+                ],
+                "tunable": true
+              },
+              "kernel": {
+                "type": "categorical",
+                "values": [
+                  "rbf",
+                  "sigmoid",
+                  "poly"
+                ],
+                "tunable": true
+              },
+              "probability": {
+                "log": false,
+                "type": "categorical",
+                "values": [
+                  true
+                ],
+                "tunable": false
+              }
+            },
+            "sklearn.linear_model.SGDClassifier": {
+              "loss": {
+                "type": "categorical",
+                "values": [
+                  "log",
+                  "modified_huber"
+                ],
+                "tunable": true
+              },
+              "alpha": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  1e-05,
+                  10
+                ],
+                "tunable": true
+              },
+              "penalty": {
+                "type": "categorical",
+                "values": [
+                  "l2",
+                  "l1",
+                  "elasticnet"
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.AdaBoostClassifier": {
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  1
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.tree.DecisionTreeClassifier": {
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.ExtraTreesClassifier": {
+              "bootstrap": {
+                "type": "categorical",
+                "values": [
+                  false,
+                  true
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.RandomForestClassifier": {
+              "bootstrap": {
+                "type": "categorical",
+                "values": [
+                  true,
+                  false
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "sklearn.ensemble.GradientBoostingClassifier": {
+              "max_depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  10
+                ],
+                "tunable": true
+              },
+              "subsample": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "max_features": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.05,
+                  1
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  50,
+                  300
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  1
+                ],
+                "tunable": true
+              },
+              "min_samples_leaf": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  1,
+                  20
+                ],
+                "tunable": true
+              },
+              "min_samples_split": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  2,
+                  20
+                ],
+                "tunable": true
+              }
+            },
+            "auger_ml.algorithms.cat_boost.CatBoostClassifier": {
+              "rsm": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.5,
+                  1
+                ],
+                "tunable": true
+              },
+              "depth": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  3,
+                  10
+                ],
+                "tunable": true
+              },
+              "l2_leaf_reg": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  100
+                ],
+                "tunable": true
+              },
+              "border_count": {
+                "log": false,
+                "type": "int",
+                "bounds": [
+                  16,
+                  128
+                ],
+                "tunable": true
+              },
+              "n_estimators": {
+                "log": true,
+                "type": "int",
+                "bounds": [
+                  100,
+                  800
+                ],
+                "tunable": true
+              },
+              "learning_rate": {
+                "log": false,
+                "type": "float",
+                "bounds": [
+                  0.01,
+                  0.3
+                ],
+                "tunable": true
+              },
+              "loss_function": {
+                "type": "categorical",
+                "values": [
+                  "Logloss",
+                  "MultiClass"
+                ],
+                "tunable": false
+              },
+              "model_size_reg": {
+                "log": true,
+                "type": "float",
+                "bounds": [
+                  0.001,
+                  10
+                ],
+                "tunable": true
+              },
+              "allow_writing_files": {
+                "type": "categorical",
+                "values": [
+                  false
+                ],
+                "tunable": false
+              },
+              "feature_border_type": {
+                "type": "categorical",
+                "values": [
+                  "Median",
+                  "UniformAndQuantiles",
+                  "GreedyLogSum",
+                  "MaxLogSum",
+                  "MinEntropy"
+                ],
+                "tunable": true
+              }
+            }
+          },
+          "splitOptions": {
+            "shuffleData": true
+          },
+          "use_ensemble": true,
+          "dataset_ncols": 12,
+          "dataset_nrows": 61999,
+          "targetFeature": "Response",
+          "classification": true,
+          "optimizer_name": "auger_ml.warmstart_optimizer.WarmStartOptimizer",
+          "optimizers_names": [
+            "auger_ml.optimizers.de_optimizer.DEEliminationOptimizer",
+            "auger_ml.optimizers.skopt_async_optimizer.SkOptAsyncOptimizer",
+            "auger_ml.warmstart_optimizer.WarmStartOptimizer"
+          ],
+          "max_eval_time_mins": 6,
+          "categoricalFeatures": [
+            "Gender",
+            "Vehicle_Age"
+          ],
+          "ensemble_start_time": "2021-03-01 15:24:28.846778",
+          "max_total_time_mins": 60,
+          "preprocessors_space": {
+            "nan.NanPreprocessor": {
+              "thresh_col": 0.95
+            },
+            "extra.ExtraPreprocessor": {},
+            "scale.ScalePreprocessor": {},
+            "sparse.SparsePreprocessor": {
+              "n_comp_frac": 0.2,
+              "thresh_sparse": 0.95
+            },
+            "date_time.DateTimePreprocessor": {},
+            "eliminate.EliminatePreprocessor": {
+              "thresh_var": 0.05
+            },
+            "categorical.CategoricalPreprocessor": {
+              "max_categoricals_nunique": 50
+            }
+          },
+          "top_pipelines_limit": 100,
+          "binaryClassification": true,
+          "cpu_per_mt_algorithm": 4,
+          "crossValidationFolds": 3,
+          "split_to_folds_files": true,
+          "originalFeaturesCount": 10,
+          "pp_fold_groups_params": {},
+          "preprocessors_version": "1.0",
+          "originalFeatureColumns": [
+            "Gender",
+            "Age",
+            "Driving_License",
+            "Region_Code",
+            "Previously_Insured",
+            "Vehicle_Age",
+            "Vehicle_Damage",
+            "Annual_Premium",
+            "Policy_Sales_Channel",
+            "Vintage"
+          ],
+          "search_space_ensembles": {
+            "auger_ml.ensembles.algorithms.VotingAlgorithm": {
+              "n_best": 3,
+              "voting": "soft",
+              "weights": null
+            },
+            "auger_ml.ensembles.algorithms.GreedySelectionAlgorithm": {
+              "n_bags": 3,
+              "n_best": 1,
+              "improve_eps": false,
+              "bag_fraction": 0.5,
+              "random_state": 42,
+              "prune_fraction": 0.0,
+              "max_bag_pipelines": 3
+            },
+            "auger_ml.ensembles.algorithms.AveragingAlgorithmClassifier": {
+              "n_best": 3,
+              "weights": null
+            },
+            "auger_ml.ensembles.algorithms.SuperLearnerAlgorithmClassifier": {
+              "method": "slsqp",
+              "opt_trials": 3
+            }
+          },
+          "algorithm_params_defaults": {
+            "loss_function": "Logloss"
+          },
+          "apply_estimate_trial_time": false,
+          "max_concurrent_iterations": 2,
+          "top_pipelines_poll_interval": 10
+        },
+        "failed_trials_stat": {
+          "svc": 1
+        },
+        "ensemble_start_time": "2021-03-01 15:24:28.846778",
+        "failed_trials_count": 1,
+        "completed_evaluations": 37,
+        "last_update_trial_report": 1614612359.53739
+      },
+      "providers_data": {
+        "auger": {
+          "status": "completed",
+          "completed_evaluations": 37
+        }
+      },
+      "project_file_id": 3314,
+      "starter_user_id": 20,
+      "top_score_value": 0.8948888612157447,
+      "dataset_statistics": {
+        "count": 92999,
+        "data_path": "s3://auger-mt-org-cinpns/workspace/projects/alex-mt-test-experimantal/files/cross_sell_sorted_50k-362df5.csv_review_date_2021-01-05_709A76C69D0B431.parquet",
+        "stat_data": [
+          {
+            "use": true,
+            "datatype": "categorical",
+            "isTarget": false,
+            "column_name": "Gender",
+            "value_counts": {
+              "Male": 45436,
+              "Female": 47563
+            },
+            "orig_datatype": "string",
+            "unique_values": 2,
+            "value_counts_ex": [
+              {
+                "count": 47563,
+                "value": "Female"
+              },
+              {
+                "count": 45436,
+                "value": "Male"
+              }
+            ]
+          },
+          {
+            "avg": 29.484683,
+            "use": true,
+            "range": [
+              "20.00",
+              "84.00"
+            ],
+            "std_dev": 13.58082,
+            "datatype": "integer",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                64529,
+                4981,
+                4291,
+                5300,
+                4689,
+                3586,
+                2242,
+                1871,
+                1170,
+                340
+              ],
+              "bin_edges": [
+                20.0,
+                26.4,
+                32.8,
+                39.2,
+                45.6,
+                52.0,
+                58.400000000000006,
+                64.80000000000001,
+                71.2,
+                77.6,
+                84.0
+              ]
+            },
+            "column_name": "Age",
+            "orig_datatype": "integer",
+            "unique_values": 65
+          },
+          {
+            "avg": 0.999226,
+            "use": true,
+            "range": [
+              "0.00",
+              "1.00"
+            ],
+            "std_dev": 0.027814,
+            "datatype": "integer",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                72,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                92927
+              ],
+              "bin_edges": [
+                0.0,
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6000000000000001,
+                0.7000000000000001,
+                0.8,
+                0.9,
+                1.0
+              ]
+            },
+            "column_name": "Driving_License",
+            "orig_datatype": "integer",
+            "unique_values": 2
+          },
+          {
+            "avg": 26.32867,
+            "use": true,
+            "range": [
+              "0.00",
+              "52.00"
+            ],
+            "std_dev": 14.15669,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                5469,
+                13481,
+                10552,
+                3164,
+                3565,
+                24316,
+                8427,
+                7649,
+                9789,
+                6587
+              ],
+              "bin_edges": [
+                0.0,
+                5.2,
+                10.4,
+                15.6,
+                20.8,
+                26.0,
+                31.2,
+                36.4,
+                41.6,
+                46.8,
+                52.0
+              ]
+            },
+            "column_name": "Region_Code",
+            "orig_datatype": "double",
+            "unique_values": 53
+          },
+          {
+            "avg": 0.517834,
+            "use": true,
+            "range": [
+              "0.00",
+              "1.00"
+            ],
+            "std_dev": 0.499685,
+            "datatype": "integer",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                44841,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                48158
+              ],
+              "bin_edges": [
+                0.0,
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6000000000000001,
+                0.7000000000000001,
+                0.8,
+                0.9,
+                1.0
+              ]
+            },
+            "column_name": "Previously_Insured",
+            "orig_datatype": "integer",
+            "unique_values": 2
+          },
+          {
+            "use": true,
+            "datatype": "categorical",
+            "isTarget": false,
+            "column_name": "Vehicle_Age",
+            "value_counts": {
+              "1-2 Year": 24282,
+              "< 1 Year": 66924,
+              "> 2 Years": 1793
+            },
+            "orig_datatype": "string",
+            "unique_values": 3,
+            "value_counts_ex": [
+              {
+                "count": 66924,
+                "value": "< 1 Year"
+              },
+              {
+                "count": 24282,
+                "value": "1-2 Year"
+              },
+              {
+                "count": 1793,
+                "value": "> 2 Years"
+              }
+            ]
+          },
+          {
+            "use": true,
+            "datatype": "boolean",
+            "isTarget": false,
+            "column_name": "Vehicle_Damage",
+            "value_counts": {
+              "No": 51250,
+              "Yes": 41749
+            },
+            "orig_datatype": "string",
+            "unique_values": 2,
+            "value_counts_ex": [
+              {
+                "count": 51250,
+                "value": "No"
+              },
+              {
+                "count": 41749,
+                "value": "Yes"
+              }
+            ]
+          },
+          {
+            "avg": 29291.499823,
+            "use": true,
+            "range": [
+              "2630.00",
+              "540165.00"
+            ],
+            "std_dev": 16167.12713,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                89775,
+                3125,
+                55,
+                21,
+                14,
+                4,
+                3,
+                0,
+                1,
+                1
+              ],
+              "bin_edges": [
+                2630.0,
+                56383.5,
+                110137.0,
+                163890.5,
+                217644.0,
+                271397.5,
+                325151.0,
+                378904.5,
+                432658.0,
+                486411.5,
+                540165.0
+              ]
+            },
+            "column_name": "Annual_Premium",
+            "orig_datatype": "double",
+            "unique_values": 30625
+          },
+          {
+            "avg": 133.239013,
+            "use": true,
+            "range": [
+              "1.00",
+              "163.00"
+            ],
+            "std_dev": 44.116903,
+            "datatype": "double",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                1352,
+                10736,
+                84,
+                461,
+                13,
+                47,
+                76,
+                10827,
+                117,
+                69286
+              ],
+              "bin_edges": [
+                1.0,
+                17.2,
+                33.4,
+                49.599999999999994,
+                65.8,
+                82.0,
+                98.19999999999999,
+                114.4,
+                130.6,
+                146.8,
+                163.0
+              ]
+            },
+            "column_name": "Policy_Sales_Channel",
+            "orig_datatype": "double",
+            "unique_values": 122
+          },
+          {
+            "avg": 154.637738,
+            "use": true,
+            "range": [
+              "10.00",
+              "299.00"
+            ],
+            "std_dev": 83.76813,
+            "datatype": "integer",
+            "isTarget": false,
+            "histogram": {
+              "hist": [
+                9239,
+                9426,
+                9318,
+                9240,
+                9165,
+                9145,
+                9435,
+                9344,
+                9326,
+                9361
+              ],
+              "bin_edges": [
+                10.0,
+                38.9,
+                67.8,
+                96.69999999999999,
+                125.6,
+                154.5,
+                183.4,
+                212.3,
+                241.2,
+                270.1,
+                299.0
+              ]
+            },
+            "column_name": "Vintage",
+            "orig_datatype": "integer",
+            "unique_values": 290
+          },
+          {
+            "avg": 0.075248,
+            "use": false,
+            "range": [
+              "0.00",
+              "1.00"
+            ],
+            "std_dev": 0.263793,
+            "datatype": "integer",
+            "isTarget": true,
+            "histogram": {
+              "hist": [
+                86001,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                6998
+              ],
+              "bin_edges": [
+                0.0,
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6000000000000001,
+                0.7000000000000001,
+                0.8,
+                0.9,
+                1.0
+              ]
+            },
+            "column_name": "Response",
+            "orig_datatype": "integer",
+            "unique_values": 2
+          }
+        ],
+        "columns_count": 11
+      },
+      "dataset_manifest_id": "382030a8e51d98b1"
+    },
+    "dataset_manifest_id": "382030a8e51d98b1",
+    "experiment_session_id": "8b17254b8c6fac1f"
+  },
+  "provider": "auger",
+  "data_path": "s3://auger-mt-org-cinpns/workspace/projects/alex-mt-test-experimantal/files/cross_sell_sorted_50k-362df5.csv_review_date_2021-01-05_709A76C69D0B431.parquet",
+  "date_from": "2021-03-01",
+  "content_type": null,
+  "provider_info": {
+    "auger": {
+      "project": {
+        "deploy_cluster": {
+          "type": "aci",
+          "cpu_cores": 1,
+          "memory_gb": 2,
+          "compute_target": "standard"
+        }
+      },
+      "experiment_session": {
+        "status": "completed",
+        "completed_evaluations": 37
+      }
+    }
+  }
+}

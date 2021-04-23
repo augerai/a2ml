@@ -15,6 +15,21 @@ class TestFeatureDivergence(unittest.TestCase):
         model = fsclient.load_object_from_file(res)
         self.assertIsInstance(model, FeatureDivergence.DensityEstimatorPerFeature)
 
+    def test_build_illdefined_empirical_covariance(self):
+        params = self._load_task_params(
+            'illdefined_empirical_covariance',
+            'cross_sell_sorted_50k.parquet',
+        )
+
+        fd = FeatureDivergence(params)
+        res = fd.build_and_save_model(divergence_model_name='density_model.pkl')
+
+        self.assertIsInstance(res, str)
+
+        # model = fsclient.load_object_from_file(res)
+        # self.assertIsInstance(model, FeatureDivergence.DensityEstimatorPerFeature)
+
+
     def test_score_divergence_daily(self):
         fd = FeatureDivergence(self._load_task_params())
 
@@ -93,11 +108,12 @@ class TestFeatureDivergence(unittest.TestCase):
             lambda: fd.score_divergence_daily(divergence_model_name='test_density_model.pkl')
         )
 
-    def _project_path(self):
-        return 'tests/fixtures/test_feature_divergence'
+    def _project_path(self, sub_path):
+        return f'tests/fixtures/test_feature_divergence/{sub_path}'
 
-    def _load_task_params(self):
-        path = self._project_path() + '/task_params.json'
+    def _load_task_params(self, sub_path='iris', data_file=None):
+        project_path = self._project_path(sub_path)
+        path = project_path + '/task_params.json'
         res = {}
 
         with open(path, 'r') as f:
@@ -106,9 +122,9 @@ class TestFeatureDivergence(unittest.TestCase):
         hub_info = res['hub_info']
         hub_info['experiment_id'] = '112233'
         hub_info['experiment_session_id'] = 'AABBCCDD'
-        hub_info['project_path'] = 'tests/fixtures/test_feature_divergence'
+        hub_info['project_path'] = project_path
 
-        evaluation_options = hub_info['experiment_session']['model_settings']['evaluation_options']
+        # evaluation_options = hub_info['experiment_session']['model_settings']['evaluation_options']
         #evaluation_options['data_path'] = self._project_path() + '/iris.csv'
-        res['data_path'] = self._project_path() + '/iris.csv'
+        res['data_path'] = project_path + '/' + (data_file or 'iris.csv')
         return res

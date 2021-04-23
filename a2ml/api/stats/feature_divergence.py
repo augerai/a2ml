@@ -66,7 +66,9 @@ class FeatureDivergence:
 
             if self.num_cols:
                 self.cont_ = GaussianMixture(
-                    n_components=3, covariance_type="diag").fit(X[self.num_cols])
+                    n_components=3,
+                    covariance_type="diag",
+                ).fit(X[self.num_cols])
 
             if self.cat_cols:
                 self.cat_ = FeatureDivergence.Histogram().fit(X[self.cat_cols])
@@ -109,8 +111,7 @@ class FeatureDivergence:
             if feature in self.models:
                 return self.models[feature].score(df) / self.base_values[feature]
             else:
-                raise KeyError("Feature: '" + feature +
-                               "'' is not in the model")
+                raise KeyError("Feature: '" + feature + "'' is not in the model")
 
     class ModelIsNotReadyError(Exception):
         pass
