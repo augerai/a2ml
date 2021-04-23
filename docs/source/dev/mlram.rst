@@ -11,6 +11,8 @@ Auger model
 
 Monitored model
 ===================
+See application example: https://github.com/augerai/mlram_apps
+
 1. Create A2ML application with external provider:
 
 .. code-block:: bash
@@ -65,6 +67,9 @@ To review distribution chart , send training features with target and actuals:
 5. Call review to check if model retrain is required:
 
     .. code-block:: python
+
+        # If call just after actuals, wait some time till server process the data
+        time.sleep(30)
 
         ctx = Context()
         result = A2ML(ctx).review(model_id='external_model_id')

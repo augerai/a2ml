@@ -23,6 +23,7 @@ class AugerReviewAlertApi(AugerBaseApi):
             'active': parameters.get('active', config.get('review/alert/active')),
             'kind': parameters.get('type', config.get('review/alert/type')),
             'threshold': float(parameters.get('threshold', config.get('review/alert/threshold'))),
+            'threshold_policy': parameters.get('threshold_policy', config.get('review/alert/threshold_policy')),
             'sensitivity': int(parameters.get('sensitivity', config.get('review/alert/sensitivity'))),
             'actions': parameters.get('action', config.get('review/alert/action')),
             'notifications': parameters.get('notification', config.get('review/alert/notification'))

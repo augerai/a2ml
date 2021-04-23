@@ -96,8 +96,6 @@ class AugerExperimentApi(AugerBaseApi):
         if config.get('experiment/search_space', None) is not None:
             options['search_space'] = config.get('experiment/search_space')
 
-        if config.get('review/metric'):
-            options['review_metric'] = config.get('review/metric')            
         if config.get('review/alert/retrain_policy/type'):
             options['retrain_policy_type'] = config.get('review/alert/retrain_policy/type')
         if config.get('review/alert/retrain_policy/value'):

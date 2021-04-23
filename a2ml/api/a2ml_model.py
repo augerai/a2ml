@@ -145,7 +145,7 @@ class A2MLModel(BaseA2ML):
                 :widths: 50 50 50
                 :header-rows: 1
 
-                * - target: predicted value
+                * - target: predicted value. If missed - predict called automatically
                   - actual
                   - baseline_target: predicted value for baseline model (OPTIONAL)
                 * - Iris-setosa
@@ -155,7 +155,7 @@ class A2MLModel(BaseA2ML):
                   - Iris-virginica
                   - Iris-virginica
 
-            It may also contain train features to retrain while Review(if target missed) and for distribution chart
+            It may also contain train features to predict(if target missed), retrain model while Review and for distribution chart
 
             This method support only one provider
 
@@ -226,6 +226,12 @@ class A2MLModel(BaseA2ML):
 
                 * threshold (float)
                 * sensitivity (int): The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+                * threshold_policy (all_values/average_value/any_value)
+
+                    - all_values: Default value. Trigger an alert when all values in sensitivity below threshold
+                    - average_value: Trigger an alert when average of values in sensitivity below threshold
+                    - any_value: Trigger an alert when any value in sensitivity below threshold
+
                 * action (no/retrain/retrain_deploy)
 
                     - no: no action should be executed
