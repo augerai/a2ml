@@ -226,6 +226,12 @@ class A2MLModel(BaseA2ML):
 
                 * threshold (float)
                 * sensitivity (int): The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+                * threshold_policy (all_values/average_value/any_value)
+
+                    - all_values: Default value. Trigger an alert when all values in sensitivity below threshold
+                    - average_value: Trigger an alert when average of values in sensitivity below threshold
+                    - any_value: Trigger an alert when any value in sensitivity below threshold
+
                 * action (no/retrain/retrain_deploy)
 
                     - no: no action should be executed

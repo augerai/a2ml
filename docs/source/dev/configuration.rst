@@ -44,6 +44,7 @@ All Providers
         type: model_accuracy
         threshold: 0.7
         sensitivity: 72
+        threshold_policy: all_values
         action: retrain_deploy
         notification: user
 
@@ -91,6 +92,13 @@ All Providers
 
     * **review.alert.threshold** Float
     * **review.alert.sensitivity** The amount of time(in hours) this metric must be at or below the threshold to trigger the alert.
+    * **review.alert.threshold_policy** 
+
+      * **Supported Review Alert threshold policies**
+      * **all_values** Trigger an alert when all values in sensitivity below threshold.
+      * **average_value** Trigger an alert when average of values in sensitivity below threshold.
+      * **any_value** Trigger an alert when any value in sensitivity below threshold.
+
     * **review.alert.action** 
 
       * **Supported Review Alert actions**
