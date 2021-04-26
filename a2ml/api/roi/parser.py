@@ -376,7 +376,7 @@ class Parser:
         node.limit_node = self.const_node(Token.INT_CONST)
 
         self.eat(Token.BY)
-        node.order_node = self.expression()
+        node.order_node = self.shift_expr()
 
         if self.current_token.type == Token.PER:
             self.eat(Token.PER)

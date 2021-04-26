@@ -19,12 +19,17 @@ from a2ml.api.roi.validator import AstError, Validator, ValidationError
         pytest.param("10 20", "error", "invalid token '20' at position 4"),
         pytest.param("top 1 by from", "error", "unknown atom 'from' at position 10"),
         pytest.param("top 1 by $a from", "error", "unexpected end of expression at position 13"),
+        pytest.param(
+            "P > 0.4 and top 5 by P",
+            "error",
+            "top or bottom expression cannot be used as an argument or operand"
+        ),
     ]
 )
 def test_validate(expression, expected_result, message):
     validator = Validator(
         expression,
-        known_vars=["$a", "$b"],
+        known_vars=["$a", "$b", "P"],
     )
 
     # Validate with force_raise = False
