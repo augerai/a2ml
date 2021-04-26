@@ -1,6 +1,6 @@
 from a2ml.api.roi.base_interpreter import BaseInterpreter
 from a2ml.api.roi.lexer import AstError, Lexer
-from a2ml.api.roi.parser import Parser
+from a2ml.api.roi.parser import Parser, TopNode
 
 class ValidationError(AstError):
     pass
@@ -84,5 +84,8 @@ class Validator(BaseInterpreter):
             raise ValidationError(f"unknown function '{node.func_name}' at position {node.position()}")
 
     def evaluate_top_node(self, node):
+        if not isinstance(self.root, TopNode):
+            raise ValidationError(f"top or bottom expression cannot be used as an argument or operand")
+
         return all(map(lambda n: self.evaluate(n), node.child_nodes()))
 

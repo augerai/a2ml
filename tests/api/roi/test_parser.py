@@ -27,6 +27,15 @@ class TestParser:
             pytest.param("@if(2 > 3, 9 / 2, 7 / 2)", "@if((2 > 3), (9 / 2), (7 / 2))"),
             pytest.param('@if("s1" = "s2", $5, $10)', '@if(("s1" == "s2"), 5, 10)'),
             pytest.param("sum(min(1, P), rand())", "sum(min(1, P), rand())"),
+        ]
+    )
+    def test_parser_with_arithmetic(self, expression, exected_parsed_expression):
+        tree = Parser(Lexer(expression)).parse()
+        assert exected_parsed_expression == str(tree)
+
+    @pytest.mark.parametrize(
+        "expression, exected_parsed_expression",
+        [
             pytest.param(
                 "top 5 by P where P > 0.4 from (bottom 1 by $spread_pct per $symbol)",
                 "top 5 by P where (P > 0.4) from (bottom 1 by $spread_pct per $symbol)",
@@ -35,9 +44,10 @@ class TestParser:
                 "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
                 "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
             ),
+            pytest.param("P > 0.4 and top 5 by P", "((P > 0.4) and top 5 by P)"),
         ]
     )
-    def test_parser_with_arithmetic(self, expression, exected_parsed_expression):
+    def test_parser_with_top_expressinos(self, expression, exected_parsed_expression):
         tree = Parser(Lexer(expression)).parse()
         assert exected_parsed_expression == str(tree)
 
@@ -87,6 +97,7 @@ class TestParser:
             pytest.param("$a + $b", True),
             pytest.param("$a + $b + $c", True),
             pytest.param("5 @ 3", "invalid token '@' at position 3"),
+            pytest.param("top 5 by P and P > 0.4 per $symbol", "invalid token 'per' at position 24"),
         ]
     )
     def test_validate(self, expression, expected_result):
