@@ -169,18 +169,8 @@ class ModelReview(object):
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
         if provider is not None and not self.target_feature in ds_actuals.columns:
-            missing_features = set(self.original_features) - set(ds_actuals.columns)
-            if len(missing_features) > 0:
-                missing_features = ', '.join(sorted(list(missing_features)))
-                raise Exception(f'Missing features to make prediction: {missing_features}. Please, provide target \'{self.target_feature}\' or all training features to run predict.')
-
             logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
-            res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
-
-            if res['result']:
-                ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]
-            else:
-                raise Exception(res['data'])
+            self._do_predict(ctx, ds_actuals, provider)
 
         result = self._do_score_actual(ds_actuals.df)
         baseline_score = {}
@@ -217,6 +207,19 @@ class ModelReview(object):
         else:
             return result
 
+    def _do_predict(self, ctx, ds_actuals, provider):
+        missing_features = set(self.original_features) - set(ds_actuals.columns)
+        if len(missing_features) > 0:
+            missing_features = ', '.join(sorted(list(missing_features)))
+            raise Exception(f'Missing features to make prediction: {missing_features}. Please, provide target \'{self.target_feature}\' or all training features to run predict.')
+
+        res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
+
+        if res['result']:
+            ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]
+        else:
+            raise Exception(res['data'])
+            
     def delete_actuals(self, with_predictions=False, begin_date=None, end_date=None):
         if with_predictions and not begin_date and not end_date:
             self.clear_model_results_and_actuals()
@@ -307,7 +310,7 @@ class ModelReview(object):
         return output
 
     # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to, extra_features=[]):
+    def score_model_performance_daily(self, date_from, date_to, extra_features=[], provider='auger', do_predict=False):
         #To support baseline_target
         features = None #[self.target_feature, 'a2ml_predicted']
         res = {}
@@ -319,7 +322,10 @@ class ModelReview(object):
                 df_actuals.df = pd.concat([df_actuals.df, df.df])
 
             if df_actuals.count() > 0:
-                print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
+                #print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
+                if do_predict:
+                    self._do_predict(ctx, df_actuals, provider)
+
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
 
