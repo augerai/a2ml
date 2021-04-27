@@ -310,7 +310,8 @@ class ModelReview(object):
         return output
 
     # date_from..date_to inclusive
-    def score_model_performance_daily(self, date_from, date_to, extra_features=[], provider='auger', do_predict=False):
+    def score_model_performance_daily(self, date_from, date_to, extra_features=[], 
+        provider='auger', do_predict=False, ctx=None):
         #To support baseline_target
         features = None #[self.target_feature, 'a2ml_predicted']
         res = {}
