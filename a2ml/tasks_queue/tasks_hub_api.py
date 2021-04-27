@@ -573,12 +573,21 @@ def delete_actuals_task(params):
 @celeryApp.task(ignore_result=True)
 @process_task_result
 def score_model_performance_daily_task(params):
+    ctx = None
+    external_model = params.get("external_model", False)
+
+    if not external_model:
+        ctx = _create_provider_context(params)
+        ctx = _read_hub_experiment_session(ctx, params)
+        ctx.config.clean_changes()
+
     return ModelReview(params).score_model_performance_daily(
         date_from=params.get('date_from'),
         date_to=params.get('date_to'),
         extra_features=params.get("features", []),
         provider=params.get('provider'),
         do_predict=params.get('do_predict'),
+        ctx=ctx
     )
 
 @celeryApp.task(ignore_result=True)
