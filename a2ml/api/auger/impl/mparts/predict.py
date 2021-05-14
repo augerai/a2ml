@@ -9,7 +9,7 @@ from .deploy import ModelDeploy
 from ..cloud.cluster import AugerClusterApi
 from ..cloud.pipeline import AugerPipelineApi
 from ..exceptions import AugerException
-from a2ml.api.utils import fsclient
+from a2ml.api.utils import fsclient, getsizeof_deep
 from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.model_review.model_helper import ModelHelper
 from ..decorators import with_project
@@ -49,6 +49,7 @@ class ModelPredict():
         records = None
         features = None
         max_records_size = 10*1024
+
         if filename:
             if not (filename.startswith("http:") or filename.startswith("https:")) and \
                not fsclient.is_s3_path(filename):
@@ -64,10 +65,12 @@ class ModelPredict():
         elif data is not None and isinstance(data, pd.DataFrame):
             if len(data) < 100:
                 send_records = True
-        elif sys.getsizeof(data) > max_records_size:
-            self.ctx.log("Size of data %s KB > %s KB, so send file to hub." % (sys.getsizeof(data)/1024, max_records_size/1024))
         else:
-            send_records = True
+            size = getsizeof_deep(data)
+            if size is None or size > max_records_size:
+                self.ctx.log("Size of data %.2f KB > %.2f KB, so send file to hub." % (size/1024, max_records_size/1024))
+            else:
+                send_records = True
 
         if send_records:
             ds = DataFrame.create_dataframe(filename, data, columns)
