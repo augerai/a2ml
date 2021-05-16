@@ -64,6 +64,7 @@ class ModelDeploy(object):
             AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
 
             endpoint_api.update_roi() 
+            endpoint_api.update_monitoring_value()
         else:
             self.ctx.log('Model is not belong to any review endpoint. Skipping ...')
 

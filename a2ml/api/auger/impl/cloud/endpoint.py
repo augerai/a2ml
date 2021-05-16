@@ -47,3 +47,11 @@ class AugerEndpointApi(AugerBaseApi):
                 return self._call_update({ 'id': self.object_id, 
                     'roi_filter': roi_values[0], 'roi_investment': roi_values[1], 'roi_revenue': roi_values[2],
                 })
+
+    def update_monitoring_value(self):
+        return self._call_update({ 'id': self.object_id, 
+            'false_positive_cost_amount': self.ctx.config.get('review/monitoring_value/false_positive_value'), 
+            'false_negative_cost_amount': self.ctx.config.get('review/monitoring_value/false_negative_value'), 
+            'regression_cost_over_amount': self.ctx.config.get('review/monitoring_value/regression_value_over'), 
+            'regression_cost_under_amount': self.ctx.config.get('review/monitoring_value/regression_value_under'),
+        })

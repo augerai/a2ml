@@ -69,6 +69,18 @@ review:
     # Investment can contain formuala for calculating investment based on fields from actual. See ROI formulas language for the syntax  
     #investment: $1000
 
+  monitoring_value:
+    #The business value of retraining the model delivered over time.
+    # Specify how much model errors will cost
+
+    #Binary Classification
+    # false_positive_value: 100
+    # false_negative_value: 10
+
+    #Regression
+    # regression_value_over: 0
+    # regression_value_under: 100
+
   alert:
     # Activate/Deactivate Review Alert
     active: True

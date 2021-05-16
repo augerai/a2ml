@@ -470,7 +470,9 @@ class ModelHelper(object):
         ds_actuals.options["originalFeatureColumns"] = feature_columns
 
         summary = ds_actuals.getSummary()
+        binaryClassification = ds_actuals.options.get('binaryClassification', False)
         options = ds_actuals.update_options_by_dataset_statistics(summary["stat_data"])
+        options['binaryClassification'] = binaryClassification
         fsclient.write_json_file(options_path, options)
 
         return options
