@@ -59,6 +59,66 @@ class TestCalculator:
         assert 200 == res["investment"]
         assert 0.2 == res["roi"]
 
+    def test_options_app_with_top2(self):
+        known_vars=["A", "P", "spread", "symbol"]
+        vars_mapping = {}
+        for known_var in known_vars:
+            vars_mapping["$" + known_var] = known_var
+
+        calc = Calculator(
+            filter="top 2 by P where $spread<0.4 from (top 1 by P per $symbol)",
+            revenue="(1 + A) * $100",
+            investment="$100",
+            known_vars=known_vars,
+            vars_mapping=vars_mapping,
+        )
+
+        res = calc.calculate(
+            [
+                {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
+                {"A": 0.1, "P": 0.15, "spread": 0.4, "symbol": "A"},
+                {"A": 0.5, "P": 0.20, "spread": 0.5, "symbol": "T"},
+                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+                {"A": 0.3, "P": 0.30, "spread": 0.3, "symbol": "T"},
+            ]
+        )
+        # print(res)
+        # assert 2 == res["count"]
+        # assert res["filtered_rows"] == [
+        #     {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+        #     {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
+        # ]
+
+    def test_options_app_with_top3(self):
+        known_vars=["A", "P", "spread", "symbol"]
+        vars_mapping = {}
+        for known_var in known_vars:
+            vars_mapping["$" + known_var] = known_var
+
+        calc = Calculator(
+            filter="top 2 by P where $spread<0.4 from (top 1 by P per $symbol)",
+            revenue="(1 + A) * $100",
+            investment="$100",
+            known_vars=known_vars,
+            vars_mapping=vars_mapping,
+        )
+
+        res = calc.calculate(
+            [
+                {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
+                {"A": 0.1, "P": 0.15, "spread": 0.1, "symbol": "A"},
+                {"A": 0.5, "P": 0.20, "spread": 0.5, "symbol": "T"},
+                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+                {"A": 0.3, "P": 0.30, "spread": 0.3, "symbol": "T"},
+            ]
+        )
+        # print(res)
+        # assert 2 == res["count"]
+        # assert res["filtered_rows"] == [
+        #     {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+        #     {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
+        # ]
+
     def test_options_app_with_missing_values(self):
         calc = Calculator(
             filter="top 2 by P where P >= 0.1 from (bottom 1 by $spread per $symbol)",
