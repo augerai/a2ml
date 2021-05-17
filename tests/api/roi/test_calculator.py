@@ -76,18 +76,17 @@ class TestCalculator:
         res = calc.calculate(
             [
                 {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
-                {"A": 0.1, "P": 0.15, "spread": 0.4, "symbol": "A"},
+                {"A": 0.1, "P": 0.15, "spread": 0.4, "symbol": "A"}, #
                 {"A": 0.5, "P": 0.20, "spread": 0.5, "symbol": "T"},
-                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"}, #
                 {"A": 0.3, "P": 0.30, "spread": 0.3, "symbol": "T"},
             ]
         )
-        # print(res)
-        # assert 2 == res["count"]
-        # assert res["filtered_rows"] == [
-        #     {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
-        #     {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
-        # ]
+
+        assert 1 == res["count"]
+        assert res["filtered_rows"] == [
+            {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"}
+        ]
 
     def test_options_app_with_top3(self):
         known_vars=["A", "P", "spread", "symbol"]
@@ -106,18 +105,18 @@ class TestCalculator:
         res = calc.calculate(
             [
                 {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
-                {"A": 0.1, "P": 0.15, "spread": 0.1, "symbol": "A"},
+                {"A": 0.1, "P": 0.15, "spread": 0.1, "symbol": "A"}, #
                 {"A": 0.5, "P": 0.20, "spread": 0.5, "symbol": "T"},
-                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+                {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"}, #
                 {"A": 0.3, "P": 0.30, "spread": 0.3, "symbol": "T"},
             ]
         )
-        # print(res)
-        # assert 2 == res["count"]
-        # assert res["filtered_rows"] == [
-        #     {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
-        #     {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
-        # ]
+
+        assert 2 == res["count"]
+        assert res["filtered_rows"] == [
+            {"A": 0.1, "P": 0.15, "spread": 0.1, "symbol": "A"},
+            {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
+        ]
 
     def test_options_app_with_missing_values(self):
         calc = Calculator(
