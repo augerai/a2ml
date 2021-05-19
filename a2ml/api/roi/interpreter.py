@@ -191,11 +191,19 @@ class Interpreter(BaseInterpreter):
 
         for key, records in groupby(table, attrgetter('group_key')):
             records = list(records)
+
+            if node.having_node:
+                # Drop whole group if none of the rows meet having expression
+                having = self.evaluate_for_list(node.having_node, [item.row for item in records])
+                if not any(having):
+                    records = []
+
             records.sort(reverse=node.top, key=attrgetter('order_value'))
             for ri in range(min(len(records), limit)):
-                result.append(records[ri].row)
+                result.append(records[ri])
 
-        return result
+        result.sort(key=attrgetter('order_value'), reverse=node.top)
+        return [item.row for item in result]
 
     def error(self, msg):
         raise InterpreterError(msg)

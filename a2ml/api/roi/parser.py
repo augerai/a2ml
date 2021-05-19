@@ -69,6 +69,7 @@ class TopNode(BaseNode):
         self.limit_node = None
         self.order_node = None
         self.group_node = None
+        self.having_node = None
         self.where_node = None
         self.nested_node = None
         self.require_aggregation = True
@@ -78,6 +79,9 @@ class TopNode(BaseNode):
 
         if self.group_node:
             res.append(self.group_node)
+
+        if self.having_node:
+            res.append(self.having_node)
 
         if self.where_node:
             res.append(self.where_node)
@@ -102,6 +106,10 @@ class TopNode(BaseNode):
         if self.group_node:
             res.append(Token.PER)
             res.append(str(self.group_node))
+
+            if self.having_node:
+                res.append(Token.HAVING)
+                res.append(str(self.having_node))
 
         if self.where_node:
             res.append(Token.WHERE)
@@ -381,6 +389,9 @@ class Parser:
         if self.current_token.type == Token.PER:
             self.eat(Token.PER)
             node.group_node = self.expression()
+            if self.current_token.type == Token.HAVING:
+                self.eat(Token.HAVING)
+                node.having_node = self.expression()
 
         if self.current_token.type == Token.WHERE:
             self.eat(Token.WHERE)
