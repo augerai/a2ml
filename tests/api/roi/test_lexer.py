@@ -147,7 +147,7 @@ class TestLexer():
                 ],
             ),
             pytest.param(
-                "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
+                "top 5 by P from (bottom 1 by $spread_pct per $symbol) order by P desc",
                 [
                     ("top", Token.TOP),
                     (5, Token.INT_CONST),
@@ -162,6 +162,10 @@ class TestLexer():
                     ("per", Token.PER),
                     ("$symbol", Token.ID),
                     (")", Token.RPAREN),
+                    ("order", Token.ORDER),
+                    ("by", Token.BY),
+                    ("P", Token.ID),
+                    ("desc", Token.DESC),
                 ],
             ),
         ]

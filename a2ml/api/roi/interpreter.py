@@ -15,8 +15,8 @@ class MissedVariable(InterpreterError):
     pass
 
 class TopRecord:
-    def __init__(self, i, group_key, order_value):
-        self.i = i
+    def __init__(self, row, group_key, order_value):
+        self.row = row
         self.group_key = group_key
         self.order_value = order_value
 
@@ -25,28 +25,33 @@ class Interpreter(BaseInterpreter):
         self.expression = expression
         self.vars_mapping = vars_mapping
 
-    def run(self, variables={}):
+    def run(self, variables={}, filter=False):
         known_vars = self.get_known_vars(variables) | set(self.vars_mapping.keys())
         validator = Validator(self.expression, known_vars)
         validation_result = validator.validate(force_raise=True)
         self.root = validation_result.tree
 
         if isinstance(variables, list):
-            self.rows = variables
-            return self.evaluate_for_list(self.root)
+            return self.evaluate_for_list(self.root, variables, filter=filter)
         else:
             self.variables = variables
             return self.evaluate(self.root)
 
-    def evaluate_for_list(self, node):
+    def evaluate_for_list(self, node, rows, filter=False):
+        # top expressions requires aggregation
         if node.require_aggregation:
-            return self.evaluate(node)
+            return self.evaluate(node, rows)
         else:
             res = []
 
-            for vars in self.rows:
+            for vars in rows:
                 self.variables = vars
-                res.append(self.evaluate(node))
+                value = self.evaluate(node)
+                if filter:
+                    if value:
+                        res.append(vars)
+                else:
+                    res.append(value)
 
             return res
 
@@ -164,34 +169,31 @@ class Interpreter(BaseInterpreter):
 
         return func(*func_args)
 
-    def evaluate_top_node(self, node):
-        # True - means row matches top expression, False - row doesn't match
-        selected = np.array([True for _ in range(len(self.rows))])
-
+    def evaluate_top_node(self, node, rows):
         if node.nested_node:
-            selected &= self.evaluate(node.nested_node)
+            rows = self.evaluate(node.nested_node, rows)
 
         if node.where_node:
-            selected &= self.evaluate_for_list(node.where_node)
+            rows = self.evaluate_for_list(node.where_node, rows, filter=True)
 
         if node.group_node:
-            group_keys = self.evaluate_for_list(node.group_node)
+            group_keys = self.evaluate_for_list(node.group_node, rows)
         else:
-            group_keys = np.zeros(len(self.rows))
+            group_keys = np.zeros(len(rows))
 
-        order_values = self.evaluate_for_list(node.order_node)
+        order_values = self.evaluate_for_list(node.order_node, rows)
 
-        table = [TopRecord(i, group_keys[i], order_values[i]) for i, is_in in enumerate(selected) if is_in]
+        table = [TopRecord(row, group_keys[i], order_values[i]) for i, row in enumerate(rows)]
         table.sort(key=attrgetter('group_key'))
 
         limit = self.evaluate(node.limit_node)
-        result = np.array([False for _ in range(len(self.rows))])
+        result = []
 
         for key, records in groupby(table, attrgetter('group_key')):
             records = list(records)
             records.sort(reverse=node.top, key=attrgetter('order_value'))
             for ri in range(min(len(records), limit)):
-                result[records[ri].i] = True
+                result.append(records[ri].row)
 
         return result
 

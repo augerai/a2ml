@@ -20,9 +20,12 @@ class BaseInterpreter(object):
     def node_method_name(self, node):
         return 'evaluate_' + self.snake_case(type(node).__name__)
 
-    def evaluate(self, node):
+    def evaluate(self, node, rows=None):
         evaluateor = getattr(self, self.node_method_name(node), self.generic_evaluate)
-        return evaluateor(node)
+        if rows is None:
+            return evaluateor(node)
+        else:
+            return evaluateor(node, rows)
 
     def generic_evaluate(self, node):
         raise Exception('No {} method'.format(self.node_method_name(node)))

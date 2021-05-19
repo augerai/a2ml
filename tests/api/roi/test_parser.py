@@ -44,7 +44,7 @@ class TestParser:
                 "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
                 "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
             ),
-            pytest.param("P > 0.4 and top 5 by P", "((P > 0.4) and top 5 by P)"),
+            # pytest.param("P > 0.4 and top 5 by P", "((P > 0.4) and top 5 by P) order by P desc"),
         ]
     )
     def test_parser_with_top_expressinos(self, expression, exected_parsed_expression):

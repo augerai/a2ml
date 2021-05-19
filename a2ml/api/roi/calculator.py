@@ -28,7 +28,7 @@ class Calculator:
         filtered_rows = rows
 
         if self.filter_interpreter:
-            filtered_rows = [row for row, marked in zip(rows, self.filter_interpreter.run(rows)) if marked]
+            filtered_rows = self.filter_interpreter.run(rows, filter=True)
 
         if len(filtered_rows) > 0:
             revenue = sum(self.revenue_interpreter.run(filtered_rows))
