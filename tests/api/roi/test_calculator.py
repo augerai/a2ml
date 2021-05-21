@@ -66,7 +66,7 @@ class TestCalculator:
             vars_mapping["$" + known_var] = known_var
 
         calc = Calculator(
-            filter="top 2 by P from (top 1 by P per $symbol having $spread < 0.4)",
+            filter="top 2 by P from (top 1 by P per $symbol where $spread < 0.4)",
             revenue="(1 + A) * $100",
             investment="$100",
             known_vars=known_vars,
@@ -87,7 +87,7 @@ class TestCalculator:
 
         assert res["filtered_rows"] == [
             {"A": 0.5, "P": 0.80, "spread": 0.1, "symbol": "T"},
-            {"A": 0.1, "P": 0.15, "spread": 0.4, "symbol": "A"},
+            {"A": 0.1, "P": 0.10, "spread": 0.3, "symbol": "A"},
         ]
 
     def test_options_app_with_missing_values(self):
