@@ -96,8 +96,13 @@ func_call_statement:
     | NAME '(' (expression (',' expression)*)? ')'
 
 top_expression:
-    | top_expression_type' NUMBER 'by' shift_expr ['per' expression ['having' expression]] ['where' expression] ['from' '(' top_expression ')']
+    | top_start [top_with] ['per' expression ['having' expression]] ['where' expression] ['from' '(' top_expression ')']
 
-top_expression_type:
-    | 'top'
-    | 'bottom'
+top_start:
+    | 'all'
+    | 'top' NUMBER 'by' shift_expr
+    | 'bottom' NUMBER 'by' shift_expr
+
+top_with: with [top_with_item] (',' top_with_item)*
+
+top_with_item: shift_expr ['AS' NAME]

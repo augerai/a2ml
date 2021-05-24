@@ -63,18 +63,21 @@ class Token:
     NOT = "not"
     IN = "in"
 
-    TOP = "top"
+    ALL = "all"
+    AS = "as"
     BOTTOM = "bottom"
     BY = "by"
-    PER = "per"
-    WHERE = "where"
     FROM = "from"
     HAVING = "having"
+    PER = "per"
+    TOP = "top"
+    WHERE = "where"
+    WITH = "with"
 
     EOF = "EOF"
 
     COMPARISON_SYMBOLS = set([LT, EQ, GT, EXCLAMATION])
-    KEYWORDS = set([AND, OR, NOT, IN, TOP, BOTTOM, BY, PER, WHERE, FROM, HAVING])
+    KEYWORDS = set([AND, OR, NOT, IN, TOP, BOTTOM, BY, PER, WHERE, FROM, HAVING, AS, WITH, ALL])
 
     SYMBOLS = set(
         [SEMI, DOT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, COMMA, BIT_OR, BIT_AND, BIT_XOR, BIT_NOT, MODULO]

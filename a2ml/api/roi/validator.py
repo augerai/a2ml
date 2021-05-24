@@ -15,6 +15,9 @@ class ValidationResult:
         self.warning = warning
         self.tree = tree
 
+    def __str__(self):
+        return self.error or self.warning or ''
+
 class Validator(BaseInterpreter):
     def __init__(self, expression, known_vars):
         self.expression = expression
@@ -53,6 +56,18 @@ class Validator(BaseInterpreter):
             else:
                 raise ValidationError(msg)
 
+    def evaluate_var_def_node(self, node):
+        if node.name in self.known_vars:
+            msg = f"var definition '{node.name}' at position {node.position()} conflicts with existing variable"
+            raise ValidationError(msg)
+        else:
+            if isinstance(self.known_vars, set):
+                self.known_vars.add(node.name)
+            else:
+                self.known_vars.append(node.name)
+
+            return True
+
     def evaluate_binary_op_node(self, node):
         return self.evaluate(node.left) and self.evaluate(node.right)
 
@@ -87,5 +102,20 @@ class Validator(BaseInterpreter):
         if not isinstance(self.root, TopNode):
             raise ValidationError(f"top or bottom expression cannot be used as an argument or operand")
 
+        if node.with_node and not node.group_node:
+            raise ValidationError(
+                f"with experession at position {node.with_node.position()} can only be used with per expression"
+            )
+
         return all(map(lambda n: self.evaluate(n), node.child_nodes()))
 
+    def evaluate_with_node(self, node):
+        return all(map(lambda n: self.evaluate(n), node.with_item_nodes))
+
+    def evaluate_with_item_node(self, node):
+        nodes = [node.source_node]
+
+        if node.alias_node:
+            nodes.append(node.alias_node)
+
+        return all(map(lambda n: self.evaluate(n), nodes))

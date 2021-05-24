@@ -22,6 +22,7 @@ class BaseInterpreter(object):
 
     def evaluate(self, node, rows=None):
         evaluateor = getattr(self, self.node_method_name(node), self.generic_evaluate)
+
         if rows is None:
             return evaluateor(node)
         else:
@@ -38,6 +39,14 @@ class BaseInterpreter(object):
             return interpreter.evaluate(true_value)
         else:
             return interpreter.evaluate(false_value)
+
+    @staticmethod
+    def agg_max(_, args):
+        return max(args)
+
+    @staticmethod
+    def agg_min(_, args):
+        return min(args)
 
     @staticmethod
     def log(_, x, base=math.e):
@@ -65,6 +74,10 @@ class BaseInterpreter(object):
             # Logic
             "if": BaseInterpreter.logic_if,
             "@if": BaseInterpreter.logic_if,
+
+            # Aggregation
+            "agg_max": BaseInterpreter.agg_max,
+            "agg_min": BaseInterpreter.agg_min,
 
             # Math
             "abs": abs,

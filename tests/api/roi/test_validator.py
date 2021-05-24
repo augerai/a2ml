@@ -24,6 +24,17 @@ from a2ml.api.roi.validator import AstError, Validator, ValidationError
             "error",
             "top or bottom expression cannot be used as an argument or operand"
         ),
+        pytest.param("all with agg_max(P) as max_p, agg_min(P) as min_p per $a", True, None),
+        pytest.param(
+            "all with agg_min(P) as P per $a",
+            "error",
+            "var definition 'P' at position 24 conflicts with existing variable",
+        ),
+        pytest.param(
+            "all with agg_max(P) as max_p",
+            "error",
+            "with experession at position 5 can only be used with per expression",
+        ),
     ]
 )
 def test_validate(expression, expected_result, message):
@@ -35,7 +46,7 @@ def test_validate(expression, expected_result, message):
     # Validate with force_raise = False
     res = validator.validate(force_raise=False)
     if expected_result == True:
-        assert res.is_valid == True
+        assert res.is_valid == True, str(res)
         assert res.error is None
         assert res.warning is None
     elif expected_result == "warning":
@@ -46,6 +57,11 @@ def test_validate(expression, expected_result, message):
         assert re.match(message, res.error)
     else:
         raise ValueError(expected_result)
+
+    validator = Validator(
+        expression,
+        known_vars=["$a", "$b", "P"],
+    )
 
     # Validate with force_raise = True
     if expected_result == True:

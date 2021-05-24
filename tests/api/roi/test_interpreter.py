@@ -116,14 +116,23 @@ def test_interpreter_with_list(expression, exected_result):
             [{ "P": 0.9, "$symbol": "A", "$spread": 0.5 }],
         ),
         pytest.param(
-            "top 3 by P - $spread / 2 per $symbol < \"Z\" where P ** 2 > 0",
+            'top 3 by P - $spread / 2 per $symbol < "Z" where P ** 2 > 0',
             [
                 { "P": 0.9, "$symbol": "A", "$spread": 0.5 },
                 { "P": 0.6, "$symbol": "T", "$spread": 0.5 },
                 { "P": 0.7, "$symbol": "A", "$spread": 0.8 },
             ],
         ),
-
+        pytest.param(
+            'all with agg_max(P) per $symbol',
+            [
+                { "P": 0.6, "$symbol": "T", "$spread": 0.5, "agg_max(P)": 0.7 },
+                { "P": 0.7, "$symbol": "T", "$spread": 1, "agg_max(P)": 0.7 },
+                { "P": 0.9, "$symbol": "A", "$spread": 0.5, "agg_max(P)": 0.9 },
+                { "P": 0.5, "$symbol": "A", "$spread": 0.9, "agg_max(P)": 0.9 },
+                { "P": 0.7, "$symbol": "A", "$spread": 0.8, "agg_max(P)": 0.9 },
+            ]
+        ),
     ]
 )
 def test_interpreter_top_expressions(expression, exected_result):

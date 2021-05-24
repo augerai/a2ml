@@ -154,7 +154,7 @@ class Interpreter(BaseInterpreter):
         else:
             raise self.error(f"unknown unary operator '{node.op}'")
 
-    def evaluate_func_node(self, node):
+    def evaluate_func_node(self, node, rows=None):
         func = self.func_values()[node.func_name]
 
         if Interpreter.is_static_func(func):
@@ -164,6 +164,8 @@ class Interpreter(BaseInterpreter):
 
         if node.func_name in ("if", "@if"):
             func_args += node.arg_nodes
+        elif rows:
+            func_args += list(map(lambda n: self.evaluate_for_list(n, rows), node.arg_nodes))
         else:
             func_args += list(map(lambda n: self.evaluate(n), node.arg_nodes))
 
@@ -181,16 +183,31 @@ class Interpreter(BaseInterpreter):
         else:
             group_keys = np.zeros(len(rows))
 
-        order_values = self.evaluate_for_list(node.order_node, rows)
+        if node.order_node:
+            order_values = self.evaluate_for_list(node.order_node, rows)
+        else:
+            order_values = np.arange(len(rows))
 
         table = [TopRecord(row, group_keys[i], order_values[i]) for i, row in enumerate(rows)]
         table.sort(key=attrgetter('group_key'))
 
-        limit = self.evaluate(node.limit_node)
+        if node.limit_node:
+            limit = self.evaluate(node.limit_node)
+        else:
+            limit = np.inf
+
         result = []
 
         for key, records in groupby(table, attrgetter('group_key')):
             records = list(records)
+
+            if node.with_node:
+                for with_item_node in node.with_node.with_item_nodes:
+                    col_value = self.evaluate(with_item_node.source_node, [item.row for item in records])
+                    col_name = with_item_node.alias()
+
+                    for item in records:
+                        item.row[col_name] = col_value
 
             if node.having_node:
                 # Drop whole group if none of the rows meet having expression
@@ -198,11 +215,11 @@ class Interpreter(BaseInterpreter):
                 if not any(having):
                     records = []
 
-            records.sort(reverse=node.top, key=attrgetter('order_value'))
+            records.sort(reverse=node.kind == Token.TOP, key=attrgetter('order_value'))
             for ri in range(min(len(records), limit)):
                 result.append(records[ri])
 
-        result.sort(key=attrgetter('order_value'), reverse=node.top)
+        result.sort(key=attrgetter('order_value'), reverse=node.kind == Token.TOP)
         return [item.row for item in result]
 
     def error(self, msg):

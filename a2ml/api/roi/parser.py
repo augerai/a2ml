@@ -34,6 +34,9 @@ class VarNode(BaseNode):
     def __str__(self):
         return str(self.name)
 
+class VarDefNode(VarNode):
+    pass
+
 class BinaryOpNode(BaseNode):
     def __init__(self, left, token, right):
         super().__init__(token)
@@ -65,43 +68,40 @@ class FuncNode(BaseNode):
 class TopNode(BaseNode):
     def __init__(self, token):
         super().__init__(token)
-        self.top = token.value == Token.TOP
+        self.kind = token.value # (top|bottom|all)
         self.limit_node = None
         self.order_node = None
         self.group_node = None
         self.having_node = None
         self.where_node = None
+        self.with_node = None
         self.nested_node = None
         self.require_aggregation = True
 
     def child_nodes(self):
-        res = [self.limit_node, self.order_node]
+        nodes = [
+            self.nested_node, # validate nested nodes first
+            self.with_node, # then with which can define new vars
+            self.limit_node, # then rest
+            self.order_node,
+            self.group_node,
+            self.having_node,
+            self.where_node,
+        ]
 
-        if self.group_node:
-            res.append(self.group_node)
-
-        if self.having_node:
-            res.append(self.having_node)
-
-        if self.where_node:
-            res.append(self.where_node)
-
-        if self.nested_node:
-            res.append(self.nested_node)
-
-        return res
+        return [node for node in nodes if node is not None]
 
     def __str__(self):
-        res = []
+        res = [self.kind]
 
-        if self.top:
-            res.append(Token.TOP)
-        else:
-            res.append(Token.BOTTOM)
+        if self.kind != Token.ALL:
+            res.append(str(self.limit_node))
+            res.append(Token.BY)
+            res.append(str(self.order_node))
 
-        res.append(str(self.limit_node))
-        res.append(Token.BY)
-        res.append(str(self.order_node))
+        if self.with_node:
+            res.append(Token.WITH)
+            res.append(str(self.with_node))
 
         if self.group_node:
             res.append(Token.PER)
@@ -117,6 +117,39 @@ class TopNode(BaseNode):
 
         if self.nested_node:
             res.append("from (" + str(self.nested_node) + ")")
+
+        return " ".join(res)
+
+class WithNode(BaseNode):
+    def __init__(self, token, with_item_nodes):
+        super().__init__(token)
+        self.with_item_nodes = with_item_nodes
+
+    def __str__(self):
+        return ", ".join(map(str, self.with_item_nodes))
+
+class WithItemNode(BaseNode):
+    def __init__(self, token, source_node, alias_node=None):
+        super().__init__(token)
+        self.token = token.value
+        self.source_node = source_node
+        self.alias_node = alias_node
+
+        self.require_aggregation = True
+        self.source_node.require_aggregation = True
+
+    def alias(self):
+        if self.alias_node:
+            return str(self.alias_node)
+        else:
+            return str(self.source_node)
+
+    def __str__(self):
+        res = [str(self.source_node)]
+
+        if self.alias_node:
+            res.append(Token.AS)
+            res.append(str(self.alias_node))
 
         return " ".join(res)
 
@@ -334,7 +367,7 @@ class Parser:
             expr = self.expression()
             self.eat(Token.RPAREN)
             return expr
-        elif self.current_token.type in (Token.TOP, Token.BOTTOM):
+        elif self.current_token.type in (Token.TOP, Token.BOTTOM, Token.ALL):
             return self.top_expression()
         else:
             return self.atom()
@@ -356,6 +389,11 @@ class Parser:
         self.eat(token_type or self.current_token.type)
         return ConstNode(token)
 
+    def var_def_node(self):
+        token = self.current_token
+        self.eat(self.current_token.type)
+        return VarDefNode(token)
+
     def func_call_statement(self):
         name_token = self.prev_token
         self.eat(Token.LPAREN)
@@ -376,15 +414,22 @@ class Parser:
     def top_expression(self):
         node = TopNode(self.current_token)
 
-        if node.top:
-            self.eat(Token.TOP)
+        if node.kind == Token.ALL:
+            self.eat(Token.ALL)
         else:
-            self.eat(Token.BOTTOM)
+            if node.kind == Token.TOP:
+                self.eat(Token.TOP)
+            else:
+                self.eat(Token.BOTTOM)
 
-        node.limit_node = self.const_node(Token.INT_CONST)
+            node.limit_node = self.const_node(Token.INT_CONST)
 
-        self.eat(Token.BY)
-        node.order_node = self.shift_expr()
+            self.eat(Token.BY)
+            node.order_node = self.shift_expr()
+
+        if self.current_token.type == Token.WITH:
+            self.eat(Token.WITH)
+            node.with_node = self.with_node()
 
         if self.current_token.type == Token.PER:
             self.eat(Token.PER)
@@ -404,3 +449,25 @@ class Parser:
             self.eat(Token.RPAREN)
 
         return node
+
+    def with_node(self):
+        with_items = []
+        with_token = self.prev_token
+
+        while True:
+            item_token = self.current_token
+            source_node = self.shift_expr()
+            alias_node = None
+
+            if self.current_token.type == Token.AS:
+                self.eat(Token.AS)
+                alias_node = self.var_def_node()
+
+            with_items.append(WithItemNode(item_token, source_node, alias_node))
+
+            if self.current_token.type == Token.COMMA:
+                self.eat(Token.COMMA)
+            else:
+                break
+
+        return WithNode(with_token, with_items)
