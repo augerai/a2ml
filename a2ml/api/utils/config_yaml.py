@@ -26,7 +26,7 @@ class ConfigYaml(object):
 
         path = path.split('/')
         for opt in path:
-            if opt in options:
+            if options is not None and opt in options:
                 options = options[opt]
             else:
                 return default
