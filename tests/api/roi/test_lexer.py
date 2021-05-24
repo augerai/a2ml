@@ -147,7 +147,7 @@ class TestLexer():
                 ],
             ),
             pytest.param(
-                "top 5 by P from (bottom 1 by $spread_pct per $symbol)",
+                "top 5 by P from (bottom 1 by $spread_pct per $symbol having $spread_pct < 0.4)",
                 [
                     ("top", Token.TOP),
                     (5, Token.INT_CONST),
@@ -161,9 +161,28 @@ class TestLexer():
                     ("$spread_pct", Token.ID),
                     ("per", Token.PER),
                     ("$symbol", Token.ID),
+                    ("having", Token.HAVING),
+                    ("$spread_pct", Token.ID),
+                    ("<", Token.LT),
+                    (0.4, Token.FLOAT_CONST),
                     (")", Token.RPAREN),
                 ],
             ),
+            pytest.param(
+                "all with max(P) as max_p per $symbol",
+                [
+                    ("all", Token.ALL),
+                    ("with", Token.WITH),
+                    ("max", Token.ID),
+                    ("(", Token.LPAREN),
+                    ("P", Token.ID),
+                    (")", Token.RPAREN),
+                    ("as", Token.AS),
+                    ("max_p", Token.ID),
+                    ("per", Token.PER),
+                    ("$symbol", Token.ID),
+                ],
+            )
         ]
     )
     def test_lexer_values(self, expression, expected_result):
