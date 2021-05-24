@@ -47,15 +47,18 @@ This expression allows to filter rows by some aggregates
 
 Full syntax:
 
-(top | bottom) NUMBER by expression [per expression] [where expression] [from (top_expression)]
+``(((top | bottom) NUMBER by expression) | all) [with_expression] [per expression [having expression]] [where expression] [from (top_expression)]``
 
-``top`` - sort in descending order
-``bottom`` - sort in ascending order
-``NUMBER`` - number of values to select
-``by expression`` - define a value for sorting
-``per expression`` (optional) - define a grouping
-``where expression`` (optional) - define addition filter
-``from (top_expression)`` (optional) - define nested top expression
+* ``top`` - sort in descending order
+* ``bottom`` - sort in ascending order
+* ``all`` - select all items
+* ``NUMBER`` - number of values to select
+* ``with_expression`` - allows to add additional fields to result e.g. ``all with agg_max(P) as max_p``
+* ``by expression`` - define a value for sorting
+* ``per expression`` (optional) - define a grouping
+* ``having expression`` (optional) - define a filter to drop a group, if all rows do not match the expression then whole group is dropped
+* ``where expression`` (optional) - define addition filter
+* ``from (top_expression)`` (optional) - define nested top expression
 
 Numbers
 -----------------
@@ -197,3 +200,14 @@ Return the square root of ``x``.
 tan(x : number) : number
 ^^^^^^^
 Return the tangent of ``x`` radians.
+
+Builtin agg functions
+-----------------
+
+agg_max(expression) : number
+^^^^^^^
+Max value in the group
+
+agg_min(expression) : number
+^^^^^^^
+Min value in the group

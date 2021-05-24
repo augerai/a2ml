@@ -156,6 +156,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#tan-x-number-number">tan(x : number) : number</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#builtin-agg-functions">Builtin agg functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#agg-max-expression-number">agg_max(expression) : number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agg-min-expression-number">agg_min(expression) : number</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
@@ -268,14 +273,19 @@
 <p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">2</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">per</span> <span class="pre">$symbol</span></code> - group all rows by <code class="docutils literal notranslate"><span class="pre">$symbol</span></code> and return top 2 by <code class="docutils literal notranslate"><span class="pre">P</span></code> rows per each group.</p>
 <p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">10</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">from</span> <span class="pre">(bottom</span> <span class="pre">5</span> <span class="pre">by</span> <span class="pre">$spread</span> <span class="pre">per</span> <span class="pre">$symbol)</span></code> - first it finds 5 records with lowest <code class="docutils literal notranslate"><span class="pre">$spread</span></code> per each <code class="docutils literal notranslate"><span class="pre">$symbol</span></code>, then it returns top 10 by <code class="docutils literal notranslate"><span class="pre">P</span></code> from these records</p>
 <p>Full syntax:</p>
-<p>(top | bottom) NUMBER by expression [per expression] [where expression] [from (top_expression)]</p>
-<p><code class="docutils literal notranslate"><span class="pre">top</span></code> - sort in descending order
-<code class="docutils literal notranslate"><span class="pre">bottom</span></code> - sort in ascending order
-<code class="docutils literal notranslate"><span class="pre">NUMBER</span></code> - number of values to select
-<code class="docutils literal notranslate"><span class="pre">by</span> <span class="pre">expression</span></code> - define a value for sorting
-<code class="docutils literal notranslate"><span class="pre">per</span> <span class="pre">expression</span></code> (optional) - define a grouping
-<code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">expression</span></code> (optional) - define addition filter
-<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">(top_expression)</span></code> (optional) - define nested top expression</p>
+<p><code class="docutils literal notranslate"><span class="pre">(((top</span> <span class="pre">|</span> <span class="pre">bottom)</span> <span class="pre">NUMBER</span> <span class="pre">by</span> <span class="pre">expression)</span> <span class="pre">|</span> <span class="pre">all)</span> <span class="pre">[with_expression]</span> <span class="pre">[per</span> <span class="pre">expression</span> <span class="pre">[having</span> <span class="pre">expression]]</span> <span class="pre">[where</span> <span class="pre">expression]</span> <span class="pre">[from</span> <span class="pre">(top_expression)]</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">top</span></code> - sort in descending order</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bottom</span></code> - sort in ascending order</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> - select all items</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NUMBER</span></code> - number of values to select</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">with_expression</span></code> - allows to add additional fields to result e.g. <code class="docutils literal notranslate"><span class="pre">all</span> <span class="pre">with</span> <span class="pre">agg_max(P)</span> <span class="pre">as</span> <span class="pre">max_p</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">by</span> <span class="pre">expression</span></code> - define a value for sorting</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">per</span> <span class="pre">expression</span></code> (optional) - define a grouping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">having</span> <span class="pre">expression</span></code> (optional) - define a filter to drop a group, if all rows do not match the expression then whole group is dropped</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">expression</span></code> (optional) - define addition filter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">(top_expression)</span></code> (optional) - define nested top expression</p></li>
+</ul>
 </div>
 <div class="section" id="numbers">
 <h2>Numbers<a class="headerlink" href="#numbers" title="Permalink to this headline">¶</a></h2>
@@ -429,6 +439,17 @@
 <div class="section" id="tan-x-number-number">
 <h3>tan(x : number) : number<a class="headerlink" href="#tan-x-number-number" title="Permalink to this headline">¶</a></h3>
 <p>Return the tangent of <code class="docutils literal notranslate"><span class="pre">x</span></code> radians.</p>
+</div>
+</div>
+<div class="section" id="builtin-agg-functions">
+<h2>Builtin agg functions<a class="headerlink" href="#builtin-agg-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="agg-max-expression-number">
+<h3>agg_max(expression) : number<a class="headerlink" href="#agg-max-expression-number" title="Permalink to this headline">¶</a></h3>
+<p>Max value in the group</p>
+</div>
+<div class="section" id="agg-min-expression-number">
+<h3>agg_min(expression) : number<a class="headerlink" href="#agg-min-expression-number" title="Permalink to this headline">¶</a></h3>
+<p>Min value in the group</p>
 </div>
 </div>
 </div>
