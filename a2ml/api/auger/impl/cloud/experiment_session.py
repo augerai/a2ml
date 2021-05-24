@@ -91,6 +91,10 @@ class AugerExperimentSessionApi(AugerBaseApi):
     def update_settings(self):
         from .experiment import AugerExperimentApi
 
+        if not self.ctx.config.get('experiment'):
+            self.ctx.log("Config does not contain experiment section. Do not update Review retrain options")
+            return
+
         session_props = self.properties()
         props = session_props.get('model_settings',{}).get('evaluation_options')
         config_props = AugerExperimentApi.get_experiment_options(self.ctx.config)
