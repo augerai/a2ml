@@ -72,6 +72,8 @@ class AugerExperimentSessionApi(AugerBaseApi):
                     '{0:.4f}'.format(item.get('score_value'))
             }
             review_metric = self.ctx.config.get('review/metric')
+            if review_metric == 'roi':
+                review_metric = 'mda'
             if review_metric:
                 l_item[review_metric] = \
                     '{0:.4f}'.format(item.get('raw_data', {}).get('all_scores', {}).get(review_metric, 0.0))

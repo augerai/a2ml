@@ -28,9 +28,9 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'numpy<1.19.0,>=1.16.0',  # version for azure
-    'pandas>=0.22',  # version for azure
-    'joblib>=0.14.1',  # version for azure
+    'numpy==1.18.5',  # version for azure
+    'pandas==1.2.4',  # version for azure
+    'joblib==1.0.1',  # version for azure
     'ruamel.yaml>0.16.7',  # version for azure
     'pyarrow<2.0.0,>=0.17.0',  # version for azure
     'scipy==1.5.2',
@@ -82,13 +82,17 @@ extras = {
     ],
     'google': [
         'google-cloud-automl'
+    ],
+    'predict': [
+        'auger.ai.predict==1.0.71'
     ]
 }
 
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if group_name != 'predict':
+        all_deps += extras[group_name]
 extras['all'] = all_deps
 
 
