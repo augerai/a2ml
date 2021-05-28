@@ -29,7 +29,7 @@ class TestFacade(object):
         init_auger.reset()
         #init_google.reset()
         a2ml = A2ML(ctx)
-        assert len(a2ml.runner.providers) == 2
+        assert len(a2ml.runner.providers) == 1
         assert isinstance(a2ml.runner.providers['auger'], AugerA2ML)
         #assert isinstance(a2ml.runner.providers['google'], GoogleA2ML)
         assert init_auger.times == 1
