@@ -11,13 +11,13 @@ class TestFacade(object):
     @pytest.fixture
     def mock_inits(self, monkeypatch):
         MockHelpers.pass_method(AugerA2ML, "__init__", monkeypatch)
-        MockHelpers.pass_method(GoogleA2ML, "__init__", monkeypatch)
+        #MockHelpers.pass_method(GoogleA2ML, "__init__", monkeypatch)
 
     def test_init_a2ml(self, project, ctx, monkeypatch):
         init_auger = MockHelpers.count_calls(
             AugerA2ML, "__init__", monkeypatch)
-        init_google = MockHelpers.count_calls(
-            GoogleA2ML, "__init__", monkeypatch)
+        # init_google = MockHelpers.count_calls(
+        #     GoogleA2ML, "__init__", monkeypatch)
         ctx.config.set('providers', 'auger')
         a2ml = A2ML(ctx)
         assert len(a2ml.runner.providers) == 1
