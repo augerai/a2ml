@@ -174,10 +174,6 @@ class ModelDeploy(object):
                 pipeline_file_properties['signed_s3_model_path'],
                 models_path, model_id)
 
-            is_loaded, model_path = self.verify_local_model(model_id)
-            if not is_loaded:
-                raise AugerException('Model download failed. Please try again...')
-
             self.ctx.log('Downloaded model to %s' % downloaded_model_file)
 
             if locally == 'docker':
