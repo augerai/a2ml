@@ -30,23 +30,21 @@ class Model(object):
     def undeploy(self, model_id, locally=False):
         return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, no_features_in_result=None):
         if locally:
             self.deploy(model_id, locally)
 
-        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output)
+        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
 
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
-            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
-                verify_local_model(model_id)
+            is_loaded, model_path = ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
 
             if not is_loaded:
                 raise AugerException('Model should be deployed locally.')
 
-            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
             params = {
-                'model_path': os.path.join(model_path, "model"),
+                'model_path': model_path,
                 'roi': {
                     'filter': str(self.ctx.config.get('review/roi/filter')),
                     'revenue': str(self.ctx.config.get('review/roi/revenue')),
@@ -67,28 +65,22 @@ class Model(object):
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         if locally:
-            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
-                verify_local_model(model_id)
-
+            is_loaded, model_path = ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
             if not is_loaded:
                 raise AugerException('Model should be deployed locally.')
 
-            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).delete_actuals(
+            return ModelReview({'model_path': model_path}).delete_actuals(
               with_predictions=with_predictions, begin_date=begin_date, end_date=end_date)
         else:
             return ModelDeleteActual(self.ctx).execute(model_id, with_predictions, begin_date, end_date)
 
     def build_review_data(self, model_id, locally, output):
         if locally:
-            is_loaded, model_path, model_name = ModelDeploy(self.ctx, self.project).\
-                verify_local_model(model_id)
-
+            is_loaded, model_path = ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
             if not is_loaded:
                 raise AugerException('Model should be deployed locally.')
 
-            model_path, model_existed = ModelPredict(self.ctx)._extract_model(model_name)
-            return ModelReview({'model_path': os.path.join(model_path, "model")}).build_review_data(
+            return ModelReview({'model_path': model_path}).build_review_data(
               data_path=self.ctx.config.get("source"), output=output)
         else:
             raise Exception("Not Implemented.")

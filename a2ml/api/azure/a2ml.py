@@ -26,12 +26,12 @@ class AzureA2ML(object):
 
         return AzureModel(self.ctx).deploy(model_id, locally, review, name, algorithm, score, data_path)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, no_features_in_result=None):
         from a2ml.api.azure.model import AzureModel
 
         return AzureModel(self.ctx).predict(
             filename, model_id, threshold=threshold, locally=locally, data=data, columns=columns,
-            predicted_at=predicted_at, output=output)
+            predicted_at=predicted_at, output=output, no_features_in_result=no_features_in_result)
 
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         from a2ml.api.azure.model import AzureModel

@@ -31,7 +31,7 @@ class AugerPipelineFileApi(AugerBaseApi):
         return file_name
 
     def _get_status_name(self):
-        return 's3_model_path_status'
+        return 'signed_s3_model_path_status'
 
     def _log_status(self, status):
         if status is None:

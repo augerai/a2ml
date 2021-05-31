@@ -79,13 +79,14 @@ extras = {
         #'xgboost<=0.90',
         # https://github.com/Azure/azure-sdk-for-python/issues/13871
         #'azure-mgmt-resource==10.2.0',
+        #this needs to move to setup.azure.py and do not include default
         'azureml-sdk[automl]==1.29.0'
     ],
     'google': [
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict==1.0.71'
+        'auger.ai.predict==1.0.72'
     ]
 }
 

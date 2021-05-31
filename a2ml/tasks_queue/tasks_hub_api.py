@@ -531,7 +531,8 @@ def predict_by_model_task(params):
         count_in_result=params.get('count_in_result'),
         predicted_at=params.get('prediction_date'),
         prediction_id = params.get('prediction_id'),
-        locally = params.get('locally', False)
+        locally = params.get('locally', False),
+        no_features_in_result=params.get('no_features_in_result', False)
     )
     _update_hub_objects(ctx, params.get('provider'), params)
 

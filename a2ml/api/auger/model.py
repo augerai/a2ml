@@ -22,9 +22,9 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def predict(self, project, filename, model_id, threshold, locally, data, columns, predicted_at, output):
+    def predict(self, project, filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result):
         predicted = Model(self.ctx, project).predict(
-            filename, model_id, threshold, locally, data, columns, predicted_at, output)
+            filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
