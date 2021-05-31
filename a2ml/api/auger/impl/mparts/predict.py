@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from zipfile import ZipFile
 import sys
 import pandas as pd
 
@@ -23,16 +22,20 @@ class ModelPredict():
         super(ModelPredict, self).__init__()
         self.ctx = ctx
 
-    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None):
+    def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
+            predicted_at=None, output=None, no_features_in_result=None):
         if filename and not (filename.startswith("http:") or filename.startswith("https:")) and\
             not fsclient.is_s3_path(filename):
             self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
 
         if locally:
-            predicted = self._predict_locally(filename, model_id, threshold, data, columns, predicted_at, output)
+            if locally == "docker":
+                predicted = self._predict_locally_in_docker(filename, model_id, threshold, data, columns, predicted_at, output, no_features_in_result)
+            else:
+                predicted = self._predict_locally(filename, model_id, threshold, data, columns, predicted_at, output, no_features_in_result)
         else:
-            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, predicted_at, output)
+            predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, predicted_at, output, no_features_in_result)
 
         return predicted
 
@@ -95,7 +98,7 @@ class ModelPredict():
             raise AugerException("Project name: %s in config.yml is different from model project name: %s. Please change name in config.yml."%(
                 self.ctx.config.get('name'), model_project_name))
 
-    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output):
+    def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, output, no_features_in_result):
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
         temp_file = None
         ds_result = None
@@ -103,7 +106,8 @@ class ModelPredict():
             ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
-            predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, predicted_at=predicted_at)
+            predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, 
+                predicted_at=predicted_at, no_features_in_result=no_features_in_result)
 
             try:
                 ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
@@ -121,11 +125,10 @@ class ModelPredict():
             ds_result.loaded_columns = columns
             ds_result.from_pandas = is_pandas_df
 
-            is_model_loaded, model_path_1, model_name = \
-                ModelDeploy(self.ctx, None).verify_local_model(model_id)
-            model_path = None
-            if is_model_loaded:
-                model_path = os.path.join(model_path_1, "model-%s"%model_id, 'model')
+            # Save prediction in local model folder if exist
+            is_model_loaded, model_path = ModelDeploy(self.ctx, None).verify_local_model(model_id)
+            if not is_model_loaded:
+                model_path = None
 
             return ModelHelper.save_prediction(ds_result,
                 prediction_id = None, json_result=False, count_in_result=False, prediction_date=predicted_at,
@@ -134,17 +137,42 @@ class ModelPredict():
             if temp_file:
                 fsclient.remove_file(temp_file)
 
-    def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, output):
-        model_deploy = ModelDeploy(self.ctx, None)
-        is_model_loaded, model_path, model_name = \
-            model_deploy.verify_local_model(model_id)
+    def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, output, no_features_in_result):
+        from auger_ml.model_exporter import ModelExporter
 
+        is_model_loaded, model_path = ModelDeploy(self.ctx, None).verify_local_model(model_id)
         if not is_model_loaded:
             raise AugerException('Model isn\'t loaded locally. '
                 'Please use a2ml deploy command to download model.')
 
-        model_path, model_existed = self._extract_model(model_name)
-        model_options = fsclient.read_json_file(os.path.join(model_path, "model", "options.json"))
+        if columns is not None:
+            columns = list(columns)
+
+        res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
+            path_to_predict=filename_arg, records=data, features=columns, 
+            threshold=threshold, no_features_in_result=no_features_in_result)
+
+        ds_result = DataFrame({'data_path': None})
+        ds_result.df = res.df
+        ds_result.loaded_columns = columns
+        if isinstance(data, pd.DataFrame):
+            ds_result.from_pandas = True
+
+        return ModelHelper.save_prediction(ds_result,
+            prediction_id = None, json_result=False, count_in_result=False, prediction_date=predicted_at,
+            model_path=model_path, model_id=model_id, output=output)
+
+        # return ModelExporter({}).predict_by_model(model_path=model_path,
+        #     path_to_predict=filename_arg, records=data, features=columns, 
+        #     threshold=threshold, prediction_date=predicted_at, 
+        #     no_features_in_result=no_features_in_result) #, output=output)
+
+    def _predict_locally_in_docker(self, filename_arg, model_id, threshold, data, columns, predicted_at, output, no_features_in_result):
+        model_deploy = ModelDeploy(self.ctx, None)
+        is_model_loaded, model_path = model_deploy.verify_local_model(model_id, add_model_folder=False)
+        if not is_model_loaded:
+            raise AugerException('Model isn\'t loaded locally. '
+                'Please use a2ml deploy command to download model.')
 
         filename = filename_arg
         if not filename:
@@ -152,15 +180,7 @@ class ModelPredict():
             filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
             ds.saveToCsvFile(filename, compression=None)
 
-        try:
-            predicted = \
-                self._docker_run_predict(filename, threshold, model_path)
-        finally:
-            # clean up unzipped model
-            # if it wasn't unzipped before
-            if not model_existed:
-                fsclient.remove_folder(model_path)
-                model_path = None
+        predicted = self._docker_run_predict(filename, threshold, model_path)
 
         if not filename_arg:
             ds_result = DataFrame.create_dataframe(predicted)
@@ -177,16 +197,6 @@ class ModelPredict():
             predicted = output
 
         return predicted
-
-    def _extract_model(self, model_name):
-        model_path = os.path.splitext(model_name)[0]
-        model_existed = os.path.exists(model_path)
-
-        if not model_existed:
-            with ZipFile(model_name, 'r') as zip_file:
-                zip_file.extractall(model_path)
-
-        return model_path, model_existed
 
     def _docker_run_predict(self, filename, threshold, model_path):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)

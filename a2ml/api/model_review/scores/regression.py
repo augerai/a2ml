@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import make_scorer, mean_squared_error, mean_squared_log_error, mean_absolute_error
-from sklearn.metrics.scorer import SCORERS
+from sklearn.metrics import SCORERS
 
 
 EPSILON = 1e-10

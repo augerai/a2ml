@@ -23,7 +23,7 @@ class ModelDeploy(object):
 
     def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None):
         if locally:
-            return self.deploy_model_locally(model_id, review, name, data_path)
+            return self.deploy_model_locally(model_id, review, name, data_path, locally)
         else:
             return self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path)
 
@@ -159,36 +159,65 @@ class ModelDeploy(object):
 
         return pipeline_properties.get('id')
 
-    def deploy_model_locally(self, model_id, review, name, data_path):
-        is_loaded, model_path, model_name = self.verify_local_model(model_id)
+    def deploy_model_locally(self, model_id, review, name, data_path, locally):
+        is_loaded, model_path = self.verify_local_model(model_id)
         #TODO: support review flag
         if not is_loaded:
             self.ctx.log('Downloading model %s' % model_id)
 
             self.project.start()
 
+            models_path = os.path.join(self.ctx.config.get_path(), 'models')
             pipeline_file_api = AugerPipelineFileApi(self.ctx, None)
             pipeline_file_properties = pipeline_file_api.create(model_id)
             downloaded_model_file = pipeline_file_api.download(
                 pipeline_file_properties['signed_s3_model_path'],
-                model_path, model_id)
+                models_path, model_id)
 
             self.ctx.log('Downloaded model to %s' % downloaded_model_file)
 
-            self.ctx.log('Pulling docker image required to predict')
-            self._docker_pull_image()            
+            if locally == 'docker':
+                self.ctx.log('Pulling docker image required to predict')
+                self._docker_pull_image()
+            else:
+                self.ctx.log('To run predict locally install a2ml[predict]')             
         else:
-            self.ctx.log('Downloaded model is %s' % model_name)
+            self.ctx.log('Downloaded model is %s' % model_path)
 
         return model_id
 
-    def verify_local_model(self, model_id):
-        model_path = os.path.join(self.ctx.config.get_path(), 'models')
-        model_name = os.path.join(model_path, 'model-%s.zip' % model_id)
-        is_exists = fsclient.is_folder_exists(os.path.join(model_path,"model-%s"%model_id))
-        if not is_exists:
-            is_exists = fsclient.is_file_exists(model_name)
-        return is_exists, model_path, model_name
+    def get_local_model_paths(self, model_id):
+        models_path = os.path.join(self.ctx.config.get_path(), 'models')
+        model_zip_path = os.path.join(models_path, 'model-%s.zip' % model_id)
+        model_path = os.path.join(models_path,"model-%s"%model_id)
+
+        return model_path, model_zip_path
+
+    def verify_local_model(self, model_id, add_model_folder=True):
+        model_path, model_zip_path = self.get_local_model_paths(model_id)
+
+        is_exists = fsclient.is_folder_exists(model_path)
+        if not is_exists and fsclient.is_file_exists(model_zip_path):
+            self._extract_model(model_zip_path)
+
+        if add_model_folder:    
+            model_path = os.path.join(model_path, "model")
+
+        is_exists = fsclient.is_folder_exists(model_path)
+
+        return is_exists, model_path
+
+    def _extract_model(self, model_name):
+        from zipfile import ZipFile
+
+        model_path = os.path.splitext(model_name)[0]
+        model_existed = os.path.exists(model_path)
+
+        if not model_existed:
+            with ZipFile(model_name, 'r') as zip_file:
+                zip_file.extractall(model_path)
+
+        return model_path, model_existed
 
     def _docker_pull_image(self):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)

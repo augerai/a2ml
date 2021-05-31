@@ -100,7 +100,7 @@ class ModelHelper(object):
 
     # @staticmethod
     # def _get_score_byname(scoring):
-    #     from sklearn.metrics.scorer import get_scorer
+    #     from sklearn.metrics import get_scorer
     #     from sklearn.metrics import SCORERS
 
     #     #TODO: below metrics does not directly map to sklearn:
@@ -157,7 +157,7 @@ class ModelHelper(object):
 
     @staticmethod
     def calculate_scores(options, y_test, X_test=None, estimator=None, y_pred=None, raise_main_score=True):
-        from sklearn.metrics.scorer import get_scorer
+        from sklearn.metrics import get_scorer
         from sklearn.model_selection._validation import _score
         from sklearn.metrics import confusion_matrix
 

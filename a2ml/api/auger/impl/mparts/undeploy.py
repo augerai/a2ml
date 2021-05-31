@@ -17,15 +17,11 @@ class ModelUndeploy(object):
 
     def execute(self, model_id, locally=False):
         if locally:
-            is_loaded, model_path, model_name = \
-                ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
-            self.ctx.log("Undeploy model. Remove local model: %s" % model_name)
+            model_path, model_zip_path = ModelDeploy(self.ctx, self.project).get_local_model_paths(model_id)
+            self.ctx.log("Undeploy model. Remove local model: %s" % model_path)
 
-            if is_loaded:
-                fsclient.remove_file(model_name)
-
-            model_folder = os.path.splitext(model_name)[0]
-            fsclient.remove_folder(model_folder)
+            fsclient.remove_file(model_zip_path)
+            fsclient.remove_folder(model_path)
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
             if pipeline_api.check_endpoint():

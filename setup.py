@@ -28,9 +28,9 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'numpy<1.19.0,>=1.16.0',  # version for azure
-    'pandas>=0.22',  # version for azure
-    'joblib>=0.14.1',  # version for azure
+    'numpy==1.18.5',  # version for azure
+    'pandas==1.2.4',  # version for azure
+    'joblib==1.0.1',  # version for azure
     'ruamel.yaml>0.16.7',  # version for azure
     'pyarrow<2.0.0,>=0.17.0',  # version for azure
     'scipy==1.5.2',
@@ -72,23 +72,30 @@ extras = {
         'redis',
         's3fs>=0.4.0,<0.5.0',
         'uvicorn',
+        'scikit-learn==0.24.2'
     ],
     'azure': [
-        'scikit-learn~=0.22.2',
-        'xgboost<=0.90',
+        #'scikit-learn~=0.22.2',
+        #'xgboost<=0.90',
         # https://github.com/Azure/azure-sdk-for-python/issues/13871
         #'azure-mgmt-resource==10.2.0',
-        'azureml-sdk[automl]~=1.22.0'
+        #this needs to move to setup.azure.py and do not include default
+        'azureml-sdk[automl]==1.29.0'
     ],
     'google': [
         'google-cloud-automl'
+    ],
+    'predict': [
+        'auger.ai.predict==1.0.72'
     ]
 }
 
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    all_deps += extras[group_name]
+    if group_name != 'predict' and group_name != 'google' and group_name != 'azure':
+        all_deps += extras[group_name]
+        
 extras['all'] = all_deps
 
 

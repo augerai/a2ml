@@ -221,7 +221,7 @@ class A2ML(BaseA2ML):
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None,
-            threshold=None, output=None, locally=False, provider=None):
+            threshold=None, output=None, no_features_in_result = None, locally=False, provider=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Note:
@@ -236,7 +236,8 @@ class A2ML(BaseA2ML):
             predicted_at: Predict data date. Use for review of historical data.
             threshold(float): For classification models only. This will return class probabilities with response.
             output(str): Output csv file path.
-            locally(bool): Predicts using a local model if True, on the Provider Cloud if False.
+            no_features_in_result(bool) : Do not return feature columns in prediction result. False by default
+            locally(bool, str): Predicts using a local model with auger.ai.predict if True, on the Provider Cloud if False. If set to "docker", then docker image used to run the model
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 
         Returns:
@@ -287,7 +288,7 @@ class A2ML(BaseA2ML):
                 # predictions are returned as rv[provider]['data']['predicted']
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
 
     @show_result
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):

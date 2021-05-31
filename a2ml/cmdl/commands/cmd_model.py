@@ -37,14 +37,19 @@ def deploy(ctx, provider, model_id, locally, no_review, name, algorithm, score, 
 @click.option('--model-id', '-m', type=click.STRING, required=True,
     help='Deployed model id.')
 @click.option('--locally', is_flag=True, default=False,
+    help='Predict locally using auger.ai.predict package.')
+@click.option('--docker', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @click.option('--output', '-o', type=click.STRING, required=False,
     help='Output csv file path.')
 @pass_context
-def predict(ctx, provider, filename, model_id, threshold, locally, output):
+def predict(ctx, provider, filename, model_id, threshold, locally, docker, output):
     """Predict with deployed model."""
+    if docker:
+        locally = "docker"
+
     A2MLModel(ctx, provider).predict(filename=filename, model_id=model_id, threshold=threshold, locally=locally, output=output)
 
 @click.command('actuals', short_help='Send actual values for deployed model. Needed for review and monitoring.')

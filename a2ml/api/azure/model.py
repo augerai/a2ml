@@ -239,8 +239,8 @@ def get_df(data):
     @error_handler
     @authenticated
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None,
-        predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None
-        ):
+        predicted_at=None, output=None, json_result=False, count_in_result=False, prediction_id=None,
+        no_features_in_result=None):
         ds = DataFrame.create_dataframe(filename, data, columns)
         model_path = self.ctx.config.get_model_path(model_id)
         options = fsclient.read_json_file(os.path.join(model_path, "options.json"))
