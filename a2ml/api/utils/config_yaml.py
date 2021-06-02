@@ -15,8 +15,7 @@ class ConfigYaml(object):
             raise ValueError("please provide yaml file name")
         self.filename = filename
         with fsclient.open_file(filename, 'r') as f:
-            self.yaml = ruamel.yaml.load(f,
-                Loader=ruamel.yaml.RoundTripLoader)
+            self.yaml = ruamel.yaml.YAML(typ='unsafe', pure=True).load(f)
         return self
 
     def get(self, path, default=None):

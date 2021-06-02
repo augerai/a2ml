@@ -17,7 +17,7 @@ class SerializableConfigYaml(ConfigYaml):
 
     def __setstate__(self, state):
         self.filename = state['filename']
-        self.yaml = ruamel.yaml.load(state['yaml'], Loader=ruamel.yaml.RoundTripLoader)
+        self.yaml = ruamel.yaml.YAML(typ='unsafe', pure=True).load(state['yaml'])
 
     def write(self, filename=None, client_side=True):
         if client_side:
