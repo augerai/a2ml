@@ -28,21 +28,21 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'numpy==1.18.5',  # version for azure
-    'pandas==1.2.4',  # version for azure
-    'joblib==1.0.1',  # version for azure
-    'ruamel.yaml>0.16.7',  # version for azure
-    'pyarrow<2.0.0,>=0.17.0',  # version for azure
+    'numpy==1.18.5',
+    'pandas==1.2.4',
+    'joblib==1.0.1',
+    'ruamel.yaml==0.17.7',
+    'pyarrow==4.0.1',
     'scipy==1.5.2',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
-    'click',
+    'click<8.0,>=7.0', #celery 5
     'shortuuid',
     'docutils<0.16,>=0.10',
     'psutil',
     'requests',
-    'smart_open==1.9.0',  # version for azure
+    'smart_open==5.1.0',
     'jsonpickle',
     'websockets',
     'liac-arff==2.4.0',
@@ -95,7 +95,7 @@ all_deps = []
 for group_name in extras:
     if group_name != 'predict' and group_name != 'google' and group_name != 'azure':
         all_deps += extras[group_name]
-        
+
 extras['all'] = all_deps
 
 
