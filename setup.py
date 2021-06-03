@@ -37,7 +37,7 @@ install_requires = [
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
-    'click',
+    'click<8.0,>=7.0', #celery 5
     'shortuuid',
     'docutils<0.16,>=0.10',
     'psutil',
