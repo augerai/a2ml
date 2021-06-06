@@ -9,15 +9,15 @@ log = logging.getLogger("a2ml")
 
 '''Config to serialize pass to server side deserialize, then pass back and save on CLI side'''
 class SerializableConfigYaml(ConfigYaml):
-    def __getstate__(self):
-        return {
-            'filename': self.filename,
-            'yaml': ruamel.yaml.dump(self.yaml, Dumper=ruamel.yaml.RoundTripDumper)
-        }
+    # def __getstate__(self):
+    #     return {
+    #         'filename': self.filename,
+    #         'yaml': ruamel.yaml.dump(self.yaml, Dumper=ruamel.yaml.RoundTripDumper)
+    #     }
 
-    def __setstate__(self, state):
-        self.filename = state['filename']
-        self.yaml = ruamel.yaml.YAML(typ='unsafe', pure=True).load(state['yaml'])
+    # def __setstate__(self, state):
+    #     self.filename = state['filename']
+    #     self.yaml = ruamel.yaml.load(state['yaml'], Loader=ruamel.yaml.RoundTripLoader)
 
     def write(self, filename=None, client_side=True):
         if client_side:
