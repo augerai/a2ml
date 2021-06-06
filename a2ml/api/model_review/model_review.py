@@ -145,6 +145,7 @@ class ModelReview(object):
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger',
+        do_predict=False
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
@@ -168,7 +169,7 @@ class ModelReview(object):
         actuals_count = ds_actuals.count()
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
-        if provider is not None and not self.target_feature in ds_actuals.columns:
+        if provider is not None and (do_predict or not self.target_feature in ds_actuals.columns):
             logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
             self._do_predict(ctx, ds_actuals, provider)
 
