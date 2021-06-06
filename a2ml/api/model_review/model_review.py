@@ -208,7 +208,7 @@ class ModelReview(object):
         else:
             return result
 
-    def _do_predict(self, ctx, ds_actuals, provider):
+    def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
         if len(missing_features) > 0:
             missing_features = ', '.join(sorted(list(missing_features)))
@@ -216,8 +216,11 @@ class ModelReview(object):
 
         res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
 
+        if predict_feature is None:
+            predict_feature = self.target_feature
+
         if res['result']:
-            ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]
+            ds_actuals.df[predict_feature] = res['data']['predicted'][self.target_feature]
         else:
             raise Exception(res['data'])
             
@@ -326,7 +329,7 @@ class ModelReview(object):
             if df_actuals.count() > 0:
                 #print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
                 if do_predict:
-                    self._do_predict(ctx, df_actuals, provider)
+                    self._do_predict(ctx, df_actuals, provider, predict_feature='a2ml_predicted')
 
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
