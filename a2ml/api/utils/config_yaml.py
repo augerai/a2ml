@@ -15,7 +15,7 @@ class ConfigYaml(object):
             raise ValueError("please provide yaml file name")
         self.filename = filename
         with fsclient.open_file(filename, 'r') as f:
-            self.yaml = ruamel.yaml.YAML(typ='unsafe', pure=True).load(f)
+            self.yaml = ruamel.yaml.YAML(typ='rt').load(f)
         return self
 
     def get(self, path, default=None):
@@ -58,9 +58,5 @@ class ConfigYaml(object):
 
     def write(self, filename=None):
         filename = filename if filename else self.filename
-        fsclient.write_text_file(filename, ruamel.yaml.dump(self.yaml,
-                Dumper=ruamel.yaml.RoundTripDumper))
-
-        # with open(self.filename, 'w') as out:
-        #     out.write(ruamel.yaml.dump(self.yaml,
-        #         Dumper=ruamel.yaml.RoundTripDumper))
+        with fsclient.open_file(filename, 'w') as f:
+            ruamel.yaml.YAML(typ='rt').dump(self.yaml, f)
