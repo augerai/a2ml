@@ -145,6 +145,7 @@ class ModelReview(object):
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger',
+        do_predict=False
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
@@ -168,7 +169,7 @@ class ModelReview(object):
         actuals_count = ds_actuals.count()
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
-        if provider is not None and not self.target_feature in ds_actuals.columns:
+        if provider is not None and (do_predict or not self.target_feature in ds_actuals.columns):
             logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
             self._do_predict(ctx, ds_actuals, provider)
 
@@ -207,7 +208,7 @@ class ModelReview(object):
         else:
             return result
 
-    def _do_predict(self, ctx, ds_actuals, provider):
+    def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
         if len(missing_features) > 0:
             missing_features = ', '.join(sorted(list(missing_features)))
@@ -215,8 +216,11 @@ class ModelReview(object):
 
         res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
 
+        if predict_feature is None:
+            predict_feature = self.target_feature
+
         if res['result']:
-            ds_actuals.df[self.target_feature] = res['data']['predicted'][self.target_feature]
+            ds_actuals.df[predict_feature] = res['data']['predicted'][self.target_feature]
         else:
             raise Exception(res['data'])
             
@@ -325,7 +329,7 @@ class ModelReview(object):
             if df_actuals.count() > 0:
                 #print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
                 if do_predict:
-                    self._do_predict(ctx, df_actuals, provider)
+                    self._do_predict(ctx, df_actuals, provider, predict_feature='a2ml_predicted')
 
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
