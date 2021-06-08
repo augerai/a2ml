@@ -110,7 +110,7 @@ class BotoClient:
         return self.client.copy(*args, **kwargs)
 
     @retry_handler
-    def put_bucket_cors(self, *args, **kwargs)
+    def put_bucket_cors(self, *args, **kwargs):
         return self.client.put_bucket_cors(*args, **kwargs)
 
     @retry_handler
