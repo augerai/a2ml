@@ -16,7 +16,7 @@ AWS_S3_HOST = "s3.amazonaws.com"
 
 def retry_handler(decorated):
     def wrapper(self, *args, **kwargs):
-        return retry_helper(lambda: decorated(self, *args, **kwargs), ['InvalidAccessKeyId', 'NoSuchKey'])
+        return retry_helper(lambda: decorated(self, *args, **kwargs), ['InvalidAccessKeyId', 'NoSuchKey', 'Please try again'])
 
     return wrapper
 
@@ -108,6 +108,10 @@ class BotoClient:
     @retry_handler
     def copy(self, *args, **kwargs):
         return self.client.copy(*args, **kwargs)
+
+    @retry_handler
+    def put_bucket_cors(self, *args, **kwargs):
+        return self.client.put_bucket_cors(*args, **kwargs)
 
     @retry_handler
     def generate_presigned_url_ex(self, bucket, key, method="GET", expires_in=None, max_content_length=None):
@@ -392,7 +396,7 @@ class S3FSClient:
                 ]
             }
 
-            self.client.client.put_bucket_cors(Bucket=Bucket, CORSConfiguration=config)
+            self.client.put_bucket_cors(Bucket=Bucket, CORSConfiguration=config)
         except botocore.exceptions.ClientError as e:
             if not "NotImplemented" in str(e):
                 raise
