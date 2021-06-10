@@ -357,7 +357,7 @@ class S3FSClient:
         path = self._get_relative_path(path)
         path = path + "/" if not path.endswith("/") else path
 
-        self.ensure_bucket_created(self.s3BucketName)
+        #self.ensure_bucket_created(self.s3BucketName)
 
         # If no path we shouldn't create it
         if path != "/":
