@@ -35,7 +35,7 @@ install_requires = [
     'pyarrow==1.0.1',
     'scipy==1.5.2',
     'asyncio',
-    'boto3',
+    'boto3==1.17.74',
     'auger-hub-api-client==0.7.4',
     'click<8.0,>=7.0', #celery 5
     'shortuuid',
@@ -86,7 +86,7 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict==1.0.75'
+        'auger.ai.predict==1.0.76'
     ]
 }
 
