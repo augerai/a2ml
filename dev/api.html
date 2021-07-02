@@ -510,6 +510,18 @@
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Predict locally without config files. Model will automatically downloaded if not exists.</span>
+<span class="c1"># To use local predict install a2ml[predict]</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;project name&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="s2">&quot;Json string from a2ml ui settings&quot;</span>
+
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2ML</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;../irises.csv&#39;</span><span class="p">,</span>
+    <span class="n">no_features_in_result</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">locally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># if rv[provider].result is True</span>
+<span class="c1"># predictions are stored in rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1194,6 +1206,18 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 <span class="c1"># if rv[provider].result is True</span>
 <span class="c1"># predictions are returned as rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Predict locally without config files. Model will automatically downloaded if not exists.</span>
+<span class="c1"># To use local predict install a2ml[predict]</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;project name&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">credentials</span> <span class="o">=</span> <span class="s2">&quot;Json string from a2ml ui settings&quot;</span>
+
+<span class="n">rv</span> <span class="o">=</span> <span class="n">A2MLModel</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;../irises.csv&#39;</span><span class="p">,</span>
+    <span class="n">no_features_in_result</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">locally</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># if rv[provider].result is True</span>
+<span class="c1"># predictions are stored in rv[provider][&#39;data&#39;][&#39;predicted&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
