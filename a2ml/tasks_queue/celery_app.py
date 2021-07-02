@@ -59,12 +59,12 @@ celeryApp.conf.task_send_sent_event = True
 celeryApp.conf.worker_prefetch_multiplier = 1
 
 celeryApp.conf.task_queues = (
-    Queue('a2ml', Exchange('a2ml', delivery_mode=1),
-          routing_key='a2ml', durable=False, priority=3),
+    Queue(task_config.task_queue, Exchange(task_config.task_queue, delivery_mode=1),
+          routing_key=task_config.task_queue, durable=False, priority=3),
 )
 
 celeryApp.conf.task_routes = {
-    'a2ml.tasks_queue.tasks_hub_api.*': {'queue': 'a2ml'},
+    'a2ml.tasks_queue.tasks_hub_api.*': {'queue': task_config.task_queue},
 }
 
 class NumpyKombuJSONEncoder(_json.JSONEncoder):
