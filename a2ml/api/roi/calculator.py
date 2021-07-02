@@ -4,6 +4,8 @@ from a2ml.api.roi.interpreter import Interpreter
 from a2ml.api.roi.lexer import Lexer
 from a2ml.api.roi.parser import Parser
 from a2ml.api.roi.validator import Validator
+from a2ml.api.roi.var_names_fetcher import VarNamesFetcher
+
 
 class Calculator:
     def __init__(self, revenue=None, investment=None, filter=None, known_vars=[], vars_mapping={}):
@@ -49,3 +51,20 @@ class Calculator:
             "investment": investment,
             "roi": roi,
         }
+
+    def get_var_names(self):
+        result = []
+        if self.revenue:
+            fetcher = VarNamesFetcher(self.revenue)
+            result += fetcher.fetch()
+
+        if self.investment:
+            fetcher = VarNamesFetcher(self.investment)
+            result += fetcher.fetch()
+
+        if self.filter:
+            fetcher = VarNamesFetcher(self.filter)
+            result += fetcher.fetch()
+
+        result = set(result)    
+        return [var[1:] for var in result if var.startswith('$')]
