@@ -159,7 +159,7 @@ class A2MLModel(BaseA2ML):
                 :widths: 50 50 50
                 :header-rows: 1
 
-                * - target: predicted value. If missed - predict called automatically
+                * - predicted ( or target): predicted value. If missed - predict called automatically
                   - actual
                   - baseline_target: predicted value for baseline model (OPTIONAL)
                 * - Iris-setosa
