@@ -1,10 +1,10 @@
 import pandas as pd
 
-from a2ml.api.roi.interpreter import Interpreter
-from a2ml.api.roi.lexer import Lexer
-from a2ml.api.roi.parser import Parser
-from a2ml.api.roi.validator import Validator
-from a2ml.api.roi.var_names_fetcher import VarNamesFetcher
+from .interpreter import Interpreter
+from .lexer import Lexer
+from .parser import Parser
+from .validator import Validator
+from .var_names_fetcher import VarNamesFetcher
 
 
 class Calculator:

@@ -1,6 +1,6 @@
-from a2ml.api.roi.base_interpreter import BaseInterpreter
-from a2ml.api.roi.lexer import AstError, Lexer
-from a2ml.api.roi.parser import Parser, TopNode
+from .base_interpreter import BaseInterpreter
+from .lexer import AstError, Lexer
+from .parser import Parser, TopNode
 
 class VarNamesFetcher(BaseInterpreter):
     def __init__(self, expression):

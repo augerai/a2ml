@@ -1,4 +1,4 @@
-from a2ml.api.roi.lexer import AstError, Token
+from .lexer import AstError, Token
 
 class ParserError(AstError):
     pass
