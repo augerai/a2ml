@@ -287,6 +287,19 @@ class A2ML(BaseA2ML):
                 # if rv[provider].result is True
                 # predictions are returned as rv[provider]['data']['predicted']
 
+            .. code-block:: python
+                
+                # Predict locally without config files. Model will automatically downloaded if not exists.
+                # To use local predict install a2ml[predict]
+                ctx = Context()
+                ctx.config.set('name', 'project name')
+                ctx.credentials = "Json string from a2ml ui settings"
+
+                rv = A2ML(ctx).predict(model_id, '../irises.csv',
+                    no_features_in_result = True, locally=True)
+                # if rv[provider].result is True
+                # predictions are stored in rv[provider]['data']['predicted']
+
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
 
