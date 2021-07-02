@@ -82,7 +82,7 @@ class Context(object):
         if provider:
             providers = provider
         else:
-            providers = self.config.get('providers', [])
+            providers = self.config.get('providers', ['auger'])
 
         if isinstance(providers, (str,)):
             providers = [p.strip() for p in providers.split(',')]
@@ -105,7 +105,8 @@ class Context(object):
         return "auger"
 
     def is_external_provider(self):
-        return self.config.get_list('providers')[0] == 'external'
+        providers = self.get_providers()
+        return providers and providers[0] == 'external'
 
     def copy(self, name):
         """creates a copy of an existing Context
@@ -135,7 +136,7 @@ class Context(object):
             # In case if command run in folder without config, do not set it
             pass
             
-        if self._runs_on_server and hasattr(self, 'credentials'):
+        if hasattr(self, 'credentials'):
             new.credentials = self.credentials
 
         return new

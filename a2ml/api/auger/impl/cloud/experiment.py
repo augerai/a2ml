@@ -112,6 +112,13 @@ class AugerExperimentApi(AugerBaseApi):
         if split_options:
             options['splitOptions'] = split_options
 
+        if  config.get('review/roi/filter'):
+            options['roi_metric'] = {
+                'filter': str(config.get('review/roi/filter')), 
+                'revenue': str(config.get('review/roi/revenue')), 
+                'investment': str(config.get('review/roi/investment'))
+            }
+
         return options
             
     def get_experiment_settings(self):

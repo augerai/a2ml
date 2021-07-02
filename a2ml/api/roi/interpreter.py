@@ -4,9 +4,9 @@ import numpy as np
 from operator import attrgetter
 from itertools import groupby
 
-from a2ml.api.roi.base_interpreter import BaseInterpreter
-from a2ml.api.roi.lexer import AstError, Token
-from a2ml.api.roi.validator import Validator
+from .base_interpreter import BaseInterpreter
+from .lexer import AstError, Token
+from .validator import Validator
 
 class InterpreterError(AstError):
     pass
