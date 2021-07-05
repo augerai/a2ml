@@ -147,3 +147,34 @@ def test_interpreter_top_expressions(expression, exected_result):
     interpreter = Interpreter(expression)
 
     assert interpreter.run(variables) == exected_result
+
+def test_interpreter_top_expression_with_tuples():
+    expression = """
+        top 1 by max_p per $date from (
+            top 1 by P per ($symbol, $date) where $close_ask<4 and $close_ask>=0.1
+            from (
+                all with agg_max(P) as max_p per ($symbol, $date)
+            )
+        )
+    """
+
+    variables = [
+        { "$close_ask": 1, "P": 0.6, "$symbol": "T", "$date": "2021-07-05" },
+        { "$close_ask": 1, "P": 0.7, "$symbol": "T", "$date": "2021-07-05" }, #
+        { "$close_ask": 0, "P": 0.9, "$symbol": "A", "$date": "2021-07-05" },
+        { "$close_ask": 1, "P": 0.5, "$symbol": "A", "$date": "2021-07-05" },
+        { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-05" }, #
+
+        { "$close_ask": 1, "P": 0.7, "$symbol": "T", "$date": "2021-07-06" },
+        { "$close_ask": 1, "P": 0.8, "$symbol": "T", "$date": "2021-07-06" }, #
+        { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-06" }, #
+        { "$close_ask": 1, "P": 0.5, "$symbol": "A", "$date": "2021-07-06" },
+        { "$close_ask": 0, "P": 1.0, "$symbol": "A", "$date": "2021-07-06" },
+    ]
+
+    interpreter = Interpreter(expression)
+
+    assert interpreter.run(variables) == [
+        { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-06", "max_p": 1.0 },
+        { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-05", "max_p": 0.9 },
+    ]

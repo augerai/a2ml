@@ -169,7 +169,7 @@ class TestLexer():
                 ],
             ),
             pytest.param(
-                "all with max(P) as max_p per $symbol",
+                "all with max(P) as max_p per ($symbol, $date)",
                 [
                     ("all", Token.ALL),
                     ("with", Token.WITH),
@@ -180,7 +180,11 @@ class TestLexer():
                     ("as", Token.AS),
                     ("max_p", Token.ID),
                     ("per", Token.PER),
+                    ("(", Token.LPAREN),
                     ("$symbol", Token.ID),
+                    (",", Token.COMMA),
+                    ("$date", Token.ID),
+                    (")", Token.RPAREN),
                 ],
             )
         ]
