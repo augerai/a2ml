@@ -310,7 +310,7 @@ class TestCalculator:
         assert 3 == res["investment"]
         assert 4 == res["roi"]
 
-    def test_get_var_names(self):        
+    def test_get_var_names(self):
         calc = Calculator(
             filter=
 """
@@ -328,7 +328,7 @@ class TestCalculator:
         res = calc.get_var_names()
         assert set(res) == set(['spread_pct', 'costbase', 'delta_afterhours', 'symbol'])
 
-    def test_get_var_names2(self):        
+    def test_get_var_names_with_tuple(self):
         calc = Calculator(
             filter=
 """
@@ -347,4 +347,4 @@ class TestCalculator:
 
         res = calc.get_var_names()
         assert set(res) == set(['data_date', 'costbase', 'symbol', 'close_ask'])
-        
+

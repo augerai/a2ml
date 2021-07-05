@@ -36,6 +36,9 @@ class VarNamesFetcher(BaseInterpreter):
     def evaluate_func_node(self, node):
         list(map(lambda node: self.evaluate(node), node.arg_nodes))
 
+    def evaluate_tuple_node(self, node):
+        list(map(lambda node: self.evaluate(node), node.item_nodes))
+
     def evaluate_top_node(self, node):
         list(map(lambda n: self.evaluate(n), node.child_nodes()))
 
