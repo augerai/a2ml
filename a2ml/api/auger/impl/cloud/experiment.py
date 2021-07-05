@@ -108,6 +108,8 @@ class AugerExperimentApi(AugerBaseApi):
             split_options['shuffleData'] = config.get('experiment/shuffle')
         if config.get('experiment/timeseries_fold_split') is not None:
             split_options['timeseriesSplit'] = config.get('experiment/timeseries_fold_split')
+        if config.get('experiment/test_size_limit') is not None:
+            split_options['test_size_limit'] = config.get('experiment/test_size_limit')
 
         if split_options:
             options['splitOptions'] = split_options
