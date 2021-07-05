@@ -169,8 +169,11 @@ class ModelReview(object):
         actuals_count = ds_actuals.count()
         ds_actuals.df.rename(columns={"actual": 'a2ml_actual'}, inplace=True)
 
+        if 'predicted' in ds_actuals.columns and not self.target_feature in ds_actuals.columns:
+            ds_actuals.df = ds_actuals.df.rename(columns={'predicted': self.target_feature})
+
         if provider is not None and (do_predict or not self.target_feature in ds_actuals.columns):
-            logging.info("Actual data missing predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
+            logging.info("Actual data missing 'predicted' column and predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
             self._do_predict(ctx, ds_actuals, provider)
 
         result = self._do_score_actual(ds_actuals.df)

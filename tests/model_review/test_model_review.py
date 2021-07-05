@@ -353,7 +353,7 @@ def test_score_actuals_dict_full():
 
     actuals = [
       {
-        'species': 'virginica',
+        'predicted': 'virginica',
         'actual': 'versicolor',
         'sepal_length': 5.0,
         'sepal_width': 4.0,
@@ -362,7 +362,7 @@ def test_score_actuals_dict_full():
         'baseline_target': 'virginica'
       },
       {
-        'species': 'virginica',
+        'predicted': 'virginica',
         'actual': 'virginica',
         'sepal_length': 3.0,
         'sepal_width': 2.0,
