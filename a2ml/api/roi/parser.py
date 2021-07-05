@@ -65,6 +65,14 @@ class FuncNode(BaseNode):
     def __str__(self):
         return str(self.func_name) + "(" + ", ".join(map(str, self.arg_nodes)) + ")"
 
+class TupleNode(BaseNode):
+    def __init__(self, token, items):
+        super().__init__(token)
+        self.item_nodes = items
+
+    def __str__(self):
+        return "(" + ", ".join(map(str, self.item_nodes))  + ")"
+
 class TopNode(BaseNode):
     def __init__(self, token):
         super().__init__(token)
@@ -363,14 +371,28 @@ class Parser:
 
     def primary(self):
         if self.current_token.type == Token.LPAREN:
+            token = self.current_token
             self.eat(Token.LPAREN)
             expr = self.expression()
-            self.eat(Token.RPAREN)
-            return expr
+            if self.current_token.type == Token.COMMA:
+                return self.tuple(token, expr)
+            else:
+                self.eat(Token.RPAREN)
+                return expr
         elif self.current_token.type in (Token.TOP, Token.BOTTOM, Token.ALL):
             return self.top_expression()
         else:
             return self.atom()
+
+    def tuple(self, start_token, first_item):
+        items = [first_item]
+        while self.current_token.type == Token.COMMA:
+            self.eat(Token.COMMA)
+            items.append(self.expression())
+
+        self.eat(Token.RPAREN)
+        return TupleNode(start_token, items)
+
 
     def atom(self):
         if self.current_token.type == Token.ID:

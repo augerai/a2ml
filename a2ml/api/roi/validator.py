@@ -98,6 +98,9 @@ class Validator(BaseInterpreter):
         else:
             raise ValidationError(f"unknown function '{node.func_name}' at position {node.position()}")
 
+    def evaluate_tuple_node(self, node):
+        return all(map(lambda node: self.evaluate(node), node.item_nodes))
+
     def evaluate_top_node(self, node):
         if not isinstance(self.root, TopNode):
             raise ValidationError(f"top or bottom expression cannot be used as an argument or operand")
