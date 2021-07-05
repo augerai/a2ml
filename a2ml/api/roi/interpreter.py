@@ -171,6 +171,9 @@ class Interpreter(BaseInterpreter):
 
         return func(*func_args)
 
+    def evaluate_tuple_node(self, node):
+        return tuple(map(lambda n: self.evaluate(n), node.item_nodes))
+
     def evaluate_top_node(self, node, rows):
         if node.nested_node:
             rows = self.evaluate(node.nested_node, rows)

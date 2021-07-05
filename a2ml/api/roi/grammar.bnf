@@ -80,12 +80,14 @@ expression:
 
 primary:
     | '(' expression ')'
+    | tuple
     | atom
     | top_expression
 
 atom:
     | NAME
     | func_call_statement
+    |
     | 'True'
     | 'False'
     | 'None'
@@ -94,6 +96,9 @@ atom:
 
 func_call_statement:
     | NAME '(' (expression (',' expression)*)? ')'
+
+tuple:
+    | '(' expression [, expression]* ')'
 
 top_expression:
     | top_start [top_with] ['per' expression ['having' expression]] ['where' expression] ['from' '(' top_expression ')']

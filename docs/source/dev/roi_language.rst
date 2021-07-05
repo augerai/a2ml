@@ -27,6 +27,13 @@ or
 
 Expressions can be nested with parentheses, the operators precedence `same as in Python <https://docs.python.org/3/reference/expressions.html#operator-precedence>`_
 
+Tuples
+-----------------
+Tuples can be defined as a several values inside a parentheses separated by comma
+
+``(1, "one")``
+``(1 + 2, "something", f(1, 2))``
+
 If expression
 -----------------
 
