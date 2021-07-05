@@ -79,6 +79,9 @@ class AugerExperimentSessionApi(AugerBaseApi):
                     '{0:.4f}'.format(item.get('raw_data', {}).get('all_scores', {}).get(review_metric, 0.0))
 
             l_item['score'] = float(item.get('score_value'))
+            l_item['fold_scores'] = []
+            for item in item.get('raw_data', {}).get('fold_scores', []):
+                l_item['fold_scores'].append('{0:.4f}'.format(item))
 
             leaderboard.append(l_item)
 
