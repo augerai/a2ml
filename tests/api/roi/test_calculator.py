@@ -327,3 +327,24 @@ class TestCalculator:
 
         res = calc.get_var_names()
         assert set(res) == set(['spread_pct', 'costbase', 'delta_afterhours', 'symbol'])
+
+    def test_get_var_names2(self):        
+        calc = Calculator(
+            filter=
+"""
+      top 12 by max_p per $data_date from (
+        top 1 by P per ($symbol, $data_date) where $close_ask<4 and $close_ask>=0.1
+
+        from (
+            all with agg_max(P) as max_p per ($symbol, $data_date)
+        )
+      )
+"""
+            ,
+            revenue="(1+A)*$costbase",
+            investment="$costbase"
+        )
+
+        res = calc.get_var_names()
+        assert set(res) == set(['data_date', 'costbase', 'symbol', 'close_ask'])
+        
