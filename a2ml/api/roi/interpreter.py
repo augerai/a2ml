@@ -92,51 +92,51 @@ class Interpreter(BaseInterpreter):
 
 
     def evaluate_binary_op_node(self, node):
-        left = self.evaluate(node.left)
-        right = self.evaluate(node.right)
+        left = lambda: self.evaluate(node.left)
+        right = lambda: self.evaluate(node.right)
 
         if node.op == Token.MUL:
-            return left * right
+            return left() * right()
         elif node.op == Token.DIV:
-            return left / right
+            return left() / right()
         elif node.op == Token.INT_DIV:
-            return left // right
+            return left() // right()
         elif node.op == Token.MODULO:
-            return left % right
+            return left() % right()
         elif node.op == Token.PLUS:
-            return left + right
+            return left() + right()
         elif node.op == Token.MINUS:
-            return left - right
+            return left() - right()
         elif node.op == Token.POWER:
-            return left ** right
+            return left() ** right()
         elif node.op == Token.GT:
-            return left > right
+            return left() > right()
         elif node.op == Token.GTE:
-            return left >= right
+            return left() >= right()
         elif node.op == Token.LT:
-            return left < right
+            return left() < right()
         elif node.op == Token.LTE:
-            return left <= right
+            return left() <= right()
         elif node.op == Token.EQ2 or node.op == Token.EQ:
-            return left == right
+            return left() == right()
         elif node.op == Token.NE:
-            return left != right
+            return left() != right()
         elif node.op == Token.BIT_XOR:
-            return left ^ right
+            return left() ^ right()
         elif node.op == Token.BIT_OR:
-            return left | right
+            return left() | right()
         elif node.op == Token.BIT_AND:
-            return left & right
+            return left() & right()
         elif node.op == Token.BIT_LSHIFT:
-            return left << right
+            return left() << right()
         elif node.op == Token.BIT_RSHIFT:
-            return left >> right
+            return left() >> right()
         elif node.op == Token.IN:
-            return left in right
+            return left() in right()
         elif node.op == Token.OR:
-            return left or right
+            return left() or right()
         elif node.op == Token.AND:
-            return left and right
+            return left() and right()
         else:
             raise self.error(f"unknown binary operator '{node.op}'")
 

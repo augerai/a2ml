@@ -35,12 +35,17 @@ from a2ml.api.roi.validator import AstError, Validator, ValidationError
             "error",
             "with experession at position 5 can only be used with per expression",
         ),
+        pytest.param(
+            "top 12 by max_p per $data_date from (\n  top 1 by P per ($symbol, $data_date) where $close_ask<4 and $close_ask>=0.1\n\n  from (\n      all with agg_max(P) as max_p per ($symbol, $data_date)\n  )\n)\n",
+            True,
+            None,
+        ),
     ]
 )
 def test_validate(expression, expected_result, message):
     validator = Validator(
         expression,
-        known_vars=["$a", "$b", "P"],
+        known_vars=["$a", "$b", "P", "$symbol", "$data_date", "$close_ask"],
     )
 
     # Validate with force_raise = False

@@ -178,3 +178,19 @@ def test_interpreter_top_expression_with_tuples():
         { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-06", "max_p": 1.0 },
         { "$close_ask": 1, "P": 0.7, "$symbol": "A", "$date": "2021-07-05", "max_p": 0.9 },
     ]
+
+def test_interpreter_and_with_nones():
+    expression = "all where $delta != None and ($delta > 0.1)"
+
+    variables = [
+        { "$id": 0, "$delta": 0 },
+        { "$id": 1, "$delta": None },
+        { "$id": 2, "$delta": 0.1 },
+        { "$id": 3, "$delta": 0.2 },
+    ]
+
+    interpreter = Interpreter(expression)
+
+    assert interpreter.run(variables) == [
+        { "$id": 3, "$delta": 0.2 },
+    ]
