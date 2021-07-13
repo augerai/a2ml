@@ -6,7 +6,7 @@ import json
 
 from a2ml.api.utils import get_uid, get_uid4, fsclient, remove_dups_from_list, sort_arrays
 from a2ml.api.utils.dataframe import DataFrame
-
+from a2ml.api.roi.calculator import Calculator as RoiCalculator
 
 class ModelHelper(object):
 
@@ -440,7 +440,22 @@ class ModelHelper(object):
         if options.get('timeSeriesFeatures'):
             selected_cols.extend(options.get('timeSeriesFeatures'))
 
+        selected_cols.extend(ModelHelper.get_roi_features(options))
         return remove_dups_from_list(selected_cols)
+
+    @staticmethod
+    def get_roi_features(options):
+        if not options.get('roi_metric'):
+            return []
+
+        roi_features = RoiCalculator(
+            filter = options['roi_metric'].get('filter'),
+            revenue = options['roi_metric'].get('revenue'),
+            investment = options['roi_metric'].get('investment')
+        ).get_var_names()
+        logging.info("ROI features from roi metric: %s"%roi_features)
+
+        return roi_features
 
     @staticmethod
     def create_model_options_file(options_path, scoring, target_column, task_type, binary_classification):
