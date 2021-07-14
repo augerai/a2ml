@@ -42,8 +42,8 @@ class AugerActualApi(AugerBaseApi):
     def delete(self, with_predictions, begin_date, end_date):
         params = {
             'with_predictions': with_predictions,
-            'from': begin_date,
-            'to': end_date
+            'from': str(begin_date) if begin_date else None,
+            'to': str(end_date) if end_date else None,
         }
         if self.use_endpoint:
             params['endpoint_id'] = self.parent_api.object_id
