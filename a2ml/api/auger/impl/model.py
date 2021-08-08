@@ -30,11 +30,13 @@ class Model(object):
     def undeploy(self, model_id, locally=False):
         return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
 
-    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, output=None, no_features_in_result=None):
+    def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, 
+        output=None, no_features_in_result=None, score=False, score_true_data=None):
         if locally:
             self.deploy(model_id, locally)
 
-        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
+        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, 
+            predicted_at, output, no_features_in_result, score, score_true_data)
 
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
         if locally:
