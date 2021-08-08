@@ -50,6 +50,9 @@ class DataFrame(object):
         elif records is not None and isinstance(records, pd.DataFrame):
             ds = DataFrame({})
             ds.df = records
+            if features:
+                ds.df = ds.df[features]
+                    
             ds.from_pandas = True
         else:
             ds = DataFrame({})

@@ -21,10 +21,12 @@ class AugerModel(object):
 
     @error_handler
     @authenticated
-    @with_project(autocreate=False)
-    def predict(self, project, filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result):
-        predicted = Model(self.ctx, project).predict(
-            filename, model_id, threshold, locally, data, columns, predicted_at, output, no_features_in_result)
+    #@with_project(autocreate=False)
+    def predict(self, filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+        no_features_in_result, score, score_true_data):
+        predicted = Model(self.ctx, project=None).predict(
+            filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+            no_features_in_result, score, score_true_data)
 
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)

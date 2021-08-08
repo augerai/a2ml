@@ -7,12 +7,12 @@ class AugerConfig(object):
         #TODO: add more providers later
         if validation:
             self.ctx.config.set('experiment/validation_dataset', name)
-            if self.ctx.use_auger_cloud():
+            if self.ctx.use_auger_cloud() and 'azure' in self.ctx.get_providers():
                 self.ctx.config.set('experiment/validation_dataset', name, "azure")
         else:
-            print("set_data_set: %s"%self.ctx.use_auger_cloud())
+            #print("set_data_set: %s"%self.ctx.use_auger_cloud())
             self.ctx.config.set('dataset', name)
-            if self.ctx.use_auger_cloud():
+            if self.ctx.use_auger_cloud() and 'azure' in self.ctx.get_providers():
                 self.ctx.config.set('dataset', name, "azure")
 
         self.ctx.config.write_all()

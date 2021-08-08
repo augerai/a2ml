@@ -28,15 +28,19 @@ def cmdl(ctx):
 @pass_context
 def deploy(ctx, provider, model_id, locally, no_review, name, algorithm, score, data_path):
     """Deploy trained model."""
-    A2MLModel(ctx, provider).deploy(model_id, locally, not no_review, name=name, algorithm=algorithm, score=score, data_path=data_path)
+    A2MLModel(ctx, provider).deploy(model_id, locally=locally, review=not no_review, 
+        name=name, algorithm=algorithm, score=score, data_path=data_path)
 
 @click.command('predict', short_help='Predict with deployed model.')
+@click.argument('model-id', required=True, type=click.STRING)
 @click.argument('filename', required=True, type=click.STRING)
 @click.option('--threshold', '-t', default=None, type=float,
     help='Threshold.')
-@click.option('--model-id', '-m', type=click.STRING, required=True,
-    help='Deployed model id.')
-@click.option('--locally', is_flag=True, default=False,
+@click.option('--score', '-s', is_flag=True, default=False,
+    help='Calculate scores for predicted results.')
+@click.option('--score_true_path', type=click.STRING, required=False,
+    help='Path to true values to calculate scores. If missed, target from filename used for true values.')
+@click.option('--locally', '-l', is_flag=True, default=False,
     help='Predict locally using auger.ai.predict package.')
 @click.option('--docker', is_flag=True, default=False,
     help='Predict locally using Docker image to run model.')
@@ -50,12 +54,13 @@ def predict(ctx, provider, filename, model_id, threshold, locally, docker, outpu
     if docker:
         locally = "docker"
 
-    A2MLModel(ctx, provider).predict(filename=filename, model_id=model_id, threshold=threshold, locally=locally, output=output)
+    A2MLModel(ctx, provider).predict(model_id, filename=filename, 
+        threshold=threshold, score=score, score_true_data=score_true_path,
+        locally=locally, output=output)
 
 @click.command('actuals', short_help='Send actual values for deployed model. Needed for review and monitoring.')
+@click.argument('model-id', required=True, type=click.STRING)
 @click.argument('filename', required=True, type=click.STRING)
-@click.option('--model-id', '-m', type=click.STRING, required=True,
-    help='Deployed model id.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
 help='Cloud AutoML Provider.')
 @click.option('--locally', is_flag=True, default=False,
@@ -98,8 +103,7 @@ def undeploy(ctx, provider, model_id, locally):
     A2MLModel(ctx, provider).undeploy(model_id, locally)
 
 @click.command('delete_actuals', short_help='Delete files with actuals and predcitions locally or from specified provider(s).')
-@click.option('--model-id', '-m', type=click.STRING, required=True,
-    help='Deployed model id.')
+@click.argument('model-id', required=True, type=click.STRING)
 @click.option('--with-predictions', is_flag=True, default=False,
     help='Remove predictions.')
 @click.option('--begin-date', '-b', type=click.STRING, required=False,
