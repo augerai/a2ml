@@ -1,0 +1,537 @@
+EMPLID,GF_GOAL,GF_COMMENTS1,GF_EMP_COMMENT,GF_MGR_COMMENT,GF_JOB_TITLE,extractions,SIGNAL_LEN,JOB_TYPE
+1000099,3D Printer Maintenance,,"Knowledge of principles, techniques and tools used in maintaining 3D printers",,,,,
+1000091,"Core Values: 
+a) PI Revitalization program (objective is TEAM BUILDING)
+b)Housekeeping
+c)Balanced Life style: > 60% of PI workforce leaving office before 7pm. 1.Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues: T9 production:
+b) Zero inline issues due to PI.
+2. BCD6 UA27 production
+3. 0.18 Ic (Cirrus UK, 0.18 MPW, 24V LDMOS and others
+4. New Process/ technology introduction. People development:
+1)Training Plan for New hires (engrs, AEs), Alpha
+2)PEACE. People development:
+PEACE. 6)Core Values:
+Housekeeping
+Balanced Life style. 4)Cost : Cost Saving:
+Mitigate ASP erosion: Process Simplification
+Engineering wafer usage  for PI dept. Zero -restarts for same experiment. 2. Quality & System:  CONC. b) Ensure the successful ramp of the ACACIA Products with no excursion
+    -  M5 Exit for SiN waveguiude ( Q2'21)
+    -  Consistent Yield > 87%. 1)Customer Satisfaction/ Appreciation - Get Appreciation from customer
+Avoid customer irritants""
+
+2)PEACE for key customer programs. 5.Core Values. Quality & System:
+1) CONC	:PI Line Yield Goal is < 0.047% every quarter 
+	: RMA 
+	: Excursion
+ SPC	: ET SPC
+2)Resolve Outstanding issues per timelines
+3)Customer Satisfaction/ Appreciation - Get Appreciation from customer,
+Avoid customer irritants
+
+PEACE for key customer programs
+GF systems - Ensure compliance to GF systems (MRB, PCRB, TRB, RTR/RTP, Risk Waiver, PDT etc). Cost:Cost Saving
+:Mitigate ASP erosion: Process Simplification
+:Engineering wafer usage  for PI dept. Zero -restarts for same experiment. Operation Excellence: Operations
+ 1)Execution errors (SPSR errors, runsheet & others)
+ 2)Disposition of lots on Hold at Post Fab / Inline due to PI
+ 3)Support FTPS (First Time Proto Execution Success) with. 5)People development
+Training Plan for New hires (engrs, AEs), Alpha
+PEACE. Operation Excellence: Operations
+--Execution errors (SPSR errors, runsheet & others)
+--Disposition of lots on Hold at Post Fab / Inline due to PI
+--Support FTPS (First Time Proto Execution Success) with. Quality & System:  CONC: PI Line Yield Goal is < 0.043% every quarter (Per Giga goal of 99.2%). Quality & System:  CONC:
+SPC: ET SPC. 5) People development & Core Values:
+PEACE
+Housekeeping
+Balanced Life style. 1)Loading Optimization / VAS technologies revenues: Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues 
+A) BCD6 production
+B) 0.18 Ic (24V LDMOS and others)
+C)Invensense 0.18um MEMS CMOS. 2) Quality & System: (  CONC,SPC,Customer)
+PI Line Yield Goal is < 0.047% every quarter 
+RMA 
+Excursion
+""ET SPC ""
+Proto type execution 
+Tapeout quality
+Yield  (Sort & FT)
+""Customer Satisfaction/ Appreciation - Get Appreciation from customer
+Avoid customer irritants""
+
+PEACE for key customer programs
+GF systems - Ensure compliance to GF systems (MRB, PCRB, TRB, RTR/RTP, Risk Waiver, PDT etc). Quality & System: Customer: a)Proto type execution 
+b)Yield  (Sort & FT) 
+c)Resolve Outstanding issues per timelines
+d) Customer Satisfaction/ Appreciation - Get Appreciation from customer
+Avoid customer irritants
+
+e)QBR score
+f)No customer irriatnts
+g) GF systems - Ensure compliance to GF systems (MRB, PCRB, TRB, RTR/RTP, Risk Waiver, PDT etc). 2 Si Photonics
+a) Successfully qualify the in-house DTE for ACACIA by end of Y2021
+    - Hermatic ( Q1'21)
+    - Non Hermatic (Q2'21)
+    - Facet Etch ( Q4'21). 5. Core Values. 3)Operation Excellence :
+Execution errors (SPSR errors, runsheet & others)
+Disposition of lots on Hold at Post Fab / Inline due to PI
+Support FTPS (First Time Proto Execution Success) with. c) Continue to support the development of the new projects for  ACACIA
+     - USG waveguide completion by  2Q'21
+
+d) Continue to support AMF order desk for Finisar/ Fibrehime /Molex. Cost: Cost Saving:
+a)Engineering wafer usage  for PI dept. Zero -restarts for same experiment
+b)Training Plan for New hires (engrs, AEs), Alpha. Cost:Cost Saving
+:Mitigate ASP erosion: Process Simplification
+:Engineering wafer usage  for PI dept. Zero restarts for same experiment. Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues : 
+1) BCD6 production
+2) 0.18 Ic (Cirrus UK, 0.18 MPW, 24V LDMOS and others). Cost: Retrofit DUV layers due to Astep-35 move out. Resolve Outstanding issues per timelines:
+Close BCD8sP CIPs :
+a) L60 resist change
+b) GF ILD scheme implementation
+c) FT yield improvement to match ST 
+d) Resolve PWQ issues (L65, etc)
+e) SPD tapeout to resolve spin pattern defect
+For Molex:
+f) Set up prime WG Cd monitoring inline (Molex)
+g) Finalise Molex ET spec
+h) Resolve 500nm PD leakage issue (Molex). 1 Continue to drive the quality and customer satisfaction
+  a) Achieve  giga line yield of > 99.2 % continuously every month
+  b) 100 % FTPS,  shipped to customer on time with 0 OSD misses
+  c) No quality excursion for process under PI_YE Team 1 , no tapeout error, human error or spsr execution.
+ d) Ensure all MRB/ PCRB/ 8D action items are completed on time , no delinquent  MRBs/PCRB/8D.
+e)  Drive al ET SPC Cpk  > 1.33 and ensure proper control limits are applied. Cost: Qualify PCII in place or Argon sputter. Operation Excellence: Operations: a) Execution errors (SPSR errors, runsheet & others): Zero SPSR errors
+b) Disposition of lots on Hold at Post Fab / Inline due to PI: No OSD misses due to PI related issues/ follow up
+c)Support FTPS (First Time Proto Execution Success) with: Error free Bias and Frame Table support mask preparation, 100% On Time Delivery , Error free execution of proto and skew lots  , ET (5%) and QA pass of proto and skew lots. Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues. 1)Molex Tapeouts: New and retrofits
+
+2)BCD8sP : New device tape outs (Templeton & Yosemite)
+3)BCD8sP: New Mizar & Horus Tape out. 4) BCD8
+a) Successfully develop the Mizar and Horus Flow in Giga
+    - MAT 20 and Risk production for Mizar by  3Q'21
+   -  MAT 20 and Risk production  for Horus 2 by 4Q'21
+b) Successfully migrate all products to SPD by  1Q'21
+c) Ensure stable yield for all the products and meet the budgetary targets.
+d) Implement SBL monitoring for STM BCD8.. Loading Optimization / VAS technologies revenues:BCD6 production, BCD8sP
+--1)Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues
+2) Zero inline issues due to PI
+3)Invensense 0.18um MEMS CMOS
+4)BCD8sP Cu Damascene transfer. 5) Support Giga Shipment and Revenue growth
+a) Support the Giga S&C  project driving  more shipment through process simplication , recipe consolidation and optimization and metrology reduction.
+b)Existing PX spider lots to use for coning PO. Si Photonics: TRB exit
+ 1)0.18um program : M4,M5, M6 exit
+ 2)0.13um program : M5, M6 exit. 1)Loading Optimization / VAS technologies revenues:
+ A) BCD6 production, BCD8sP
+B) 0.18 Ic (24V LDMOS and others), Cisco Lightwire, Acacia, Molex
+C)Invensense 0.18um MEMS CMOS
+2) 'BX009 projects.. 4)Cost:
+Mitigate ASP erosion: Process Simplification
+Engineering wafer usage  for PI dept. Zero -restarts for same experiment. Quality & System:	
+1) CONC	:PI Line Yield Goal is < 0.047% every quarter 
+	: RMA 
+	: Excursion
+ SPC	: ET SPC
+2)Resolve Outstanding issues per timelines. 3.Operation Excellence: Operations. 4.Cost:. 3)Operation Excellence: Operations:
+Execution errors (SPSR errors, runsheet & others)
+Disposition of lots on Hold at Post Fab / Inline due to PI
+Support FTPS (First Time Proto Execution Success) with. 1)Proto type execution 
+2)Tapeout quality
+3)Yield  (Sort & FT). Loading Optimization / VAS technologies revenues: BCD8sP, Molex
+1)Deliver key PI projects, development or ramp within timelines (exceed or meet) . No misses due to inhouse issues
+2) Zero inline issues due to PI
+3)Invensense 0.18um MEMS CMOS. 2)Quality & System: 
+A) CONC: PI Line Yield Goal is < 0.047% every quarter,RMA ,Excursion
+B)SPC: ET SPC
+C)Customer: 
+Proto type execution 
+Tapeout quality
+Yield  (Sort & FT) 
+Resolve Outstanding issues per timelines
+""Customer Satisfaction/ Appreciation - Get Appreciation from customer
+Avoid customer irritants""
+
+PEACE for key customer programs
+GF systems - Ensure compliance to GF systems (MRB, PCRB, TRB, RTR/RTP, Risk Waiver, PDT etc). Zero inline issues due to PI. Core Values:
+:Housekeeping
+:Balanced Life style","a)Zero fails due to PI related issues
+ET within (+/-5%) target for proto/skew lots for key parameters.
+b)After 1K - 2K wafers 
+GDPW < 1000 - Yield ~ 90%
+GDPW : 1K - 5K , Yield - 95%
+GDPW > 5K , Yield - 97%
+c) T9 trenchMOS complete post R-gate improvement actions : Process margin checks on new silicon, and new process conditions
+d)Better than plan	1st or 2nd or improve >= 3 posiitons	Missed
+e)>75%	QBR score >= 75%	<75%
+
+
+f) NA	0	>0
+g)T9 TRB M7 exit	Before Oct'14	Oct'14	After Oct'14. 1.PI Line Yield Goal is < 0.043% every quarter 	Meet PI line yield goal in each quarter 
+RMA 	0 RMA
+	CPK > 1.67
+	%OOC
+	Maturity reaching L3
+	Annotation
+	No miss in ETSPC detection, non compliance and reaction resulting in excursion 
+Proto type execution 	""Zero fails due to PI related issues
+ET within (+/-5%) target for proto/skew lots for key parameters.""
+Tapeout quality	Improve Tapeout process, use Configurator on new tapeouts
+Yield  (Sort & FT) 	""After 1K - 2K wafers 
+GDPW < 1000 - Yield ~ 90%
+GDPW : 1K - 5K , Yield - 95%
+GDPW > 5K , Yield - 97%""
+Process EOL	EOL NXP, TI and other EOL processes without issues
+2. Resolve T9 BVDSS marginality and define new substrate specs / process
+3. Close BCD6 process change PCRBs:
+a) M3 etch recipe change 
+b) Salicide etchback recipe change
+c) IMD2 dep thickness change
+d) Pre-Ti clean recipe change
+4. BCD6 TRB M7 exit. Meet housekeeing guidelines.
+> 60% of PI workforce leaving office before 7pm. Execution errors (SPSR errors, runsheet & others)	Zero SPSR errors
+Disposition of lots on Hold at Post Fab / Inline due to PI	No OSD misses due to PI related issues/ follow up
+	Held lots reduction by 50% compared to Jan-Feb'16
+	Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time; 
+Support FTPS (First Time Proto Execution Success) with  	Error free Bias and Frame Table support mask preparation
+	100% On Time Delivery 
+	Error free execution of proto and skew lots  
+	ET (5%) and QA pass of proto and skew lots. T9 risk production: Stable device yield >97.3% in risk production for the 2 high runner devices: Exceeded: >98%, Met: 97.3%, Missed: < 97.3%,. Mitigate ASP erosion: Process Simplification	Complete the identified process simplification on volume runner processes
+Engineering wafer usage  for PI dept. Zero -restarts for same experiment	""Zero Re-start of engg wafers for same experiment due to poor PI planning 
+(Make use of DOE method in engineer wafer plan to minimise the wafer usage.)"". Zero SPSR errors : Achieved. No SPSR errors.
+No OSD misses due to PI related issues/ follow up : Zero OTD misses.
+Held lots reduction by 50% compared to Jan-Feb'17 : Achieved. 
+Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time : Achieved. 
+Error free Bias and Frame Table support mask preparation: Achieved. 
+Error free execution of proto and skew lots : Achieved.
+ET (5%) and QA pass of proto and skew lots: Achieved.. a)Nil	Meet the goal	Missed goal
+b)Nil	Meet the goal	Missed goal
+
+c) Nil	Meet the goal	Missed goal. Exceeded:<0.043%, Met: 0.043%, Missed:> 0.043%. 1)Stable risk production yield
+2)Zero inline issues due to PI
+3)Maintain ComboYield stable > 97%. 1)
+:Meet PI line yield goal in each quarter 
+:0
+:0
+:%OOC
+:CPK > 1.67
+:Maturity reaching L3
+:No miss in ETSPC detection, non compliance and reaction resulting in excursion:
+2)Close BCD8sP CIPs :
+    a) GF ILD scheme implementation
+     b) FT yield improvement to match ST 
+     c) Resolve PWQ issues (L65, etc)
+    d) SPD tapeout to resolve spin pattern defect. Meet PI line yield goal in each quarter 
+0
+0
+%OOC
+CPK > 1.67
+Maturity reaching L3
+No miss in ETSPC detection, non compliance and reaction resulting in excursion 
+""Zero fails due to PI related issues
+ET within (+/-5%) target for proto/skew lots for key parameters.""
+Improve Tapeout process, use Configurator on new tapeouts
+""After 1K - 2K wafers 
+GDPW < 1000 - Yield ~ 90%
+GDPW : 1K - 5K , Yield - 95%
+GDPW > 5K , Yield - 97%
+""
+1 Close BCD6 L88 FICD Cpk issue (By June)
+2. Resolve spin pattern particle issue  from ASML mark ( By June)
+Achieve customer ranking of 1st or 2nd, or QBR score  > 75%
+No customer irriatnts
+Zero PI related excursion. FMFG process. :No OSD misses due to PI related issues/ follow up
+:Meet Fab Held lot target
+:Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time; 
+:Error free Bias and Frame Table support mask preparation
+:100% On Time Delivery 
+:Error free execution of proto and skew lots  
+:ET (5%) and QA pass of proto and skew lots. Development of Mozar/Horus: Tape out as per timeline. Cost Saving	Mitigate ASP erosion: Process Simplification
+	Engineering wafer usage  for PI dept. Zero -restarts for same experiment
+	Training Plan for New hires (engrs, AEs), Alpha
+	#PEACE nominations. PI Revitalization program (objective is TEAM BUILDING)	PI revitalization team to  propose activities & complete 100% of activities suggested by team ; 1 event per quarter 
+Housekeeping	Meet housekeeing guidelines
+Balanced Life style	> 60% of PI workforce leaving office before 7pm. PI Revitalization program (objective is TEAM BUILDING)
+Housekeeping
+Balanced Life style. To support Giga shipment as per time line. A) Met PI line yield goal in each quarter.
+B)%OOC, CPK > 1.67, Maturity reaching L3
+No miss in ETSPC detection, non compliance and reaction resulting in excursion
+C) ""Zero fails due to PI related issues
+ET within (+/-5%) target for proto/skew lots for key parameters."" 
+Improve Tapeout process, use Configurator on new tapeouts
+""After 1K - 2K wafers GDPW > 5K  Yield - 97% : Achieved yield : 98.2%
+4. Close BCD6 process change PCRBs:
+a) Salicide etchback recipe change- Closed 
+b) Pre-Ti clean recipe change- CMFG done. Will go for FMFG in Jan18. On target.
+
+Achieve customer ranking of 1st or 2nd, or QBR score  > 75% : Achieved QBR score >75%.
+Zero PI related excursion : Achieved
+BCD6 TRB M7 exit : To go in Q1'2018. (cpk improvement on some parameters feedback is delayed due customer feedback). Exceeded: Nil, Met: 0, Missed>0,. Develop comprehensive training plan for New hires (experienced & Fresh) & Alpha engineers.
+PEACE awards to engineers (from SWOT analysis):1 nomination / employee / qtr with 2 Stars from AE & above per yr.. Goal 			
+	Exceeded	Met	Missed
+
+%OOC	<2.2%	1.9%	>2.2%
+CPK > 1.67	>95%	95%	<95%
+%OOS	<0.2%	0.2%	>0.2%
+Maturity reaching L3	>95%	95%	<95%. Execution errors (SPSR errors, runsheet & others)	Zero SPSR errors
+Disposition of lots on Hold at Post Fab / Inline due to PI	No OSD misses due to PI related issues/ follow up
+	Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time; 
+Support FTPS (First Time Proto Execution Success) with  	Error free Bias and Frame Table support mask preparation
+	100% On Time Delivery 
+	Error free execution of proto and skew lots  
+	ET (5%) and QA pass of proto and skew lots. : Meet housekeeing guidelines
+: > 60% of PI workforce leaving office before 7pm. 1)""Zero fails due to PI related issues
+ET within (+/-5%) target for proto/skew lots for key parameters.""
+2)Improve Tapeout process, use Configurator on new tapeouts
+3)""After 1K - 2K wafers 
+GDPW < 1000 - Yield ~ 90%
+GDPW : 1K - 5K , Yield - 95%
+GDPW > 5K , Yield - 97%
+"". 1)
+:Meet PI line yield goal in each quarter 
+:0
+:0
+:%OOC
+:CPK > 1.67
+:Maturity reaching L3
+:No miss in ETSPC detection, non compliance and reaction resulting in excursion:
+2)Close BCD8sP CIPs :
+a) GF ILD scheme implementation
+b) FT yield improvement to match ST 
+c) Resolve PWQ issues (L65, etc)
+d) SPD tapeout to resolve spin pattern defect
+3)
+:Achieve customer ranking of 1st or 2nd, or QBR score  > 75%
+:No customer irriatants
+:Zero PI related excursion. PEACE awards to engineers (from SWOT analysis) : Achieved PEACE keeper Rank of MAJOR.
+Meet housekeeing guidelines
+> 60% of PI workforce leaving office before 7pm : Achieved.. As per time line. a)Zero Re-start of engg wafers for same experiment due to poor PI planning 
+(Make use of DOE method in engineer wafer plan to minimise the wafer usage.): 125 per rmonth	150  per month	>150
+
+B) Develop comprehensive training plan for New hires (experienced & Fresh) & Alpha engineers: Nil	100% for all new hires per plan	< 100%. No OSD misses due to PI related issues/ follow up
+:Meet Fab Held lot target
+:Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time; 
+:Error free Bias and Frame Table support mask preparation
+:100% On Time Delivery 
+:Error free execution of proto and skew lots  
+:ET (5%) and QA pass of proto and skew lots. To support development for Molex. Develop comprehensive training plan for New hires (experienced & Fresh) & Alpha engineers.
+
+PEACE awards to engineers (from SWOT analysis). a) Nil	0	>0 SPSR error
+
+b) Nil	0	>0 OSD Miss
+
+c) Nil	No error	Error
+Nil	Zero miss	>0 miss
+Nil	Zero error	>0 error
+Nil	Zero miss	>0 miss. M5 exit for SIN waveguide by Q2'21. line yield of > 99.2 %
+Zero misses.
+ ET SPC Cpk  > 1.33. 1)Stable risk production yield
+2)Zero inline issues due to PI
+3)Maintain ComboYield stable > 97%
+4)Qualify and start risk production. PEACE awards to engineers (from SWOT analysis). Dec2020. Zero SPSR errors
+No OSD misses due to PI related issues/ follow up
+Held lots reduction by 50% compared to Jan-Feb'17
+Identify actions for Lots Held  within 24 - 48 hours ;  Clear lots in the system in 1 wk time; 
+Error free Bias and Frame Table support mask preparation
+100% On Time Delivery 
+Error free execution of proto and skew lots  
+ET (5%) and QA pass of proto and skew lots. :Complete the identified process simplification on volume runner processes
+""Zero Re-start of engg wafers for same experiment due to poor PI planning 
+(Make use of DOE method in engineer wafer plan to minimise the wafer usage.)"". 1.PI Line Yield Goal is < 0.043% every quarter 	Meet PI line yield goal in each quarter 
+RMA 	0 RMA
+Excursion	<=2 for year
+	CPK > 1.67
+	%OOC
+	Maturity reaching L3
+	No miss in ETSPC detection, non compliance and reaction resulting in excursion 
+2.Resolve Outstanding issues per timelines	2. Resolve UM85 FT low yield issue
+	""3. Close BCD6 process change PCRBs:
+a) ET spec change CR
+b) Salicide etchback recipe change
+c) IMD2 dep thickness change
+d) Pre-Ti clean recipe change
+e) L10 DUV migration
+"". Complete the identified process simplification on volume runner processes
+""Zero Re-start of engg wafers for same experiment due to poor PI planning 
+(Make use of DOE method in engineer wafer plan to minimise the wafer usage.)"". Resolve BVDSS issue and reach yield entitlement (GDPW 13k high runner): 98%
+2. for BCD6:  a. Stable risk production yield
+b.Zero inline issues due to PI.
+
+3.For 0.18 Ic : a.Stable sort yield.
+b.Zero inline issues due to PI
+
+4.BCD6s UA28 / UM90 MAT30 :. Complete the identified process simplification on volume runner processes : Done. 
+""Zero Re-start of engg wafers for same experiment due to poor PI planning 
+(Make use of DOE method in engineer wafer plan to minimise the wafer usage.)"" : Achieved. No Re-start for engg wafers for same experiment.. 1) Achieve customer ranking of 1st or 2nd, or  QBR score  > 75%
+    No customer irritants
+2)Zero PI related excursion. Qualification of DTE by end of Y2021. Stable risk production yield	>98%	98%	<98%
+Zero inline issues due to PI	Nil	0	> 0. A)Stable risk production yield, Zero inline issues due to PI: Achieved.
+B)Stable sort yield, Zero inline issues due to PI : Achieved.
+C)Achieved ComboYield stable > 97%.
+--Supported to process Invensense -OSLO device X-fab lots from Fab3E to run in Fab5. Borderless system established & processed 20 over lots. Ensure no integration / CONC, OSD, Yield, process A)Stable risk production yield (98%)
+Zero inline issues due to PI
+B)Stable sort yield (95%)
+Zero inline issues due to PI
+C)Maintain ComboYield stable > 97%
+2)Ensure no integration / CONC, OSD, Yield, process issues (0). Comparable yield",". %OOC:	Met; 1.89%
+CPK > 1.67:	Met; 98.6%
+%OOS:	Met; 0.0095%.
+Maturity reaching L3:	Met; 95.8%. Met. 1)Argyle, ArcusD, GAIA(MPD), M2 retorifts and New device M2D, DEV1 tape out  done as per customer time line.
+2)For BCD8sP new device tapeouts (Templeton & Yosemite) completed in time.
+3)Mizar tape out ongoing.. 1)Met PI line yield goat in Q1 & Q2.
+2)No RMA and Excursion.
+3)For Molex ET SPC updates done. ET spec update ongoing.
+4)For BCD8: Supported to run the lots to achieve CIPS.. Met.
+No OSD misses.
+All Moelx proto lots ET passed and delivered in time.. a)Met
+b)Met; Passed housekeeping audits
+c)Met. 0 inline issues due to PI.. No execution errors, All proto lots shipped on in time.
+NO OSD misses due to PI related issues
+All held lots disposed in 1 week time.. Housekeeping- No violations through out the year.. Met. Stable risk production, Zero inline issues due to PI.
+Invensense Yield : 97.4%  ( stable >97%)
+
+BCD8sP Cu process: As per the plan PID creation and FT creation done. Process stopped by Customer.. Fir first half  of  for KUM87 high runner achieved Yield >98%. 
+For KUI94 device high runner in 2nd half achieved Yield >98% 
+Zero inline issues from PI .. a) Met; 0 error
+b) Met; 0 OTD miss
+c)Met; 0 error
+Met; 0 miss
+Met 0 error
+Met; Passed PQ4 goal. 1) Day to day discussions with colleagues ongoing for better implementation of tasks.
+
+2) Training on tapeout activities has been given to colleagues
+ 
+3) Achieved Major rank in PEACE. CONC:PI Line Yield Goal is < 0.047% every quarter Met.
+Got Appreciation from customer for Molex tapeout work.
+
+Zero Pi related excursion.. For all process improvement DOE method was used to minimise the wafer usage after discussion with UMD.. All CMFG lots processed and shipped in time.. -No OSD misses. All Molex lots delivered in time.
+-Met target.
+-For BCD8 new device tapeouts, BT &GR updated with new layers. Tapeout done successfully with out any errors.
+--All proto lots executed with out any errors and ET QA passed.. BCD8sp new device tapeouts done ahead of customer target.
+For all Molex devices DRC check and  tape outs done on targets.
+--Met. Zero PI related excursion. a)Met; 0 re-starts
+EO starts <  150w /month (excludes BX009 billable wafers)
+
+b)Met. 100% trained for new hires. Met.. 0 inline issues due to PI. Met. As planned CMFG lots are running.  To be shipped in wk8 2017 as planned.. Met goal every quarter. Zero restarts for engg wafers in first half  & 2nd half.. Met.
+All pilot wafer runs incorporated in runsheet to avoid SPSR work & to save the process time.. 1. Bvdss issue Resolved. Yield :99.2%
+2.Stabel risk production yield : Met
+3. Zero inline issues due to PI: Met
+4.BCD6s UA28: 3 production lots processed : Yiled : ~98% : Met. For T9 risk production susbtrate was provided by cutomer. Due low reisistivity of the some batches(material) yield was dropped. Missed:Actual yield was  93.6% due to BVDSS sensitivity to substrate resistivity.No Process abnormality form inline.. 1) Met.Stable risk production yield.
+2)No inline missed due to PI.
+3)For Invensense for shipped wafers yield is stable (>97%). Pi Line Yield goal : Met every quarter.
+a)ET spec change CR closed.
+b)Vt centering and IMD2 thick change CR Closed.
+c)Salicide etch back CR FMFG approved  as planned.
+d)L10 I -line to DUV migration for process improvement FMFG approved.
+e) Ar - Sputter tool migratin CR: CMFG ongoing as planned. To go for FMG in Q1 2017 as planned.
+ Remaining CR are as planned on going. Will be completed in Q12017 as planned.. 1) 0.18um program: Planned to go at time M4&M5. 90%  M5 exit done.
+2)0.13um Prpgram : M5 exit. Collection of Margin check lots sort data collection from customer ongoing (80% done). For BCD8: Supported to run the lots to achieve CIPS.
+For Molex: 
+-Inline WG CD monitoring done. Runsheet updated.
+-Finalisation of ET spec done. 
+-500nm PD leakage: Reliability test done. Good and bad samples showed dislocations.CIP regarding PD growth under discussion.. -Met. Zero fail due to PI related issues.
+-All proto lot POR wafers ET within +/-5%
+-Configurator use was implemented for new tapeouts.
+- All Molex wafers sort passed.. ""a) Met;
+0 PQ4 fails / error""
+b) Met
+c) Not met; Process amrgin checks and CMFG on new substrate completed but showed insufficient process margin to release to production.
+""d) Customer ranking not available.
+NXP: Improved SRS score from 72.1 in Q4 2013 to 81.4 in Q3 2014. Quarter on Quarter improvement in 2014.
+e) Met;  80.2 for NXP
+f) Met; 0 irritants
+g)TRB aborted due to consigned substrate not meeting process margin requirement.",. Not met. Met. T9 BVDSS issue contained and exceeded yield target to achieve 99.2% for 13k device,Sr Engineer Integration & Yield,"['Team Building', 'Process Improvement', 'ASP', 'R', 'Implementation', 'C']",25188,Integration and Yield
+1000093,"Alarm rate has been met. Drive the alarm rate to a lower baseline.. Zero Industrial Accidents. BEOL LAM Uptime. PEACE. Maintain or upgrade any UPS as to have 0 incidents due to power lost.. Housekeeping 6S. Be aware of Customer's specifications. Be updated with new CAS and Passdown Sign Offs. Reduce down time to meet the machine output. Meet BEOL LAM PM success rate.. Tool Uptime ( select your tool group - right side )
+
+EBEV_FEOL	85%
+EBEV_MOL	80%
+EMTL (8SW)	82%
+EMTL_CAP	82%
+EMTL_MIM	85%
+EOXP	80%
+EOXP_40nm(FA)	80%
+EOXP_Al_Pad	80%
+EOXP_Flex45	80%
+EOXP_Flex45 (8SW)	80%
+EOXP_Pad (LAM)	75%. Communicate openly on critical business information, listen, and response to line supports / process engineer feedback. Alarms module 3wfrs/10k wfrs move
+1. EOXP_Flex ( 4/10k wfrs move )
+2. EOXP_Flex45 ( 2.5/10k wfrs move )
+3. EMTL ( 4/10k wfrs move )
+4. EBEV ( 1.5/10k wfrs move )
+5. AMAT (  4/10k wfrs move ). Meet F7 line Yield 99% and module BEOL LAM Yield target and  Improvement
+a. EBEV 0.079/10k wafer
+b. EMTL 1.0/10k wafer
+c. EOXP_Pad  0.8/10k wafer
+d. EOXP_Flex 0.98/10k wafer
+e. EOXP_Flex45 ( 0.928/10k wafer). Quality Mindset. Improve the setup success rate for all toolsets. Cost saving upkeep cost. Drive the LP down count down with building a correct LP expert able to troubleshoot.. Be On Time for Work & Reports. PM Success Rate (target 93%)
+a. first setup pass ( target 94%)
+b. PM Duration ( target 96% ). To familiar level 1 & 2 for EPRS tool. Learn New Tools/Equipment. Safety compliance. Operational Excellence. Safety Compliance. Meet all 6s requirements.. Meet Department Cost Target. Line Yield ( Target 99% )
+Reduction wafer scrap 
+a. EBEV 0.079/10k wafer
+b. EMTL 1.0/10k wafer
+c. EOXP_Pad  0.8/10k wafer
+d. EOXP_Flex 0.98/10k wafer
+e. EOXP_Flex45 ( 0.928/10k wafer). To familiar level 1 & Level 2 suprema tool. Maintain and Improve PM Efficiency. 6S 3U. Widen and Improve line support knowledge. Leadership. Quality Mindset 
+a. FDC
+b. SPC. Tool skillset. Cost Saving and Upkeep Cost. ALL robot calibration performed with jigs. Peace. Zero safety issues in etch. Housekeeping, 6S. No gaps in ITMs unless communicated and allowed by supervisors.. Meet availability goals mostly concentrating on when the WIP is present at that tool type.. Make a proper status and detailed comments in X-site, or any other equipment monitoring softwares. Training. Maintain Good Cooperation Relationship between Shifts. CIP
+- Cost Saving / Upkeep cost
+- Alarm reduction
+- PM improvement
+- 6S improvement. All screws must be set with a torque spec where required by vendor and expertise. Quality mindset. Set clear goals ( Equipment uptime and project CIP ) and check in on progress at least one month. Improve the Lam BEOL robot alarm errors including the LPs. Line Yield. 6S. Cost Saving
+Upkeep cost. Update Correct Information in Space Charts","1. No safety violation.
+2. Be able to detect safety gaps and resolve them.
+3. Act as a safety conveyer for the shift and report any unsafe act.. 1. chamber/tool encounter alarm down for trouble-shooting and find out the root cause;
+2. Always chamber/tool quality first. 1. Help each other and share the equipment knowhow information.
+2. Promote teamwork diligently.. 1. Highlight any OOC / OOS trend deviations or step changes immediately to equipment and process owners.
+2. Speedy shutdown of tools (and/or processes) in event of repeated OOC/OOS.
+3. Feedback problem charts to Chart owners. 1. No 6S violation.
+2. Take ownership for post PM/Troubleshooting housekeeping within the shift and report any repeated offense.. 1. Be responsible and take ownership for all activities in respective shift.. 1. Zero occurance of human error resulting  wafer scraps or parts damage
+2. Feedback quality gaps to tool owner promptly.. 1. Eval second source Flex UE / ESC / TCP and Quartz parts. 1. Follow fab safety protocol. 1. No skipping & violation of SOP. Highlight ambiguity or recommendation. To meet all BEOL LAM tools uptime:
+EBEV_FEOL                 85%
+EBEV_MOL                 80%
+EMTL (8SW)                 82%
+EMTL_CAP                 82%
+EMTL_MIM                 85%
+EOXP                         80%
+EOXP_40nm(FA)         80%
+EOXP_Al_Pad                 80%
+EOXP_Flex45                 80%
+EOXP_Flex45 (8SW) 80%
+EOXP_Pad (LAM)         75%. 1. No violation on safety. 
+2. To be able to detect safety gaps and resolve them.
+3. Able to act as safety conveyer for the shift and report any unsafe act.. 1. To make sure that PM efficiency is as consistent.
+2. Find ways to make PM more efficient and within minimal downtime as possible.. Decrease the number of robot related alarms for Lam. Bring the baseline trend to a new Low. 1. Make sure all comments are clear and correct. 1. Make sure or key-in data are correct, and comments are concise and easy to track. 1. Never miss training. Achieve good attendance and punctuality in all work activities.
+2. Zero training fall out.
+3. To follow up and take ownership of new hire.. 1. To be active in cost saving activities and at least identify 1 cost saving/avoidance projects per year.
+2. One improvement CIP project per year. 1. Zero occurance of human error resulting  wafer scraps or parts damage
+2. Feedback quality gaps to tool owner promptly.
+3. BEOL LAM alarm reduction to 5/10k wafers move. 1. PEACE nomination or feedback per quarter.. NO more eyeball measurements when performing robot calibrations. 1.Proactively shutdown of tools (and/or processes) in event of repeated Alarm or abnormality observed. 
+2. Take ownership for any quality incident within the shift. Drive alarm rates to a lower baseline.. No safety issues in etch.. Availability goals met not hampered by any process control issues.. 1.Zero non-conformance for Safety violations.
+2. Report any unsafe act promptly
+3. No 6S violation. 
+4. Take ownership for post PM/troubleshooting housekeeping within the shift and report any repeated offend.. 1. Keep self updated with every new CAS and passdown sign offs for these are crucial in insuring that the line is handled correctly and efficiently. 
+2. Be sure to understand and learn the proper implementations of any new CAS to avoid errors and risk to products, equipments, and personnel.. 1. Be able to meet the department's cost target for the year through awareness in parts usage and be cautious in any troubleshooting, or PM that no parts be wasted. 
+2. Be aware of the departments goals in achieving cost target so as to be able to abide by them. 3 peace nomination / feedback per Quarter.. 1. Be Certified by Tool Owner. 1. Meet tools uptime monthly goal
+2. Monthly CIP Project check in progress update. 1. Zero occurrence of human error resulting to wafer scraps or part damage. 
+2. Able to detect potential gaps and take appropriate action to close them permanently. 
+3. No violation of SOP. To feedback any ambiguity.. 1. No 6S violation. 
+2. Take ownership for post PM/troubleshooting housekeeping within the shift and report any repeated offend.. 1. Highlight any OOS/OOC trend deviation or setup changes;
+2. Proactively shutdown the tool/chamber ( and / or in processes) in event or repeated. All tools being able to ride through F47 compliance power lost. Either maintain the battery, upgrade the UPS, or ad VSP. Improve the PM wet clean success rate for BEOL LAM and reduce the amount of trial and error for parts replacement. 1. Be active in cost-saving activities and identify at least 1 cost saving/avoidance project per year.. 1. To be active in cost saving activities and at least identify 4 cost saving/advoidance projects per year.. 1. No miss communication with process engineers on quality related matters 
+2. No miss communication with line support on tools issues, passdown and sop. 1. Work harder and smarter.
+2. Be aware of all CAS and recovery procedures to be able to up machine on time, or earlier.
+3. Monitor machine performance, and see any room for improvement.. Provide quality wetclean and pm, any abnormality feedback to owner or CIP. 1. Never miss training. Achieve good attendance and punctuality in all work actitvities.
+2. Zero Training Fall out.
+3. To followup and take ownership for new hire. All screws tightening set with a torque spec and being used. No gaps or misses due to this. 1. To assess self performance so as to identify weak points for correction.
+2. Talk with colleagues and engineers so as to learn how to run the line in a more efficient manner.. 1. To be always diligent in doing housekeeping before and after any job done to ensure and clean working environment for all.
+2. To be within conformance of the safety policies set by the company.. 1. Zero occurance of human error resulting wafer scraps or part damage
+2. Able to detect potential gaps and take appropriate action to close them permanently
+3. No Violation of SOP. Feedback ambuigity. End top 4 best modules every quarter for 6s.. 1. Never miss training. Achieve good attendance and punctuality in all work actitvities.
+2. Zero Training Fall out.
+3. To followup and take ownership for new hire. To meet all the BEOL LAM tools uptime target. Lower LP down trend and no highlights from manufacturing. System expert needs to be trained.. All ITMS hours met. 1. Meet all BEOL Lam Tools uptime target.. 1. Highlight any OOC/OOS trend deviations or step changes immediately to equipment and process owners.
+2. Speedy shutdown of tools in the event of any OOC/OOS.. 1. To be active in cost saving activities and at least identify 1 cost saving/advoidance projects per year.. 2 peace nomination / feedback per month. Every Quarter submit 1 Peace. 1. To be mindful of any new customer's specifications, so as to be able to handle product within the parameters set by customer.
+2. To talk with engineers as to how to implement any new parameters or specifications set by customer.. 1. At least having 3 tool skillset and able to performace success tool failure troubleshooting individually.
+2. Achieve PM successrate 95% hit. PC and Etch rate success improved, by helping to drive process for a better performance.. 1. Responsible and take ownership for all activities in respective shift.. 1. Be responsible and task ownership for all activities in respective shift 
+Provide training to new AE;
+2. Always checking chamber/tool status by Hyper Alart / GUI. 1. Never miss training. Achieve good attendance and punctuality in all work actitvities.
+2. Zero Training Fall out.
+3. To followup and take ownership for new hirer on proper line SOP during OJT. 1. Manage time effectively to avoid tardiness on any activity. 1. To learn new or different tool types so as to widen capabilities and equipment knowledge.
+2. To learn other tool types so as to be able to support other teams in cases of manpower shortage.. 1. Highlight any OOC / OOS trend deviations or step changes immediately to equipment and process owners.
+2. Speedy shutdown of tools (and/or processes) in event of repeated OOC/OOS.
+3. Feedback problem charts to Chart owners",". Undergone some trainings which were helpful in sustaining the line.. 1. Continue Progress. 1. Continue to Improve. 1. Met. In Progress, ...continuous goal. Vigilant on line issues and be able to answer for all work done.. 1Met. On track and finding ways to improve. Focused on making sure that no parts used are wasted.. ON TRACK. Attended all trainings and focused on mentoring new hires.. Attentive in monitoring line issues with improved knowledge on line monitoring charts to detect in drift in Equipment performance.
+
+Diligently following SOP and CAS with clear feedbacks on how to improve.. Diligent in implementing discipline in work and 6S to ensure a safe working environment.. In Progress. Achieved and seeking ways to improve further. In progress. Prioritized all critical tools and aware of equipment downtime. Focused on speedy recovery of tool and proper coordination with colleagues so as to avoid unnecessary down time to be able to meet target.. On track and finding other resources for learning. Focused on monitoring all equipment performance to avoid and prevent excursion.. Do housekeeping and maintain good 6S.. 1. Continuous Progress. In Progress, ...continuous goal 
+Helping out new ERT members to arrange training schedule and guide them. On track. Achieved. 1. In Progress",. ok. Need to be improve good housekeeping practices.,,"['Leadership', 'Communication', 'IT Environment', 'Teamwork']",12341,

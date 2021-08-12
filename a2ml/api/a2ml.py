@@ -74,6 +74,61 @@ class A2ML(BaseA2ML):
             return self.runner.execute('import_data', source=data_source)
 
     @show_result
+    def preprocess_data(self, data, preprocessors, locally=False):
+        """Preprocess data
+
+        Args:
+            data (str|pandas.DataFrame): Input data for preprocess. Can be path to file(local or s3) or Pandas Dataframe
+            preprocessors (array of dicts): List of preprocessors with parameters ::
+
+                [
+                    {'text': {'text_cols': []}}
+                ]
+
+        Preprocessors:
+            text
+                * text_cols(array): List of text columns to process
+                * text_metrics ['mean_length', 'unique_count', 'separation_score'] : Calculate metrics for text fields and after vectorize(separation_score) 
+                * tokenize (dict): Default - {'max_text_len': 30000, 'tokenizers': ['sent'], 'remove_chars': '○•'}
+                * vectorize ('en_use_lg'|'hashing'|'en_use_md'|'en_use_cmlm_md'|'en_use_cmlm_lg'): See see https://github.com/MartinoMensio/spacy-universal-sentence-encoder
+                * dim_reduction(dict): Generate features based on vectors. See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html ::
+
+                    {
+                        'alg_name': 'PCA'|'t-SNE', 
+                        'args': {'n_components': 2} #Number of components to keep.
+                    }
+
+                * output_prefix (str): Prefix for generated columns. Format name: {prefix}_{colname}_{num}
+
+                * calc_distance ['none', 'cosine', 'cityblock', 'euclidean', 'haversine', 'l1', 'l2', 'manhattan', 'nan_euclidean'] | 'cosine' : See https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.distance_metrics.html#sklearn.metrics.pairwise.distance_metrics
+                * compare_pairs (array of dicts): When calc_distance is not none. ::
+
+                    [
+                        {'compare_cols': [{'dataset_idx': 0, 'cols': ['col1']}, {'dataset_idx': 1, 'cols': ['col2']}], 
+                            'output_name':'cosine_col1_col2', 'params': {}
+                        },
+                        {'compare_cols': [{'dataset_idx': 0, 'cols': ['col3']}, {'dataset_idx': 1, 'cols': ['col4']}], 
+                            'output_name':'cosine_col3_col4', 'params': {}
+                        },                        
+                    ]
+
+                * datasets: List of datasets to process, may be empty, so all fields takes from main dataset ::
+
+                    [
+                        {'path': 'path', 'keys': ['main_key', 'local_key'], 'text_metrics': ['separation_score', 'mean_length', 'unique_count']}, 
+                        {'path': 'path1', 'keys': ['main_key1', 'local_key1']}
+                    ]
+
+        Returns:
+                {
+                    'result': True,
+                    'data': 'data in input format'
+                }
+
+        """
+        return self.get_runner(locally).execute_one_provider('preprocess_data', data, preprocessors, locally)
+
+    @show_result
     def train(self):
         """Starts training session based on context state.
 
