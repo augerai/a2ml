@@ -12,6 +12,9 @@ class AugerA2ML(object):
     def import_data(self, source=None):
         return AugerDataset(self.ctx).create(source=source)
 
+    def preprocess_data(self, data, preprocessors, locally=False):
+        return AugerDataset(self.ctx).preprocess_data(data, preprocessors, locally)
+
     def train(self):
         return AugerExperiment(self.ctx).start()
 

@@ -73,3 +73,25 @@ class AugerDataset(object):
         file_name = DataSet(self.ctx, project, name).download(path_to_download)
         self.ctx.log('Downloaded dataset %s to %s' % (name, file_name))
         return {'dowloaded': name, 'file': file_name}
+
+    def preprocess_data(self, data, preprocessors, locally):
+        if locally:
+            return self._preprocess_data_locally(data, preprocessors)
+        else:
+           raise Exception("preprocess_data supported with locally=True only.")     
+
+    def _preprocess_data_locally(self, data, preprocessors):                
+        from auger_ml.preprocessors.text import TextPreprocessor
+
+        res = data
+        for p in preprocessors:
+            name = list(p.keys())[0]
+            params = list(p.values())[0]
+            if name != 'text':
+                raise Exception("Only text preprocessor supported.")
+
+            tp = TextPreprocessor(params)
+            res = tp.fit_transform(res)
+
+        return res
+            
