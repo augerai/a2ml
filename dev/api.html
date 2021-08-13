@@ -286,6 +286,79 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="a2ml.api.a2ml.A2ML.preprocess_data">
+<code class="sig-name descname">preprocess_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">preprocessors</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.preprocess_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str|pandas.DataFrame</em>) -- Input data for preprocess. Can be path to file(local or s3) or Pandas Dataframe</p></li>
+<li><p><strong>preprocessors</strong> (<em>array of dicts</em>) -- <p>List of preprocessors with parameters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;text_cols&#39;</span><span class="p">:</span> <span class="p">[]}}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Preprocessors:</dt><dd><dl>
+<dt>text</dt><dd><ul>
+<li><p>text_cols(array): List of text columns to process</p></li>
+<li><p>text_metrics ['mean_length', 'unique_count', 'separation_score'] : Calculate metrics for text fields and after vectorize(separation_score)</p></li>
+<li><p>tokenize (dict): Default - {'max_text_len': 30000, 'tokenizers': ['sent'], 'remove_chars': '○•'}</p></li>
+<li><p>vectorize ('en_use_lg'|'hashing'|'en_use_md'|'en_use_cmlm_md'|'en_use_cmlm_lg'): See see <a class="reference external" href="https://github.com/MartinoMensio/spacy-universal-sentence-encoder">https://github.com/MartinoMensio/spacy-universal-sentence-encoder</a></p></li>
+<li><p>dim_reduction(dict): Generate features based on vectors. See <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html">https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;alg_name&#39;</span><span class="p">:</span> <span class="s1">&#39;PCA&#39;</span><span class="o">|</span><span class="s1">&#39;t-SNE&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span> <span class="c1">#Number of components to keep.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>output_prefix (str): Prefix for generated columns. Format name: {prefix}_{colname}_{num}</p></li>
+<li><p>calc_distance ['none', 'cosine', 'cityblock', 'euclidean', 'haversine', 'l1', 'l2', 'manhattan', 'nan_euclidean'] | 'cosine' : See <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.distance_metrics.html#sklearn.metrics.pairwise.distance_metrics">https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.distance_metrics.html#sklearn.metrics.pairwise.distance_metrics</a></p></li>
+<li><p>compare_pairs (array of dicts): When calc_distance is not none.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;compare_cols&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;dataset_idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]},</span> <span class="p">{</span><span class="s1">&#39;dataset_idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col2&#39;</span><span class="p">]}],</span>
+        <span class="s1">&#39;output_name&#39;</span><span class="p">:</span><span class="s1">&#39;cosine_col1_col2&#39;</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;compare_cols&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;dataset_idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col3&#39;</span><span class="p">]},</span> <span class="p">{</span><span class="s1">&#39;dataset_idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;col4&#39;</span><span class="p">]}],</span>
+        <span class="s1">&#39;output_name&#39;</span><span class="p">:</span><span class="s1">&#39;cosine_col3_col4&#39;</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>datasets: List of datasets to process, may be empty, so all fields takes from main dataset</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;main_key&#39;</span><span class="p">,</span> <span class="s1">&#39;local_key&#39;</span><span class="p">],</span> <span class="s1">&#39;text_metrics&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;separation_score&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_length&#39;</span><span class="p">,</span> <span class="s1">&#39;unique_count&#39;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;main_key1&#39;</span><span class="p">,</span> <span class="s1">&#39;local_key1&#39;</span><span class="p">]}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>{</dt><dd><p>'result': True,
+'data': 'data in input format'</p>
+</dd>
+</dl>
+<p>}</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="a2ml.api.a2ml.A2ML.train">
 <code class="sig-name descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.train" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts training session based on context state.</p>
