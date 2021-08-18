@@ -110,6 +110,8 @@ class AugerExperimentApi(AugerBaseApi):
             split_options['timeseriesSplit'] = config.get('experiment/timeseries_fold_split')
         if config.get('experiment/test_size_limit') is not None:
             split_options['test_size_limit'] = config.get('experiment/test_size_limit')
+        if config.get('experiment/groups_col') is not None:
+            split_options['groups_col'] = config.get('experiment/groups_col')
 
         if split_options:
             options['splitOptions'] = split_options
