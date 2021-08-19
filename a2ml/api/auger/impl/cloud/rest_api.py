@@ -25,13 +25,13 @@ class RestApi(object):
         if params.get('id') and not method.startswith('create_'):
             oid = params['id']
             del params['id']
-            print(method, oid, params)
+            #print(method, oid, params)
             res = getattr(self.hub_client, method)(oid, **params)
         else:
-            if method == 'create_endpoint_prediction' or method == 'create_endpoint_actual':
-                print(method, params.keys())
-            else:
-                print(method, params)
+            # if method == 'create_endpoint_prediction' or method == 'create_endpoint_actual':
+            #     print(method, params.keys())
+            # else:
+            #     print(method, params)
 
             res = getattr(self.hub_client, method)(**params)
 

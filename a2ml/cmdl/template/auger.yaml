@@ -14,7 +14,7 @@ experiment:
   label_encoded: []
 
   # List of all supported model names:
-  # *Classification: XGBClassifier,LGBMClassifier,SVC,SGDClassifier,
+  # *Classification: XGBClassifier,LGBMClassifier,LinearSVC,SVC,SGDClassifier,
   # AdaBoostClassifier,DecisionTreeClassifier,ExtraTreesClassifier,RandomForestClassifier,
   # GradientBoostingClassifier,CatBoostClassifier
   # *Regression: SVR,XGBRegressor,LGBMRegressor,ElasticNet,
@@ -56,15 +56,22 @@ experiment:
   # Split to folds parameters:
   # Shuffle records in each fold
   #shuffle: True
-  # Use TimeSeriesSplit for folds generation. Will not change records order on the training data
+
+  # Column to use as groups in split methods. See: https://scikit-learn.org/stable/modules/classes.html#splitter-classes
+  #groups_col: data_date
+
+  # Use TimeSeriesSplit for folds generation. Will not change records order on the training data.
   #timeseries_fold_split: False
+  # Maximum number of records for test data. Used for timeseries_fold_split
+  #test_size_limit: 800
+
   # Validation data split ratio, used when split to test/validation datasets. If set, cross_validation_folds will be ignored
   #validation_size: 0.8
 
 # CPU cluster hardware settings
 cluster:
   # Type could be standard or high_memory
-  type: standard
+  type: high_memory
   min_nodes: 2
-  max_nodes: 2
+  max_nodes: 6
   stack_version: stable

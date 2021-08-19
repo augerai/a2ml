@@ -32,9 +32,6 @@ class Model(object):
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, 
         output=None, no_features_in_result=None, score=False, score_true_data=None):
-        if locally:
-            self.deploy(model_id, locally)
-
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, 
             predicted_at, output, no_features_in_result, score, score_true_data)
 

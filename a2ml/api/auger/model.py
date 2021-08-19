@@ -24,6 +24,9 @@ class AugerModel(object):
     #@with_project(autocreate=False)
     def predict(self, filename, model_id, threshold, locally, data, columns, predicted_at, output, 
         no_features_in_result, score, score_true_data):
+        if locally:
+            self.deploy(model_id, locally, review=False, name=None, algorithm=None, score=None, data_path=None)
+
         predicted = Model(self.ctx, project=None).predict(
             filename, model_id, threshold, locally, data, columns, predicted_at, output, 
             no_features_in_result, score, score_true_data)
