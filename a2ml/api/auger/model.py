@@ -34,7 +34,7 @@ class AugerModel(object):
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
 
-        return {'predicted': predicted}
+        return predicted
 
     @error_handler
     @authenticated
