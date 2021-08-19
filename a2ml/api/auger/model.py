@@ -34,7 +34,10 @@ class AugerModel(object):
         if filename:
             self.ctx.log('Predictions stored in %s' % predicted)
 
-        return predicted
+        if isinstance(predicted, dict) and 'predicted' in predicted:
+            return predicted
+
+        return {'predicted': predicted}
 
     @error_handler
     @authenticated
