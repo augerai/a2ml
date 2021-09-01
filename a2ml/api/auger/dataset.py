@@ -31,15 +31,15 @@ class AugerDataset(object):
     @error_handler
     @authenticated
     @with_project(autocreate=True)
-    def create(self, project, source = None, validation=False):
-        dataset = self._create(project, source, validation)
+    def create(self, project, source = None, validation=False, name=None):
+        dataset = self._create(project, source, validation, name)
         self.ctx.log('Created DataSet %s' % dataset.name)
         return {'created': dataset.name}
 
-    def _create(self, project, source = None, validation=False):
+    def _create(self, project, source = None, validation=False, name=None):
         if source is None:
             source = self.ctx.config.get('source', None)
-        dataset = DataSet(self.ctx, project).create(source)
+        dataset = DataSet(self.ctx, project).create(source, name)
         AugerConfig(self.ctx).set_data_set(dataset.name, source, validation)
 
         return dataset

@@ -6,6 +6,7 @@ import shortuuid
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ElementTree
+from a2ml.api.utils.dataframe import DataFrame
 
 from .cluster import AugerClusterApi
 from .project_file import AugerProjectFileApi
@@ -31,8 +32,17 @@ class AugerDataSetApi(AugerProjectFileApi):
         #     AugerDataSetApi.verify(data_source_file, self.ctx.config.path)
 
         if local_data_source:
-            file_url = self._upload_to_cloud(data_source_file)
-            file_name = os.path.basename(data_source_file)
+            if DataFrame.is_dataframe(data_source_file):
+                with fsclient.save_atomic("%s.parquet"%data_set_name, move_file=False) as local_path:
+                    ds = DataFrame.create_dataframe(data_source_file)
+                    ds.saveToParquetFile(local_path)
+                    file_url = self._upload_to_cloud(local_path)
+
+                file_name = data_set_name
+            else:    
+                file_url = self._upload_to_cloud(data_source_file)
+                file_name = os.path.basename(data_source_file)
+
             if data_set_name:
                 self.object_name = data_set_name
             else:
@@ -81,6 +91,9 @@ class AugerDataSetApi(AugerProjectFileApi):
 
     @staticmethod
     def verify(data_source_file, config_path=None):
+        if DataFrame.is_dataframe(data_source_file):
+            return data_source_file, True
+
         if urllib.parse.urlparse(data_source_file).scheme in ['http', 'https']:
             return data_source_file, False
 

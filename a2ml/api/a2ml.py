@@ -1,6 +1,6 @@
 from a2ml.api.base_a2ml import BaseA2ML
 from a2ml.api.utils.show_result import show_result
-from a2ml.api.utils import convert_source
+#from a2ml.api.utils import convert_source
 from a2ml.api.utils.context import Context
 
 
@@ -28,7 +28,7 @@ class A2ML(BaseA2ML):
         self.local_runner = lambda: self.build_runner(ctx, provider, force_local=True)
 
     @show_result
-    def import_data(self, source=None):
+    def import_data(self, source=None, name=None):
         """Imports data defined in context. Uploading the same file name will result in versions being appended to the file name.
 
         Note:
@@ -46,6 +46,7 @@ class A2ML(BaseA2ML):
 
         Args:
             source (str, optional): Local file name, remote url to the data source file, Pandas DataFrame or postgres url
+            name (str, optional): Name of dataset, if none then file name used. If source is DataFrame then name should be specified.
 
         Returns:
             Results for each provider. ::
@@ -70,8 +71,7 @@ class A2ML(BaseA2ML):
                 a2ml = A2ML(ctx, 'auger, azure')
                 a2ml.import_data()
         """
-        with convert_source(source, self.ctx.config.get("name", "source_data")) as data_source:
-            return self.runner.execute('import_data', source=data_source)
+        return self.runner.execute('import_data', source=source, name=name)
 
     @show_result
     def preprocess_data(self, data, preprocessors, locally=False):

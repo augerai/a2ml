@@ -5,6 +5,7 @@
 import pytest
 import copy
 
+from a2ml.api.utils.dataframe import DataFrame
 from a2ml.api.auger.dataset import AugerDataset
 from a2ml.api.auger.impl.cloud.project import AugerProjectApi
 from .utils import interceptor, PAYLOAD_DEFAULT, object_status_chain
@@ -41,6 +42,29 @@ class TestDataSet():
 
         result = AugerDataset(ctx).create(source='iris.csv')
         assert result.get('created') == 'iris-1'
+
+    def test_create_from_df(self, log, project, ctx, authenticated, monkeypatch):
+        PAYLOAD = copy.deepcopy(PAYLOAD_DEFAULT)
+        PAYLOAD['get_project_files'] = {
+            'data': [{
+                'project_id': 1,
+                'url': 's3://iris.csv',
+                'name': 'iris-2.csv',
+            }],
+            'meta': {'pagination': {'offset': 0, 'total': 1, 'count': 1, 'limit': 100}, 'status': 200},
+        }
+        PAYLOAD['get_project_file'] = {'data': {}},
+        PAYLOAD['create_project_file'] = {'data': {}}
+
+        interceptor(PAYLOAD, monkeypatch)
+        object_status_chain(['processing', 'processed'], monkeypatch)
+        monkeypatch.setattr(AugerProjectApi, 'start', lambda self: None)
+        monkeypatch.setattr('a2ml.api.auger.impl.cloud.dataset.AugerDataSetApi._upload_to_cloud', lambda *args: 's3://iris.csv')
+
+        ds = DataFrame({'data_path': 'iris.csv'})
+        ds.load()
+        result = AugerDataset(ctx).create(source=ds.df, name='iris')
+        assert result.get('created') == 'iris'
 
     def test_delete(self, log, project, ctx, authenticated, monkeypatch):
         PAYLOAD = copy.deepcopy(PAYLOAD_DEFAULT)
