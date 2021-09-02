@@ -62,7 +62,7 @@ class DataFrame(object):
                     ds.load_records(data_path)
             else:    
                 ds = DataFrame({'data_path': data_path})
-                ds.load(features = features, use_cache=False)
+                ds.load(features = features)
         else:
             ds = DataFrame({})
             ds.load_records(records, features=features)
