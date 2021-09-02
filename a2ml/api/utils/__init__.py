@@ -215,14 +215,14 @@ def convert_to_date(date):
     else:
         return date
 
-@contextlib.contextmanager
-def convert_source(source, name):
-    if source is not None and isinstance(source, pd.DataFrame):
-        with fsclient.save_atomic("%s.parquet"%name, move_file=False) as local_path:
-            source.to_parquet(local_path, index=False, compression="gzip")
-            yield local_path
-    else:
-        yield source
+# @contextlib.contextmanager
+# def convert_source(source, name):
+#     if source is not None and isinstance(source, pd.DataFrame):
+#         with fsclient.save_atomic("%s.parquet"%name, move_file=False) as local_path:
+#             source.to_parquet(local_path, index=False, compression="gzip")
+#             yield local_path
+#     else:
+#         yield source
 
 def retry_helper(func, retry_errors=[], num_try=10, delay=10, ctx=None):
     nTry = 0

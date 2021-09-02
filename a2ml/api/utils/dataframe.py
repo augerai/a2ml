@@ -43,20 +43,47 @@ class DataFrame(object):
         return compression
 
     @staticmethod
-    def create_dataframe(data_path=None, records=None, features=None):
-        if data_path:
-            ds = DataFrame({'data_path': data_path})
-            ds.load(features = features)
-        elif records is not None and isinstance(records, pd.DataFrame):
-            ds = DataFrame({})
-            ds.df = records
-            if features:
-                ds.df = ds.df[features]
-                    
-            ds.from_pandas = True
+    def create_dataframe(data_path=None, records=None, features=None, reset_index=False):
+        if data_path is not None:
+            if isinstance(data_path, pd.DataFrame):
+                ds = DataFrame({})
+                ds.df = data_path
+            elif isinstance(data_path, DataFrame):
+                ds = data_path
+            elif isinstance(data_path, list):
+                ds = DataFrame({})
+                ds.load_records(data_path)                
+            elif isinstance(data_path, dict):
+                ds = DataFrame({})
+
+                if 'data' in data_path and 'columns' in data_path:
+                    ds.load_records(data_path['data'], features=data_path['columns'])
+                else:    
+                    ds.load_records(data_path)
+            else:    
+                ds = DataFrame({'data_path': data_path})
+                ds.load(features = features)
         else:
             ds = DataFrame({})
             ds.load_records(records, features=features)
+
+        if reset_index and ds.df is not None:
+            ds.df.reset_index(drop=True, inplace=True)
+
+
+        # if data_path:
+        #     ds = DataFrame({'data_path': data_path})
+        #     ds.load(features = features)
+        # elif records is not None and isinstance(records, pd.DataFrame):
+        #     ds = DataFrame({})
+        #     ds.df = records
+        #     if features:
+        #         ds.df = ds.df[features]
+                    
+        #     ds.from_pandas = True
+        # else:
+        #     ds = DataFrame({})
+        #     ds.load_records(records, features=features)
 
         return ds
 
@@ -71,6 +98,10 @@ class DataFrame(object):
                 yield (file, df)
             except Exception as exc:
                 logging.exception("load_from_files failed for: %s. Error: %s"%(path, exc))
+
+    @staticmethod
+    def is_dataframe(data):
+        return isinstance(data, pd.DataFrame) or isinstance(data, DataFrame)
 
     def load_from_file(self, path, features=None, nrows=None):
         from collections import OrderedDict
