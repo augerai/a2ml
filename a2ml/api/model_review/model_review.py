@@ -174,7 +174,7 @@ class ModelReview(object):
 
         if provider is not None and (do_predict or not self.target_feature in ds_actuals.columns):
             logging.info("Actual data missing 'predicted' column and predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
-            self._do_predict(ctx, ds_actuals, provider)
+            self._do_predict(ctx, ds_actuals, provider, predicted_at=actual_date)
 
         result = self._do_score_actual(ds_actuals.df)
         baseline_score = {}
@@ -211,13 +211,14 @@ class ModelReview(object):
         else:
             return result
 
-    def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None):
+    def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
         if len(missing_features) > 0:
             missing_features = ', '.join(sorted(list(missing_features)))
             raise Exception(f'Missing features to make prediction: {missing_features}. Please, provide target \'{self.target_feature}\' or all training features to run predict.')
 
-        res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider)
+        res = A2ML(ctx).predict(self.model_id, data=ds_actuals.df, provider=provider,
+            predicted_at=predicted_at)
 
         if predict_feature is None:
             predict_feature = self.target_feature
@@ -332,7 +333,8 @@ class ModelReview(object):
             if df_actuals.count() > 0:
                 #print(df_actuals.df['a2ml_predicted']) #.query("%s>=0.10"%'a2ml_predicted'))
                 if do_predict:
-                    self._do_predict(ctx, df_actuals, provider, predict_feature='a2ml_predicted')
+                    self._do_predict(ctx, df_actuals, provider, predict_feature='a2ml_predicted',
+                        predicted_at=curr_date)
 
                 df_actuals.df.rename(columns={self.target_feature: 'a2ml_actual'}, inplace=True)
                 df_actuals.df.rename(columns={'a2ml_predicted': self.target_feature}, inplace=True)
