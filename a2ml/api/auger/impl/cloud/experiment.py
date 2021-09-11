@@ -79,6 +79,14 @@ class AugerExperimentApi(AugerBaseApi):
             options["algorithms_to_exlude"] = config.get_list('experiment/blocked_models')
         if config.get('experiment/allowed_models'):
             options["allowed_algorithms"] = config.get_list('experiment/allowed_models')
+
+        if config.get('experiment/blocked_preprocessors'):
+            options["blocked_preprocessors"] = config.get_list('experiment/blocked_preprocessors')
+        if config.get('experiment/allowed_preprocessors'):
+            options["allowed_preprocessors"] = config.get_list('experiment/allowed_preprocessors')
+        if config.get('experiment/preprocessors'):
+            options["preprocessors"] = config.get_list('experiment/preprocessors')
+
         if config.get('experiment/exit_score'):
             options['exit_score'] = config.get('experiment/exit_score')
         if config.get('experiment/score_top_count'):
