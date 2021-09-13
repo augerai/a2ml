@@ -28,6 +28,16 @@ experiment:
   # If not specified, then all models supported for the task are used minus any specified in blocked_models
   #allowed_models:
 
+  # List of all supported preprocessors:
+  # nan, date_time, categorical, text, eliminate, sparse, extra, scale, dim_reduction
+
+  # A list of preprocessors names to ignore for an experiment  
+  #blocked_preprocessors:  
+
+  # A list of preprocessors names to apply for an experiment. 
+  # If not specified, then all preprocessors supported  are used minus any specified in blocked_preprocessors
+  #allowed_preprocessors:
+
   # Optional. Default: False. 
   # Estimate Trial Time Predict the training time of each individual model to avoid timeouts.
   #estimate_trial_time: False
