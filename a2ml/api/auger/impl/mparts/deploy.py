@@ -22,10 +22,14 @@ class ModelDeploy(object):
         self.ctx = ctx
 
     def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None):
+        res = None
+        if not locally or review:
+            res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path)
+
         if locally:
-            return self.deploy_model_locally(model_id, review, name, data_path, locally)
-        else:
-            return self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path)
+            res = self.deploy_model_locally(model_id, review, name, data_path, locally)
+
+        return res
 
     def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None, name=None):
         if not self.ctx.config.get('review'):
