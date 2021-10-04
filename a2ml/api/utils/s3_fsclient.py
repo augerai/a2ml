@@ -406,9 +406,15 @@ class S3FSClient:
 
     def ensure_bucket_deleted(self, Bucket):
         try:
-            self.client = BotoClient()
-            self.client.head_bucket(Bucket=Bucket)
-            self.client.delete_bucket(Bucket=Bucket)
+            # https://stackoverflow.com/questions/29809105/how-do-i-delete-a-versioned-bucket-in-aws-s3-using-the-cli
+            s3 = boto3.resource(
+                's3',
+                endpoint_url=os.environ.get('S3_ENDPOINT_URL'),
+                config=boto3.session.Config(signature_version='s3v4'),
+            )
+            bucket = s3.Bucket(Bucket)
+            bucket.object_versions.delete()
+            bucket.delete()
         except botocore.client.ClientError as e:
             code = e.response['Error']['Code']
             # 404 - deleted, that how it should work
