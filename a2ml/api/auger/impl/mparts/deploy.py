@@ -21,10 +21,10 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None):
+    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None, metadata=None):
         res = None
         if not locally or review:
-            res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path)
+            res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path, metadata)
 
         if locally:
             res = self.deploy_model_locally(model_id, review, name, data_path, locally)
@@ -134,14 +134,14 @@ class ModelDeploy(object):
         }
         return result
             
-    def deploy_model_in_cloud(self, model_id, review, name, algorithm, score, data_path):
+    def deploy_model_in_cloud(self, model_id, review, name, algorithm, score, data_path, metadata):
         from .predict import ModelPredict
 
         self.ctx.log('Deploying model %s' % model_id)
 
         if self.ctx.is_external_provider():
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create_external(review, name, self.project.object_id, algorithm, score)
+                self.ctx, None).create_external(review, name, self.project.object_id, algorithm, score, metadata)
         else:    
             self.project.start()
             data_url = None
@@ -149,7 +149,7 @@ class ModelDeploy(object):
                 _, _, data_url, _ = ModelPredict(self.ctx)._process_input(data_path, None, None)
 
             pipeline_properties = AugerPipelineApi(
-                self.ctx, None).create(model_id, review, name, data_url)
+                self.ctx, None).create(model_id, review, name, data_url, metadata)
 
         if pipeline_properties.get('status') == 'ready':
             if review:

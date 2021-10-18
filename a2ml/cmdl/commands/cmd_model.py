@@ -116,9 +116,20 @@ help='Cloud AutoML Provider.')
     help='Process actuals locally.')
 @pass_context
 def delete_actuals(ctx, model_id, with_predictions, begin_date, end_date, provider, locally):
-    """Predict with deployed model."""
     A2MLModel(ctx, provider).delete_actuals(model_id, 
         with_predictions=with_predictions, begin_date=begin_date, end_date=end_date, locally=locally)
+
+@click.command('get_info', short_help='Get information about model.')
+@click.argument('model-id', required=True, type=click.STRING)
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+help='Cloud AutoML Provider.')
+@click.option('--locally', is_flag=True, default=False,
+    help='Process actuals locally.')
+@pass_context
+def get_info(ctx, model_id, provider, locally):
+    result = A2MLModel(ctx, provider).get_info(model_id, locally=locally)
+
+    ctx.log('Model information for %s: %s' % (model_id, result))
 
 @pass_context
 def add_commands(ctx):
@@ -129,5 +140,6 @@ def add_commands(ctx):
     cmdl.add_command(review)
     cmdl.add_command(undeploy)
     cmdl.add_command(delete_actuals)
+    cmdl.add_command(get_info)
 
 add_commands()

@@ -11,22 +11,37 @@ class AugerPipelineApi(AugerBaseApi):
         super(AugerPipelineApi, self).__init__(
             ctx, experiment_api, None, pipeline_id)
 
-    def create(self, trial_id, review=True, name=None, refit_data_path=None):
-        return self._call_create({'trial_id': trial_id, 'is_review_model_enabled' : review, 'name': name, 
-            'refit_data_path': refit_data_path},
-            ['creating_files', 'packaging', 'deploying'])
+    def create(self, trial_id, review=True, name=None, refit_data_path=None, metadata=None):
+        params = {
+            'trial_id': trial_id, 
+            'is_review_model_enabled' : review, 
+            'name': name, 
+            'refit_data_path': refit_data_path
+        }
+        if metadata:
+            params['metadata'] = metadata
 
-    def create_external(self, review, name, project_id, algorithm, score):
-        return self._call_create({'name': name, 'is_review_model_enabled' : review, 
-                'project_id': project_id, 
-                'target_column': self.ctx.config.get('target'), 
-                'score_name': self.ctx.config.get('experiment/metric'), 
-                'task_type': self.ctx.config.get('model_type'),
-                'algorithm_name': algorithm,
-                'score_value': score,
-                'binary_classification': self.ctx.config.get('binary_classification')
-            },
-            ['creating_files', 'packaging', 'deploying'])            
+        return self._call_create(params, ['creating_files', 'packaging', 'deploying'])
+
+    def create_external(self, review, name, project_id, algorithm, score, metadata=None):
+        params = {
+            'name': name, 'is_review_model_enabled' : review, 
+            'project_id': project_id, 
+            'target_column': self.ctx.config.get('target'), 
+            'score_name': self.ctx.config.get('experiment/metric'), 
+            'task_type': self.ctx.config.get('model_type'),
+            'algorithm_name': algorithm,
+            'score_value': score,
+            'binary_classification': self.ctx.config.get('binary_classification')
+        }
+        if metadata:
+            params['metadata'] = metadata
+        
+        return self._call_create( params, ['creating_files', 'packaging', 'deploying'])            
+
+    def update(self, updates):
+        updates['id'] = self.object_id
+        return self._call_update(updates)
 
     def remove(self, trial_id):
         try:

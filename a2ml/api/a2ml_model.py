@@ -26,7 +26,7 @@ class A2MLModel(BaseA2ML):
 
     @show_result
     def deploy(self, model_id, locally=False, review=True, provider=None,
-        name=None, algorithm=None, score=None, data_path=None):
+        name=None, algorithm=None, score=None, data_path=None, metadata=None):
         """Deploy a model locally or to specified provider(s).
 
         Args:
@@ -38,6 +38,7 @@ class A2MLModel(BaseA2ML):
             algorithm (str): Monitored model(external provider) algorithm name.
             score (float): Monitored model(external provider) score.
             data_path (str): Data path to fit model when deploy. Return new deployed model-id
+            metadata (dict): Additional parameter for the model. Used for accurcay report(report parameter)
 
         Returns:
             ::
@@ -58,11 +59,11 @@ class A2MLModel(BaseA2ML):
                 ctx = Context()
                 model = A2MLModel(ctx, 'external')
                 result = model.deploy(model_id=None, name="My external model.", algorithm='RandomForest', score=0.75)
-                model_id = result['model_id']
+                model_id = result['data']['model_id']
 
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('deploy',
-            model_id, locally, review, name, algorithm, score, data_path)
+            model_id, locally, review, name, algorithm, score, data_path, metadata)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None,
@@ -336,12 +337,12 @@ class A2MLModel(BaseA2ML):
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False, provider=None):
         """Delete files with actuals and predcitions locally or from specified provider(s).
 
-        Args:
-            model_id (str): Model ID to delete actuals and predictions.
+        Args:
+            model_id (str): Model ID to delete actuals and predictions.
             with_predictions(bool):
             begin_date: Date to begin delete operations
             end_date: Date to end delete operations
-            locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
+            locally(bool): Delete files from local model if True, on the Provider Cloud if False. The default is False.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
 
         Returns:
@@ -359,3 +360,54 @@ class A2MLModel(BaseA2ML):
                 A2MLModel(ctx).delete_actuals(model_id='D881079E1ED14FB')
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('delete_actuals', model_id, with_predictions, begin_date, end_date, locally)
+
+    @show_result
+    def get_info(self, model_id, locally=False, provider=None):
+        """Get information about model
+
+        Args:
+            model_id (str): Model ID to delete actuals and predictions.
+            locally(bool): Get information from local model if True, on the Provider Cloud if False. The default is False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                    'data': {} #detailed model information
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                res = A2MLModel(ctx).get_info('D881079E1ED14FB')
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('get_info', model_id, locally)
+
+    @show_result
+    def update(self, model_id, metadata, locally=False, provider=None):
+        """Update model metadata
+
+        Args:
+            model_id (str): Model ID to delete actuals and predictions.
+            metadata (dict): Model metadata to update
+            locally(bool): Get information from local model if True, on the Provider Cloud if False. The default is False.
+            provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider defined by model_id or set in costructor.
+
+        Returns:
+            ::
+
+                {
+                    'result': True,
+                    'data': {}
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                res = A2MLModel(ctx).update('D881079E1ED14FB', {'report': {}})
+        """
+        return self.get_runner(locally, model_id, provider).execute_one_provider('update', model_id, metadata, locally)
