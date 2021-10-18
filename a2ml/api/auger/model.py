@@ -15,7 +15,7 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def deploy(self, project, model_id, locally, review, name, algorithm, score, data_path, metadata):
+    def deploy(self, project, model_id, locally, review, name, algorithm, score, data_path, metadata=None):
         model_id = Model(self.ctx, project).deploy(model_id, locally, review, name, algorithm, score, data_path, metadata)
         return {'model_id': model_id}
 
