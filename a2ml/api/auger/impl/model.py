@@ -18,8 +18,8 @@ class Model(object):
         self.project = project
         self.ctx = ctx
 
-    def deploy(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None):
-        return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review, name, algorithm, score, data_path)
+    def deploy(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None, metadata=None):
+        return ModelDeploy(self.ctx, self.project).execute(model_id, locally, review, name, algorithm, score, data_path, metadata)
 
     def review_alert(self, model_id, parameters, name):
         return ModelDeploy(self.ctx, self.project).create_update_review_alert(model_id, None, parameters, name)
@@ -83,3 +83,17 @@ class Model(object):
               data_path=self.ctx.config.get("source"), output=output)
         else:
             raise Exception("Not Implemented.")
+
+    def get_info(self, model_id, locally):
+        if locally:
+            raise AugerException('Model get_info for local model is not supported yet.')
+
+        pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()    
+
+        return pipeline_properties
+
+    def update(self, model_id, updates, locally):
+        if locally:
+            raise AugerException('Model get_info for local model is not supported yet.')
+
+        return AugerPipelineApi(self.ctx, None, model_id).update(updates)    

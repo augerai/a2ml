@@ -33,6 +33,9 @@ class AugerDataSetApi(AugerProjectFileApi):
 
         if local_data_source:
             if DataFrame.is_dataframe(data_source_file):
+                if not data_set_name:
+                    self.ctx.exception("Name parameter has to be specified, when import dataframe.")
+
                 with fsclient.save_atomic("%s.parquet"%data_set_name, move_file=False) as local_path:
                     ds = DataFrame.create_dataframe(data_source_file)
                     ds.saveToParquetFile(local_path)

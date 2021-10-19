@@ -15,8 +15,8 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
-    def deploy(self, project, model_id, locally, review, name, algorithm, score, data_path):
-        model_id = Model(self.ctx, project).deploy(model_id, locally, review, name, algorithm, score, data_path)
+    def deploy(self, project, model_id, locally, review, name, algorithm, score, data_path, metadata=None):
+        model_id = Model(self.ctx, project).deploy(model_id, locally, review, name, algorithm, score, data_path, metadata)
         return {'model_id': model_id}
 
     @error_handler
@@ -76,3 +76,15 @@ class AugerModel(object):
         Model(self.ctx, project).undeploy(model_id, locally)
         return {'model_id': model_id}
 
+
+    @error_handler
+    @authenticated
+    #@with_project(autocreate=False)
+    def get_info(self, model_id, locally):
+        return Model(self.ctx, project=None).get_info(model_id, locally)
+
+    @error_handler
+    @authenticated
+    #@with_project(autocreate=False)
+    def update(self, model_id, metadata, locally):
+        return Model(self.ctx, project=None).update(model_id, metadata, locally)

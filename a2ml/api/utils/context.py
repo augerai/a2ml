@@ -154,6 +154,10 @@ class Context(object):
         log.error('%s%s' %(self.name, msg), *args, **kwargs)
         self.publish_log('error', '%s%s' %(self.name, msg), *args, **kwargs)
 
+    def exception(self, msg, *args, **kwargs):
+        self.error(msg, *args, **kwargs)
+        raise Exception(msg, *args, **kwargs)
+
     def system_warning(self, *args, **kwargs):
         if self.debug and args:
             name = '[warning] '

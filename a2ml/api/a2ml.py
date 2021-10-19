@@ -231,7 +231,7 @@ class A2ML(BaseA2ML):
 
     @show_result
     def deploy(self, model_id, locally=False, review=True, provider=None,
-            name=None, algorithm=None, score=None, data_path=None):
+            name=None, algorithm=None, score=None, data_path=None, metadata=None):
         """Deploy a model locally or to specified provider(s).
 
         Note:
@@ -247,6 +247,7 @@ class A2ML(BaseA2ML):
             algorithm (str): Monitored model(external provider) algorithm name.
             score (float): Monitored model(external provider) score.
             data_path (str): Data path to fit model when deploy. Return new deployed model-id
+            metadata (dict): Additional parameter for the model. Used for accurcay report(report parameter)
 
         Returns:
             ::
@@ -268,11 +269,11 @@ class A2ML(BaseA2ML):
                 ctx = Context()
                 a2ml = A2ML(ctx, 'external')
                 result = a2ml.deploy(model_id=None, name="My external model.", algorithm='RandomForest', score=0.75)
-                model_id = result['model_id']
+                model_id = result['data']['model_id']
 
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('deploy',
-            model_id, locally, review, name, algorithm, score, data_path)
+            model_id, locally, review, name, algorithm, score, data_path, metadata)
 
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None,
