@@ -56,7 +56,7 @@ class Context(object):
         return self._runs_on_server
             
     def use_auger_cloud(self):
-        return self.config.get('use_auger_cloud', self.config.get('use_a2ml_hub', False))
+        return self.config.get('use_auger_cloud', self.config.get('use_a2ml_hub', True))
 
     def get_name(self):
         return self.config.name
