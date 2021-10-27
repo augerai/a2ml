@@ -65,3 +65,5 @@ tests/fixtures/test_score_actuals/pr_can/candidate/predictions/*_data.feather.zs
 tests/fixtures/test_score_actuals/predictions/*_actuals.feather.zstd
 tests/fixtures/test_score_actuals/predictions/*_data.feather.zstd
 tests/fixtures/predictions/
+
+tests/temp

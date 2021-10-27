@@ -464,16 +464,40 @@ class ModelHelper(object):
         options["task_type"] = task_type
         options["scoring"] = scoring
         options["score_name"] = scoring
-        options["scoreNames"] = [scoring]
 
         if task_type == "classification":
             options["classification"] = True
 
         options['binaryClassification'] = True if binary_classification else False
         options['external_model'] = True
+
+        options["scoreNames"] = ModelHelper.get_available_scores(options)
+
         fsclient.write_json_file(options_path, options)
 
         return options
+
+    @staticmethod    
+    def get_available_scores(options):
+        ADD_SCORES = ['f1', 'precision', 'recall']
+        SUFFIXES = ['_micro', '_macro', '_weighted']  # '_samples'
+
+        if options.get('classification', True):
+            add_scores = []
+            for item in ADD_SCORES:
+                add_scores.extend([item + s for s in SUFFIXES])
+
+            if options.get('binaryClassification', False):
+                advanced_binary = ['cohen_kappa_score', 'matthews_corrcoef']    # 'fowlkes_mallows_score'
+                return ['accuracy', 'average_precision', 'neg_log_loss', 'roc_auc', 'gini'] \
+                    + ADD_SCORES + add_scores + advanced_binary
+            else:
+                # jaccard_similarity_score
+                return ['accuracy', 'neg_log_loss'] + add_scores
+        else:
+            return ['explained_variance', 'neg_median_absolute_error', 'neg_mean_absolute_error',
+                    'neg_mean_squared_error', 'neg_mean_squared_log_error', 'r2', 'neg_rmsle',
+                    'neg_mase', 'neg_mape', 'mda', 'neg_rmse']
 
     def update_model_options_file(options_path, options, ds_actuals):
         ds_actuals.options = options

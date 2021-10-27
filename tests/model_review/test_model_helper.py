@@ -259,3 +259,14 @@ class TestModelHelper(unittest.TestCase):
         res = ModelHelper.calculate_proba_target(
             [[0.9957942056, 0.0042057944]], [0,1], [" <=50K", " >50K"], 0.000001, minority_target_class=" >50K")
         self.assertEqual(res, [1])
+
+    def test_create_model_options_file(self):
+        res = ModelHelper.create_model_options_file(
+            options_path='tests/temp/options.json',
+            scoring='accuracy',
+            target_column='test',
+            task_type='classification',
+            binary_classification=True,
+        )
+
+        self.assertEqual(res, {'targetFeature': 'test', 'task_type': 'classification', 'scoring': 'accuracy', 'score_name': 'accuracy', 'classification': True, 'binaryClassification': True, 'external_model': True, 'scoreNames': ['accuracy', 'average_precision', 'neg_log_loss', 'roc_auc', 'gini', 'f1', 'precision', 'recall', 'f1_micro', 'f1_macro', 'f1_weighted', 'precision_micro', 'precision_macro', 'precision_weighted', 'recall_micro', 'recall_macro', 'recall_weighted', 'cohen_kappa_score', 'matthews_corrcoef']})
