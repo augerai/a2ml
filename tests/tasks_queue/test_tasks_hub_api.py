@@ -456,7 +456,7 @@ class TestTasksHubApiAuger(unittest.TestCase):
                 'external_model': True,
                 "scoring": "accuracy",
                 "score_name": "accuracy",
-                "scoreNames": ["accuracy"],
+                "scoreNames": ['accuracy','neg_log_loss','f1_micro','f1_macro','f1_weighted','precision_micro','precision_macro','precision_weighted','recall_micro','recall_macro','recall_weighted'],
                 'binaryClassification': False,
             }
 
