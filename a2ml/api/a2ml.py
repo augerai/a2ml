@@ -365,7 +365,8 @@ class A2ML(BaseA2ML):
             score, score_true_data )
 
     @show_result
-    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False, provider=None):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, 
+            actual_date_column=None, experiment_params=None, locally=False, provider=None):
         """Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.
 
         Note:
@@ -396,6 +397,12 @@ class A2ML(BaseA2ML):
             columns(list): list of column names if data is array of records
             actuals_at: Actuals date. Use for review of historical data.
             actual_date_column(str): name of column in data which contains actual date
+            experiment_params(dict): parameters to calculate experiment metrics ::
+
+                start_date(date): experiment actuals start date
+                end_date(date):  experiment actuals end date
+                date_col(str): column name with date
+
             locally(bool): Process actuals locally.
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
 

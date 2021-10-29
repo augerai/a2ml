@@ -145,7 +145,7 @@ class ModelReview(object):
     def add_actuals(
         self, ctx, actuals_path=None, data=None, columns=None, external_model=False,
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger',
-        do_predict=False
+        do_predict=False, experiment_params=None
     ):
         ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
 
@@ -178,8 +178,12 @@ class ModelReview(object):
 
         result = self._do_score_actual(ds_actuals.df)
         baseline_score = {}
+        experiment_score = {}
+        experiment_count = 0
         if "baseline_target" in ds_actuals.columns:
             baseline_score = self._do_score_actual(ds_actuals.df, "baseline_target")
+        if experiment_params:
+            experiment_score, experiment_count = self._do_score_actual_experiment(ds_actuals, experiment_params)
 
         #logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
@@ -207,9 +211,20 @@ class ModelReview(object):
             ds_actuals.saveToFeatherFile(os.path.join(self.model_path, "predictions", file_name))
 
         if return_count:
-            return {'score': result, 'count': actuals_count, 'baseline_score': baseline_score}
+            return {'score': result, 'count': actuals_count, 'baseline_score': baseline_score,
+                'experiment_score': experiment_score, 'experiment_count': experiment_count}
         else:
             return result
+
+    def _do_score_actual_experiment(self, ds_actuals, experiment_params):
+        df_exp_actuals = ds_actuals.df.query("%s>='%s' and %s<'%s'"%(
+            experiment_params.get('date_col'), 
+            experiment_params.get('start_date'),
+            experiment_params.get('date_col'),
+            experiment_params.get('end_date')
+        ))
+
+        return self._do_score_actual(df_exp_actuals), len(df_exp_actuals)
 
     def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
