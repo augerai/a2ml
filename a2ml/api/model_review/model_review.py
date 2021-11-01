@@ -217,13 +217,26 @@ class ModelReview(object):
             return result
 
     def _do_score_actual_experiment(self, ds_actuals, experiment_params):
-        df_exp_actuals = ds_actuals.df.query("%s>='%s' and %s<'%s'"%(
-            experiment_params.get('date_col'), 
-            experiment_params.get('start_date'),
-            experiment_params.get('date_col'),
-            experiment_params.get('end_date')
-        ))
-
+        if experiment_params.get('start_date') and experiment_params.get('end_date'):
+            df_exp_actuals = ds_actuals.df.query("%s>='%s' and %s<'%s'"%(
+                experiment_params.get('date_col'), 
+                experiment_params.get('start_date'),
+                experiment_params.get('date_col'),
+                experiment_params.get('end_date')
+            ))
+        elif experiment_params.get('start_date'):
+            df_exp_actuals = ds_actuals.df.query("%s>='%s'"%(
+                experiment_params.get('date_col'), 
+                experiment_params.get('start_date')
+            ))
+        elif experiment_params.get('end_date'):
+            df_exp_actuals = ds_actuals.df.query("%s<'%s'"%(
+                experiment_params.get('date_col'), 
+                experiment_params.get('end_date')
+            ))
+        else:
+            df_exp_actuals = ds_actuals.df
+                        
         return self._do_score_actual(df_exp_actuals), len(df_exp_actuals)
 
     def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):

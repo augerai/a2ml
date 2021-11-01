@@ -35,7 +35,8 @@ class Model(object):
         return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, 
             predicted_at, output, no_features_in_result, score, score_true_data)
 
-    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, actual_date_column=None, locally=False):
+    def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, 
+        actual_date_column=None, experiment_params=None, locally=False):
         if locally:
             is_loaded, model_path = ModelDeploy(self.ctx, self.project).verify_local_model(model_id)
 
@@ -57,10 +58,12 @@ class Model(object):
               columns=columns,
               actual_date=actuals_at,
               actual_date_column=actual_date_column,
+              experiment_params=experiment_params,
               provider='auger'
             )
         else:
-            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at, actual_date_column)
+            return ModelActual(self.ctx).execute(model_id, filename, data, columns, actuals_at, 
+                actual_date_column, experiment_params)
 
     def delete_actuals(self, model_id, with_predictions=False, begin_date=None, end_date=None, locally=False):
         if locally:

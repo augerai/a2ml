@@ -444,7 +444,8 @@ class A2ML(BaseA2ML):
                 A2ML(ctx, "external").actuals('external_model_id', data=actual_records,columns=columns)
 
         """
-        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', model_id, filename, data, columns, actuals_at, actual_date_column, locally)
+        return self.get_runner(locally, model_id, provider).execute_one_provider('actuals', 
+            model_id, filename, data, columns, actuals_at, actual_date_column, experiment_params, locally)
 
 
     @show_result
