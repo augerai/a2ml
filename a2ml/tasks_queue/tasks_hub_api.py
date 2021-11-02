@@ -560,7 +560,8 @@ def score_actuals_by_model_task(params):
         return_count=params.get('return_count', False),
         provider=params.get('provider'),
         external_model=external_model,
-        do_predict=params.get('do_predict', False)
+        do_predict=params.get('do_predict', False),
+        experiment_params=params.get('experiment_params'),
     )
 
 @celeryApp.task(ignore_result=True)
