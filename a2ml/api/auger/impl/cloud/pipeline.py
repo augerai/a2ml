@@ -56,11 +56,15 @@ class AugerPipelineApi(AugerBaseApi):
         if not props:
             props = self.properties()
 
-        is_endpoint = False    
-        if props.get('is_review_model_enabled') and props.get('endpoint_pipelines'):
-            self.object_id = props['endpoint_pipelines'][0].get('endpoint_id')
-            self._set_api_request_path("AugerEndpointApi")
-            is_endpoint = True
+        is_endpoint = False
+        # if props.get('is_review_model_enabled') and props.get('endpoint_pipelines'):
+
+        #     for item in props['endpoint_pipelines']:
+        #         if item.get('pipeline_id') == self.object_id and item.get('active'):
+        #             self.object_id = item.get('endpoint_id')
+        #             self._set_api_request_path("AugerEndpointApi")
+        #             is_endpoint = True
+        #             break
 
         return is_endpoint
 
