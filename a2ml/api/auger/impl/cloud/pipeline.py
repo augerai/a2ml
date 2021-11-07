@@ -68,6 +68,18 @@ class AugerPipelineApi(AugerBaseApi):
 
         return is_endpoint
 
+    def has_endpoint(self, props=None):
+        if not props:
+            props = self.properties()
+
+        is_endpoint = False
+        if props.get('is_review_model_enabled') and props.get('endpoint_pipelines'):
+            self.object_id = props['endpoint_pipelines'][0].get('endpoint_id')
+            self._set_api_request_path("AugerEndpointApi")
+            is_endpoint = True
+
+        return is_endpoint
+
     def predict(self, records, features, threshold=None, file_url=None, predicted_at=None, 
         no_features_in_result=None, score=False, score_true_data=None):
         if self.object_id is None:
