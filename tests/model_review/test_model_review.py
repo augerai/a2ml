@@ -632,6 +632,21 @@ def test_score_actuals_experiment():
 
     assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5}
 
+def test_score_actuals_experiment_2():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None,
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params={'filter_query': "date>='2020-10-21' and date<'2020-10-23'"}
+    )
+
+    assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5}
+
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
