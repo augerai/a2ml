@@ -218,6 +218,9 @@ class ModelReview(object):
 
     def _do_score_actual_experiment(self, ds_actuals, experiment_params):
         if experiment_params.get('filter_query'):
+            for col in experiment_params.get('string_cols', []):
+                ds_actuals.df[col] = ds_actuals.df[col].astype(str, copy=False)
+
             df_exp_actuals = ds_actuals.df.query(experiment_params.get('filter_query'))
         else:    
             if experiment_params.get('start_date') and experiment_params.get('end_date'):
