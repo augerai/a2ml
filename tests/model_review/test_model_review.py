@@ -630,7 +630,7 @@ def test_score_actuals_experiment():
       experiment_params={'start_date': '2020-10-21', 'end_date': '2020-10-23', 'date_col': 'date'}
     )
 
-    assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5}
+    assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5, 'drill_down_report': []}
 
 def test_score_actuals_experiment_2():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -646,7 +646,36 @@ def test_score_actuals_experiment_2():
         'string_cols': ['date']}
     )
 
-    assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5}
+    assert res == {'score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'count': 9, 'baseline_score': {}, 'experiment_score': {'accuracy': 1.0, 'neg_log_loss': 0, 'f1_micro': 1.0, 'f1_macro': 1.0, 'f1_weighted': 1.0, 'precision_micro': 1.0, 'precision_macro': 1.0, 'precision_weighted': 1.0, 'recall_micro': 1.0, 'recall_macro': 1.0, 'recall_weighted': 1.0}, 'experiment_count': 5, 'drill_down_report': []}
+
+def test_score_actuals_experiment_drill_down():
+    model_path = 'tests/fixtures/test_score_actuals/iris_binary'
+    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None,
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params={
+        'filter_query': "date>='2020-10-21' and date<'2020-10-23'", 
+        'string_cols': ['date'],
+
+        'drill_down_report': [{
+          "name": "test_iris",
+          "order_by": "actuals(DESC)",
+          "bucket_tag": "sepal_length",
+          "bucket_info": {
+            "sepal_width": "sepal_width",
+            "petal_length": "petal_length"
+          },
+          "score_names": "precision,recall,f1,tn,fp,fn,tp"        
+        }]
+      }
+    )
+
+    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_width', 'petal_length', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():

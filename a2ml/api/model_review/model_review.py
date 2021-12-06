@@ -180,10 +180,12 @@ class ModelReview(object):
         baseline_score = {}
         experiment_score = {}
         experiment_count = 0
+        drill_down_report = []
         if "baseline_target" in ds_actuals.columns:
             baseline_score = self._do_score_actual(ds_actuals.df, "baseline_target")
         if experiment_params:
-            experiment_score, experiment_count = self._do_score_actual_experiment(ds_actuals, experiment_params)
+            experiment_score, experiment_count = self._do_score_actual_experiment(ds_actuals.df, experiment_params)
+            drill_down_report = self._get_drill_down_report(ds_actuals.df, experiment_params)            
 
         #logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
@@ -212,39 +214,136 @@ class ModelReview(object):
 
         if return_count:
             return {'score': result, 'count': actuals_count, 'baseline_score': baseline_score,
-                'experiment_score': experiment_score, 'experiment_count': experiment_count}
+                'experiment_score': experiment_score, 'experiment_count': experiment_count,
+                'drill_down_report': drill_down_report}
         else:
             return result
 
-    def _do_score_actual_experiment(self, ds_actuals, experiment_params):
+    def _do_score_actual_experiment(self, df_actuals, experiment_params):
+
         if experiment_params.get('filter_query'):
             for col in experiment_params.get('string_cols', []):
-                ds_actuals.df[col] = ds_actuals.df[col].astype(str, copy=False)
+                df_actuals[col] = df_actuals[col].astype(str, copy=False)
 
-            df_exp_actuals = ds_actuals.df.query(experiment_params.get('filter_query'))
+            df_exp_actuals = df_actuals.query(experiment_params.get('filter_query'))
         else:    
             if experiment_params.get('start_date') and experiment_params.get('end_date'):
-                df_exp_actuals = ds_actuals.df.query("%s>='%s' and %s<'%s'"%(
+                df_exp_actuals = df_actuals.query("%s>='%s' and %s<'%s'"%(
                     experiment_params.get('date_col'), 
                     experiment_params.get('start_date'),
                     experiment_params.get('date_col'),
                     experiment_params.get('end_date')
                 ))
             elif experiment_params.get('start_date'):
-                df_exp_actuals = ds_actuals.df.query("%s>='%s'"%(
+                df_exp_actuals = df_actuals.query("%s>='%s'"%(
                     experiment_params.get('date_col'), 
                     experiment_params.get('start_date')
                 ))
             elif experiment_params.get('end_date'):
-                df_exp_actuals = ds_actuals.df.query("%s<'%s'"%(
+                df_exp_actuals = df_actuals.query("%s<'%s'"%(
                     experiment_params.get('date_col'), 
                     experiment_params.get('end_date')
                 ))
             else:
-                df_exp_actuals = ds_actuals.df
+                df_exp_actuals = df_actuals
                         
         return self._do_score_actual(df_exp_actuals), len(df_exp_actuals)
 
+    # "drill_down_report": [
+    #     {
+    #       "name": "jobs",
+    #       "bucket_tag": "job_field"
+    #     },
+    #     {
+    #       "name": "skill",
+    #       "order_by": "actuals(DESC)",
+    #       "bucket_tag": "abbr",
+    #       "bucket_info": {
+    #         "type": "type_field",
+    #         "title": "title_field"
+    #       },
+    #       "score_names": "precision,recall,f1,tn,fp,fn,tp"
+    #     }
+    # ]
+
+    def _get_drill_down_report(self, df_actuals, experiment_params):
+        report = []
+
+        if not experiment_params.get('drill_down_report'):
+            return report
+
+        for item in experiment_params['drill_down_report']:
+            bucket_tag = item['bucket_tag']
+            tag_values = df_actuals[bucket_tag].unique()
+
+            reverse_order = True
+            sort_name = 'actuals'
+            sort_idx = 0
+            if item.get('order_by'):
+                reverse_order = item['order_by'].endswith('(DESC)')
+                last_idx = item['order_by'].rfind('(')
+                if last_idx >= 0:
+                    sort_name = item['order_by'][:last_idx]
+
+            columns = [bucket_tag]
+            if item.get('bucket_info'):
+                columns.extend(item.get('bucket_info').keys())
+            columns.append('actuals')
+            sort_idx = columns.index(sort_name)
+
+            score_names = item.get('score_names', [])
+            if isinstance(score_names, str):
+                score_names = score_names.split(',')
+
+            for score_name in score_names:
+                columns.append('EA_' + score_name)
+            for score_name in score_names:
+                columns.append('CA_' + score_name)
+                
+            report_item = {
+                'name': item['name'],
+                'columns': columns,
+                'records': []
+            }
+            report_item['records'] = []
+            for value in tag_values:
+                df_tag = df_actuals[df_actuals[bucket_tag]==value]
+                ca_scores = self._do_score_actual(df_tag)
+                #print(ca_scores)
+                ca_scores = self._filter_scores(ca_scores, score_names)
+                ea_scores, n_actuals = self._do_score_actual_experiment(df_tag, experiment_params)
+                ea_scores = self._filter_scores(ea_scores, score_names)
+                #print(ea_scores)
+
+                record = [value]
+                if item.get('bucket_info'):
+                    vals_info = df_tag[item['bucket_info'].keys()].values[0]
+                    record.extend(vals_info)
+
+                record.append(n_actuals)
+                record.extend(ea_scores)
+                record.extend(ca_scores)
+
+                report_item['records'].append(record)
+
+            report_item['records'].sort(key=lambda x: x[sort_idx], reverse=reverse_order)
+
+            report.append(report_item)
+
+        return report
+
+    def _filter_scores(self, scores, score_names):
+        result = []
+        for score_name in score_names:
+            if score_name in scores:
+                result.append(scores[score_name])
+            elif score_name.upper() in scores:
+                result.append(scores[score_name.upper()])
+            else:
+                result.append(None)
+
+        return result
+            
     def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
         if len(missing_features) > 0:
