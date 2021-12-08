@@ -147,7 +147,12 @@ class ModelReview(object):
         actual_date=None, actual_date_column=None, actuals_id = None, return_count=False, provider='auger',
         do_predict=False, experiment_params=None
     ):
-        ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns)
+        dtype = {}
+        if experiment_params:
+            for col in experiment_params.get('string_cols', []):
+                dtype[col] = 'str'
+
+        ds_actuals = DataFrame.create_dataframe(actuals_path, data, features=columns, dtype=dtype)
 
         if external_model or self.options.get('external_model'):
             options = self.options.copy()
@@ -220,11 +225,7 @@ class ModelReview(object):
             return result
 
     def _do_score_actual_experiment(self, df_actuals, experiment_params):
-
         if experiment_params.get('filter_query'):
-            for col in experiment_params.get('string_cols', []):
-                df_actuals[col] = df_actuals[col].astype(str, copy=False)
-
             df_exp_actuals = df_actuals.query(experiment_params.get('filter_query'))
         else:    
             if experiment_params.get('start_date') and experiment_params.get('end_date'):
@@ -274,7 +275,7 @@ class ModelReview(object):
 
         for item in experiment_params['drill_down_report']:
             bucket_tag = item['bucket_tag']
-            tag_values = df_actuals[bucket_tag].unique()
+            tag_values = df_actuals[bucket_tag].dropna().unique()
 
             reverse_order = True
             sort_name = 'actuals'
@@ -309,15 +310,16 @@ class ModelReview(object):
             for value in tag_values:
                 df_tag = df_actuals[df_actuals[bucket_tag]==value]
                 ca_scores = self._do_score_actual(df_tag)
-                #print(ca_scores)
                 ca_scores = self._filter_scores(ca_scores, score_names)
                 ea_scores, n_actuals = self._do_score_actual_experiment(df_tag, experiment_params)
                 ea_scores = self._filter_scores(ea_scores, score_names)
-                #print(ea_scores)
 
                 record = [value]
                 if item.get('bucket_info'):
-                    vals_info = df_tag[item['bucket_info'].values()].values[0]
+                    vals_info = df_tag[item['bucket_info'].values()]
+                    if len(vals_info):
+                        vals_info = vals_info.values[0]
+
                     record.extend(vals_info)
 
                 record.append(n_actuals)

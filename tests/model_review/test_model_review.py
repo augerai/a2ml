@@ -677,6 +677,46 @@ def test_score_actuals_experiment_drill_down():
 
     assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
+def _test_score_actuals_experiment_drill_down_2():
+    model_path = 'tests/fixtures/test_score_actuals/iris_binary'
+    actuals_path = os.path.join(model_path, 'level.csv')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None,
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params={
+        "string_cols": [
+          "actual_experiment_title"
+        ],
+        "filter_query": "actual_experiment_title == '20211109'",
+        "drill_down_report": [
+          {
+            "name": "jobs",
+            "bucket_tag": "job_code",
+            "bucket_info": {
+              "title": "job_title"
+            },
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill",
+            "order_by": "actuals(DESC)",
+            "bucket_tag": "abbr",
+            "bucket_info": {
+              "type": "skill_type",
+              "title": "skill_title"
+            },
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          }
+        ]
+      }
+    )
+
+    print(res)
+
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'

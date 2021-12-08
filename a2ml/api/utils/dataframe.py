@@ -43,7 +43,7 @@ class DataFrame(object):
         return compression
 
     @staticmethod
-    def create_dataframe(data_path=None, records=None, features=None, reset_index=False):
+    def create_dataframe(data_path=None, records=None, features=None, reset_index=False, dtype=None):
         if data_path is not None:
             if isinstance(data_path, pd.DataFrame):
                 ds = DataFrame({})
@@ -62,7 +62,7 @@ class DataFrame(object):
                     ds.load_records(data_path)
             else:    
                 ds = DataFrame({'data_path': data_path})
-                ds.load(features = features)
+                ds.load(features = features, dtype=dtype)
         else:
             ds = DataFrame({})
             ds.load_records(records, features=features)
@@ -103,7 +103,7 @@ class DataFrame(object):
     def is_dataframe(data):
         return isinstance(data, pd.DataFrame) or isinstance(data, DataFrame)
 
-    def load_from_file(self, path, features=None, nrows=None):
+    def load_from_file(self, path, features=None, nrows=None, dtype=None):
         from collections import OrderedDict
 
         extension = path
@@ -188,7 +188,8 @@ class DataFrame(object):
                 sep = ',',
                 nrows=nrows,
                 low_memory=False,
-                compression=compression
+                compression=compression,
+                dtype=dtype
             )
         except Exception as e:
             logging.error("read_csv failed: %s"%e)
@@ -203,7 +204,8 @@ class DataFrame(object):
                 sep = '|',
                 nrows=nrows,
                 low_memory=False,
-                compression=compression
+                compression=compression,
+                dtype=dtype
             )
 
         # if res_df is not None:
@@ -213,7 +215,7 @@ class DataFrame(object):
 
         return res_df
 
-    def load(self, features=None, nrows=None):
+    def load(self, features=None, nrows=None, dtype=None):
         self.categoricals = {}
         self.transforms_log = [[],[],[],[]]
 
@@ -248,7 +250,7 @@ class DataFrame(object):
             else:
                 path, remote_path = self._check_remote_path()
                 try:
-                    self.df = self.load_from_file(path, features=features, nrows=nrows)
+                    self.df = self.load_from_file(path, features=features, nrows=nrows, dtype=dtype)
                 except:
                     if remote_path:
                         logging.exception("Loading local file failed. Download it again...")
