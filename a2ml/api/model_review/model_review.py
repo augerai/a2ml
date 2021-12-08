@@ -317,7 +317,7 @@ class ModelReview(object):
 
                 record = [value]
                 if item.get('bucket_info'):
-                    vals_info = df_tag[item['bucket_info'].keys()].values[0]
+                    vals_info = df_tag[item['bucket_info'].values()].values[0]
                     record.extend(vals_info)
 
                 record.append(n_actuals)

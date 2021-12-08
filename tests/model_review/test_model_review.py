@@ -667,15 +667,15 @@ def test_score_actuals_experiment_drill_down():
           "order_by": "actuals(DESC)",
           "bucket_tag": "sepal_length",
           "bucket_info": {
-            "sepal_width": "sepal_width",
-            "petal_length": "petal_length"
+            "sepal_w": "sepal_width",
+            "petal_l": "petal_length"
           },
           "score_names": "precision,recall,f1,tn,fp,fn,tp"        
         }]
       }
     )
 
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_width', 'petal_length', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
