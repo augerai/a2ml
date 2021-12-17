@@ -273,6 +273,14 @@ class ModelReview(object):
         if not experiment_params.get('drill_down_report'):
             return report
 
+        df_bucket_infos = {}    
+        if experiment_params.get('bucket_info_files'):
+            for key, value in experiment_params['bucket_info_files'].items():
+                ds = DataFrame.create_dataframe(data_path=value)
+                if ds.df is not None:
+                    df_bucket_infos[key] = ds.df
+                        
+
         for item in experiment_params['drill_down_report']:
             bucket_tag = item['bucket_tag']
             tag_values = df_actuals[bucket_tag].dropna().unique()
@@ -316,9 +324,15 @@ class ModelReview(object):
 
                 record = [value]
                 if item.get('bucket_info'):
-                    vals_info = df_tag[item['bucket_info'].values()]
-                    if len(vals_info):
-                        vals_info = vals_info.values[0]
+                    df_info = df_bucket_infos.get(item['name'])
+                    vals_info = []
+                    if df_info is not None:
+                        vals_info = df_info[item['bucket_info'].values()]
+                        if len(vals_info):
+                            vals_info = vals_info.values[0]
+                    else:
+                        for bi in item['bucket_info'].values():
+                            vals_info.append(None)
 
                     record.extend(vals_info)
 

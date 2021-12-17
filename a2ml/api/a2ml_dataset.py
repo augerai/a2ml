@@ -83,7 +83,29 @@ class A2MLDataset(BaseA2ML):
                 ctx = Context()
                 dataset = DataSet(ctx, 'auger, azure').create('../dataset.csv')
         """
-        return self.runner.execute('create', data_source, name)
+        return self.runner.execute('create', source, name)
+
+    @show_result
+    def upload(self, source, name=None):
+        """Upload file to Auger and get Auger url.
+
+        Args:
+            source (str): Local file name, remote url to the data source file, Pandas DataFrame or postgres url
+            name (str, optional): Name of dataset, if none then file name used. If source is DataFrame then name should be specified.
+
+        Returns:
+            {
+                'result': True,
+                'data': 'url for the file on Auger Hub'
+            }
+
+        Examples:
+            .. code-block:: python
+
+            ctx = Context()
+            url = DataSet(ctx).upload('../dataset.csv')
+        """
+        return self.get_runner(False).execute_one_provider('upload', source, name)
 
     @show_result
     def delete(self, name = None):

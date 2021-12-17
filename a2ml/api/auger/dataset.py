@@ -47,6 +47,17 @@ class AugerDataset(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
+    def upload(self, project, source = None, name=None):
+        data_source_file, local_data_source = \
+            DataSet.verify(source, self.ctx.config.path)
+
+        file_url, file_name = DataSet(self.ctx, project, name).do_upload_file(data_source_file, local_data_source=local_data_source)
+        #self.ctx.log('Upload dataset %s to %s' % (name, file_url))
+        return file_url
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
     def delete(self, project, name):
         if name is None:
             name = self.ctx.config.get('dataset', None)

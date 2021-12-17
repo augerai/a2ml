@@ -679,7 +679,7 @@ def test_score_actuals_experiment_drill_down():
 
 def _test_score_actuals_experiment_drill_down_2():
     model_path = 'tests/fixtures/test_score_actuals/iris_binary'
-    actuals_path = os.path.join(model_path, 'level.csv')
+    actuals_path = os.path.join(model_path, 'mapped.csv')
 
     remove_actual_files(model_path)
 
@@ -692,9 +692,13 @@ def _test_score_actuals_experiment_drill_down_2():
           "actual_experiment_title"
         ],
         "filter_query": "actual_experiment_title == '20211109'",
+        'bucket_info_files': {
+          'job': os.path.join(model_path, 'job_bucket_info.csv'),
+          'skill': os.path.join(model_path, 'skill_bucket_info.csv'),
+        },
         "drill_down_report": [
           {
-            "name": "jobs",
+            "name": "job",
             "bucket_tag": "job_code",
             "bucket_info": {
               "title": "job_title"
