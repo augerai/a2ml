@@ -21,15 +21,17 @@ def list_cmd(ctx, provider):
 
 @click.command(short_help='Create Dataset on Provider Cloud')
 @click.argument('source', required=False, type=click.STRING)
+@click.option('--description', '-d', type=click.STRING, required=False,
+    help='Description of dataset.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
     help='Cloud AutoML Provider.')
 @pass_context
-def create(ctx, provider, source):
+def create(ctx, source, description, provider):
     """Create data set on the Provider Cloud.
        If source is not specified, config.yaml/source
        will be used instead.
     """
-    A2MLDataset(ctx, provider).create(source)
+    A2MLDataset(ctx, provider).create(source, description=description)
 
 
 @click.command(short_help='Delete Dataset on Provider Cloud')

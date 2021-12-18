@@ -10,7 +10,7 @@ class DataSet(AugerDataSetApi):
             ctx, project, data_set_name)
         self.project = project
 
-    def create(self, data_source_file, name):
+    def create(self, data_source_file, name, description):
         if data_source_file is None:
             raise AugerException('Please specify data source file...')
 
@@ -19,7 +19,8 @@ class DataSet(AugerDataSetApi):
 
         self.project.start()
 
-        super().create(data_source_file, name if name else self.object_name, local_data_source=local_data_source)
+        super().create(data_source_file, name if name else self.object_name, 
+            local_data_source=local_data_source, description=description)
         return self
 
     def upload_file(self, data_source_file):

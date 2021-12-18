@@ -9,8 +9,8 @@ class AugerA2ML(object):
         super(AugerA2ML, self).__init__()
         self.ctx = ctx
 
-    def import_data(self, source=None, name=None):
-        return AugerDataset(self.ctx).create(source=source, name=name)
+    def import_data(self, source=None, name=None, description=None):
+        return AugerDataset(self.ctx).create(source=source, name=name, description=description)
 
     def preprocess_data(self, data, preprocessors, locally=False):
         return AugerDataset(self.ctx).preprocess_data(data, preprocessors, locally)

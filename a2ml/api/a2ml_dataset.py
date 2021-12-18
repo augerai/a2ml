@@ -58,7 +58,7 @@ class A2MLDataset(BaseA2ML):
         return self.runner.execute('list')
 
     @show_result
-    def create(self, source = None, name=None):
+    def create(self, source = None, name=None, description=None):
         """Create a new DataSet for the Project specified in the .yaml.
 
         Args:
@@ -83,7 +83,7 @@ class A2MLDataset(BaseA2ML):
                 ctx = Context()
                 dataset = DataSet(ctx, 'auger, azure').create('../dataset.csv')
         """
-        return self.runner.execute('create', source, name)
+        return self.runner.execute('create', source, name, description)
 
     @show_result
     def upload(self, source, name=None):

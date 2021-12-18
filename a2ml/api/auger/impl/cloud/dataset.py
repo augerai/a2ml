@@ -27,7 +27,7 @@ class AugerDataSetApi(AugerProjectFileApi):
         super(AugerDataSetApi, self).__init__(
             ctx, project_api, data_set_name, data_set_id)
 
-    def do_upload_file(self, data_source_file, data_set_name=None, local_data_source=True):
+    def do_upload_file(self, data_source_file, data_set_name=None, local_data_source=True, description=None):
         # data_source_file, local_data_source = \
         #     AugerDataSetApi.verify(data_source_file, self.ctx.config.path)
 
@@ -35,18 +35,18 @@ class AugerDataSetApi(AugerProjectFileApi):
             if DataFrame.is_dataframe(data_source_file):
                 if not data_set_name:
                     data_set_name = self.object_name
-                    
+
                 if not data_set_name:
                     self.ctx.exception("Name parameter has to be specified, when import dataframe.")
 
                 with fsclient.save_atomic("%s.parquet"%data_set_name, move_file=False) as local_path:
                     ds = DataFrame.create_dataframe(data_source_file)
                     ds.saveToParquetFile(local_path)
-                    file_url = self._upload_to_cloud(local_path)
+                    file_url = self._upload_to_cloud(local_path, description=description)
 
                 file_name = data_set_name
             else:    
-                file_url = self._upload_to_cloud(data_source_file)
+                file_url = self._upload_to_cloud(data_source_file, description=description)
                 file_name = os.path.basename(data_source_file)
 
             if data_set_name:
@@ -61,8 +61,9 @@ class AugerDataSetApi(AugerProjectFileApi):
 
         return file_url, file_name
 
-    def create(self, data_source_file, data_set_name=None, local_data_source=True):
-        file_url, file_name = self.do_upload_file(data_source_file, data_set_name=data_set_name, local_data_source=local_data_source)
+    def create(self, data_source_file, data_set_name=None, local_data_source=True, description=None):
+        file_url, file_name = self.do_upload_file(data_source_file, data_set_name=data_set_name, 
+            local_data_source=local_data_source, description=description)
 
         try:
             return super().create(file_url, file_name)
@@ -123,8 +124,8 @@ class AugerDataSetApi(AugerProjectFileApi):
 
         return data_source_file, True
 
-    def _upload_to_cloud(self, file_to_upload):
-        return self._upload_to_multi_tenant(file_to_upload)
+    def _upload_to_cloud(self, file_to_upload, description=None):
+        return self._upload_to_multi_tenant(file_to_upload, description=description)
 
     # def _upload_to_single_tenant(self, file_to_upload):
     #     # get file_uploader_service from the cluster
@@ -156,7 +157,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             raise AugerException(
                 'HTTP error [%s] while uploading file to Auger Cloud...' % r.status_code)
 
-    def _upload_to_multi_tenant(self, file_to_upload):
+    def _upload_to_multi_tenant(self, file_to_upload, description):
         file_path = 'workspace/projects/%s/files/%s-%s' % \
             (self.parent_api.object_name, shortuuid.uuid(),
              os.path.basename(file_to_upload))
@@ -165,6 +166,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             'project_id': self.parent_api.object_id,
             'file_path': file_path,
             'file_size': fsclient.get_file_size(file_to_upload),
+            'description': description if description else '',
             'async': True
         })
         cluster_task = AugerClusterTaskApi(self.ctx, cluster_task_id=res['id'])

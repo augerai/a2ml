@@ -327,8 +327,11 @@ class ModelReview(object):
                     df_info = df_bucket_infos.get(item['name'])
                     vals_info = []
                     if df_info is not None:
-                        vals_info = df_info[item['bucket_info'].values()]
-                        if len(vals_info):
+                        vals_info = df_info[df_info[bucket_tag]==value][item['bucket_info'].values()]
+                    else:
+                        vals_info = df_tag[item['bucket_info'].values()]
+
+                    if len(vals_info):
                             vals_info = vals_info.values[0]
                     else:
                         for bi in item['bucket_info'].values():
