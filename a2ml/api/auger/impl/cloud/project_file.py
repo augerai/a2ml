@@ -12,11 +12,16 @@ class AugerProjectFileApi(AugerBaseApi):
         #assert project_api is not None, 'Project must be set for Project File'
         self._set_api_request_path('AugerProjectFileApi')
 
-    def create(self, file_url, file_name=None):
+    def create(self, file_url, file_name=None, description=None):
         return self._call_create({
             'name': self.object_name,
             'project_id': self.parent_api.object_id,
-            'file_name': file_name, 'url': file_url}, ['processing'])
+            'file_name': file_name, 
+            'url': file_url,
+            'description': description
+            }, 
+            ['processing'],
+        )
 
     def delete(self):
         self.rest_api.call(
