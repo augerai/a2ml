@@ -38,7 +38,7 @@ class AugerActualApi(AugerBaseApi):
         if experiment_params:
             params['experiment_params'] = experiment_params
 
-        print(params)                
+        #print(params)
         return self._call_create(
             params=params, 
             has_return_object=False)
