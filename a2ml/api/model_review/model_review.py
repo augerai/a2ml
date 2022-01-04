@@ -127,7 +127,7 @@ class ModelReview(object):
         )
 
         res = calc.calculate(df_data)
-        return res["roi"]
+        return res['roi']
 
     def add_external_model(self, target_column, scoring, task_type, binary_classification):
         ModelHelper.create_model_options_file(
@@ -267,6 +267,25 @@ class ModelReview(object):
     #     }
     # ]
 
+    @staticmethod
+    def _parse_order_items(orders):
+        sort_name = 'actuals'
+        sort_name_1 = None
+        reverse_order = True
+
+        if orders:
+            ar_orders = orders.split(',')
+            for idx, item in enumerate(ar_orders):
+                reverse_order = item.endswith('(DESC)')
+                last_idx = item.rfind('(')
+                if last_idx >= 0:
+                    if idx == 0 and len(ar_orders)>1:
+                        sort_name_1 = item[:last_idx]
+                    else:
+                        sort_name = item[:last_idx]    
+
+        return sort_name, sort_name_1, reverse_order
+                
     def _get_drill_down_report(self, df_actuals, experiment_params):
         report = []
 
@@ -285,20 +304,16 @@ class ModelReview(object):
             bucket_tag = item['bucket_tag']
             tag_values = df_actuals[bucket_tag].dropna().unique()
 
-            reverse_order = True
-            sort_name = 'actuals'
-            sort_idx = 0
-            if item.get('order_by'):
-                reverse_order = item['order_by'].endswith('(DESC)')
-                last_idx = item['order_by'].rfind('(')
-                if last_idx >= 0:
-                    sort_name = item['order_by'][:last_idx]
+            sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(item.get('order_by'))
 
             columns = [bucket_tag]
             if item.get('bucket_info'):
                 columns.extend(item.get('bucket_info').keys())
             columns.append('actuals')
             sort_idx = columns.index(sort_name)
+            sort_idx_1 = None
+            if sort_name_1:
+                sort_idx_1 = columns.index(sort_name_1)
 
             score_names = item.get('score_names', [])
             if isinstance(score_names, str):
@@ -345,7 +360,10 @@ class ModelReview(object):
 
                 report_item['records'].append(record)
 
-            report_item['records'].sort(key=lambda x: x[sort_idx], reverse=reverse_order)
+            if sort_idx_1:
+                report_item['records'].sort(key=lambda x: (x[sort_idx_1], x[sort_idx]), reverse=reverse_order)
+            else:    
+                report_item['records'].sort(key=lambda x: x[sort_idx], reverse=reverse_order)
 
             report.append(report_item)
 

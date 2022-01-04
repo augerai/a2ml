@@ -35,6 +35,9 @@ experiment:
   # Size in percent(0.0-1.0): to hold out a portion of the training data for validation
   #validation_size: 0.2
 
+  #Path to validation dataset. If not set your source dataset will be split to validate.
+  #validation_source: 
+
   # Maximum time to run experiment in minutes
   max_total_time: 60
   # Maximum time to run individual trial in minutes

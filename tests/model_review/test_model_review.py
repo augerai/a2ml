@@ -677,6 +677,23 @@ def test_score_actuals_experiment_drill_down():
 
     assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
+def test_drill_down_report_order():
+  sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(None)
+  assert sort_name=='actuals'
+  assert sort_name_1 is None
+  assert reverse_order
+
+  sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items("test(DESC)")
+  assert sort_name=='test'
+  assert sort_name_1 is None
+  assert reverse_order
+
+  sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items("indemand(DESC),actuals(DESC)")
+
+  assert sort_name=='actuals'
+  assert sort_name_1 == 'indemand'
+  assert reverse_order
+
 def _test_score_actuals_experiment_drill_down_2():
     model_path = 'tests/fixtures/test_score_actuals/iris_binary'
     actuals_path = os.path.join(model_path, 'mapped.csv')
