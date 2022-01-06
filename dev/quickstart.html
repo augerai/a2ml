@@ -289,18 +289,18 @@ auger.yaml  azure.yaml config.yaml  google.yaml
 <p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="config-yaml">
 <div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#config-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">moneyball_proj</span>
-<span class="hll"><span class="nt">providers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
-</span><span class="hll"><span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
-</span><span class="hll"><span class="nt">exclude</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Team,League,Year,RankSeason,RankPlayoffs</span>
-</span><span class="hll"><span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RS</span>
-</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regression</span>
-</span><span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
-  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
-  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">moneyball_proj</span><span class="w"></span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span><span class="w"></span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
+</span><span class="hll"><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Team,League,Year,RankSeason,RankPlayoffs</span><span class="w"></span>
+</span><span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RS</span><span class="w"></span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regression</span><span class="w"></span>
+</span><span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -365,34 +365,34 @@ Could not load the run context. Logging offline
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>R2</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#azure-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span>
-  <span class="nt">run_id</span><span class="p">:</span>
-<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
-</span><span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
-  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2_score</span><span class="w"></span>
+</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="auger-yaml">
 <div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#auger-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span>
-  <span class="nt">experiment_session_id</span><span class="p">:</span>
-  <span class="nt">time_series</span><span class="p">:</span>
-  <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
-<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2</span>
-</span><span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard</span>
-  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">stack_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stable</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2</span><span class="w"></span>
+</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -559,18 +559,18 @@ auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
 <p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="digits-proj-config-yaml">
 <div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#digits-proj-config-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits_proj</span>
-<span class="hll"><span class="nt">providers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
-</span><span class="hll"><span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
-</span><span class="nt">exclude</span><span class="p">:</span>
-<span class="hll"><span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">class</span>
-</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">classifiction</span>
-</span><span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
-  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
-  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits_proj</span><span class="w"></span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span><span class="w"></span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
+</span><span class="nt">exclude</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">class</span><span class="w"></span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classifiction</span><span class="w"></span>
+</span><span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -604,34 +604,34 @@ auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>accuracy</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="digits-proj-azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#digits-proj-azure-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span>
-  <span class="nt">run_id</span><span class="p">:</span>
-<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
-</span><span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
-  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span><span class="w"></span>
+</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="digits-proj-auger-yaml">
 <div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#digits-proj-auger-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span>
-  <span class="nt">experiment_session_id</span><span class="p">:</span>
-  <span class="nt">time_series</span><span class="p">:</span>
-  <span class="nt">label_encoded</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
-<span class="hll">  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accuracy</span>
-</span><span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">standard</span>
-  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">stack_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stable</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span><span class="w"></span>
+</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span><span class="w"></span>
 </pre></div>
 </div>
 </div>

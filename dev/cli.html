@@ -220,14 +220,14 @@
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code></p></li>
 </ul>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the name of the project</span>
-<span class="nt">provider</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the AutoML provider. **GC (for Google Cloud)**, **AZ (for Microsoft Azure)**, or **Auger**</span>
-<span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the CSV or Parquet file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage (&quot;gs://...&quot;) for Google Cloud AutoML.</span>
-<span class="nt">source_format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">csv(default), parquet. Set it if source is url or file has no extension</span>
-<span class="nt">exclude</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">features from the dataset to exclude from the model</span>
-<span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the feature which is the target</span>
-<span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Can be regression or classification</span>
-<span class="nt">budget</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the time budget in milliseconds to train</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the name of the project</span><span class="w"></span>
+<span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the AutoML provider. **GC (for Google Cloud)**, **AZ (for Microsoft Azure)**, or **Auger**</span><span class="w"></span>
+<span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the CSV or Parquet file to train with. Can be a local file path (for Auger or Azure). Can be a hosted file URL. Can be URL for Google Cloud Storage (&quot;gs://...&quot;) for Google Cloud AutoML.</span><span class="w"></span>
+<span class="nt">source_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">csv(default), parquet. Set it if source is url or file has no extension</span><span class="w"></span>
+<span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">features from the dataset to exclude from the model</span><span class="w"></span>
+<span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the feature which is the target</span><span class="w"></span>
+<span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Can be regression or classification</span><span class="w"></span>
+<span class="nt">budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the time budget in milliseconds to train</span><span class="w"></span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -238,8 +238,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">google.yaml</span></code></p></li>
 </ul>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the region for the AutoML providers compute clusters, each vendor has different names for their regions</span>
-<span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">how to measure the accuracy of the model to perform the search of algorithms, each vendor has different names for their regions</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the region for the AutoML providers compute clusters, each vendor has different names for their regions</span><span class="w"></span>
+<span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">how to measure the accuracy of the model to perform the search of algorithms, each vendor has different names for their regions</span><span class="w"></span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -247,56 +247,56 @@
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Here is an example with options that apply to all AutoML providers:</p>
 <p><strong>config.yaml</strong></p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./moneyball/train.csv</span>
-<span class="nt">exclude</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Team,League,Year</span>
-<span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RS</span>
-<span class="nt">model_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regression</span>
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
-  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
-  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./moneyball/train.csv</span><span class="w"></span>
+<span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Team,League,Year</span><span class="w"></span>
+<span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RS</span><span class="w"></span>
+<span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regression</span><span class="w"></span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p><strong>azure.yaml</strong></p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">r2_score</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2_score</span><span class="w"></span>
 
-<span class="nt">cluster</span><span class="p">:</span>
-  <span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">eastus2</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cpucluster</span>
-  <span class="nt">min_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-  <span class="nt">max_nodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
+<span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cpucluster</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span><span class="w"></span>
 
-<span class="nt">file_share</span><span class="p">:</span>
-<span class="nt">account_name</span><span class="p">:</span>
-<span class="nt">account_key</span><span class="p">:</span>
-<span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">train.csv</span>
+<span class="nt">file_share</span><span class="p">:</span><span class="w"></span>
+<span class="nt">account_name</span><span class="p">:</span><span class="w"></span>
+<span class="nt">account_key</span><span class="p">:</span><span class="w"></span>
+<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">train.csv</span><span class="w"></span>
 </pre></div>
 </div>
 <p><strong>google.yaml</strong></p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">region</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us-central1</span>
-<span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MINIMIZE_MAE</span>
-<span class="nt">project</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">automl-test-237311</span>
-<span class="nt">dataset_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TBL1889796605356277760</span>
-<span class="nt">operation_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TBL2145477039279308800</span>
-<span class="nt">operation_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">projects/291533092938/locations/us-central1/operations/TBL4473943599746121728</span>
-<span class="nt">model_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">projects/291533092938/locations/us-central1/models/TBL1517370026795991040</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-central1</span><span class="w"></span>
+<span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MINIMIZE_MAE</span><span class="w"></span>
+<span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">automl-test-237311</span><span class="w"></span>
+<span class="nt">dataset_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TBL1889796605356277760</span><span class="w"></span>
+<span class="nt">operation_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TBL2145477039279308800</span><span class="w"></span>
+<span class="nt">operation_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">projects/291533092938/locations/us-central1/operations/TBL4473943599746121728</span><span class="w"></span>
+<span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">projects/291533092938/locations/us-central1/models/TBL1517370026795991040</span><span class="w"></span>
 </pre></div>
 </div>
 <p><strong>auger.yaml</strong></p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">project</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">moneyball</span>
-<span class="nt">dataset</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">train.csv</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">moneyball</span><span class="w"></span>
+<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">train.csv</span><span class="w"></span>
 
-<span class="nt">experiment</span><span class="p">:</span>
-  <span class="nt">cross_validation_folds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">max_total_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60</span>
-  <span class="nt">max_eval_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-  <span class="nt">max_n_trials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
-  <span class="nt">use_ensemble</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">metric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">f1_macro</span>
+<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f1_macro</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
