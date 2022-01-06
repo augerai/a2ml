@@ -677,6 +677,36 @@ def test_score_actuals_experiment_drill_down():
 
     assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
+def test_score_actuals_experiment_drill_down_multi():
+    model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
+    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      None,
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params={
+        'filter_query': "date>='2020-10-21' and date<'2020-10-23'", 
+        'string_cols': ['date'],
+
+        'drill_down_report': [{
+          "name": "test_iris",
+          "order_by": "actuals(DESC)",
+          "bucket_tag": "sepal_length",
+          "bucket_info": {
+            "sepal_w": "sepal_width",
+            "petal_l": "petal_length"
+          },
+          "score_names_multi": "precision,recall,f1"
+        }]
+      }
+    )
+
+    #print(res['drill_down_report'])
+    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'CA_precision', 'CA_recall', 'CA_f1', 'EA_Iris-setosa_precision', 'EA_Iris-setosa_recall', 'EA_Iris-setosa_f1', 'EA_Iris-versicolor_precision', 'EA_Iris-versicolor_recall', 'EA_Iris-versicolor_f1', 'EA_Iris-virginica_precision', 'EA_Iris-virginica_recall', 'EA_Iris-virginica_f1', 'CA_Iris-setosa_precision', 'CA_Iris-setosa_recall', 'CA_Iris-setosa_f1', 'CA_Iris-versicolor_precision', 'CA_Iris-versicolor_recall', 'CA_Iris-versicolor_f1', 'CA_Iris-virginica_precision', 'CA_Iris-virginica_recall', 'CA_Iris-virginica_f1'], 'records': [[4.6, 3.1, 1.5, 6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [5.0, 3.6, 1.4, 6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [5.4, 3.9, 1.7, 3, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [4.4, 2.9, 1.4, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.6666666666666666, 0.5, 0.6666666666666666, 0.5555555555555555, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.6666666666666666], [5.1, 3.5, 1.4, 0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [4.9, 3.0, 1.4, 0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [4.7, 3.2, 1.3, 0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]]}]
+
 def test_drill_down_report_order():
   sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(None)
   assert sort_name=='actuals'

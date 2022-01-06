@@ -213,6 +213,9 @@ class ModelHelper(object):
                     mae_ex(y_test, y_pred)
 
         for scoring in options.get('scoreNames', []):
+            if scoring.upper() in ['TN', 'FP', 'FN', 'TP']:
+                continue
+
             try:
                 if options.get('task_type') == "timeseries":
                     # from auger_ml.preprocessors.space import ppspace_is_timeseries_model
@@ -240,11 +243,15 @@ class ModelHelper(object):
                     #all_scores['scoring'] = scorer(estimator, X_test, y_test)
 
 
-                if np.isnan(all_scores[scoring]):
+                if not isinstance(all_scores[scoring], list) and np.isnan(all_scores[scoring]):
                     all_scores[scoring] = 0
 
             except Exception as e:
-                #logging.exception("Score failed.")
+                # import traceback
+                # print("Score %s for algorithm %s failed to build: %s" % (
+                #     scoring, options.get('algorithm_name'), str(e)))
+                # print(traceback.format_exc())
+
                 if scoring == options.get('scoring', None) and raise_main_score:
                     raise
 

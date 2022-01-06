@@ -300,6 +300,12 @@ class ModelReview(object):
                     df_bucket_infos[key] = ds.df
                         
 
+        target_classes = []
+        is_multi_class = self.options.get('classification') and not self.options.get('binaryClassification')    
+
+        if is_multi_class:
+            target_classes = list(df_actuals['a2ml_actual'].unique())
+
         for item in experiment_params['drill_down_report']:
             bucket_tag = item['bucket_tag']
             tag_values = df_actuals[bucket_tag].dropna().unique()
@@ -315,27 +321,53 @@ class ModelReview(object):
             if sort_name_1:
                 sort_idx_1 = columns.index(sort_name_1)
 
-            score_names = item.get('score_names', [])
+            if is_multi_class:
+                score_names = item.get('score_names_multi', [])
+            else:
+                score_names = item.get('score_names', [])
+
             if isinstance(score_names, str):
-                score_names = score_names.split(',')
+                score_names = [x.strip() for x in score_names.split(',')]
 
             for score_name in score_names:
                 columns.append('EA_' + score_name)
             for score_name in score_names:
                 columns.append('CA_' + score_name)
                 
+            if target_classes:
+                for target_class in target_classes:
+                    for score_name in score_names:
+                        columns.append('EA_' + target_class + '_' + score_name)
+                for target_class in target_classes:                        
+                    for score_name in score_names:
+                        columns.append('CA_' + target_class + '_' + score_name)
+                    
             report_item = {
                 'name': item['name'],
                 'columns': columns,
                 'records': []
             }
             report_item['records'] = []
+
+            if target_classes:
+                multi_scores = []
+                for score_name in score_names:
+                    multi_scores.append(score_name+'_weighted')
+
+                for score_name in score_names:
+                    multi_scores.append(score_name+'_none')
+
+                score_names = multi_scores
+
+            old_scores_names = self.options.get('scoreNames', [])                
+            self.options['scoreNames'] = score_names
+                
             for value in tag_values:
                 df_tag = df_actuals[df_actuals[bucket_tag]==value]
                 ca_scores = self._do_score_actual(df_tag)
-                ca_scores = self._filter_scores(ca_scores, score_names)
+                ca_scores = self._filter_scores(ca_scores, score_names, len(target_classes))
                 ea_scores, n_actuals = self._do_score_actual_experiment(df_tag, experiment_params)
-                ea_scores = self._filter_scores(ea_scores, score_names)
+                ea_scores = self._filter_scores(ea_scores, score_names, len(target_classes))
 
                 record = [value]
                 if item.get('bucket_info'):
@@ -360,6 +392,8 @@ class ModelReview(object):
 
                 report_item['records'].append(record)
 
+            self.options['scoreNames'] = old_scores_names
+                
             if sort_idx_1:
                 report_item['records'].sort(key=lambda x: (x[sort_idx_1], x[sort_idx]), reverse=reverse_order)
             else:    
@@ -369,15 +403,25 @@ class ModelReview(object):
 
         return report
 
-    def _filter_scores(self, scores, score_names):
+    def _filter_scores(self, scores, score_names, num_target_classes):
         result = []
+        class_scores = []
         for score_name in score_names:
-            if score_name in scores:
-                result.append(scores[score_name])
-            elif score_name.upper() in scores:
-                result.append(scores[score_name.upper()])
-            else:
-                result.append(None)
+            if num_target_classes > 2 and score_name.endswith('_none'):
+                class_scores.append(scores[score_name])
+            else:    
+                if score_name in scores:
+                    result.append(scores[score_name])
+                elif score_name.upper() in scores:
+                    result.append(scores[score_name.upper()])
+                else:
+                    result.append(None)
+
+        if class_scores:            
+            for cur_idx in range(num_target_classes):
+                for item in class_scores:
+                    if cur_idx < len(item):
+                        result.append(item[cur_idx])
 
         return result
             

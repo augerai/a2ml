@@ -1,6 +1,6 @@
 import numpy as np
 import pandas
-from sklearn.metrics import make_scorer, recall_score, average_precision_score, roc_auc_score
+from sklearn.metrics import make_scorer, recall_score, average_precision_score, roc_auc_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import matthews_corrcoef as mcc
 from sklearn.metrics import SCORERS
@@ -96,12 +96,24 @@ def average_precision_score_weighted_score(y_true, y_pred):
 def AUC_weighted_score(y_true, y_pred):
     return roc_auc_score(y_true, y_pred, average='weighted')
 
+def precision_none_score(y_true, y_pred):
+    return list(precision_score(y_true, y_pred, average=None))
+
+def recall_none_score(y_true, y_pred):
+    return list(recall_score(y_true, y_pred, average=None))
+
+def f1_none_score(y_true, y_pred):
+    return list(f1_score(y_true, y_pred, average=None))
+
 cohen_kappa_score = make_scorer(kappa)
 matthews_corrcoef = make_scorer(matthews)
 gini_score = make_scorer(gini, needs_threshold=True)
 norm_macro_recall_scorer = make_scorer(norm_macro_recall_score)
 average_precision_score_weighted_scorer = make_scorer(average_precision_score_weighted_score)
 AUC_weighted_scorer = make_scorer(AUC_weighted_score)
+precision_none_scorer = make_scorer(precision_none_score)
+recall_none_scorer = make_scorer(recall_none_score)
+f1_none_scorer = make_scorer(f1_none_score)
 
 SCORERS['cohen_kappa_score'] = cohen_kappa_score
 SCORERS['matthews_corrcoef'] = matthews_corrcoef
@@ -109,3 +121,6 @@ SCORERS['gini'] = gini_score
 SCORERS['norm_macro_recall'] = norm_macro_recall_scorer
 SCORERS['average_precision_score_weighted'] = average_precision_score_weighted_scorer
 SCORERS['AUC_weighted'] = AUC_weighted_scorer
+SCORERS['precision_none'] = precision_none_scorer
+SCORERS['recall_none'] = recall_none_scorer
+SCORERS['f1_none'] = f1_none_scorer
