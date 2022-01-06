@@ -679,7 +679,7 @@ def test_score_actuals_experiment_drill_down():
 
 def test_score_actuals_experiment_drill_down_multi():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
-    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates.csv')
+    actuals_path = os.path.join(model_path, 'iris_actuals_with_dates_2.csv')
 
     remove_actual_files(model_path)
 
