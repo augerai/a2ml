@@ -301,7 +301,7 @@ class ModelReview(object):
                         
 
         target_classes = []
-        is_multi_class = self.options.get('classification') and not self.options.get('binaryClassification')    
+        is_multi_class = self.options.get('task_type') == 'classification' and not self.options.get('binaryClassification')    
 
         if is_multi_class:
             target_classes = list(df_actuals['a2ml_actual'].unique())
