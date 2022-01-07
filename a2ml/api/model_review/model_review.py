@@ -321,13 +321,13 @@ class ModelReview(object):
             if sort_name_1:
                 sort_idx_1 = columns.index(sort_name_1)
 
-            if is_multi_class:
-                score_names = item.get('score_names_multi', [])
-            else:
-                score_names = item.get('score_names', [])
-
+            score_names = item.get('score_names', [])
             if isinstance(score_names, str):
                 score_names = [x.strip() for x in score_names.split(',')]
+
+            if is_multi_class:
+                remove_scores = ['tn', 'fn', 'fp' , 'tp']
+                score_names = [ x for x in score_names if not (x.lower() in remove_scores) ]
 
             for score_name in score_names:
                 columns.append('EA_' + score_name)

@@ -670,7 +670,7 @@ def test_score_actuals_experiment_drill_down():
             "sepal_w": "sepal_width",
             "petal_l": "petal_length"
           },
-          "score_names": "precision,recall,f1,tn,fp,fn,tp"        
+          "score_names": "precision,recall,f1,tn,fp,fn,tp"
         }]
       }
     )
@@ -699,7 +699,7 @@ def test_score_actuals_experiment_drill_down_multi():
             "sepal_w": "sepal_width",
             "petal_l": "petal_length"
           },
-          "score_names_multi": "precision,recall,f1"
+          "score_names": "precision,recall,f1,tn,fp,fn,tp"
         }]
       }
     )
