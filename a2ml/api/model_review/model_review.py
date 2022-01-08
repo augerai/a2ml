@@ -337,10 +337,10 @@ class ModelReview(object):
             if target_classes:
                 for target_class in target_classes:
                     for score_name in score_names:
-                        columns.append('EA_' + target_class + '_' + score_name)
+                        columns.append('EA_' + str(target_class) + '_' + score_name)
                 for target_class in target_classes:                        
                     for score_name in score_names:
-                        columns.append('CA_' + target_class + '_' + score_name)
+                        columns.append('CA_' + str(target_class) + '_' + score_name)
                     
             report_item = {
                 'name': item['name'],
