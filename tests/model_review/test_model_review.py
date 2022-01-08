@@ -699,7 +699,8 @@ def test_score_actuals_experiment_drill_down_multi():
             "sepal_w": "sepal_width",
             "petal_l": "petal_length"
           },
-          'class_names': ['cl1', 'cl2', 'cl3'],
+          #'class_names': ['cl1', 'cl2', 'cl3'],
+          'class_names': 'cl1, cl2, cl3',
           "score_names": "precision,recall,f1,tn,fp,fn,tp"
         }]
       }

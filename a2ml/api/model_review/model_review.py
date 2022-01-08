@@ -343,9 +343,13 @@ class ModelReview(object):
             if target_classes:
                 for idx, target_class in enumerate(target_classes):
                     class_name = str(target_class)
-                    if item.get("class_names"):
-                        if idx < len(item["class_names"]):
-                            class_name = item["class_names"][idx]
+                    class_names = item.get("class_names")
+                    if class_names:
+                        if isinstance(class_names, str):
+                            class_names = [x.strip() for x in class_names.split(',')]
+
+                        if idx < len(class_names):
+                            class_name = class_names[idx]
 
                     for score_name in score_names:
                         columns.append('CA_' + class_name + '_' + score_name)
