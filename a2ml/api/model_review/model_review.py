@@ -333,24 +333,17 @@ class ModelReview(object):
                 columns.append('EA_' + score_name)
                 
             if target_classes:
-                for target_class in target_classes:
+                for idx, target_class in enumerate(target_classes):
+                    class_name = self._get_class_name(target_class, item.get("class_names"), idx)
                     for score_name in score_names:
-                        columns.append('EA_' + str(target_class) + '_' + score_name)
+                        columns.append('EA_' + class_name + '_' + score_name)
 
             for score_name in score_names:
                 columns.append('CA_' + score_name)
 
             if target_classes:
                 for idx, target_class in enumerate(target_classes):
-                    class_name = str(target_class)
-                    class_names = item.get("class_names")
-                    if class_names:
-                        if isinstance(class_names, str):
-                            class_names = [x.strip() for x in class_names.split(',')]
-
-                        if idx < len(class_names):
-                            class_name = class_names[idx]
-
+                    class_name = self._get_class_name(target_class, item.get("class_names"), idx)
                     for score_name in score_names:
                         columns.append('CA_' + class_name + '_' + score_name)
                     
@@ -415,6 +408,17 @@ class ModelReview(object):
 
         return report
 
+    def _get_class_name(self, target_class, class_names, idx):
+        class_name = str(target_class)
+        if class_names:
+            if isinstance(class_names, str):
+                class_names = [x.strip() for x in class_names.split(',')]
+
+            if idx < len(class_names):
+                class_name = class_names[idx]
+            
+        return class_name
+            
     def _filter_scores(self, scores, score_names, num_target_classes):
         result = []
         class_scores = []
