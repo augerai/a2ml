@@ -331,16 +331,24 @@ class ModelReview(object):
 
             for score_name in score_names:
                 columns.append('EA_' + score_name)
-            for score_name in score_names:
-                columns.append('CA_' + score_name)
                 
             if target_classes:
                 for target_class in target_classes:
                     for score_name in score_names:
                         columns.append('EA_' + str(target_class) + '_' + score_name)
-                for target_class in target_classes:                        
+
+            for score_name in score_names:
+                columns.append('CA_' + score_name)
+
+            if target_classes:
+                for idx, target_class in enumerate(target_classes):
+                    class_name = str(target_class)
+                    if item.get("class_names"):
+                        if idx < len(item["class_names"]):
+                            class_name = item["class_names"][idx]
+
                     for score_name in score_names:
-                        columns.append('CA_' + str(target_class) + '_' + score_name)
+                        columns.append('CA_' + class_name + '_' + score_name)
                     
             report_item = {
                 'name': item['name'],
