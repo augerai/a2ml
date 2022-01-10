@@ -376,12 +376,16 @@ class ModelReview(object):
             for value in tag_values:
                 df_tag = df_actuals[df_actuals[bucket_tag]==value]
                 ca_scores = self._do_score_actual(df_tag)
-                ca_val_counts = self._get_value_counts(df_tag['a2ml_actual'])
+                ca_val_counts = []
+                if target_classes:
+                    ca_val_counts = self._get_value_counts(df_tag['a2ml_actual'])
                 ca_scores = self._filter_scores(ca_scores, score_names, len(target_classes), ca_val_counts)
 
                 ea_scores, n_actuals, df_exp_tag = self._do_score_actual_experiment(df_tag, experiment_params)
-                ea_val_counts = self._get_value_counts(df_exp_tag[self.target_feature])
-                ea_val_counts.extend(self._get_value_counts(df_exp_tag['a2ml_actual']))
+                ea_val_counts = []
+                if target_classes:
+                    ea_val_counts = self._get_value_counts(df_exp_tag[self.target_feature])
+                    ea_val_counts.extend(self._get_value_counts(df_exp_tag['a2ml_actual']))
                 ea_scores = self._filter_scores(ea_scores, score_names, len(target_classes), ea_val_counts)
 
                 record = [value]
@@ -444,17 +448,28 @@ class ModelReview(object):
                 elif score_name.upper() in scores:
                     result.append(scores[score_name.upper()])
                 else:
-                    result.append(None)
+                    result.append(0)
 
-        if val_counts:
-            result.extend(val_counts)
-
-        if class_scores:            
+        if class_scores:
             for cur_idx in range(num_target_classes):
+                if val_counts:
+                    if cur_idx < len(val_counts):
+                        result.append(val_counts[cur_idx])
+                    else:
+                        result.append(0)
+
+                    if len(val_counts) > num_target_classes:
+                        if cur_idx+num_target_classes < len(val_counts):
+                            result.append(val_counts[cur_idx+num_target_classes])
+                        else:
+                            result.append(0)
+
                 for item in class_scores:
                     if cur_idx < len(item):
                         result.append(item[cur_idx])
-
+                    else:
+                        result.append(0)
+                        
         return result
             
     def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):
