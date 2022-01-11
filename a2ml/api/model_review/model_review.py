@@ -378,14 +378,14 @@ class ModelReview(object):
                 ca_scores = self._do_score_actual(df_tag)
                 ca_val_counts = []
                 if target_classes:
-                    ca_val_counts = self._get_value_counts(df_tag['a2ml_actual'])
+                    ca_val_counts = self._get_value_counts(df_tag['a2ml_actual'], target_classes)
                 ca_scores = self._filter_scores(ca_scores, score_names, len(target_classes), ca_val_counts)
 
                 ea_scores, n_actuals, df_exp_tag = self._do_score_actual_experiment(df_tag, experiment_params)
                 ea_val_counts = []
                 if target_classes:
-                    ea_val_counts = self._get_value_counts(df_exp_tag[self.target_feature])
-                    ea_val_counts.extend(self._get_value_counts(df_exp_tag['a2ml_actual']))
+                    ea_val_counts = self._get_value_counts(df_exp_tag[self.target_feature], target_classes)
+                    ea_val_counts.extend(self._get_value_counts(df_exp_tag['a2ml_actual'], target_classes))
                 ea_scores = self._filter_scores(ea_scores, score_names, len(target_classes), ea_val_counts)
 
                 record = [value]
@@ -422,9 +422,18 @@ class ModelReview(object):
 
         return report
 
-    def _get_value_counts(self, data):
-        return data.value_counts(sort=False).tolist()
-            
+    def _get_value_counts(self, data, target_classes):
+        res = data.value_counts(sort=False).to_dict()
+
+        result = []
+        for item in target_classes:
+            if item in res:
+                result.append(res[item])
+            else:
+                result.append(0)
+
+        return result
+
     def _get_class_name(self, target_class, class_names, idx):
         class_name = str(target_class)
         if class_names:
