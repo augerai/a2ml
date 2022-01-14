@@ -119,8 +119,8 @@ class AugerBaseApi(object):
 
     def _log_status(self, status):
         self.ctx.log(
-            '%s %s is %s...' % \
-            (self._get_readable_name(), self._get_status_name(), status))
+            '%s:%s %s is %s...' % \
+            (self._get_readable_name(), self.name, self._get_status_name(), status))
 
     def _call_create(self, params=None, progress=None,has_return_object=True):
         if self.ctx.provider_info:

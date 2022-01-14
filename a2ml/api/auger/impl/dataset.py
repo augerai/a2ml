@@ -17,7 +17,7 @@ class DataSet(AugerDataSetApi):
         data_source_file, local_data_source = \
             AugerDataSetApi.verify(data_source_file, self.ctx.config.path)
 
-        self.project.start()
+        #self.project.start()
 
         super().create(data_source_file, name if name else self.object_name, 
             local_data_source=local_data_source, description=description)
@@ -30,7 +30,7 @@ class DataSet(AugerDataSetApi):
         data_source_file, local_data_source = \
             AugerDataSetApi.verify(data_source_file, self.ctx.config.path)
 
-        self.project.start()
+        #self.project.start()
 
         return super().do_upload_file(data_source_file, self.object_name, local_data_source=local_data_source)
 
@@ -38,6 +38,6 @@ class DataSet(AugerDataSetApi):
         if path_to_download is None:
             raise AugerException('Please specify path to download...')
 
-        self.project.start()
+        #self.project.start()
 
         return super().download(path_to_download)

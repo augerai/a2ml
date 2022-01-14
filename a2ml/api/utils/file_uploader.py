@@ -23,10 +23,11 @@ class FileUploader(object):
         )
 
     def transfer_config(self):
+        MB = 1024 ** 2
         return TransferConfig(
-            multipart_threshold=1024 * 25,
+            multipart_threshold=MB*10,
             max_concurrency=4,
-            multipart_chunksize=1024 * 25,
+            multipart_chunksize=MB*10,
             use_threads=True
         )
 
