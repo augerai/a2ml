@@ -744,6 +744,7 @@ def _test_score_actuals_experiment_drill_down_2():
         'bucket_info_files': {
           'job': os.path.join(model_path, 'job_bucket_info.csv'),
           'skill': os.path.join(model_path, 'skill_bucket_info.csv'),
+          'skill_type': os.path.join(model_path, 'skill_bucket_info.csv'),
         },
         "drill_down_report": [
           {
@@ -759,6 +760,17 @@ def _test_score_actuals_experiment_drill_down_2():
             "order_by": "actuals(DESC)",
             "bucket_tag": "abbr",
             "bucket_info": {
+              "type": "skill_type",
+              "title": "skill_title"
+            },
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill_type",
+            "bucket_tag": "skill_type",
+            "bucket_key": "abbr",
+            "bucket_info": {
+              'abbr': 'abbr',
               "type": "skill_type",
               "title": "skill_title"
             },

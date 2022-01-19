@@ -286,7 +286,7 @@ class ModelReview(object):
 
         return sort_name, sort_name_1, reverse_order
                 
-    def _get_drill_down_report(self, df_actuals, experiment_params):
+    def _get_drill_down_report(self, df_actuals_arg, experiment_params):
         report = []
 
         if not experiment_params.get('drill_down_report'):
@@ -304,10 +304,15 @@ class ModelReview(object):
         is_multi_class = self.options.get('task_type') == 'classification' and not self.options.get('binaryClassification')    
 
         if is_multi_class:
-            target_classes = list(df_actuals['a2ml_actual'].unique())
+            target_classes = list(df_actuals_arg['a2ml_actual'].unique())
 
         for item in experiment_params['drill_down_report']:
             bucket_tag = item['bucket_tag']
+            df_actuals = df_actuals_arg
+            if item['name'] in df_bucket_infos:
+                df_actuals = df_actuals_arg.merge(df_bucket_infos.get(item['name']), how='left',
+                    on=item.get('bucket_key', bucket_tag))
+
             tag_values = df_actuals[bucket_tag].dropna().unique()
 
             sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(item.get('order_by'))
@@ -390,13 +395,14 @@ class ModelReview(object):
 
                 record = [value]
                 if item.get('bucket_info'):
-                    df_info = df_bucket_infos.get(item['name'])
-                    vals_info = []
-                    if df_info is not None:
-                        vals_info = df_info[df_info[bucket_tag]==value][item['bucket_info'].values()]
-                    else:
-                        vals_info = df_tag[item['bucket_info'].values()]
+                    # vals_info = []                    
+                    # df_info = df_bucket_infos.get(item['name'])
+                    # if df_info is not None:
+                    #     vals_info = df_info[df_info[bucket_tag]==value][item['bucket_info'].values()]
+                    # else:
+                    #     vals_info = df_tag[item['bucket_info'].values()]
 
+                    vals_info = df_tag[item['bucket_info'].values()]
                     if len(vals_info):
                         vals_info = vals_info.values[0]
                     else:
