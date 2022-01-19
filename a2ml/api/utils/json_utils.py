@@ -15,6 +15,8 @@ def convert_simple_numpy_type(obj):
     elif isinstance(obj, (np.float_, np.float16, np.float32,
         np.float64)):
         return float(obj)
+    elif isinstance(obj, (np.bool_)):
+        return bool(obj)
 
     # elif isinstance(obj,(np.ndarray,)): #### This is the fix
     #     return obj.tolist()
