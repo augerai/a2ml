@@ -31,7 +31,7 @@ install_requires = [
     'pandas==1.3.5',
     'joblib',
     'ruamel.yaml',
-    'pyarrow==1.0.1',
+    'pyarrow',
     'scipy==1.5.2',
     'asyncio',
     'boto3',
