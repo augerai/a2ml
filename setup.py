@@ -28,16 +28,15 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'numpy==1.19.2',
-    'pandas==1.2.4',
-    'joblib==1.0.1',
+    'pandas==1.3.5',
+    'joblib',
     'ruamel.yaml',
     'pyarrow==1.0.1',
     'scipy==1.5.2',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
-    'click<8.0,>=7.0', #celery 5
+    'click', #celery 5
     'shortuuid',
     'docutils<0.16,>=0.10',
     'psutil',
