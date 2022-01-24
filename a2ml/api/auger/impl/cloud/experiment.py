@@ -71,6 +71,8 @@ class AugerExperimentApi(AugerBaseApi):
             options['oversampling'] = config.get('experiment/oversampling')
         if config.get('experiment/estimate_trial_time'):
             options['apply_estimate_trial_time'] = config.get('experiment/estimate_trial_time')
+        if config.get('experiment/apply_eval_set'):
+            options['apply_eval_set'] = config.get('experiment/apply_eval_set')            
         if config.get('experiment/max_cores_per_trial'):
             options['cpu_per_mt_algorithm'] = config.get('experiment/max_cores_per_trial')
         if config.get('experiment/max_concurrent_trials'):
