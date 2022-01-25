@@ -44,6 +44,6 @@ COPY LICENSE README.md setup.py setup.cfg $WORKDIR/
 COPY a2ml $WORKDIR/a2ml
 COPY tests $WORKDIR/tests
 RUN python setup.py bdist_wheel && \
-  pip install -U --force-reinstall --no-cache-dir --no-deps dist/*
+  pip install -U --force-reinstall --no-cache-dir dist/*
 
 CMD /usr/local/bin/a2ml
