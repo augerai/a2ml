@@ -43,9 +43,7 @@ install_requires = [
     'requests',
     'smart_open==5.1.0',
     'jsonpickle',
-    'websockets',
-    'liac-arff==2.4.0',
-    'xlrd==1.2.0'
+    'websockets'
 ]
 
 extras = {
@@ -85,7 +83,7 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict==1.0.92'
+        'auger.ai.predict==1.0.93'
     ]
 }
 
