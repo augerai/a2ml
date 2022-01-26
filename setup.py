@@ -43,7 +43,9 @@ install_requires = [
     'requests',
     'smart_open==5.1.0',
     'jsonpickle',
-    'websockets'
+    'websockets',
+    'liac-arff==2.4.0',
+    'xlrd==1.2.0'
 ]
 
 extras = {
