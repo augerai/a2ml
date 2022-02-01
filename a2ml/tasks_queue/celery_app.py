@@ -41,7 +41,7 @@ if celeryApp.conf.broker_url.lower().startswith('amqp'):
     if os.environ.get('RESULT_RPC', 'false').lower() == 'true':
         celeryApp.conf.result_backend = "rpc://"
     else:
-        celeryApp.conf.result_backend = "amqp://"
+        celeryApp.conf.result_backend = None #"amqp://"
 else:
     celeryApp.conf.result_backend = celeryApp.conf.broker_url
 
