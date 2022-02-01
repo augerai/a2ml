@@ -39,7 +39,6 @@ install_requires = [
     'click', #celery 5
     'shortuuid',
     'docutils<0.16,>=0.10',
-    'psutil',
     'requests',
     'smart_open==5.1.0',
     'jsonpickle',
@@ -85,8 +84,11 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict==1.0.94'
-    ]
+        'auger.ai.predict[all]==1.0.96'
+    ],
+    'predict_no_cat_lgbm': [
+        'auger.ai.predict[no_cat_lgbm]==1.0.96'
+    ]    
 }
 
 # Meta dependency groups.

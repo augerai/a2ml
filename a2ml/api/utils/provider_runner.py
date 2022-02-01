@@ -1,7 +1,6 @@
 import contextlib
 import importlib
 import os
-import psutil
 import sys
 import threading
 import time
