@@ -64,7 +64,7 @@ extras = {
     ],
     'server': [
         'aioredis',
-        'celery==4.4.7',
+        'celery==5.2.2',
         'fastapi',
         'gevent',
         'redis',
