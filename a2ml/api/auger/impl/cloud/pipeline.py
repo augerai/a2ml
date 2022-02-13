@@ -11,7 +11,7 @@ class AugerPipelineApi(AugerBaseApi):
         super(AugerPipelineApi, self).__init__(
             ctx, experiment_api, None, pipeline_id)
 
-    def create(self, trial_id, review=True, name=None, refit_data_path=None, metadata=None):
+    def create(self, trial_id, review=False, name=None, refit_data_path=None, metadata=None):
         params = {
             'trial_id': trial_id, 
             'is_review_model_enabled' : review, 

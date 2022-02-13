@@ -13,7 +13,7 @@ def cmdl(ctx):
 @click.argument('model-id', required=False, type=click.STRING)
 @click.option('--locally', is_flag=True, default=False,
     help='Download and deploy trained model locally.')
-@click.option('--no-review', is_flag=True, default=False,
+@click.option('--review', is_flag=True, default=False,
     help='Do not support model review based on actual data.')
 @click.option('--provider', '-p', type=click.Choice(['auger','azure','external']), required=False,
     help='Cloud AutoML Provider.')
@@ -26,9 +26,9 @@ def cmdl(ctx):
 @click.option('--data-path', '-d', type=click.STRING, required=False,
     help='Data path to fit model when deploy. Return new deployed model-id')
 @pass_context
-def deploy(ctx, provider, model_id, locally, no_review, name, algorithm, score, data_path):
+def deploy(ctx, provider, model_id, locally, review, name, algorithm, score, data_path):
     """Deploy trained model."""
-    A2MLModel(ctx, provider).deploy(model_id, locally=locally, review=not no_review, 
+    A2MLModel(ctx, provider).deploy(model_id, locally=locally, review=review, 
         name=name, algorithm=algorithm, score=score, data_path=data_path)
 
 @click.command('predict', short_help='Predict with deployed model.')

@@ -231,7 +231,7 @@ class A2ML(BaseA2ML):
         return self.runner.execute('evaluate', run_id = run_id)
 
     @show_result
-    def deploy(self, model_id, locally=False, review=True, provider=None,
+    def deploy(self, model_id, locally=False, review=False, provider=None,
             name=None, algorithm=None, score=None, data_path=None, metadata=None):
         """Deploy a model locally or to specified provider(s).
 

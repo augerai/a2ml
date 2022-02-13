@@ -21,7 +21,7 @@ class ModelDeploy(object):
         self.project = project
         self.ctx = ctx
 
-    def execute(self, model_id, locally=False, review=True, name=None, algorithm=None, score=None, data_path=None, metadata=None):
+    def execute(self, model_id, locally=False, review=False, name=None, algorithm=None, score=None, data_path=None, metadata=None):
         res = None
         if not locally or review:
             res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path, metadata)
