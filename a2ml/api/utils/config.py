@@ -144,3 +144,7 @@ class Config(object):
         if (not self.parts.is_loaded) or reload:
             self.parts.load(path)
         return self
+
+    def set_validation_source(self, validation_source):
+        self.set('experiment/validation_source', validation_source)
+        self.remove('experiment/validation_dataset')
