@@ -269,7 +269,7 @@ class ModelReview(object):
 
     @staticmethod
     def _parse_order_items(orders):
-        sort_name = 'actuals'
+        sort_name = 'EA_actuals'
         sort_name_1 = None
         reverse_order = True
 
@@ -283,6 +283,12 @@ class ModelReview(object):
                         sort_name_1 = item[:last_idx]
                     else:
                         sort_name = item[:last_idx]    
+
+        if sort_name == 'actuals':
+            sort_name = 'EA_actuals'              
+
+        if sort_name_1 == 'actuals':
+            sort_name_1 = 'EA_actuals'
 
         return sort_name, sort_name_1, reverse_order
                 
@@ -320,7 +326,7 @@ class ModelReview(object):
             columns = [bucket_tag]
             if item.get('bucket_info'):
                 columns.extend(item.get('bucket_info').keys())
-            columns.append('actuals')
+            columns.append('EA_actuals')
             sort_idx = columns.index(sort_name)
             sort_idx_1 = None
             if sort_name_1:
@@ -347,6 +353,7 @@ class ModelReview(object):
                     for score_name in score_names:
                         columns.append('EA_' + class_name + '_' + score_name)
 
+            columns.append('CA_actuals')
             for score_name in score_names:
                 columns.append('CA_' + score_name)
 
@@ -385,8 +392,9 @@ class ModelReview(object):
                 if target_classes:
                     ca_val_counts = self._get_value_counts(df_tag['a2ml_actual'], target_classes)
                 ca_scores = self._filter_scores(ca_scores, score_names, len(target_classes), ca_val_counts)
+                n_ca_actuals = len(df_tag)
 
-                ea_scores, n_actuals, df_exp_tag = self._do_score_actual_experiment(df_tag, experiment_params)
+                ea_scores, n_ea_actuals, df_exp_tag = self._do_score_actual_experiment(df_tag, experiment_params)
                 ea_val_counts = []
                 if target_classes:
                     ea_val_counts = self._get_value_counts(df_exp_tag[self.target_feature], target_classes)
@@ -411,8 +419,9 @@ class ModelReview(object):
 
                     record.extend(vals_info)
 
-                record.append(n_actuals)
+                record.append(n_ea_actuals)
                 record.extend(ea_scores)
+                record.append(n_ca_actuals)
                 record.extend(ca_scores)
 
                 report_item['records'].append(record)

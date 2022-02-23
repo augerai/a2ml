@@ -675,7 +675,7 @@ def test_score_actuals_experiment_drill_down():
       }
     )
 
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 8, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 4, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
 def test_score_actuals_experiment_drill_down_multi():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -707,11 +707,11 @@ def test_score_actuals_experiment_drill_down_multi():
     )
 
     #print(res['drill_down_report'])
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'cl1_pos_predict', 'EA_cl1_pos_sample', 'EA_cl1_precision', 'EA_cl1_recall', 'EA_cl1_f1', 'cl2_pos_predict', 'EA_cl2_pos_sample', 'EA_cl2_precision', 'EA_cl2_recall', 'EA_cl2_f1', 'cl3_pos_predict', 'EA_cl3_pos_sample', 'EA_cl3_precision', 'EA_cl3_recall', 'EA_cl3_f1', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_cl1_pos_sample', 'CA_cl1_precision', 'CA_cl1_recall', 'CA_cl1_f1', 'CA_cl2_pos_sample', 'CA_cl2_precision', 'CA_cl2_recall', 'CA_cl2_f1', 'CA_cl3_pos_sample', 'CA_cl3_precision', 'CA_cl3_recall', 'CA_cl3_f1'], 'records': [[4.6, 3.1, 1.5, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.0, 3.6, 1.4, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.4, 3.9, 1.7, 3, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.4, 2.9, 1.4, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1, 1.0, 1.0, 1.0, 0, 1, 0.0, 0.0, 0.0, 2, 1, 0.5, 1.0, 0.6666666666666666, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1.0, 1.0, 1.0, 1, 0.0, 0.0, 0.0, 1, 0.5, 1.0, 0.6666666666666666], [5.1, 3.5, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.9, 3.0, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.7, 3.2, 1.3, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'cl1_pos_predict', 'EA_cl1_pos_sample', 'EA_cl1_precision', 'EA_cl1_recall', 'EA_cl1_f1', 'cl2_pos_predict', 'EA_cl2_pos_sample', 'EA_cl2_precision', 'EA_cl2_recall', 'EA_cl2_f1', 'cl3_pos_predict', 'EA_cl3_pos_sample', 'EA_cl3_precision', 'EA_cl3_recall', 'EA_cl3_f1', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_cl1_pos_sample', 'CA_cl1_precision', 'CA_cl1_recall', 'CA_cl1_f1', 'CA_cl2_pos_sample', 'CA_cl2_precision', 'CA_cl2_recall', 'CA_cl2_f1', 'CA_cl3_pos_sample', 'CA_cl3_precision', 'CA_cl3_recall', 'CA_cl3_f1'], 'records': [[4.6, 3.1, 1.5, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.0, 3.6, 1.4, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.4, 3.9, 1.7, 3, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.4, 2.9, 1.4, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1, 1.0, 1.0, 1.0, 0, 1, 0.0, 0.0, 0.0, 2, 1, 0.5, 1.0, 0.6666666666666666, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1.0, 1.0, 1.0, 1, 0.0, 0.0, 0.0, 1, 0.5, 1.0, 0.6666666666666666], [5.1, 3.5, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.9, 3.0, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.7, 3.2, 1.3, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0]]}]
 
 def test_drill_down_report_order():
   sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(None)
-  assert sort_name=='actuals'
+  assert sort_name=='EA_actuals'
   assert sort_name_1 is None
   assert reverse_order
 
@@ -722,7 +722,7 @@ def test_drill_down_report_order():
 
   sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items("indemand(DESC),actuals(DESC)")
 
-  assert sort_name=='actuals'
+  assert sort_name=='EA_actuals'
   assert sort_name_1 == 'indemand'
   assert reverse_order
 
