@@ -31,7 +31,7 @@ class AugerExperiment(object):
     @with_dataset
     def start(self, dataset):
         experiment_name = \
-            self.ctx.config.get('experiment/name', None)
+            AugerConfig(self.ctx).get_experiment() #self.ctx.config.get('experiment/name', None)
         experiment_name, session_id = \
             Experiment(self.ctx, dataset, experiment_name).start()
         AugerConfig(self.ctx).set_experiment(experiment_name, session_id)
@@ -41,12 +41,12 @@ class AugerExperiment(object):
     @authenticated
     @with_dataset
     def stop(self, dataset, run_id = None):
-        name = self.ctx.config.get('experiment/name', None)
+        name = AugerConfig(self.ctx).get_experiment() #self.ctx.config.get('experiment/name', None)
         if name is None:
             raise AugerException('Please specify Experiment name...')
         if run_id is None:
-            run_id = self.ctx.config.get(
-                'experiment/experiment_session_id', None)
+            run_id = AugerConfig(self.ctx).get_experiment_session()
+                #self.ctx.config.get('experiment/experiment_session_id', None)
 
         if Experiment(self.ctx, dataset, name).stop(run_id):
             self.ctx.log('Search is stopped...')
@@ -58,12 +58,13 @@ class AugerExperiment(object):
     @authenticated
     @with_dataset
     def leaderboard(self, dataset, run_id = None):
-        name = self.ctx.config.get('experiment/name', None)
+        name = AugerConfig(self.ctx).get_experiment() #self.ctx.config.get('experiment/name', None)
         if name is None:
             raise AugerException('Please specify Experiment name...')
         if run_id is None:
-            run_id = self.ctx.config.get(
-                'experiment/experiment_session_id', None)
+            run_id = AugerConfig(self.ctx).get_experiment_session()
+            # run_id = self.ctx.config.get(
+            #     'experiment/experiment_session_id', None)
         leaderboard, status, run_id, trials_count, errors = Experiment(
             self.ctx, dataset, name).leaderboard(run_id)
         if leaderboard is None:
@@ -109,7 +110,7 @@ class AugerExperiment(object):
     @authenticated
     @with_dataset
     def history(self, dataset):
-        name = self.ctx.config.get('experiment/name', None)
+        name = AugerConfig(self.ctx).get_experiment() #self.ctx.config.get('experiment/name', None)
         if name is None:
             raise AugerException('Please specify Experiment name...')
         for exp_run in iter(Experiment(self.ctx, dataset, name).history()):
