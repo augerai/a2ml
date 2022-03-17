@@ -33,10 +33,11 @@ def with_project(autocreate=False):
 
 def with_dataset(decorated):
     from .dataset import DataSet
+    from ..config import AugerConfig
 
     def wrapper(self, *args, **kwargs):
         project = _get_project(self, False)
-        data_set_name = self.ctx.config.get('dataset', None)
+        data_set_name = AugerConfig(self.ctx).get_dataset() #self.ctx.config.get('dataset', None)
         if data_set_name is None:
             raise AugerException(
                 'Please specify dataset name in auger.yaml/dataset...')

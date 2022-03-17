@@ -14,7 +14,7 @@ PROVIDERS_META = '|'.join(PROVIDERS)
 
 class Context(object):
     """The Context class provides an environment to run A2ML"""
-    def __init__(self, name='config', path=None, debug=False):
+    def __init__(self, name='auger', path=None, debug=False):
         """Initializes the Context instance
         
         Args:
@@ -39,7 +39,7 @@ class Context(object):
         self.provider_info = None
 
         if len(self.name) > 0:
-            self.name = "{:<9}".format('[%s]' % self.name)
+            self.name = f'[{self.name}] ' #"{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
         self.set_runs_on_server(False)
 
@@ -109,6 +109,8 @@ class Context(object):
         return providers and providers[0] == 'external'
 
     def copy(self, name):
+        return self
+
         """creates a copy of an existing Context
         
         Args:
@@ -123,23 +125,23 @@ class Context(object):
                 ctx = Context()
                 new_ctx = ctx.copy()
         """
-        new = Context(name, self.config.path, self.debug)
-        new.set_runs_on_server(self._runs_on_server)
-        new.notificator = self.notificator
-        new.request_id = self.request_id
-        new.config.parts = self.config.parts
-        new.config.parts_changes = self.config.parts_changes
+        # new = Context(name, self.config.path, self.debug)
+        # new.set_runs_on_server(self._runs_on_server)
+        # new.notificator = self.notificator
+        # new.request_id = self.request_id
+        # new.config.parts = self.config.parts
+        # new.config.parts_changes = self.config.parts_changes
 
-        try:
-            new.config.set("providers", name, config_name='config')
-        except Exception as e:
-            # In case if command run in folder without config, do not set it
-            pass
+        # try:
+        #     new.config.set("providers", name, config_name='config')
+        # except Exception as e:
+        #     # In case if command run in folder without config, do not set it
+        #     pass
             
-        if hasattr(self, 'credentials'):
-            new.credentials = self.credentials
+        # if hasattr(self, 'credentials'):
+        #     new.credentials = self.credentials
 
-        return new
+        # return new
 
     def log(self, msg, *args, **kwargs):
         log.info('%s%s' %(self.name, msg), *args, **kwargs)
