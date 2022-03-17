@@ -28,13 +28,13 @@ class TestNewCommand():
         result = runner.invoke(cmdl, ['new', 'test_project'])
         #assert result.exit_code != 0
         assert (log.records[-1].message ==
-                "[config] Can't create 'test_project'. Folder already exists.")
+                "[auger] Can't create 'test_project'. Folder already exists.")
 
     def test_nested_project_forbidden(self, runner, log, isolated):
         result = runner.invoke(cmdl, ['new', 'test_project'])
         #assert result.exit_code != 0
         assert (log.records[-1].message ==
-                "[config] To build your model, please do:"
+                "[auger] To build your model, please do:"
                 " cd test_project && a2ml import && a2ml train")
 
     def test_full_set_of_arguments(self, log, runner, isolated, project):
@@ -60,11 +60,11 @@ class TestNewCommand():
         result = runner.invoke(
             cmdl, ['new', 'test_project', '--source', 'not_existing_file.csv'])
         #assert result.exit_code != 0
-        assert log.messages[-1].startswith("[config] Can't find file to import:")
+        assert log.messages[-1].startswith("[auger] Can't find file to import:")
 
     def test_source_wrong_extension(self, log, runner, isolated):
         result = runner.invoke(
             cmdl, ['new', 'test_project', '--source', 'file_with_wrong.extension'])
         #assert result.exit_code != 0
         assert log.messages[-1] ==\
-             '[config] Source file has to be one of the supported fomats: .csv, .arff, .gz, .bz2, .zip, .xz, .json, .xls, .xlsx, .feather, .h5, .hdf5, .parquet'
+             '[auger] Source file has to be one of the supported fomats: .csv, .arff, .gz, .bz2, .zip, .xz, .json, .xls, .xlsx, .feather, .h5, .hdf5, .parquet'
