@@ -36,29 +36,29 @@ class TestAugerAuth():
             input="test@example.com\nauger\npassword\n")
         assert result.exit_code == 0
         assert (log.records[-1].message ==
-                "[auger]  You are now logged in on https://app.auger.ai"
+                "[auger] You are now logged in on https://app.auger.ai"
                 " as test@example.com.")
 
     def test_logout(self, log, runner, isolated, monkeypatch, auger_authenticated):
         result = runner.invoke(cmdl, ['auth', 'logout'])
         assert result.exit_code == 0
-        assert log.records[-1].message == "[auger]  You are logged out of Auger."
+        assert log.records[-1].message == "[auger] You are logged out of Auger."
 
     def test_whoami_anonymous(self, log, runner, monkeypatch):
         monkeypatch.setenv("AUGER_CREDENTIALS", '{}')
         result = runner.invoke(cmdl, ['auth', 'whoami'])
         #assert result.exit_code != 0
         assert (log.records[-1].message ==
-                "[auger]  Please login to Auger...")
+                "[auger] Please login to Auger...")
 
     def test_whoami_authenticated(self, log, runner, monkeypatch, auger_authenticated):
         result = runner.invoke(cmdl, ['auth', 'whoami'])
         assert result.exit_code == 0
         assert (log.records[-1].message ==
-                "[auger]  test_user auger https://example.com")
+                "[auger] test_user auger https://example.com")
 
     def test_logout_not_logged(self, log, runner, isolated, monkeypatch):
         monkeypatch.setenv("AUGER_CREDENTIALS", '{}')
         result = runner.invoke(cmdl, ['auth', 'logout'])
-        assert (log.records[-1].message == '[auger]  You are not logged in Auger.')
+        assert (log.records[-1].message == '[auger] You are not logged in Auger.')
         #assert result.exit_code != 0
