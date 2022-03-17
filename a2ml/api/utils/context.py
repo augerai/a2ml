@@ -39,7 +39,7 @@ class Context(object):
         self.provider_info = None
 
         if len(self.name) > 0:
-            self.name = "{:<8}".format('[%s]' % self.name)
+            self.name = f'[{self.name}] ' #"{:<9}".format('[%s]' % self.name)
         self.debug = self.config.get('debug', debug)
         self.set_runs_on_server(False)
 
