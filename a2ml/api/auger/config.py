@@ -14,7 +14,8 @@ class AugerConfig(object):
             self.ctx.config.set('dataset', name)
             if user_name:
                 self.ctx.config.set('dataset_name', user_name)
-                    
+                self.ctx.config.set(f'experiments/{user_name}/dataset', self.ctx.config.get('dataset'))
+
             if self.ctx.use_auger_cloud() and 'azure' in self.ctx.get_providers():
                 self.ctx.config.set('dataset', name, "azure")
 
@@ -27,8 +28,9 @@ class AugerConfig(object):
 
         if self.ctx.config.get('dataset_name'):
             dataset_name = self.ctx.config.get('dataset_name')
-            self.ctx.config.set(f'experiments/{dataset_name}/experiment_id', experiment_name)
+            self.ctx.config.set(f'experiments/{dataset_name}/experiment_name', experiment_name)
             self.ctx.config.set(f'experiments/{dataset_name}/experiment_session_id', experiment_session_id)
+            self.ctx.config.set(f'experiments/{dataset_name}/dataset', self.ctx.config.get('dataset'))
 
         self.ctx.config.write()
 
@@ -39,7 +41,7 @@ class AugerConfig(object):
         return experiments.get(dataset_name, {})
 
     def get_experiment(self):                
-        return self._get_experiment_by_dataset().get('experiment_id',
+        return self._get_experiment_by_dataset().get('experiment_name',
             self.ctx.config.get('experiment/name'))
 
     def get_experiment_session(self):                
@@ -47,7 +49,7 @@ class AugerConfig(object):
             self.ctx.config.get('experiment/experiment_session_id'))
 
     def get_dataset(self):
-        return self._get_experiment_by_dataset().get('dataset_id',
+        return self._get_experiment_by_dataset().get('dataset',
             self.ctx.config.get('dataset'))
             
     def set_project(self, project_name):
