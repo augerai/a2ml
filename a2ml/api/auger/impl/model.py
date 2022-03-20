@@ -46,7 +46,7 @@ class Model(object):
             params = {
                 'model_path': model_path,
                 'roi': {
-                    'filter': str(self.ctx.config.get('review/roi/filter')),
+                    'filter': str(self.ctx.config.get('review/roi/filter', '')),
                     'revenue': str(self.ctx.config.get('review/roi/revenue')),
                     'investment': str(self.ctx.config.get('review/roi/investment')),
                 }

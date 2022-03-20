@@ -34,7 +34,7 @@ class ModelDeploy(object):
     def create_update_review_alert(self, model_id, pipeline_properties=None, parameters=None, name=None):
         if not self.ctx.config.get('review'):
             raise Exception("To use Review, please add section review to config.yml")
-
+  
         if not pipeline_properties:
             pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()
 
@@ -61,9 +61,12 @@ class ModelDeploy(object):
             if params:    
                 endpoint_api.update(params)
 
-            session_id = endpoint_api.properties().get('primary_experiment_session_id')
-            if session_id:
-                AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
+            # AugerEndpointPipelineApi(self.ctx, 
+            #     pipeline_properties['endpoint_pipelines'][0].get('id'))._call_update({'active': False})
+
+            # session_id = endpoint_api.properties().get('primary_experiment_session_id')
+            # if session_id:
+            #     AugerExperimentSessionApi(self.ctx, None, None, session_id).update_settings()
 
             AugerReviewAlertApi(self.ctx, endpoint_api).create_update(parameters)
 

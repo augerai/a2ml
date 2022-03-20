@@ -2,6 +2,7 @@ from .base import AugerBaseApi
 from .prediction import AugerPredictionApi
 from .actual import AugerActualApi
 from ..exceptions import AugerException
+from ..cloud.endpoint_pipeline import AugerEndpointPipelineApi
 
 
 class AugerPipelineApi(AugerBaseApi):
@@ -40,8 +41,16 @@ class AugerPipelineApi(AugerBaseApi):
         return self._call_create( params, ['creating_files', 'packaging', 'deploying'])            
 
     def update(self, updates):
-        updates['id'] = self.object_id
-        return self._call_update(updates)
+        if 'active' in updates:
+            props = self.properties()
+            AugerEndpointPipelineApi(self.ctx, 
+                props['endpoint_pipelines'][0].get('id'))._call_update({'active': updates['active']})
+
+            del updates['active']
+
+        if updates:    
+            updates['id'] = self.object_id
+            return self._call_update(updates)
 
     def remove(self, trial_id):
         try:

@@ -128,7 +128,7 @@ class AugerExperimentApi(AugerBaseApi):
 
         if  config.get('review/roi/filter'):
             options['roi_metric'] = {
-                'filter': str(config.get('review/roi/filter')), 
+                'filter': str(config.get('review/roi/filter', '')), 
                 'revenue': str(config.get('review/roi/revenue')), 
                 'investment': str(config.get('review/roi/investment'))
             }

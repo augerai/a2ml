@@ -84,7 +84,7 @@ class ModelReview(object):
         )
 
         for expression in expressions:
-            if len(expression) > 0:
+            if expression:
                 validator = RoiValidator(expression, known_vars=known_vars)
                 validation_result = validator.validate(force_raise=False)
             else:
