@@ -190,7 +190,8 @@ class ModelDeploy(object):
             else:
                 self.ctx.log('To run predict locally install a2ml[predict]')             
         else:
-            self.ctx.log('Downloaded model is %s' % model_path)
+            pass
+            #self.ctx.log('Downloaded model is %s' % model_path)
 
         return model_id
 

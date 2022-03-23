@@ -44,7 +44,12 @@ class AugerPipelineApi(AugerBaseApi):
         if 'active' in updates:
             props = self.properties()
             AugerEndpointPipelineApi(self.ctx, 
-                props['endpoint_pipelines'][0].get('id'))._call_update({'active': updates['active']})
+                props['endpoint_pipelines'][0].get('id'))._call_update({
+                    'active': updates['active'],
+                    'id':  props['endpoint_pipelines'][0].get('id')
+                    },
+                    has_return_object=False
+                )
 
             del updates['active']
 
