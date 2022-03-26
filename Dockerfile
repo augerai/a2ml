@@ -28,7 +28,7 @@ RUN find /usr/local/lib/python3.7 \
   && find /usr/local/lib/python3.7 \
   -name '__pycache__' | xargs rm -r \
   && find /usr/local/lib/python3.7 \
-  -name '*.so*' | grep -v libgfortran | xargs strip
+  -name '*.so*' | grep -v libgfortran | grep -v scipy | xargs strip
 
 FROM base as runtime
 

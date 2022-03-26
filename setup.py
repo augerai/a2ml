@@ -32,7 +32,7 @@ install_requires = [
     'joblib',
     'ruamel.yaml',
     'pyarrow',
-    'scipy==1.5.2',
+    'scipy==1.7.3',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
@@ -84,7 +84,7 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict[all]==1.0.98'
+        'auger.ai.predict[all]==1.0.101'
     ],
     'predict_no_cat_lgbm': [
         'auger.ai.predict[no_cat_lgbm]==1.0.97'
