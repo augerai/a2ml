@@ -87,7 +87,7 @@ extras = {
         'auger.ai.predict[all]==1.0.101'
     ],
     'predict_no_cat_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.97'
+        'auger.ai.predict[no_cat_lgbm]==1.0.101'
     ]    
 }
 
