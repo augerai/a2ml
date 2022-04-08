@@ -24,7 +24,10 @@ class AugerBaseApi(object):
         params = {} if params is None else params
         if self.parent_api:
             api_request_path = self.parent_api.api_request_path
-            params['%s_id' % api_request_path] = self.parent_api.oid
+            try:
+                params['%s_id' % api_request_path] = self.parent_api.oid
+            except: 
+                pass    
         if self.object_name:
             params['name'] = self.object_name
         return self.rest_api.request_list(

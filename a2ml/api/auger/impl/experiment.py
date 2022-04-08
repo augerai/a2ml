@@ -8,9 +8,9 @@ from .cloud.experiment_session import AugerExperimentSessionApi
 class Experiment(AugerExperimentApi):
     """Auger Cloud Experiments(s) management"""
 
-    def __init__(self, ctx, dataset, experiment_name=None):
+    def __init__(self, ctx, dataset, experiment_name=None, project=None):
         super(Experiment, self).__init__(
-            ctx, dataset.project, experiment_name)
+            ctx, dataset.project if dataset else project, experiment_name)
         self.dataset = dataset
 
     def list(self):

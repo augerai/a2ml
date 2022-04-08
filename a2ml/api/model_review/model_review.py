@@ -304,7 +304,6 @@ class ModelReview(object):
                 ds = DataFrame.create_dataframe(data_path=value)
                 if ds.df is not None:
                     df_bucket_infos[key] = ds.df
-                        
 
         target_classes = []
         is_multi_class = self.options.get('task_type') == 'classification' and not self.options.get('binaryClassification')    
@@ -316,9 +315,13 @@ class ModelReview(object):
             bucket_tag = item['bucket_tag']
             df_actuals = df_actuals_arg
             if item['name'] in df_bucket_infos:
-                df_actuals = df_actuals_arg.merge(df_bucket_infos.get(item['name']), how='left',
-                    on=item.get('bucket_key', bucket_tag))
-
+                df_actuals = df_actuals_arg.merge(
+                    df_bucket_infos.get(item['name']), 
+                    how='left',
+                    on=item.get('bucket_key', bucket_tag),
+                    suffixes=(None, '_y')
+                )
+                
             tag_values = df_actuals[bucket_tag].dropna().unique()
 
             sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(item.get('order_by'))

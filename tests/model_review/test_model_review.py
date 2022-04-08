@@ -728,7 +728,7 @@ def test_drill_down_report_order():
 
 def _test_score_actuals_experiment_drill_down_2():
     model_path = 'tests/fixtures/test_score_actuals/iris_binary'
-    actuals_path = os.path.join(model_path, 'mapped.csv')
+    actuals_path = os.path.join(model_path, 'actuals.csv.gz')
 
     remove_actual_files(model_path)
 
@@ -740,11 +740,11 @@ def _test_score_actuals_experiment_drill_down_2():
         "string_cols": [
           "actual_experiment_title"
         ],
-        "filter_query": "actual_experiment_title == '20211109'",
+        "filter_query": "actual_experiment_title == '20220208'",
         'bucket_info_files': {
-          'job': os.path.join(model_path, 'job_bucket_info.csv'),
-          'skill': os.path.join(model_path, 'skill_bucket_info.csv'),
-          'skill_type': os.path.join(model_path, 'skill_bucket_info.csv'),
+          'job': os.path.join(model_path, 'job_bucket_info.parquet'),
+          'skill': os.path.join(model_path, 'skill_bucket_info.parquet'),
+          'indemand': os.path.join(model_path, 'indemand.parquet'),
         },
         "drill_down_report": [
           {
@@ -757,23 +757,25 @@ def _test_score_actuals_experiment_drill_down_2():
           },
           {
             "name": "skill",
-            "order_by": "actuals(DESC)",
+            "order_by": "indemand(DESC),actuals(DESC)",
             "bucket_tag": "abbr",
             "bucket_info": {
               "type": "skill_type",
-              "title": "skill_title"
+              "title": "skill_title",
+              "indemand": "indemand"
             },
             "score_names": "precision,recall,f1,tn,fp,fn,tp"
           },
           {
-            "name": "skill_type",
-            "bucket_tag": "skill_type",
+            "name": "indemand",
             "bucket_key": "abbr",
-            "bucket_info": {
-              'abbr': 'abbr',
-              "type": "skill_type",
-              "title": "skill_title"
-            },
+            "bucket_tag": "indemand",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill_type",
+            "order_by": "actuals(DESC)",
+            "bucket_tag": "skill_type",
             "score_names": "precision,recall,f1,tn,fp,fn,tp"
           }
         ]

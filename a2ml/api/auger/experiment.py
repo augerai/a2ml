@@ -1,5 +1,5 @@
 from .impl.cloud.rest_api import RestApi
-from .impl.decorators import with_dataset
+from .impl.decorators import with_dataset, with_project
 from a2ml.api.utils.decorators import error_handler, authenticated
 from .impl.experiment import Experiment
 from .impl.exceptions import AugerException
@@ -56,17 +56,17 @@ class AugerExperiment(object):
 
     @error_handler
     @authenticated
-    @with_dataset
-    def leaderboard(self, dataset, run_id = None):
+    @with_project(autocreate=False)
+    def leaderboard(self, project, run_id = None):
         name = AugerConfig(self.ctx).get_experiment() #self.ctx.config.get('experiment/name', None)
-        if name is None:
-            raise AugerException('Please specify Experiment name...')
+        # if name is None:
+        #     raise AugerException('Please specify Experiment name...')
         if run_id is None:
             run_id = AugerConfig(self.ctx).get_experiment_session()
             # run_id = self.ctx.config.get(
             #     'experiment/experiment_session_id', None)
         leaderboard, status, run_id, trials_count, errors = Experiment(
-            self.ctx, dataset, name).leaderboard(run_id)
+            self.ctx, None, name, project).leaderboard(run_id)
         if leaderboard is None:
             raise AugerException('No leaderboard was found...')
         self.ctx.log('Leaderboard for Run %s' % run_id)
