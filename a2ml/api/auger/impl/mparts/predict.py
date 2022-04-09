@@ -25,7 +25,8 @@ class ModelPredict():
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
             predicted_at=None, output=None, no_features_in_result=None,
             score=False, score_true_data=None):
-        if filename and not (filename.startswith("http:") or filename.startswith("https:")) and\
+        if filename is not None and isinstance(filename, str) and \
+            not (filename.startswith("http:") or filename.startswith("https:")) and \
             not fsclient.is_s3_path(filename):
             self.ctx.log('Predicting on data in %s' % filename)
             filename = os.path.abspath(filename)
@@ -154,6 +155,9 @@ class ModelPredict():
 
         if columns is not None:
             columns = list(columns)
+
+        if filename_arg is None and data is not None and isinstance(data, pd.DataFrame):
+            filename_arg = data
 
         if score and score_true_data is None:
             options = fsclient.read_json_file(os.path.join(model_path, "options.json"))            
