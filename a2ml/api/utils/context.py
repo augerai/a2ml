@@ -109,6 +109,13 @@ class Context(object):
         return providers and providers[0] == 'external'
 
     def copy(self, name):
+
+        try:
+            self.config.set("providers", name, config_name='config')
+        except Exception as e:
+            # In case if command run in folder without config, do not set it
+            pass
+
         return self
 
         """creates a copy of an existing Context

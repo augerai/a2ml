@@ -141,7 +141,7 @@ class ModelDeploy(object):
     def deploy_model_in_cloud(self, model_id, review, name, algorithm, score, data_path, metadata):
         from .predict import ModelPredict
 
-        self.ctx.log('Deploying model %s' % model_id)
+        self.ctx.log('Deploying model %s, providers: %s' % (model_id, self.ctx.get_providers()))
 
         if self.ctx.is_external_provider():
             pipeline_properties = AugerPipelineApi(
