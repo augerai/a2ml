@@ -91,7 +91,7 @@ class Model(object):
         if locally:
             raise AugerException('Model get_info for local model is not supported yet.')
 
-        if len(model_id) > 15:
+        if len(model_id) > 20:
             pipeline_properties = AugerEndpointApi(self.ctx, None, model_id).properties()
         else:        
             pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()    
