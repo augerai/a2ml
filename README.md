@@ -9,9 +9,11 @@
 The A2ML ("Automate AutoML") project is a Python API and set of command line tools to automate Automated Machine Learning tools from multiple vendors. The intention is to provide a common API for all Cloud-oriented AutoML vendors.  Data scientists can then train their datasets against multiple AutoML models to get the best possible predictive model.  May the best "algorithm/hyperparameter search" win.  Full documentation for A2ML is available at [a2ml.org](http://a2ml.org)
 
 ## The PREDIT Pipeline
+
 Every AutoML vendor has their own API to manage the datasets and create and
 manage predictive models.  They are similar but not identical APIs.  But they share a
 common set of stages:
+
 * Importing data for training
 * Train models with multiple algorithms and hyperparameters
 * Evaluate model performance and choose one or more for deployment
@@ -23,6 +25,7 @@ Since ITEDPR is hard to remember we refer to this pipeline by its conveniently m
 and a command line interface that invokes stages of the pipeline.
 
 ## Setup
+
 A2ML is distributed as a python package, so to install it:
 
 ```sh
@@ -34,16 +37,20 @@ It will install Auger provider.
 To use Azure AutoML:
 
 ### Mac:
+
 ```sh
 $ brew install libomp
+
 ```
 #### For Mac OS High Sierra and below:
+
 ```sh
 $ SKLEARN_NO_OPENMP=1 pip install "scikit-learn==0.21.3"
 $ pip install "a2ml[azure]" --ignore-installed onnxruntime onnx nimbusml
 ```
 
 ### Linux:
+
 ```sh
 $ apt-get update && apt-get -y install gcc g++ libgomp1
 ```
@@ -65,7 +72,9 @@ $ pip install "a2ml[all]"
 ```
 
 ## Development
+
 To release a new version the flow should be:
+
 1. Change the `__version__` variable in `a2ml/__init__.py` to match what you want to release, minus the "v". By default it would be "<current-milestone>.dev0", for example "0.3.0.dev0". This ensures we don’t accidentally release a dev version to pypi.org. So for when we’re ready to release 0.3.0, the   `__version__` variable should simply be "0.3.0".
 
 2. Commit and push the changes above.
