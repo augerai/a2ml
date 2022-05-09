@@ -1,10 +1,13 @@
 name: publish_pip
 
+# on:
+#   push:
+#     tags:
+#       - v.*
 on:
   push:
-    tags:
-      - v.*
-
+    branches: github_actions
+    
 jobs:
   publish_pip:
     runs-on: ubuntu-latest

@@ -2,8 +2,9 @@ name: docs
 
 on:
   push:
-    tags:
-      - v.*
+    branches: github_actions
+    # tags:
+    #   - v.*
 
 jobs:
   build_publish_docs:
