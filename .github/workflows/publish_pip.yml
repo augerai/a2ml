@@ -1,0 +1,30 @@
+name: publish_pip
+
+on:
+  push:
+    tags:
+      - v.*
+
+jobs:
+  publish_pip:
+    runs-on: ubuntu-latest
+    env:
+      PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.7
+
+      - name: Make pypirc file
+        run: |
+          echo -e "[pypi]" >> ~/.pypirc
+          echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+          echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - name: Build wheel
+        run: make build
+      - name: Deploy package
+        run: make release
