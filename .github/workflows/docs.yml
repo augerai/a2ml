@@ -17,15 +17,9 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Install dependencies
-        run: |
-          virtualenv venv
-          source venv/bin/activate
-          make develop-docs
-
       - name: Build docs
         run: |
-          source venv/bin/activate
+          make develop-docs
           cd docs/
           make html
 
