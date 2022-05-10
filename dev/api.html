@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -26,10 +28,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -111,7 +113,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Development</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -135,7 +137,7 @@
 <li class="toctree-l1"><a class="reference internal" href="roi_language.html">ROI formulas language</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Community</span></p>
+<p class="caption" role="heading"><span class="caption-text">Community</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community/philosophy.html">Philosophy</a></li>
@@ -212,12 +214,12 @@
 <div class="section" id="a2ml-module-a2ml-predit-api">
 <h3>a2ml module - A2ML PREDIT API<a class="headerlink" href="#a2ml-module-a2ml-predit-api" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.a2ml.A2ML">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml.</code><code class="sig-name descname">A2ML</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml.</span></span><span class="sig-name descname"><span class="pre">A2ML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML" title="Permalink to this definition">¶</a></dt>
 <dd><p>Facade to A2ML providers.</p>
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes A2ML PREDIT instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -238,8 +240,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.import_data">
-<code class="sig-name descname">import_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.import_data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.import_data">
+<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.import_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Imports data defined in context. Uploading the same file name will result in versions being appended to the file name.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -290,13 +292,13 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.preprocess_data">
-<code class="sig-name descname">preprocess_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">preprocessors</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.preprocess_data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.preprocess_data">
+<span class="sig-name descname"><span class="pre">preprocess_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.preprocess_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preprocess data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str|pandas.DataFrame</em>) -- Input data for preprocess. Can be path to file(local or s3) or Pandas Dataframe</p></li>
+<li><p><strong>data</strong> (<em>str</em><em>|</em><em>pandas.DataFrame</em>) -- Input data for preprocess. Can be path to file(local or s3) or Pandas Dataframe</p></li>
 <li><p><strong>preprocessors</strong> (<em>array of dicts</em>) -- <p>List of preprocessors with parameters</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
     <span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;text_cols&#39;</span><span class="p">:</span> <span class="p">[]}}</span>
@@ -363,8 +365,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.train">
-<code class="sig-name descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.train" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.train" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts training session based on context state.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -407,8 +409,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.evaluate">
-<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.evaluate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the results of training.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -471,8 +473,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">algorithm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.deploy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.deploy">
+<span class="sig-name descname"><span class="pre">deploy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy a model locally or to specified provider(s).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -518,8 +520,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">score_true_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_features_in_result</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.predict" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_true_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_features_in_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -605,8 +607,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.actuals">
-<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_date_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">experiment_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actuals" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.actuals">
+<span class="sig-name descname"><span class="pre">actuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actuals_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_date_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -697,8 +699,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.delete_actuals">
-<code class="sig-name descname">delete_actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">with_predictions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">begin_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.delete_actuals" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.delete_actuals">
+<span class="sig-name descname"><span class="pre">delete_actuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_predictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.delete_actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete files with actuals and predcitions locally or from specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -729,8 +731,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml.A2ML.review">
-<code class="sig-name descname">review</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.review" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML.review">
+<span class="sig-name descname"><span class="pre">review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML.review" title="Permalink to this definition">¶</a></dt>
 <dd><p>Review information about deployed model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -768,12 +770,12 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <div class="section" id="a2ml-dataset-module">
 <h3>a2ml_dataset module<a class="headerlink" href="#a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_dataset.</code><code class="sig-name descname">A2MLDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_dataset.</span></span><span class="sig-name descname"><span class="pre">A2MLDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contains the dataset CRUD operations that interact with provider.</p>
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new a2ml dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -794,8 +796,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.list" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all of the DataSets for the Project specified in the .yaml.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -831,8 +833,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.create" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new DataSet for the Project specified in the .yaml.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -864,8 +866,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.upload">
-<code class="sig-name descname">upload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.upload" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.upload">
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.upload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload file to Auger and get Auger url.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -893,8 +895,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.delete" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a DataSet for the Project specified in the .yaml.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -924,8 +926,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_dataset.A2MLDataset.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.select" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets a DataSet name in the context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -959,12 +961,12 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 <div class="section" id="module-a2ml.api.a2ml_experiment">
 <span id="a2ml-experiment-module"></span><h3>a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_experiment.</code><code class="sig-name descname">A2MLExperiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_experiment.</span></span><span class="sig-name descname"><span class="pre">A2MLExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contains the experiment operations that interact with provider.</p>
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new a2ml experiment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -985,8 +987,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.list" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all of the experiments for the Project specified in the .yaml.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1022,8 +1024,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.start" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts experiment/s for selected dataset. If the name of experiment is not set in context config, new experiment will be created, otherwise an existing experiment will be run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1050,8 +1052,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stops runninng experiment/s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1080,8 +1082,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard">
-<code class="sig-name descname">leaderboard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard">
+<span class="sig-name descname"><span class="pre">leaderboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.leaderboard" title="Permalink to this definition">¶</a></dt>
 <dd><p>The leaderboard of the currently running or previously completed experiment/s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1147,8 +1149,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_experiment.A2MLExperiment.history">
-<code class="sig-name descname">history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.history" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment.history">
+<span class="sig-name descname"><span class="pre">history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment.history" title="Permalink to this definition">¶</a></dt>
 <dd><p>The history of the currently running or previously completed experiment/s.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1191,12 +1193,12 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 <div class="section" id="module-a2ml.api.a2ml_model">
 <span id="a2ml-model-module"></span><h3>a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.a2ml_model.A2MLModel">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_model.</code><code class="sig-name descname">A2MLModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_model.</span></span><span class="sig-name descname"><span class="pre">A2MLModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contains the model operations that interact with provider.</p>
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new a2ml model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1217,8 +1219,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.deploy">
-<code class="sig-name descname">deploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">review</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">algorithm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.deploy">
+<span class="sig-name descname"><span class="pre">deploy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.deploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deploy a model locally or to specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1258,8 +1260,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.predict">
-<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">predicted_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">score</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">score_true_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_features_in_result</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_true_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_features_in_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1345,8 +1347,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.actuals">
-<code class="sig-name descname">actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actuals_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_date_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">experiment_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actuals" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.actuals">
+<span class="sig-name descname"><span class="pre">actuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actuals_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_date_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submits actual results(ground truths) for predictions of a deployed model. This is used to review and monitor active models.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1437,8 +1439,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.review_alert">
-<code class="sig-name descname">review_alert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">parameters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.review_alert" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.review_alert">
+<span class="sig-name descname"><span class="pre">review_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.review_alert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update Review parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1501,8 +1503,8 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.review">
-<code class="sig-name descname">review</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.review" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.review">
+<span class="sig-name descname"><span class="pre">review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.review" title="Permalink to this definition">¶</a></dt>
 <dd><p>Review information about deployed model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1536,8 +1538,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.undeploy">
-<code class="sig-name descname">undeploy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.undeploy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.undeploy">
+<span class="sig-name descname"><span class="pre">undeploy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.undeploy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Undeploy a model locally or from specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1565,8 +1567,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.delete_actuals">
-<code class="sig-name descname">delete_actuals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">with_predictions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">begin_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.delete_actuals" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.delete_actuals">
+<span class="sig-name descname"><span class="pre">delete_actuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_predictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.delete_actuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete files with actuals and predcitions locally or from specified provider(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1597,8 +1599,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.get_info">
-<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.get_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.get_info">
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.get_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information about model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1626,8 +1628,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_model.A2MLModel.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">metadata</span></em>, <em class="sig-param"><span class="n">locally</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.update" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locally</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update model metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1661,12 +1663,12 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <div class="section" id="module-a2ml.api.a2ml_project">
 <span id="a2ml-project-module"></span><h3>a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.a2ml_project.A2MLProject">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.a2ml_project.</code><code class="sig-name descname">A2MLProject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_project.</span></span><span class="sig-name descname"><span class="pre">A2MLProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contains the project CRUD operations that interact with provider.</p>
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new a2ml project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1687,8 +1689,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.list">
-<code class="sig-name descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.list" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all of the projects for the specified providers.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1724,8 +1726,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.create" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a project for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1752,8 +1754,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.delete" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a project for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1780,8 +1782,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.select">
-<code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.select" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets a Project name in the context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1810,8 +1812,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.get_cluster_config">
-<code class="sig-name descname">get_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">local_config</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.get_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.get_cluster_config">
+<span class="sig-name descname"><span class="pre">get_cluster_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.get_cluster_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get project cluster configuration for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1857,8 +1859,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.a2ml_project.A2MLProject.update_cluster_config">
-<code class="sig-name descname">update_cluster_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.update_cluster_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject.update_cluster_config">
+<span class="sig-name descname"><span class="pre">update_cluster_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject.update_cluster_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update project cluster configuration for the specified providers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1901,12 +1903,12 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 <div class="section" id="module-a2ml.api.utils.context">
 <span id="context-module"></span><h3>context module<a class="headerlink" href="#module-a2ml.api.utils.context" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt id="a2ml.api.utils.context.Context">
-<em class="property">class </em><code class="sig-prename descclassname">a2ml.api.utils.context.</code><code class="sig-name descname">Context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'auger'</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.utils.context.Context">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.utils.context.</span></span><span class="sig-name descname"><span class="pre">Context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auger'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Context class provides an environment to run A2ML</p>
 <dl class="py method">
-<dt id="a2ml.api.utils.context.Context.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'auger'</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.__init__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.utils.context.Context.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auger'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes the Context instance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1930,8 +1932,8 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dd></dl>
 
 <dl class="py method">
-<dt id="a2ml.api.utils.context.Context.get_providers">
-<code class="sig-name descname">get_providers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">provider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.get_providers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="a2ml.api.utils.context.Context.get_providers">
+<span class="sig-name descname"><span class="pre">get_providers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context.get_providers" title="Permalink to this definition">¶</a></dt>
 <dd><p>constructs Context instance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
