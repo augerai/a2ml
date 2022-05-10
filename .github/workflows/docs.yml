@@ -4,7 +4,7 @@ on:
   push:
     branches: github_actions
     # tags:
-    #   - v.*
+    #   - v*
 
 jobs:
   build_publish_docs:
@@ -23,15 +23,21 @@ jobs:
           cd docs/
           make html
 
-      - uses: actions/setup-node@v3
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          node-version: 14
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
+    
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 14
 
-      - name: Deploy docs to gh-pages branch
-        run: |
-          git config user.email "23641280+augerbot@users.noreply.github.com"
-          git config user.name "augerbot"        
-          npm install -g --silent gh-pages@2.2.0
-          gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
+      # - name: Deploy docs to gh-pages branch
+      #   run: |
+      #     git config user.email "23641280+augerbot@users.noreply.github.com"
+      #     git config user.name "augerbot"        
+      #     npm install -g --silent gh-pages@2.2.0
+      #     gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
 
           

@@ -1,13 +1,10 @@
 name: publish_pip
 
-# on:
-#   push:
-#     tags:
-#       - v.*
 on:
   push:
-    branches: github_actions
-    
+    tags:
+      - v*
+
 jobs:
   publish_pip:
     runs-on: ubuntu-latest
@@ -27,6 +24,9 @@ jobs:
           echo -e "[pypi]" >> ~/.pypirc
           echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
           echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+
+      - name: Install dependencies
+        run: pip install wheel          
       - name: Build wheel
         run: make build
       - name: Deploy package
