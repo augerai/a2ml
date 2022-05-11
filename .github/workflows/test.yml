@@ -2,8 +2,9 @@ name: test
 
 on: 
   push:
-    branches:
-      - '*'
+    branches-ignore:
+      - github_actions
+
     tags-ignore:
       - v*
 
