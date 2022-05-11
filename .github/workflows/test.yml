@@ -3,7 +3,7 @@ name: test
 on: 
   push:
     branches-ignore:
-      - github_actions
+      - master
 
     tags-ignore:
       - v*

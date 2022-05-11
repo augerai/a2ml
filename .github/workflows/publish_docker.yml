@@ -5,7 +5,7 @@ on:
     tags:
       - v*
     branches:
-      - github_actions
+      - master
 
 jobs:
   publish_docker:
@@ -28,8 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build docker
-        run: make docker-build
+      - name: Build docker and run tests
+        run: make config docker-test
 
       - name: Push docker image    
         run: |
