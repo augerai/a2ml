@@ -79,6 +79,8 @@ class ModelReview(object):
 
     def validate_roi_syntax(self, expressions, features=[]):
         res = []
+        logging.info('validate_roi_syntax: %s'%(expressions))
+
         known_vars = ["A", "P", "$" + self.target_feature] + list(
             map(lambda name: "$" + name, set(self.original_features + features))
         )
