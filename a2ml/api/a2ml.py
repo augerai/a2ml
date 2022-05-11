@@ -8,7 +8,7 @@ class A2ML(BaseA2ML):
     """Facade to A2ML providers."""
 
     def __init__(self, ctx, provider = None):
-        """Initializes A2ML PREDIT instance.
+        """Initializes new A2ML PREDIT instance.
 
         Args:
             ctx (object): An instance of the a2ml Context.

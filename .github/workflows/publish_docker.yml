@@ -1,0 +1,69 @@
+name: publish_docker
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - master
+
+jobs:
+  publish_docker:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      DOCKER_TAG: ${{github.ref_type == 'tag' && github.ref_name || 'latest'}}
+      REPO_NAME: 'augerai/a2ml'
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+
+      AWS_KS_ROLE: ${{ secrets[format('AWS_KS_{0}_ROLE', github.ref_type == 'tag' && 'STABLE' || 'EXPERIMENTAL')] }}
+      CLUSTER_NAME: ${{ secrets[format('{0}_CLUSTER_NAME', github.ref_type == 'tag' && 'STABLE' || 'EXPERIMENTAL')] }}      
+      KUBECONFIG_FILE: '/home/runner/.kube/config'
+      RELEASE_NAME: 'a2ml'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build docker and run tests
+        run: make config docker-test
+
+      - name: Push docker image    
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push $REPO_NAME:$DOCKER_TAG
+
+      - name: configure aws credentials with role1
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: us-west-2
+
+      - name: Assume execution role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-region: us-west-2
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+          role-duration-seconds: 3000
+          role-skip-session-tagging: true
+          role-to-assume: ${{ env.AWS_KS_ROLE }}
+
+      - uses: azure/setup-kubectl@v2.0
+      - uses: azure/setup-helm@v1
+        with:
+          version: 'v3.4.2'
+
+      - name: setup the kubectl config
+        run : aws eks update-kubeconfig --name $CLUSTER_NAME
+
+      - name: Helm upgrade augerai repo
+        run: |
+          helm repo add augerai https://augerai.github.io/charts
+          helm repo update
+          helm repo list
+          helm upgrade $RELEASE_NAME $REPO_NAME --namespace=$RELEASE_NAME --set=image.tag=$DOCKER_TAG --reuse-values --wait --atomic --kubeconfig $KUBECONFIG_FILE
