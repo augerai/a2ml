@@ -1,0 +1,32 @@
+name: publish_docker
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - github_actions
+
+jobs:
+  publish_docker:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      DOCKER_TAG: ${{github.ref_type == 'tag' && github.ref_name || 'latest'}}
+      REPO_NAME: 'augerai/a2ml'
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build docker
+        run: make docker-build
+
+      - name: Push docker image    
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push $REPO_NAME:$DOCKER_TAG             
