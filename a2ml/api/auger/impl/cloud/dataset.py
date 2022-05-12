@@ -105,10 +105,10 @@ class AugerDataSetApi(AugerProjectFileApi):
             return data_source_file, False
 
         if not fsclient.is_s3_path(data_source_file):
-            if config_path is None:
-                config_path = os.getcwd()
+            # if config_path is None:
+            #     config_path = os.getcwd()
 
-            data_source_file = os.path.join(config_path, data_source_file)
+            # data_source_file = os.path.join(config_path, data_source_file)
             if not fsclient.is_s3_path(data_source_file):
                 data_source_file = os.path.abspath(data_source_file)
 
