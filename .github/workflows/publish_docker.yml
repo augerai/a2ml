@@ -62,13 +62,14 @@ jobs:
 
       - uses: azure/setup-kubectl@v2.0
         with:
-          version: 'v1.24.0'
+          version: 'v1.23.6'
       - uses: azure/setup-helm@v1
         with:
           version: 'v3.4.2'
 
       - name: setup the kubectl config
         run : |
+          kubectl version --client=true
           rm -f $KUBECONFIG_FILE
           aws eks update-kubeconfig --name $CLUSTER_NAME --region us-west-2
 
