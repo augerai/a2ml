@@ -72,6 +72,7 @@ jobs:
           kubectl version --client=true
           rm -f $KUBECONFIG_FILE
           aws eks update-kubeconfig --name $CLUSTER_NAME --region us-west-2
+          echo $KUBECONFIG_FILE
 
       - name: Helm upgrade augerai repo
         run: |
