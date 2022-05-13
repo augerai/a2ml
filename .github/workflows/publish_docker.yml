@@ -41,6 +41,7 @@ jobs:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+          /usr/local/bin/aws --version
 
       - name: configure aws credentials with role1
         uses: aws-actions/configure-aws-credentials@v1
@@ -67,7 +68,9 @@ jobs:
           version: 'v3.4.2'
 
       - name: setup the kubectl config
-        run : aws eks update-kubeconfig --name $CLUSTER_NAME --region us-west-2
+        run : |
+          rm -f $KUBECONFIG_FILE
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region us-west-2
 
       - name: Helm upgrade augerai repo
         run: |
