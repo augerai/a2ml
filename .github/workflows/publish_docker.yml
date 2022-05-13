@@ -61,8 +61,8 @@ jobs:
           role-to-assume: ${{ env.AWS_KS_ROLE }}
 
       - uses: azure/setup-kubectl@v2.0
-        with:
-          version: 'v1.23.6'
+        # with:
+        #   version: 'v1.23.6'
       - uses: azure/setup-helm@v1
         with:
           version: 'v3.4.2'
