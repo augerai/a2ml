@@ -39,7 +39,7 @@ jobs:
       - name: Install latest AWS CLI
         run: |
           /usr/local/bin/aws --version
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.6.30.zip" -o "awscliv2.zip"
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.6.2.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
           /usr/local/bin/aws --version
