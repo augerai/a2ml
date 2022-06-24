@@ -84,10 +84,14 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict[all]==1.0.102'
+        'auger.ai.predict[all]==1.0.104'
     ],
     'predict_no_cat_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.101'
+        'auger.ai.predict[no_cat_lgbm]==1.0.104'
+    ],
+    'predict_no_lgbm': [
+        'auger.ai.predict[no_cat_lgbm]==1.0.104',
+        'catboost'
     ]    
 }
 
