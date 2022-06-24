@@ -70,7 +70,7 @@ extras = {
         'redis',
         's3fs>=0.4.0,<0.5.0',
         'uvicorn',
-        'scikit-learn==0.24.2'
+        'scikit-learn==1.0.2'
     ],
     'azure': [
         #'scikit-learn~=0.22.2',
@@ -98,7 +98,8 @@ extras = {
 # Meta dependency groups.
 all_deps = []
 for group_name in extras:
-    if group_name != 'predict' and group_name != 'google' and group_name != 'azure':
+    if group_name != 'predict' and group_name != 'google' and \
+        group_name != 'azure' and group_name != 'predict_no_cat_lgbm' and group_name != 'predict_no_lgbm':
         all_deps += extras[group_name]
 
 extras['all'] = all_deps
