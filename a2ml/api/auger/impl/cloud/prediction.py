@@ -15,7 +15,7 @@ class AugerPredictionApi(AugerBaseApi):
             self._set_api_request_path("AugerEndpointPredictionApi")
 
     def create(self, records, features, threshold=None, file_url=None, predicted_at=None, 
-        no_features_in_result=None, score=False, score_true_data=None):
+        no_features_in_result=None, score=False, score_true_data=None, predict_labels=None):
         params = {
             'records': records, 
             'features': features,
@@ -42,5 +42,8 @@ class AugerPredictionApi(AugerBaseApi):
 
         if score_true_data:
             params['score_true_data'] = score_true_data
+
+        if predict_labels:
+            params['predict_labels'] = predict_labels
 
         return self._call_create(params, ['requested', 'running'])

@@ -279,7 +279,7 @@ class A2ML(BaseA2ML):
     @show_result
     def predict(self, model_id, filename=None, data=None, columns=None, predicted_at=None,
             threshold=None, score=False, score_true_data=None,
-            output=None, no_features_in_result = None, locally=False, provider=None):
+            output=None, no_features_in_result = None, locally=False, provider=None, predict_labels=None):
         """Predict results with new data against deployed model. Predictions are stored next to the file with data to be predicted on. The file name will be appended with suffix _predicted.
 
         Note:
@@ -299,6 +299,7 @@ class A2ML(BaseA2ML):
             no_features_in_result(bool) : Do not return feature columns in prediction result. False by default
             locally(bool, str): Predicts using a local model with auger.ai.predict if True, on the Provider Cloud if False. If set to "docker", then docker image used to run the model
             provider (str): The automl provider you wish to run. For example 'auger'. The default is None - use provider set in costructor or config.
+            predict_labels (dict, bool): Run ActiveLearn to select data for labelling
 
         Returns:
             if filename is not None. ::
@@ -363,7 +364,7 @@ class A2ML(BaseA2ML):
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('predict', filename, model_id, 
             threshold, locally, data, columns, predicted_at, output, no_features_in_result,
-            score, score_true_data )
+            score, score_true_data, predict_labels )
 
     @show_result
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, 
