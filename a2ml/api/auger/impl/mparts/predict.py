@@ -163,10 +163,15 @@ class ModelPredict():
             options = fsclient.read_json_file(os.path.join(model_path, "options.json"))            
             ds = DataFrame.create_dataframe(filename_arg, data)#, [options['targetFeature']])
             score_true_data = ds.df
-                
-        res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
-            path_to_predict=filename_arg, records=data, features=columns, 
-            threshold=threshold, no_features_in_result=no_features_in_result, predict_labels=predict_labels)
+        
+        if predict_labels:        
+            res, options = ModelExporter({}).predict_labels_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result, predict_labels=predict_labels)
+        else:    
+            res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result)
 
         ds_result = DataFrame({'data_path': None})
         ds_result.df = res.df
