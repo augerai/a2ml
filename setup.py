@@ -44,8 +44,7 @@ install_requires = [
     'jsonpickle',
     'websockets',
     'liac-arff==2.4.0',
-    'xlrd==1.2.0',
-    'celery==5.2.2'
+    'xlrd==1.2.0'
 ]
 
 extras = {
