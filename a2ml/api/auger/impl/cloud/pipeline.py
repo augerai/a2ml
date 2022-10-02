@@ -95,7 +95,7 @@ class AugerPipelineApi(AugerBaseApi):
         return is_endpoint
 
     def predict(self, records, features, threshold=None, file_url=None, predicted_at=None, 
-        no_features_in_result=None, score=False, score_true_data=None):
+        no_features_in_result=None, score=False, score_true_data=None, predict_labels=None):
         if self.object_id is None:
             raise AugerException('Please provide Auger Pipeline id')
 
@@ -120,7 +120,7 @@ class AugerPipelineApi(AugerBaseApi):
         prediction_properties = \
             prediction_api.create(records, features, threshold=threshold, file_url=file_url, 
                 predicted_at=predicted_at, no_features_in_result=no_features_in_result,
-                score=score, score_true_data=score_true_data)
+                score=score, score_true_data=score_true_data, predict_labels=predict_labels)
 
         return prediction_properties.get('result')
 

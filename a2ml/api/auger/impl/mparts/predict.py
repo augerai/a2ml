@@ -24,7 +24,7 @@ class ModelPredict():
 
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
             predicted_at=None, output=None, no_features_in_result=None,
-            score=False, score_true_data=None):
+            score=False, score_true_data=None, predict_labels=None):
         if filename is not None and isinstance(filename, str) and \
             not (filename.startswith("http:") or filename.startswith("https:")) and \
             not fsclient.is_s3_path(filename):
@@ -34,13 +34,13 @@ class ModelPredict():
         if locally:
             if locally == "docker":
                 predicted = self._predict_locally_in_docker(filename, model_id, threshold, data, columns, predicted_at, output, 
-                    no_features_in_result, score, score_true_data)
+                    no_features_in_result, score, score_true_data, predict_labels)
             else:
                 predicted = self._predict_locally(filename, model_id, threshold, data, columns, predicted_at, output, 
-                    no_features_in_result, score, score_true_data)
+                    no_features_in_result, score, score_true_data, predict_labels)
         else:
             predicted = self._predict_on_cloud(filename, model_id, threshold, data, columns, predicted_at, output, 
-                no_features_in_result, score, score_true_data)
+                no_features_in_result, score, score_true_data, predict_labels)
 
         return predicted
 
@@ -104,7 +104,7 @@ class ModelPredict():
                 self.ctx.config.get('name'), model_project_name))
 
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, 
-        output, no_features_in_result, score, score_true_data):
+        output, no_features_in_result, score, score_true_data, predict_labels):
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
         temp_file = None
         ds_result = None
@@ -114,7 +114,7 @@ class ModelPredict():
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
             predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, 
                 predicted_at=predicted_at, no_features_in_result=no_features_in_result,
-                score=score, score_true_data=score_true_data)
+                score=score, score_true_data=score_true_data, predict_labels=predict_labels)
 
             try:
                 ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
@@ -145,7 +145,7 @@ class ModelPredict():
                 fsclient.remove_file(temp_file)
 
     def _predict_locally(self, filename_arg, model_id, threshold, data, columns, predicted_at, 
-        output, no_features_in_result, score, score_true_data):
+        output, no_features_in_result, score, score_true_data, predict_labels):
         from auger_ml.model_exporter import ModelExporter
 
         is_model_loaded, model_path = ModelDeploy(self.ctx, None).verify_local_model(model_id)
@@ -161,12 +161,17 @@ class ModelPredict():
 
         if score and score_true_data is None:
             options = fsclient.read_json_file(os.path.join(model_path, "options.json"))            
-            ds = DataFrame.create_dataframe(filename_arg, data, [options['targetFeature']])
+            ds = DataFrame.create_dataframe(filename_arg, data)#, [options['targetFeature']])
             score_true_data = ds.df
-                
-        res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
-            path_to_predict=filename_arg, records=data, features=columns, 
-            threshold=threshold, no_features_in_result=no_features_in_result)
+        
+        if predict_labels:        
+            res, options = ModelExporter({}).predict_labels_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result, predict_labels=predict_labels)
+        else:    
+            res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result)
 
         ds_result = DataFrame({'data_path': None})
         ds_result.df = res.df
@@ -192,7 +197,7 @@ class ModelPredict():
         #     no_features_in_result=no_features_in_result) #, output=output)
 
     def _predict_locally_in_docker(self, filename_arg, model_id, threshold, data, columns, predicted_at, 
-        output, no_features_in_result, score, score_true_data):
+        output, no_features_in_result, score, score_true_data, predict_labels):
         model_deploy = ModelDeploy(self.ctx, None)
         is_model_loaded, model_path = model_deploy.verify_local_model(model_id, add_model_folder=False)
         if not is_model_loaded:
@@ -205,7 +210,7 @@ class ModelPredict():
             filename = os.path.join(self.ctx.config.get_path(), '.augerml', 'predict_data.csv')
             ds.saveToCsvFile(filename, compression=None)
 
-        predicted = self._docker_run_predict(filename, threshold, model_path, score, score_true_data)
+        predicted = self._docker_run_predict(filename, threshold, model_path, score, score_true_data, predict_labels)
 
         if not filename_arg:
             ds_result = DataFrame.create_dataframe(predicted)
@@ -223,7 +228,7 @@ class ModelPredict():
 
         return predicted
 
-    def _docker_run_predict(self, filename, threshold, model_path, score, score_true_data):
+    def _docker_run_predict(self, filename, threshold, model_path, score, score_true_data, predict_labels):
         cluster_settings = AugerClusterApi.get_cluster_settings(self.ctx)
         docker_tag = cluster_settings.get('kubernetes_stack')
         predict_file = os.path.basename(filename)

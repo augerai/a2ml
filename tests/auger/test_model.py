@@ -60,7 +60,7 @@ class TestModel():
 
         result = AugerModel(ctx).predict(filename='iris.csv', model_id='87C81FE615DE46D', 
             threshold=None, locally="docker", data=None, columns=None, predicted_at=None, output=None,
-            no_features_in_result=None, score=False, score_true_data=None)
+            no_features_in_result=None, score=False, score_true_data=None, predict_labels=None)
 
         assert result.get('predicted')
         assert 'test_project/predictions/iris_predicted.csv' in result.get('predicted')
