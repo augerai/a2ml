@@ -83,7 +83,7 @@ def open_file(path, mode, num_tries=20, encoding='utf-8', auto_decompression=Tru
                     path,
                     mode,
                     encoding=encoding,
-                    ignore_ext=not auto_decompression,
+                    compression = "disable" if not auto_decompression else "infer_from_extension",
                     transport_params=get_smart_open_transport_params(path)
                 )
             except Exception as e:
