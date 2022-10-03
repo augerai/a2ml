@@ -28,11 +28,11 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
-    'pandas==1.3.5',
+    'pandas==1.5.0',
     'joblib',
     'ruamel.yaml',
     'pyarrow',
-    'scipy==1.7.3',
+    'scipy==1.9.1',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
@@ -40,7 +40,7 @@ install_requires = [
     'shortuuid',
     'docutils<0.16,>=0.10',
     'requests',
-    'smart_open==5.1.0',
+    'smart_open==6.2.0',
     'jsonpickle',
     'websockets',
     'liac-arff==2.4.0',
@@ -64,13 +64,13 @@ extras = {
     ],
     'server': [
         'aioredis',
-        'celery==5.2.2',
+        'celery==5.2.7',
         'fastapi',
         'gevent',
         'redis',
         's3fs>=0.4.0,<0.5.0',
         'uvicorn',
-        'scikit-learn==1.0.2'
+        'scikit-learn==1.1.2'
     ],
     'azure': [
         #'scikit-learn~=0.22.2',
@@ -84,13 +84,13 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict[all]==1.0.106'
+        'auger.ai.predict[all]==1.0.107'
     ],
     'predict_no_cat_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.106'
+        'auger.ai.predict[no_cat_lgbm]==1.0.107'
     ],
     'predict_no_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.106',
+        'auger.ai.predict[no_cat_lgbm]==1.0.107',
         'catboost'
     ]    
 }
