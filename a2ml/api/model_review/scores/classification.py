@@ -3,7 +3,7 @@ import pandas
 from sklearn.metrics import make_scorer, recall_score, average_precision_score, roc_auc_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import matthews_corrcoef as mcc
-from sklearn.metrics.score import SCORERS
+from sklearn.metrics import SCORERS
 
 
 def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
