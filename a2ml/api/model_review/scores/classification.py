@@ -3,7 +3,7 @@ import pandas
 from sklearn.metrics import make_scorer, recall_score, average_precision_score, roc_auc_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import matthews_corrcoef as mcc
-from sklearn.metrics._scorer import _SCORERS
+from sklearn.metrics import SCORERS
 
 
 def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
@@ -115,12 +115,12 @@ precision_none_scorer = make_scorer(precision_none_score)
 recall_none_scorer = make_scorer(recall_none_score)
 f1_none_scorer = make_scorer(f1_none_score)
 
-_SCORERS['cohen_kappa_score'] = cohen_kappa_score
-_SCORERS['matthews_corrcoef'] = matthews_corrcoef
-_SCORERS['gini'] = gini_score
-_SCORERS['norm_macro_recall'] = norm_macro_recall_scorer
-_SCORERS['average_precision_score_weighted'] = average_precision_score_weighted_scorer
-_SCORERS['AUC_weighted'] = AUC_weighted_scorer
-_SCORERS['precision_none'] = precision_none_scorer
-_SCORERS['recall_none'] = recall_none_scorer
-_SCORERS['f1_none'] = f1_none_scorer
+SCORERS['cohen_kappa_score'] = cohen_kappa_score
+SCORERS['matthews_corrcoef'] = matthews_corrcoef
+SCORERS['gini'] = gini_score
+SCORERS['norm_macro_recall'] = norm_macro_recall_scorer
+SCORERS['average_precision_score_weighted'] = average_precision_score_weighted_scorer
+SCORERS['AUC_weighted'] = AUC_weighted_scorer
+SCORERS['precision_none'] = precision_none_scorer
+SCORERS['recall_none'] = recall_none_scorer
+SCORERS['f1_none'] = f1_none_scorer
