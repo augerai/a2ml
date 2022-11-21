@@ -57,7 +57,8 @@ extras = {
         'pytest-xdist',
         'twine',
         'vcrpy',
-        'wheel>=0.30.0,<0.31.0'
+        'wheel>=0.30.0,<0.31.0',
+        'httpx'
     ],
     'docs': [
         'sphinx'
