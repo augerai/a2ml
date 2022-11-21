@@ -66,7 +66,7 @@ develop:
 
 develop-docs:
 	pip install -r docs/requirements.txt
-	pip install .
+	pip install .[docs]
 
 init:
 	virtualenv .venv
