@@ -28,7 +28,16 @@ class Model(object):
         return ModelDeploy(self.ctx, self.project).review(model_id)
 
     def undeploy(self, model_id, locally=False):
-        return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
+        if self.is_model_id(model_id):        
+            return ModelUndeploy(self.ctx, self.project).execute(model_id, locally)
+
+        return AugerEndpointApi(self.ctx, None, model_id).delete()
+            
+    def list(self, endpoints=False):
+        if endpoints:        
+            return AugerEndpointApi(self.ctx, self.project).list()
+
+        return AugerPipelineApi(self.ctx, self.project).list()
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, 
         output=None, no_features_in_result=None, score=False, score_true_data=None, predict_labels=None):
@@ -87,14 +96,17 @@ class Model(object):
         else:
             raise Exception("Not Implemented.")
 
+    def is_model_id(self, model_id):
+        return len(model_id) <= 20
+
     def get_info(self, model_id, locally):
         if locally:
             raise AugerException('Model get_info for local model is not supported yet.')
 
-        if len(model_id) > 20:
-            pipeline_properties = AugerEndpointApi(self.ctx, None, model_id).properties()
+        if self.is_model_id(model_id):
+            pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()                
         else:        
-            pipeline_properties = AugerPipelineApi(self.ctx, None, model_id).properties()    
+            pipeline_properties = AugerEndpointApi(self.ctx, None, model_id).properties()
 
         return pipeline_properties
 

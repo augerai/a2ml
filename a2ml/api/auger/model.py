@@ -15,6 +15,17 @@ class AugerModel(object):
     @error_handler
     @authenticated
     @with_project(autocreate=False)
+    def list(self, project, endpoints=False):
+        res = []
+
+        for model in iter(Model(self.ctx, project).list(endpoints)):
+            res.append(model)
+                    
+        return {'models': res}
+
+    @error_handler
+    @authenticated
+    @with_project(autocreate=False)
     def deploy(self, project, model_id, locally, review, name, algorithm, score, data_path, metadata=None):
         model_id = Model(self.ctx, project).deploy(model_id, locally, review, name, algorithm, score, data_path, metadata)
         return {'model_id': model_id}

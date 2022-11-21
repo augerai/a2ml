@@ -76,13 +76,21 @@ class AugerProject(object):
     @authenticated    
     def get_cluster_config(self, name, local_config = True):
         old_name, name, project = self._setup_op(name)
-        return prject.get_cluster_config(local_config)
+        return project.get_cluster_config(local_config)
 
     @error_handler
     @authenticated    
     def update_cluster_config(self, name, params):
         old_name, name, project = self._setup_op(name)
-        return prject.update_cluster_config(params)
+        return project.update_cluster_config(params)
+
+    @error_handler
+    @authenticated    
+    def update(self, name, params):
+        old_name, name, project = self._setup_op(name)
+        project.properties() #To get object_id
+        params['id'] = project.object_id
+        return project._call_update(params)
 
     def _set_project_config(self, name):
         AugerConfig(self.ctx).\

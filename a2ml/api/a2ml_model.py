@@ -421,3 +421,26 @@ class A2MLModel(BaseA2ML):
                 res = A2MLModel(ctx).update('D881079E1ED14FB', {'report': {}})
         """
         return self.get_runner(locally, model_id, provider).execute_one_provider('update', model_id, metadata, locally)
+
+    @show_result
+    def list(self, endpoints=False):
+        """
+        List all of the models/endpoints for the specified providers.        
+
+        Returns:
+            Results for each provider. ::
+
+                    'result': True,
+                    'data': {
+                        'projects': <object> 
+                    }
+                }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                models_list = A2MLModel(ctx).list()
+        """
+        return self.runner.execute_one_provider('list', endpoints)
+

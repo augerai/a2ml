@@ -28,22 +28,22 @@ class ModelUndeploy(object):
                 endpoint_api = AugerEndpointApi(self.ctx, None, pipeline_api.object_id)
                 endpoint_props = endpoint_api.properties()
                 endpoint_pipelines = sorted(endpoint_props.get('endpoint_pipelines', []), key=lambda k: k['created_at'])
-                if endpoint_pipelines and endpoint_pipelines[0]['pipeline_id'] == model_id:
-                    self.ctx.log("Undeploy Review endpoint and all models.")
-                    for pipeline in endpoint_pipelines:
+                # if endpoint_pipelines and endpoint_pipelines[0]['pipeline_id'] == model_id:
+                #     self.ctx.log("Undeploy Review endpoint and all models.")
+                #     for pipeline in endpoint_pipelines:
+                #         AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
+
+                #     endpoint_api.delete()
+
+                # else:
+                self.ctx.log("Undeploy model and remove from Review endpoint.")
+                for pipeline in endpoint_pipelines:
+                    if pipeline.get('pipeline_id') == model_id:
                         AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
 
-                    endpoint_api.delete()
-
-                else:
-                    self.ctx.log("Undeploy model and remove from Review endpoint.")
-                    for pipeline in endpoint_pipelines:
-                        if pipeline.get('pipeline_id') == model_id:
-                            AugerPipelineApi(self.ctx, None, pipeline.get('pipeline_id')).remove(pipeline.get('pipeline_id'))
-
-                            AugerEndpointPipelineApi(self.ctx, pipeline.get('id')).delete()
-                            
-                            break
+                        AugerEndpointPipelineApi(self.ctx, pipeline.get('id')).delete()
+                        
+                        break
             else:
                 pipeline_api.remove(model_id)                    
 
