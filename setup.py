@@ -58,7 +58,6 @@ extras = {
         'twine',
         'vcrpy',
         'wheel>=0.30.0,<0.31.0',
-        'httpx'
     ],
     'docs': [
         'sphinx'
@@ -66,7 +65,7 @@ extras = {
     'server': [
         'aioredis',
         'celery==5.2.7',
-        'fastapi',
+        'fastapi==0.85',
         'gevent',
         'redis',
         's3fs>=0.4.0,<0.5.0',
