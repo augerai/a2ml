@@ -3,7 +3,7 @@ version: '3'
 services:
   a2ml:
     image: augerai/a2ml:latest
-    command: python -m py.test tests
+    command: python -m pytest tests
     env_file: develop.env
     depends_on:
       - createbucket

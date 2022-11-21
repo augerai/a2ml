@@ -80,4 +80,4 @@ release: build
 	twine upload dist/*
 
 test:
-	python -m py.test tests
+	python -m pytest tests
