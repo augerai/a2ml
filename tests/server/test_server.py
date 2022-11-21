@@ -28,7 +28,11 @@ class TestServer():
         def test(self):
             with patch.object(task, 'delay') as mock_method:
                 http_method = getattr(client, http_verb)
-                response = http_method(path + '?arg1=11', json={'arg2': 22})
+                if not http_verb in ['get', 'delete']:
+                    response = http_method(path + '?arg1=11', json={'arg2': 22})
+                else:
+                    response = http_method(path + '?arg1=11')    
+
                 assert response.status_code == 200
 
                 body = response.json()
