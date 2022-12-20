@@ -28,6 +28,7 @@ class VerifyVersionCommand(install):
 
 
 install_requires = [
+    'numpy==1.23.5',
     'pandas==1.5.0',
     'joblib',
     'ruamel.yaml',
@@ -70,7 +71,7 @@ extras = {
         'redis',
         's3fs>=0.4.0,<0.5.0',
         'uvicorn',
-        'scikit-learn==1.0.2'
+        'scikit-learn==1.2.0'
     ],
     'azure': [
         #'scikit-learn~=0.22.2',
@@ -84,13 +85,13 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict[all]==1.0.108'
+        'auger.ai.predict[all]==1.0.109'
     ],
     'predict_no_cat_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.108'
+        'auger.ai.predict[no_cat_lgbm]==1.0.109'
     ],
     'predict_no_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.0.108',
+        'auger.ai.predict[no_cat_lgbm]==1.0.109',
         'catboost'
     ]    
 }

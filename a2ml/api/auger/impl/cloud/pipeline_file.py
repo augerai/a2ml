@@ -13,7 +13,8 @@ class AugerPipelineFileApi(AugerBaseApi):
         super(AugerPipelineFileApi, self).__init__(
             ctx, experiment_api, None, pipeline_file_id)
 
-    def create(self, trial_id):
+    def create(self, trial_id, redeploy=False):
+        #TODO: suppport redeploy
         return self._call_create({'trial_id': trial_id},
             ['not_requested', 'pending'])
 

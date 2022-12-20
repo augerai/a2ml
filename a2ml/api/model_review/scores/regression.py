@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import make_scorer, mean_squared_error, mean_squared_log_error, mean_absolute_error
-from sklearn.metrics import SCORERS
+from sklearn.metrics._scorer import _SCORERS
 
 
 EPSILON = 1e-10
@@ -115,11 +115,11 @@ nmae_scorer = make_scorer(nmae_score)
 nrmse_scorer = make_scorer(nrmse_score)
 spearman_correlation_scorer = make_scorer(spearman_correlation_score)
 
-SCORERS['neg_rmsle'] = neg_rmsle_scorer
-SCORERS['neg_mase'] = neg_mase_scorer
-SCORERS['neg_mape'] = neg_mape_scorer
-SCORERS['mda'] = mda_scorer
-SCORERS['neg_rmse'] = neg_rmse_scorer
-SCORERS['normalized_mean_absolute_error'] = nmae_scorer
-SCORERS['normalized_root_mean_squared_error'] = nrmse_scorer
-SCORERS['spearman_correlation'] = spearman_correlation_scorer
+_SCORERS['neg_rmsle'] = neg_rmsle_scorer
+_SCORERS['neg_mase'] = neg_mase_scorer
+_SCORERS['neg_mape'] = neg_mape_scorer
+_SCORERS['mda'] = mda_scorer
+_SCORERS['neg_rmse'] = neg_rmse_scorer
+_SCORERS['normalized_mean_absolute_error'] = nmae_scorer
+_SCORERS['normalized_root_mean_squared_error'] = nrmse_scorer
+_SCORERS['spearman_correlation'] = spearman_correlation_scorer
