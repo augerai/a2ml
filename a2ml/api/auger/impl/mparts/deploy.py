@@ -12,7 +12,6 @@ from ..exceptions import AugerException
 from ..cloud.pipeline_file import AugerPipelineFileApi
 from a2ml.api.utils import fsclient
 
-
 class ModelDeploy(object):
     """Deploy Model on locally or on Auger Cloud."""
 
@@ -167,7 +166,12 @@ class ModelDeploy(object):
 
         return pipeline_properties.get('id')
 
-    def deploy_model_locally(self, model_id, review, name, data_path, locally):
+    def deploy_model_locally(self, model_id, review, name, data_path, locally, redeploy=False):
+        if redeploy:
+            from .undeploy import ModelUndeploy
+            self.ctx.log('Redeploy model %s' % model_id)
+            ModelUndeploy(self.ctx, self.project).execute(model_id, locally=True)
+
         is_loaded, model_path = self.verify_local_model(model_id)
         #TODO: support review flag
         if not is_loaded:
@@ -177,7 +181,7 @@ class ModelDeploy(object):
 
             models_path = os.path.join(self.ctx.config.get_path(), 'models')
             pipeline_file_api = AugerPipelineFileApi(self.ctx, None)
-            pipeline_file_properties = pipeline_file_api.create(model_id)
+            pipeline_file_properties = pipeline_file_api.create(model_id, redeploy)
             downloaded_model_file = pipeline_file_api.download(
                 pipeline_file_properties['signed_s3_model_path'],
                 models_path, model_id)
@@ -207,7 +211,11 @@ class ModelDeploy(object):
 
         is_exists = fsclient.is_folder_exists(model_path)
         if not is_exists and fsclient.is_file_exists(model_zip_path):
-            self._extract_model(model_zip_path)
+            try:
+                self._extract_model(model_zip_path)
+            except Exception as e:
+                self.ctx.log('Unzip model failed: %s. Deploy again.'%str(e))
+                return False, model_path
 
         if add_model_folder:    
             model_path = os.path.join(model_path, "model")

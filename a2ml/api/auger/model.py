@@ -32,15 +32,34 @@ class AugerModel(object):
 
     @error_handler
     @authenticated
+    @with_project(autocreate=False)
+    def redeploy_predict(self, project, filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+        no_features_in_result, score, score_true_data, predict_labels):
+        from .impl.mparts.deploy import ModelDeploy
+        ModelDeploy(self.ctx, project).deploy_model_locally(model_id, 
+            review=False, name=None, data_path=None, locally=locally, redeploy=True)
+
+        return self.predict(filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+            no_features_in_result, score, score_true_data, predict_labels, from_redeploy=True)
+
+    @error_handler
+    @authenticated
     #@with_project(autocreate=False)
     def predict(self, filename, model_id, threshold, locally, data, columns, predicted_at, output, 
-        no_features_in_result, score, score_true_data, predict_labels):
+        no_features_in_result, score, score_true_data, predict_labels, from_redeploy=False):
         if locally:
             self.deploy(model_id, locally, review=False, name=None, algorithm=None, score=None, data_path=None)
 
-        predicted = Model(self.ctx, project=None).predict(
-            filename, model_id, threshold, locally, data, columns, predicted_at, output, 
-            no_features_in_result, score, score_true_data, predict_labels)
+        try:    
+            predicted = Model(self.ctx, project=None).predict(
+                filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+                no_features_in_result, score, score_true_data, predict_labels)
+        except Exception as e:
+            if locally and not from_redeploy and 'Auger model error' in str(e):            
+                self.redeploy_predict(filename, model_id, threshold, locally, data, columns, predicted_at, output, 
+                    no_features_in_result, score, score_true_data, predict_labels)
+            else:
+                raise
 
         if output:
             self.ctx.log('Predictions stored in %s' % predicted)
