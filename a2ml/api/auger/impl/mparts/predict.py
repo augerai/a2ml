@@ -18,10 +18,9 @@ from ..project import Project
 class ModelPredict():
     """Predict using deployed Auger Model."""
 
-    def __init__(self, ctx, project=None):
+    def __init__(self, ctx):
         super(ModelPredict, self).__init__()
         self.ctx = ctx
-        self.project = project
 
     def execute(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, 
             predicted_at=None, output=None, no_features_in_result=None,
@@ -165,19 +164,14 @@ class ModelPredict():
             ds = DataFrame.create_dataframe(filename_arg, data)#, [options['targetFeature']])
             score_true_data = ds.df
         
-        try:
-            if predict_labels:        
-                res, options = ModelExporter({}).predict_labels_by_model_to_ds(model_path, 
-                    path_to_predict=filename_arg, records=data, features=columns, 
-                    threshold=threshold, no_features_in_result=no_features_in_result, predict_labels=predict_labels)
-            else:    
-                res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
-                    path_to_predict=filename_arg, records=data, features=columns, 
-                    threshold=threshold, no_features_in_result=no_features_in_result)
-        except Exception as e:
-            if 'Auger model error' in str(e):
-                ModelDeploy(self.ctx, self.project).deploy_model_locally(model_id, 
-                    review=False, name=None, data_path=None, locally=True, redeploy=True)
+        if predict_labels:        
+            res, options = ModelExporter({}).predict_labels_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result, predict_labels=predict_labels)
+        else:    
+            res, options = ModelExporter({}).predict_by_model_to_ds(model_path, 
+                path_to_predict=filename_arg, records=data, features=columns, 
+                threshold=threshold, no_features_in_result=no_features_in_result)
 
         ds_result = DataFrame({'data_path': None})
         ds_result.df = res.df

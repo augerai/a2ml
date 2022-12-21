@@ -41,7 +41,7 @@ class Model(object):
 
     def predict(self, filename, model_id, threshold=None, locally=False, data=None, columns=None, predicted_at=None, 
         output=None, no_features_in_result=None, score=False, score_true_data=None, predict_labels=None):
-        return ModelPredict(self.ctx, self.project).execute(filename, model_id, threshold, locally, data, columns, 
+        return ModelPredict(self.ctx).execute(filename, model_id, threshold, locally, data, columns, 
             predicted_at, output, no_features_in_result, score, score_true_data, predict_labels)
 
     def actuals(self, model_id, filename=None, data=None, columns=None, actuals_at=None, 
