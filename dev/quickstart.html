@@ -279,30 +279,30 @@ The goal of this exercise is to find a highly accurate model to predict the numb
 <div class="section" id="project-setup">
 <h3>Project Setup<a class="headerlink" href="#project-setup" title="Permalink to this headline">¶</a></h3>
 <p>Inside of a terminal create a new a2ml project.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml new moneyball_project
-<span class="o">[</span>config<span class="o">]</span> Created project folder moneyball_project
-<span class="o">[</span>config<span class="o">]</span> To build your model, please <span class="k">do</span>: <span class="nb">cd</span> moneyball_project <span class="o">&amp;&amp;</span> a2ml import <span class="o">&amp;&amp;</span> a2ml train
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>new<span class="w"> </span>moneyball_project
+<span class="o">[</span>config<span class="o">]</span><span class="w"> </span>Created<span class="w"> </span>project<span class="w"> </span>folder<span class="w"> </span>moneyball_project
+<span class="o">[</span>config<span class="o">]</span><span class="w"> </span>To<span class="w"> </span>build<span class="w"> </span>your<span class="w"> </span>model,<span class="w"> </span>please<span class="w"> </span><span class="k">do</span>:<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>moneyball_project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>a2ml<span class="w"> </span>import<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>a2ml<span class="w"> </span>train
 
-$ <span class="nb">cd</span> moneyball_project
-$ ls
-auger.yaml  azure.yaml config.yaml  google.yaml
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>moneyball_project
+$<span class="w"> </span>ls
+auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml<span class="w">  </span>google.yaml
 </pre></div>
 </div>
 <p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="config-yaml">
 <div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#config-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">moneyball_proj</span><span class="w"></span>
-<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span><span class="w"></span>
-</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
-</span><span class="hll"><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Team,League,Year,RankSeason,RankPlayoffs</span><span class="w"></span>
-</span><span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RS</span><span class="w"></span>
-</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regression</span><span class="w"></span>
-</span><span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
-<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">moneyball_proj</span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+</span><span class="hll"><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Team,League,Year,RankSeason,RankPlayoffs</span>
+</span><span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RS</span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regression</span>
+</span><span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </div>
@@ -345,18 +345,18 @@ Could not load the run context. Logging offline
 </span></pre></div>
 </div>
 <p>Notice how many assets were created in Microsoft Azure and Auger. Make sure to look for verification that import was successful.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>azure<span class="o">]</span>  Created DataSet baseball.csv
-<span class="o">[</span>auger<span class="o">]</span>  Created DataSet baseball.csv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Created<span class="w"> </span>DataSet<span class="w"> </span>baseball.csv
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Created<span class="w"> </span>DataSet<span class="w"> </span>baseball.csv
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you are not authenticated with either provider run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml auth login
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>auth<span class="w"> </span>login
 </pre></div>
 </div>
 <p>or see the different <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> options and then run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml import
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>import
 </pre></div>
 </div>
 <p>Only the remaining import steps will be run.</p>
@@ -367,97 +367,97 @@ Could not load the run context. Logging offline
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>R2</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#azure-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
-<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2_score</span><span class="w"></span>
-</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2_score</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="auger-yaml">
 <div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#auger-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span><span class="w"></span>
-<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2</span><span class="w"></span>
-</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseball.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">r2</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span>
 </pre></div>
 </div>
 </div>
 <p>To start training run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml train
-<span class="o">[</span>azure<span class="o">]</span>  Starting search on baseball.csv Dataset...
-Could not load the run context. Logging offline
-<span class="o">[</span>azure<span class="o">]</span>  Found compute target a2ml-azure ...
-Created a worker pool <span class="k">for</span> first use
-<span class="o">[</span>auger<span class="o">]</span>  Created Experiment baseball.csv-experiment
-<span class="o">[</span>auger<span class="o">]</span>  Started Experiment baseball.csv-experiment search...
-<span class="o">[</span>azure<span class="o">]</span>  Started Experiment baseball-csv search...
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>train
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Starting<span class="w"> </span>search<span class="w"> </span>on<span class="w"> </span>baseball.csv<span class="w"> </span>Dataset...
+Could<span class="w"> </span>not<span class="w"> </span>load<span class="w"> </span>the<span class="w"> </span>run<span class="w"> </span>context.<span class="w"> </span>Logging<span class="w"> </span>offline
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Found<span class="w"> </span>compute<span class="w"> </span>target<span class="w"> </span>a2ml-azure<span class="w"> </span>...
+Created<span class="w"> </span>a<span class="w"> </span>worker<span class="w"> </span>pool<span class="w"> </span><span class="k">for</span><span class="w"> </span>first<span class="w"> </span>use
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Created<span class="w"> </span>Experiment<span class="w"> </span>baseball.csv-experiment
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Started<span class="w"> </span>Experiment<span class="w"> </span>baseball.csv-experiment<span class="w"> </span>search...
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Started<span class="w"> </span>Experiment<span class="w"> </span>baseball-csv<span class="w"> </span>search...
 </pre></div>
 </div>
 </div>
 <div class="section" id="evaluate">
 <h3>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this headline">¶</a></h3>
 <p>To view the realtime model results of a train.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml evaluate
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>evaluate
 
-<span class="o">[</span>auger<span class="o">]</span>  Leaderboard <span class="k">for</span> Run 0d8b32fedd073b8e
-<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
-<span class="o">[</span>auger<span class="o">]</span>  model id        <span class="p">|</span> r2      <span class="p">|</span> algorithm
-<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
-<span class="o">[</span>auger<span class="o">]</span>  FF4998552070427 <span class="p">|</span> <span class="m">0</span>.9392  <span class="p">|</span> SuperLearnerAlgorithmRegressor
-<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
-<span class="o">[</span>auger<span class="o">]</span>  60A26A1DBC7543E <span class="p">|</span> <span class="m">0</span>.9353  <span class="p">|</span> LGBMRegressor
-<span class="o">[</span>auger<span class="o">]</span>  ----------------+---------+-------------------------------
-<span class="o">[</span>auger<span class="o">]</span>  Search is completed.
-<span class="o">[</span>azure<span class="o">]</span>  Leaderboard <span class="k">for</span> Run AutoML_feca2e53-618b-4407-a17c-f119ba9d7578
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  model id                                      <span class="p">|</span> algorithm                        <span class="p">|</span> r2_score
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9 <span class="p">|</span> StackEnsemble                    <span class="p">|</span> <span class="m">0</span>.9435518514990049
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_8 <span class="p">|</span> VotingEnsemble                   <span class="p">|</span> <span class="m">0</span>.942078490714301
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_0 <span class="p">|</span> MaxAbsScaler,LightGBM            <span class="p">|</span> <span class="m">0</span>.9338693722577552
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_1 <span class="p">|</span> StandardScalerWrapper,LightGBM   <span class="p">|</span> <span class="m">0</span>.9316232600551793
-<span class="o">[</span>azure<span class="o">]</span>  ----------------------------------------------+----------------------------------+-------------------
-<span class="o">[</span>azure<span class="o">]</span>  Status: Completed
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Leaderboard<span class="w"> </span><span class="k">for</span><span class="w"> </span>Run<span class="w"> </span>0d8b32fedd073b8e
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>model<span class="w"> </span>id<span class="w">        </span><span class="p">|</span><span class="w"> </span>r2<span class="w">      </span><span class="p">|</span><span class="w"> </span>algorithm
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>FF4998552070427<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.9392<span class="w">  </span><span class="p">|</span><span class="w"> </span>SuperLearnerAlgorithmRegressor
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>60A26A1DBC7543E<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.9353<span class="w">  </span><span class="p">|</span><span class="w"> </span>LGBMRegressor
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>----------------+---------+-------------------------------
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Search<span class="w"> </span>is<span class="w"> </span>completed.
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Leaderboard<span class="w"> </span><span class="k">for</span><span class="w"> </span>Run<span class="w"> </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>model<span class="w"> </span>id<span class="w">                                      </span><span class="p">|</span><span class="w"> </span>algorithm<span class="w">                        </span><span class="p">|</span><span class="w"> </span>r2_score
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9<span class="w"> </span><span class="p">|</span><span class="w"> </span>StackEnsemble<span class="w">                    </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.9435518514990049
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_8<span class="w"> </span><span class="p">|</span><span class="w"> </span>VotingEnsemble<span class="w">                   </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.942078490714301
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_0<span class="w"> </span><span class="p">|</span><span class="w"> </span>MaxAbsScaler,LightGBM<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.9338693722577552
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_1<span class="w"> </span><span class="p">|</span><span class="w"> </span>StandardScalerWrapper,LightGBM<span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>.9316232600551793
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>----------------------------------------------+----------------------------------+-------------------
+<span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Status:<span class="w"> </span>Completed
 </pre></div>
 </div>
 </div>
 <div class="section" id="deploy">
 <h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">¶</a></h3>
 <p>To deploy a specific model copy the <strong>model id</strong> from the leaderboard output and run.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>deploy<span class="w"> </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
 
-  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - CacheDriver:Cached token is expired at <span class="m">2020</span>-04-22 <span class="m">16</span>:13:41.536177.  Refreshing
-  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - TokenRequest:Getting a new token from a refresh token
-  6c664bf8-da13-41cd-ac87-d2f04ad77eb7 - CacheDriver:Returning token refreshed after expiry.
-  <span class="o">[</span>auger<span class="o">]</span>  Deploying model AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
-  Created a worker pool <span class="k">for</span> first use
-<span class="hll">  <span class="o">[</span>auger<span class="o">]</span>  status: <span class="m">404</span>, body: <span class="o">{</span><span class="s2">&quot;meta&quot;</span>:<span class="o">{</span><span class="s2">&quot;status&quot;</span>:404,<span class="s2">&quot;request_params&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>,<span class="s2">&quot;token&quot;</span>:<span class="s2">&quot;****&quot;</span>,<span class="s2">&quot;pipeline&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>,<span class="s2">&quot;is_review_model_enabled&quot;</span>:true<span class="o">}</span>,<span class="s2">&quot;errors&quot;</span>:<span class="o">[{</span><span class="s2">&quot;message&quot;</span>:<span class="s2">&quot;There is no such Trial&quot;</span>,<span class="s2">&quot;error_type&quot;</span>:<span class="s2">&quot;not_found&quot;</span><span class="o">}]}}</span> <span class="o">{</span><span class="s2">&quot;status&quot;</span>: <span class="m">404</span>, <span class="s2">&quot;request_params&quot;</span>: <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>, <span class="s2">&quot;token&quot;</span>: <span class="s2">&quot;****&quot;</span>, <span class="s2">&quot;pipeline&quot;</span>: <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>, <span class="s2">&quot;is_review_model_enabled&quot;</span>: true<span class="o">}</span>, <span class="s2">&quot;errors&quot;</span>: <span class="o">[{</span><span class="s2">&quot;message&quot;</span>: <span class="s2">&quot;There is no such Trial&quot;</span>, <span class="s2">&quot;error_type&quot;</span>: <span class="s2">&quot;not_found&quot;</span><span class="o">}]}</span> on: POST /api/v1/pipelines <span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>: <span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>
-</span>  <span class="o">[</span>azure<span class="o">]</span>  Regestiring model: AutoMLfeca2e5369
-  <span class="o">[</span>azure<span class="o">]</span>  Deploying AciWebservice automlfeca2e5369-service ...
-  Warning, azureml-defaults not detected <span class="k">in</span> provided environment pip dependencies. The azureml-defaults package contains requirements <span class="k">for</span> the inference stack to run, and should be included.
-  Running.....................................................
-  Succeeded
-  ACI service creation operation finished, operation <span class="s2">&quot;Succeeded&quot;</span>
-<span class="hll">  <span class="o">[</span>azure<span class="o">]</span>  automlfeca2e5369-service state Healthy
+<span class="w">  </span>6c664bf8-da13-41cd-ac87-d2f04ad77eb7<span class="w"> </span>-<span class="w"> </span>CacheDriver:Cached<span class="w"> </span>token<span class="w"> </span>is<span class="w"> </span>expired<span class="w"> </span>at<span class="w"> </span><span class="m">2020</span>-04-22<span class="w"> </span><span class="m">16</span>:13:41.536177.<span class="w">  </span>Refreshing
+<span class="w">  </span>6c664bf8-da13-41cd-ac87-d2f04ad77eb7<span class="w"> </span>-<span class="w"> </span>TokenRequest:Getting<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>token<span class="w"> </span>from<span class="w"> </span>a<span class="w"> </span>refresh<span class="w"> </span>token
+<span class="w">  </span>6c664bf8-da13-41cd-ac87-d2f04ad77eb7<span class="w"> </span>-<span class="w"> </span>CacheDriver:Returning<span class="w"> </span>token<span class="w"> </span>refreshed<span class="w"> </span>after<span class="w"> </span>expiry.
+<span class="w">  </span><span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Deploying<span class="w"> </span>model<span class="w"> </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
+<span class="w">  </span>Created<span class="w"> </span>a<span class="w"> </span>worker<span class="w"> </span>pool<span class="w"> </span><span class="k">for</span><span class="w"> </span>first<span class="w"> </span>use
+<span class="hll"><span class="w">  </span><span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>status:<span class="w"> </span><span class="m">404</span>,<span class="w"> </span>body:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;meta&quot;</span>:<span class="o">{</span><span class="s2">&quot;status&quot;</span>:404,<span class="s2">&quot;request_params&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>,<span class="s2">&quot;token&quot;</span>:<span class="s2">&quot;****&quot;</span>,<span class="s2">&quot;pipeline&quot;</span>:<span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>,<span class="s2">&quot;is_review_model_enabled&quot;</span>:true<span class="o">}</span>,<span class="s2">&quot;errors&quot;</span>:<span class="o">[{</span><span class="s2">&quot;message&quot;</span>:<span class="s2">&quot;There is no such Trial&quot;</span>,<span class="s2">&quot;error_type&quot;</span>:<span class="s2">&quot;not_found&quot;</span><span class="o">}]}}</span><span class="w"> </span><span class="o">{</span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="m">404</span>,<span class="w"> </span><span class="s2">&quot;request_params&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span>,<span class="w"> </span><span class="s2">&quot;token&quot;</span>:<span class="w"> </span><span class="s2">&quot;****&quot;</span>,<span class="w"> </span><span class="s2">&quot;pipeline&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>,<span class="w"> </span><span class="s2">&quot;is_review_model_enabled&quot;</span>:<span class="w"> </span>true<span class="o">}</span>,<span class="w"> </span><span class="s2">&quot;errors&quot;</span>:<span class="w"> </span><span class="o">[{</span><span class="s2">&quot;message&quot;</span>:<span class="w"> </span><span class="s2">&quot;There is no such Trial&quot;</span>,<span class="w"> </span><span class="s2">&quot;error_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;not_found&quot;</span><span class="o">}]}</span><span class="w"> </span>on:<span class="w"> </span>POST<span class="w"> </span>/api/v1/pipelines<span class="w"> </span><span class="o">{</span><span class="s2">&quot;trial_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9&quot;</span><span class="o">}</span>
+</span><span class="w">  </span><span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Regestiring<span class="w"> </span>model:<span class="w"> </span>AutoMLfeca2e5369
+<span class="w">  </span><span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Deploying<span class="w"> </span>AciWebservice<span class="w"> </span>automlfeca2e5369-service<span class="w"> </span>...
+<span class="w">  </span>Warning,<span class="w"> </span>azureml-defaults<span class="w"> </span>not<span class="w"> </span>detected<span class="w"> </span><span class="k">in</span><span class="w"> </span>provided<span class="w"> </span>environment<span class="w"> </span>pip<span class="w"> </span>dependencies.<span class="w"> </span>The<span class="w"> </span>azureml-defaults<span class="w"> </span>package<span class="w"> </span>contains<span class="w"> </span>requirements<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>inference<span class="w"> </span>stack<span class="w"> </span>to<span class="w"> </span>run,<span class="w"> </span>and<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>included.
+<span class="w">  </span>Running.....................................................
+<span class="w">  </span>Succeeded
+<span class="w">  </span>ACI<span class="w"> </span>service<span class="w"> </span>creation<span class="w"> </span>operation<span class="w"> </span>finished,<span class="w"> </span>operation<span class="w"> </span><span class="s2">&quot;Succeeded&quot;</span>
+<span class="hll"><span class="w">  </span><span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>automlfeca2e5369-service<span class="w"> </span>state<span class="w"> </span>Healthy
 </span></pre></div>
 </div>
 <p>Notice the first highlighted line in the code block above outputs a not found error for the Auger provider.</p>
@@ -465,25 +465,25 @@ Created a worker pool <span class="k">for</span> first use
 </pre></div>
 </div>
 <p>This is because a Microsoft Azure <strong>model id</strong> was selected.  To deploy a model to the Auger provider run.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy FF4998552070427 -p auger
-<span class="o">[</span>auger<span class="o">]</span>  Deploying model FF4998552070427
-<span class="o">[</span>auger<span class="o">]</span>  Pipeline status is packaging...
-<span class="o">[</span>auger<span class="o">]</span>  Pipeline status is ready...
-<span class="hll"><span class="o">[</span>auger<span class="o">]</span>  Deployed Model on Auger Cloud. Model id is FF4998552070427
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>deploy<span class="w"> </span>FF4998552070427<span class="w"> </span>-p<span class="w"> </span>auger
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Deploying<span class="w"> </span>model<span class="w"> </span>FF4998552070427
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Pipeline<span class="w"> </span>status<span class="w"> </span>is<span class="w"> </span>packaging...
+<span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Pipeline<span class="w"> </span>status<span class="w"> </span>is<span class="w"> </span>ready...
+<span class="hll"><span class="o">[</span>auger<span class="o">]</span><span class="w">  </span>Deployed<span class="w"> </span>Model<span class="w"> </span>on<span class="w"> </span>Auger<span class="w"> </span>Cloud.<span class="w"> </span>Model<span class="w"> </span>id<span class="w"> </span>is<span class="w"> </span>FF4998552070427
 </span></pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <strong>-p</strong> argument allows a specific provider to be selected. At anytime to view a list of possible commands use <strong>--help</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml deploy --help
-Usage: a2ml deploy <span class="o">[</span>OPTIONS<span class="o">]</span> MODEL_ID
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>deploy<span class="w"> </span>--help
+Usage:<span class="w"> </span>a2ml<span class="w"> </span>deploy<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>MODEL_ID
 
-  Deploy trained model.
+<span class="w">  </span>Deploy<span class="w"> </span>trained<span class="w"> </span>model.
 
 Options:
-<span class="hll">  -p, --provider TEXT  Cloud AutoML Provider.
-</span>  --locally            Download and deploy trained model locally.
-  --help               Show this message and exit.
+<span class="hll"><span class="w">  </span>-p,<span class="w"> </span>--provider<span class="w"> </span>TEXT<span class="w">  </span>Cloud<span class="w"> </span>AutoML<span class="w"> </span>Provider.
+</span><span class="w">  </span>--locally<span class="w">            </span>Download<span class="w"> </span>and<span class="w"> </span>deploy<span class="w"> </span>trained<span class="w"> </span>model<span class="w"> </span>locally.
+<span class="w">  </span>--help<span class="w">               </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </pre></div>
 </div>
 </div>
@@ -500,8 +500,8 @@ Options:
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png"><img alt="baseball predict dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/baseball_predict.png" style="width: 100%;" /></a>
 <p><em>Notice RS is not included in the file</em></p>
 <p>To request predictions.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml predict -m AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9 -p azure baseball_predict.csv
-<span class="hll"><span class="o">[</span>azure<span class="o">]</span>  Predictions are saved to &lt;path_to&gt;/moneyball_proj/baseball_predict_predicted.csv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>predict<span class="w"> </span>-m<span class="w"> </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9<span class="w"> </span>-p<span class="w"> </span>azure<span class="w"> </span>baseball_predict.csv
+<span class="hll"><span class="o">[</span>azure<span class="o">]</span><span class="w">  </span>Predictions<span class="w"> </span>are<span class="w"> </span>saved<span class="w"> </span>to<span class="w"> </span>&lt;path_to&gt;/moneyball_proj/baseball_predict_predicted.csv
 </span></pre></div>
 </div>
 <p><em>Notice a file has been created in the project directory</em> <strong>baseball_predict_predicted.csv</strong></p>
@@ -549,30 +549,30 @@ Options:
 <div class="section" id="id2">
 <h3>Project Setup<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Inside of a terminal create a new a2ml project.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml new digits_proj
-<span class="o">[</span>config<span class="o">]</span> Created project folder digits_proj
-<span class="o">[</span>config<span class="o">]</span> To build your model, please <span class="k">do</span>: <span class="nb">cd</span> digits_proj <span class="o">&amp;&amp;</span> a2ml import <span class="o">&amp;&amp;</span> a2ml train
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>new<span class="w"> </span>digits_proj
+<span class="o">[</span>config<span class="o">]</span><span class="w"> </span>Created<span class="w"> </span>project<span class="w"> </span>folder<span class="w"> </span>digits_proj
+<span class="o">[</span>config<span class="o">]</span><span class="w"> </span>To<span class="w"> </span>build<span class="w"> </span>your<span class="w"> </span>model,<span class="w"> </span>please<span class="w"> </span><span class="k">do</span>:<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>digits_proj<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>a2ml<span class="w"> </span>import<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>a2ml<span class="w"> </span>train
 
-$ <span class="nb">cd</span> digits_proj
-$ ls
-auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>digits_proj
+$<span class="w"> </span>ls
+auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml<span class="w">  </span>google.yaml<span class="w"> </span>digits.csv
 </pre></div>
 </div>
 <p>To configure Microsoft Azure and Auger providers, open <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="digits-proj-config-yaml">
 <div class="code-block-caption"><span class="caption-text">config.yaml</span><a class="headerlink" href="#digits-proj-config-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits_proj</span><span class="w"></span>
-<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span><span class="w"></span>
-</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
-</span><span class="nt">exclude</span><span class="p">:</span><span class="w"></span>
-<span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">class</span><span class="w"></span>
-</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classifiction</span><span class="w"></span>
-</span><span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
-<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits_proj</span>
+<span class="hll"><span class="nt">providers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auger,azure</span>
+</span><span class="hll"><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+</span><span class="nt">exclude</span><span class="p">:</span>
+<span class="hll"><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">class</span>
+</span><span class="hll"><span class="nt">model_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classifiction</span>
+</span><span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cross_validation_folds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">max_total_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">  </span><span class="nt">max_eval_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">max_n_trials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">use_ensemble</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </div>
@@ -606,34 +606,34 @@ auger.yaml  azure.yaml config.yaml  google.yaml digits.csv
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>accuracy</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="digits-proj-azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#digits-proj-azure-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
-<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span><span class="w"></span>
-</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">run_id</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eastus2</span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STANDARD_D2_V2</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a2ml-azure</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="digits-proj-auger-yaml">
 <div class="code-block-caption"><span class="caption-text">auger.yaml</span><a class="headerlink" href="#digits-proj-auger-yaml" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span><span class="w"></span>
-<span class="nt">experiment</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span><span class="w"></span>
-</span><span class="nt">cluster</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span><span class="w"></span>
-<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">digits.csv</span>
+<span class="nt">experiment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experiment_session_id</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">time_series</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">label_encoded</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="hll"><span class="w">  </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accuracy</span>
+</span><span class="nt">cluster</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span>
+<span class="w">  </span><span class="nt">min_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">max_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">stack_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span>
 </pre></div>
 </div>
 </div>

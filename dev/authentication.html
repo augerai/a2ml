@@ -220,7 +220,7 @@
 <div class="section" id="cli-login">
 <h3>CLI Login<a class="headerlink" href="#cli-login" title="Permalink to this headline">¶</a></h3>
 <p>You can login to the A2ML Cloud with the <code class="docutils literal notranslate"><span class="pre">a2ml</span> <span class="pre">auth</span> <span class="pre">login</span></code> command.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml auth login
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>auth<span class="w"> </span>login
 </pre></div>
 </div>
 <p>You will be prompted for your A2ML service user and password.</p>
@@ -228,7 +228,7 @@
 <div class="section" id="download-credentials">
 <h3>Download Credentials<a class="headerlink" href="#download-credentials" title="Permalink to this headline">¶</a></h3>
 <p>A2ML credentials can be downloaded as an <code class="docutils literal notranslate"><span class="pre">auger.json</span></code> file from your organization's <a class="reference external" href="https://app.auger.ai">https://app.auger.ai</a>/&lt;project_name&gt;/<strong>settings</strong>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">AUGER_CREDENTIALS</span><span class="o">=</span>~/auger.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUGER_CREDENTIALS</span><span class="o">=</span>~/auger.json
 </pre></div>
 </div>
 <div class="admonition note">
@@ -254,7 +254,7 @@
 <h4>CLI Login<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <p>The Azure AutoML service allows browser login. Run any <code class="docutils literal notranslate"><span class="pre">a2ml</span></code> command and a login URL will open in the default browser.</p>
 <p>To explicitly login to azure run.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ a2ml auth login -p azure
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>auth<span class="w"> </span>login<span class="w"> </span>-p<span class="w"> </span>azure
 </pre></div>
 </div>
 </div>
@@ -267,16 +267,16 @@
 </div>
 <div class="literal-block-wrapper docutils container" id="azure-json">
 <div class="code-block-caption"><span class="caption-text">azure.json</span><a class="headerlink" href="#azure-json" title="Permalink to this code">¶</a></div>
-<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;subscription_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;directory_tenant_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;application_client_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;client_secret&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;subscription_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;directory_tenant_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;application_client_id&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;client_secret&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">AZURE_CREDENTIALS</span><span class="o">=</span>~/azure.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CREDENTIALS</span><span class="o">=</span>~/azure.json
 </pre></div>
 </div>
 <div class="admonition note">
@@ -295,11 +295,11 @@
 <div class="section" id="google-cloud-provider">
 <h3>Google Cloud Provider<a class="headerlink" href="#google-cloud-provider" title="Permalink to this headline">¶</a></h3>
 <p>If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the <code class="docutils literal notranslate"><span class="pre">GOOGLE_APPLICATION</span> <span class="pre">CREDENTIALS</span></code> environment variable to point to the saved file.  For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span><span class="s2">&quot;/Users/user/a2ml/automl.json&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span><span class="s2">&quot;/Users/user/a2ml/automl.json&quot;</span>
 </pre></div>
 </div>
 <p>For ease of use you can set up a default project ID to use with your project with the <code class="docutils literal notranslate"><span class="pre">PROJECT_ID</span></code> environment variable. For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;automl-test-237311&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;automl-test-237311&quot;</span>
 </pre></div>
 </div>
 <p>Detailed instructions for setting up <a href="https://cloud.google.com/vision/automl/docs/before-you-begin" target="_blank">Google Cloud AutoML</a>.</p>
