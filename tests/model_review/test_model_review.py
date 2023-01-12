@@ -25,6 +25,7 @@ def test_score_model_performance_daily():
     date_to = datetime.date(2020, 10, 22)
 
     res = ModelReview({'model_path': model_path}).score_model_performance_daily(str(date_from), date_to)
+    print(res)
 
     assert type(res) is dict
     date_item = res[str(date_from)]
@@ -36,7 +37,7 @@ def test_score_model_performance_daily():
     assert score > 0
     assert 'review_metric' in date_item
 
-def test_score_model_performance_daily():
+def test_score_model_performance_daily_1():
     model_path = 'tests/fixtures/test_score_model_performance_daily/iris'
     date_from = datetime.date(2020, 10, 22)
     date_to = datetime.date(2020, 10, 22)

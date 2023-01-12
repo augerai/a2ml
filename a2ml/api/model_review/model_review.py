@@ -635,10 +635,15 @@ class ModelReview(object):
                 if "baseline_target" in df_actuals.columns:
                     baseline_score = self._do_score_actual(df_actuals.df, "baseline_target", extra_features)
 
+                review_metric = None
+                if self.params.get('roi'):
+                    review_metric = 'roi'
+                    
                 res[str(curr_date)] = {
                     'scores': scores,
                     'score_name': self.options.get('score_name'),
-                    'baseline_scores': baseline_score
+                    'baseline_scores': baseline_score,
+                    'review_metric':  review_metric,
                 }
 
         return res

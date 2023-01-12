@@ -74,6 +74,9 @@ class AugerModel(object):
     @with_project(autocreate=False)
     def actuals(self, project, model_id, filename=None, data=None, columns=None, actuals_at=None, 
         actual_date_column=None, experiment_params=None, locally=False):
+        if locally:
+            self.deploy(model_id, locally, review=False, name=None, algorithm=None, score=None, data_path=None)
+    
         return Model(self.ctx, project).actuals(model_id, filename, data, columns, actuals_at, actual_date_column, experiment_params, locally)
 
     @error_handler
