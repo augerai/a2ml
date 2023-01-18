@@ -35,8 +35,8 @@ class DataSet(AugerDataSetApi):
         return super().do_upload_file(data_source_file, self.object_name, local_data_source=local_data_source)
 
     def download(self, path_to_download):
-        if path_to_download is None:
-            raise AugerException('Please specify path to download...')
+        # if path_to_download is None:
+        #     raise AugerException('Please specify path to download...')
 
         #self.project.start()
 

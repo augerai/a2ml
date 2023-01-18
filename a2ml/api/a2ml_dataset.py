@@ -81,7 +81,7 @@ class A2MLDataset(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                dataset = DataSet(ctx, 'auger, azure').create('../dataset.csv')
+                dataset = A2MLDataset(ctx, 'auger, azure').create('../dataset.csv')
         """
         return self.runner.execute('create', source, name, description)
 
@@ -103,7 +103,7 @@ class A2MLDataset(BaseA2ML):
             .. code-block:: python
 
             ctx = Context()
-            url = DataSet(ctx).upload('../dataset.csv')
+            url = A2MLDataset(ctx).upload('../dataset.csv')
         """
         return self.get_runner(False).execute_one_provider('upload', source, name)
 
@@ -131,13 +131,12 @@ class A2MLDataset(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                DataSet(ctx, 'auger, azure').delete(dataset_name)
+                A2MLDataset(ctx, 'auger, azure').delete(dataset_name)
                 ctx.log('Deleted dataset %s' % dataset_name)
         """
         return self.runner.execute('delete', name)
 
     @show_result
-
     def select(self, name = None):
         """
         Sets a DataSet name in the context.
@@ -161,7 +160,31 @@ class A2MLDataset(BaseA2ML):
             .. code-block:: python
 
                 ctx = Context()
-                DataSet(ctx, 'auger, azure').select(dataset_name)
+                A2MLDataset(ctx, 'auger, azure').select(dataset_name)
         """
         return self.runner.execute('select', name)
+
+
+    @show_result
+    def download(self, name = None, path = None):
+        """
+        Download DataSet by name to the local file.
+
+        Args:
+            name(str, optional): name of dataset. If skipped dataset from auger.yaml will be used
+            path(str, optional): local dir path to store file. If skipped current folder will be used.
+
+        Returns:
+            {
+                'result': True,
+                'data': 'full local path to the file'
+            }
+
+        Examples:
+            .. code-block:: python
+
+                ctx = Context()
+                A2MLDataset(ctx).download(dataset_name)
+        """
+        return self.get_runner(False).execute_one_provider('download', name, path)
 
