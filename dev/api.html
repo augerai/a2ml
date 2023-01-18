@@ -861,7 +861,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;../dataset.csv&#39;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;../dataset.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -892,7 +892,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 </pre></div>
 </div>
 <p>ctx = Context()
-url = DataSet(ctx).upload('../dataset.csv')</p>
+url = A2MLDataset(ctx).upload('../dataset.csv')</p>
 </dd></dl>
 
 <dl class="py method">
@@ -920,7 +920,7 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Deleted dataset </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset_name</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -951,7 +951,35 @@ url = DataSet(ctx).upload('../dataset.csv')</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
-<span class="n">DataSet</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;auger, azure&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download DataSet by name to the local file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) -- name of dataset. If skipped dataset from auger.yaml will be used</p></li>
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) -- local dir path to store file. If skipped current folder will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>{</dt><dd><p>'result': True,
+'data': 'full local path to the file'</p>
+</dd>
+</dl>
+<p>}</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">A2MLDataset</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
