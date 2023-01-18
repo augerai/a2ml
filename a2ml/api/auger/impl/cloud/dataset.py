@@ -77,6 +77,9 @@ class AugerDataSetApi(AugerProjectFileApi):
         remote_file = self.properties().get('url')
         unused, ext = os.path.splitext(remote_file)
         filename, unused = os.path.splitext(self.name)
+        if not path_to_download:
+            path_to_download = ''
+
         local_file = os.path.abspath(
             os.path.join(path_to_download, filename+ext))
 
@@ -85,8 +88,7 @@ class AugerDataSetApi(AugerProjectFileApi):
             'project_id': self.parent_api.oid,
             'file_path': remote_file}).get('url')
 
-        if not os.path.exists(path_to_download):
-            os.makedirs(path_to_download)
+        fsclient.create_folder(path_to_download)
 
         urllib.request.urlretrieve(s3_signed_url, local_file)
 

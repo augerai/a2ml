@@ -33,6 +33,9 @@ class LocalFSClient:
         return os.path.exists(path)
 
     def create_folder(self, path):
+        if not path:
+            return
+
         if not self.is_folder_exists(path):
             os.makedirs(path)
 

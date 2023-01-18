@@ -4,7 +4,7 @@ from a2ml.api.utils.decorators import error_handler, authenticated
 from .impl.cloud.rest_api import RestApi
 from .credentials import Credentials
 from .config import AugerConfig
-
+from .impl.cloud.experiment_session import AugerExperimentSessionApi
 
 class AugerDataset(object):
     def __init__(self, ctx):
@@ -79,8 +79,25 @@ class AugerDataset(object):
     @authenticated
     @with_project(autocreate=False)
     def download(self, project, name, path_to_download):
+        from .impl.experiment import Experiment
+        
         if name is None:
             name = AugerConfig(self.ctx).get_dataset() #self.ctx.config.get('dataset', None)
+
+        if name is None:
+            run_id = self.ctx.config.get('experiment/experiment_session_id')
+            if not run_id:
+                run_id = Experiment(self.ctx, None, project=project)._get_latest_run()
+
+            if run_id:
+                session_api = AugerExperimentSessionApi(
+                    self.ctx, None, None, run_id)
+                session_props = session_api.properties()
+                name = session_props.get('datasource_name')
+
+        if name is None:
+            raise Exception("No dataset name is found.")
+
         file_name = DataSet(self.ctx, project, name).download(path_to_download)
         self.ctx.log('Downloaded dataset %s to %s' % (name, file_name))
         return {'dowloaded': name, 'file': file_name}

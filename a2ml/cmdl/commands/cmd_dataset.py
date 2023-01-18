@@ -58,6 +58,17 @@ def select(ctx, provider, name):
     """
     A2MLDataset(ctx, provider).select(name)
 
+@click.command(short_help='Download Dataset')
+@click.argument('name', required=False, type=click.STRING)
+@click.option('--path', '-t', required=False, type=click.STRING,
+    help='Local dir path to save the file.')
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+    help='Cloud AutoML Provider.')
+@pass_context
+def download(ctx, name, path, provider):
+    """Download data set.
+    """
+    A2MLDataset(ctx, provider).download(name, path)
 
 @pass_context
 def add_commands(ctx):
@@ -65,6 +76,7 @@ def add_commands(ctx):
     cmdl.add_command(create)
     cmdl.add_command(delete)
     cmdl.add_command(select)
+    cmdl.add_command(download)
 
 
 add_commands()
