@@ -162,8 +162,8 @@ class ModelPredict():
         if score and score_true_data is None:
             options = fsclient.read_json_file(os.path.join(model_path, "options.json"))            
             ds = DataFrame.create_dataframe(filename_arg, data)#, [options['targetFeature']])
-            score_true_data = ds.df
-        
+            score_true_data = ds.df.copy()
+
         if predict_labels:        
             res, options = ModelExporter({}).predict_labels_by_model_to_ds(model_path, 
                 path_to_predict=filename_arg, records=data, features=columns, 
