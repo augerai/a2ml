@@ -61,7 +61,7 @@ jobs:
           role-skip-session-tagging: true
           role-to-assume: ${{ env.AWS_KS_ROLE }}
 
-      - uses: azure/setup-kubectl@v2.0
+      - uses: azure/setup-kubectl@v3.0
         # with:
         #   version: 'v1.23.6'
       - uses: azure/setup-helm@v1
