@@ -43,6 +43,8 @@ develop.env
 develop.client.env
 tmp/
 
+tests/fixtures/**/predictions
+tests/fixtures/**/*.parquet
 tests/fixtures/*.feather.zstd
 tests/fixtures/*_predicted.csv
 tests/fixtures/test_build_review_data/iris/predictions/*.parquet
