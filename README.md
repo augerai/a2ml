@@ -1,4 +1,4 @@
-# a2ml - Automation of AutoML
+# a2ml - Automation of AutoML 
 
 [![CircleCI](https://img.shields.io/circleci/build/gh/augerai/a2ml/master)](https://circleci.com/gh/augerai/a2ml)
 [![Join the chat](https://img.shields.io/gitter/room/augerai/a2ml.svg)](https://gitter.im/augerai/a2ml)
