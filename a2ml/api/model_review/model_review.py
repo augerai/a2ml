@@ -192,7 +192,10 @@ class ModelReview(object):
             baseline_score = self._do_score_actual(ds_actuals.df, "baseline_target")
         if experiment_params:
             experiment_score, experiment_count, _ = self._do_score_actual_experiment(ds_actuals.df, experiment_params)
-            drill_down_report = self._get_drill_down_report(ds_actuals.df, experiment_params)            
+            drill_down_report = self._get_drill_down_report(ds_actuals.df, experiment_params)
+            self._save_experiment_accuracy(experiment_score, experiment_count, drill_down_report)
+        else:
+            experiment_score, experiment_count, drill_down_report = self._load_experiment_accuracy()
 
         #logging.info("Actual result: %s", result)
         ds_actuals.df = ds_actuals.df.rename(columns={self.target_feature: 'a2ml_predicted'})
@@ -225,6 +228,17 @@ class ModelReview(object):
                 'drill_down_report': drill_down_report}
         else:
             return result
+
+    def _save_experiment_accuracy(self, experiment_score, experiment_count, drill_down_report):
+        exp_data = {
+            'experiment_score': experiment_score, 'experiment_count': experiment_count,
+            'drill_down_report': drill_down_report
+        }
+        fsclient.write_json_file(os.path.join(self.model_path, "predictions", 'experiment_accuracy.json'), exp_data)
+
+    def _load_experiment_accuracy(self):        
+        res = fsclient.read_json_file(os.path.join(self.model_path, "predictions", 'experiment_accuracy.json'))        
+        return res.get('experiment_score',{}), res.get('experiment_count', 0), res.get('drill_down_report', [])
 
     def _do_score_actual_experiment(self, df_actuals, experiment_params):
         if experiment_params.get('filter_query'):
