@@ -169,6 +169,7 @@ class ModelReview(object):
             )
 
             self._load_options()
+            provider = None
 
         if not 'actual' in ds_actuals.columns:
             raise Exception("There is no 'actual' column in data")
@@ -182,6 +183,9 @@ class ModelReview(object):
         if provider is not None and (do_predict or not self.target_feature in ds_actuals.columns):
             logging.info("Actual data missing 'predicted' column and predicted value column: %s. Call predict with features from actual data: %s"%(self.target_feature, ds_actuals.columns))
             self._do_predict(ctx, ds_actuals, provider, predicted_at=actual_date)
+        else:    
+            if not self.target_feature in ds_actuals.columns:
+                self._load_predictions(ds_actuals, experiment_params)
 
         result = self._do_score_actual(ds_actuals.df)
         baseline_score = {}
@@ -190,7 +194,7 @@ class ModelReview(object):
         drill_down_report = []
         if "baseline_target" in ds_actuals.columns:
             baseline_score = self._do_score_actual(ds_actuals.df, "baseline_target")
-        if experiment_params:
+        if experiment_params and (experiment_params.get('filter_query') or experiment_params.get('start_date')):
             experiment_score, experiment_count, _ = self._do_score_actual_experiment(ds_actuals.df, experiment_params)
             drill_down_report = self._get_drill_down_report(ds_actuals.df, experiment_params)
             self._save_experiment_accuracy(experiment_score, experiment_count, drill_down_report)
@@ -237,8 +241,38 @@ class ModelReview(object):
         fsclient.write_json_file(os.path.join(self.model_path, "predictions", 'experiment_accuracy.json'), exp_data)
 
     def _load_experiment_accuracy(self):        
-        res = fsclient.read_json_file(os.path.join(self.model_path, "predictions", 'experiment_accuracy.json'))        
+        res = fsclient.read_json_file(os.path.join(self.model_path, "predictions", 'experiment_accuracy.json'))
         return res.get('experiment_score',{}), res.get('experiment_count', 0), res.get('drill_down_report', [])
+
+    # def _save_predictions(self, ds_actuals):
+    #     predict_path = os.path.join(self.model_path, "predictions", 'predictions.feather.zstd')
+    #     df = ds_actuals.df.drop(['a2ml_actual'], axis=1)
+    #     DataFrame.create_dataframe(df).saveToFeatherFile(predict_path)
+
+    def _load_predictions(self, ds_actuals, experiment_params):
+        predict_path = None
+        if experiment_params:
+            predict_path = experiment_params.get('inferences_path')
+
+        if not predict_path:
+            return
+
+        ds_predictions = DataFrame.create_dataframe(predict_path)
+
+        if 'predicted' in ds_predictions.columns and not self.target_feature in ds_predictions.columns:
+            ds_predictions.df = ds_predictions.df.rename(columns={'predicted': self.target_feature})
+
+        df_actuals = ds_actuals.df.merge(
+            ds_predictions.df,
+            how='left',
+            on=experiment_params.get('inf_actuals_cols'),
+        )
+        if self.options.get('binaryClassification'):
+            df_actuals[self.target_feature].fillna(False, inplace=True)            
+        else:
+            df_actuals[self.target_feature].fillna(0, inplace=True)            
+            
+        ds_actuals.df = df_actuals
 
     def _do_score_actual_experiment(self, df_actuals, experiment_params):
         if experiment_params.get('filter_query'):
@@ -514,7 +548,7 @@ class ModelReview(object):
                         result.append(0)
                         
         return result
-            
+
     def _do_predict(self, ctx, ds_actuals, provider, predict_feature=None, predicted_at=None):
         missing_features = set(self.original_features) - set(ds_actuals.columns)
         if len(missing_features) > 0:

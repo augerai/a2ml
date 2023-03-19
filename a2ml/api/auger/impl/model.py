@@ -54,12 +54,14 @@ class Model(object):
 
             params = {
                 'model_path': model_path,
-                'roi': {
+            }
+            if self.ctx.config.get('review/roi/revenue'):
+                params['roi'] = {
                     'filter': str(self.ctx.config.get('review/roi/filter', '')),
                     'revenue': str(self.ctx.config.get('review/roi/revenue')),
                     'investment': str(self.ctx.config.get('review/roi/investment')),
-                }
-            }
+                    }                
+
             return ModelReview(params).add_actuals(
               self.ctx,
               actuals_path=filename,
