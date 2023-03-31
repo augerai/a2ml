@@ -105,16 +105,31 @@ class ModelPredict():
 
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, 
         output, no_features_in_result, score, score_true_data, predict_labels):
-        records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)
+        from auger_ml.model_exporter import ModelExporter
+
+        records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)        
         temp_file = None
         ds_result = None
+
+        # if score and score_true_data is None:
+        #     filename_arg = None
+        #     if filename is None and data is not None and isinstance(data, pd.DataFrame):
+        #         filename_arg = data
+
+        #     ds = DataFrame.create_dataframe(filename_arg, data)
+        #     score_true_data = ds.df.copy()
+
         if records is not None and len(records) == 0:
             ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
         else:
             pipeline_api = AugerPipelineApi(self.ctx, None, model_id)
+            #TODO: support score_true_data
             predictions = pipeline_api.predict(records, features, threshold=threshold, file_url=file_url, 
                 predicted_at=predicted_at, no_features_in_result=no_features_in_result,
-                score=score, score_true_data=score_true_data, predict_labels=predict_labels)
+                score=score, predict_labels=predict_labels)
+
+            if score:
+                scores = predictions.get('scores')
 
             try:
                 ds_result = DataFrame.create_dataframe(predictions.get('signed_prediction_url'),
@@ -137,9 +152,17 @@ class ModelPredict():
             if not is_model_loaded:
                 model_path = None
 
-            return ModelHelper.save_prediction(ds_result,
+            result = ModelHelper.save_prediction(ds_result,
                 prediction_id = None, json_result=False, count_in_result=False, prediction_date=predicted_at,
                 model_path=model_path, model_id=model_id, output=output)
+
+            if not score:    
+                return result
+
+            # scores = ModelExporter({}).score_by_model(model_path, predictions=result, 
+            #     test_path = score_true_data)
+                    
+            return {'predicted': result, 'scores': scores}
         finally:
             if temp_file:
                 fsclient.remove_file(temp_file)
@@ -160,8 +183,7 @@ class ModelPredict():
             filename_arg = data
 
         if score and score_true_data is None:
-            options = fsclient.read_json_file(os.path.join(model_path, "options.json"))            
-            ds = DataFrame.create_dataframe(filename_arg, data)#, [options['targetFeature']])
+            ds = DataFrame.create_dataframe(filename_arg, data)
             score_true_data = ds.df.copy()
 
         if predict_labels:        

@@ -61,7 +61,7 @@ class Experiment(AugerExperimentApi):
             run_id = self._get_latest_run()
 
         if run_id is None:
-            return None, None, None
+            return None, None, None, None, None
         else:
             session_api = AugerExperimentSessionApi(
                 self.ctx, None, None, run_id)
