@@ -105,19 +105,9 @@ class ModelPredict():
 
     def _predict_on_cloud(self, filename, model_id, threshold, data, columns, predicted_at, 
         output, no_features_in_result, score, score_true_data, predict_labels):
-        from auger_ml.model_exporter import ModelExporter
-
         records, features, file_url, is_pandas_df = self._process_input(filename, data, columns)        
         temp_file = None
         ds_result = None
-
-        # if score and score_true_data is None:
-        #     filename_arg = None
-        #     if filename is None and data is not None and isinstance(data, pd.DataFrame):
-        #         filename_arg = data
-
-        #     ds = DataFrame.create_dataframe(filename_arg, data)
-        #     score_true_data = ds.df.copy()
 
         if records is not None and len(records) == 0:
             ds_result =  DataFrame.create_dataframe(None, [], features+[self.ctx.config.get('target')])
@@ -158,9 +148,6 @@ class ModelPredict():
 
             if not score:    
                 return result
-
-            # scores = ModelExporter({}).score_by_model(model_path, predictions=result, 
-            #     test_path = score_true_data)
                     
             return {'predicted': result, 'scores': scores}
         finally:
