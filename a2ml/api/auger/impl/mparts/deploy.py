@@ -22,8 +22,8 @@ class ModelDeploy(object):
 
     def execute(self, model_id, locally=False, review=False, name=None, algorithm=None, score=None, data_path=None, metadata=None):
         res = None
-        if not locally or review:
-            res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path, metadata)
+        # if not locally or review:
+        res = self.deploy_model_in_cloud(model_id, review, name, algorithm, score, data_path, metadata)
 
         if locally:
             res = self.deploy_model_locally(model_id, review, name, data_path, locally)

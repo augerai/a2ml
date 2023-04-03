@@ -14,8 +14,11 @@ class TestModel():
         }
         interceptor(PAYLOAD, monkeypatch)
         object_status_chain(['undeployed', 'deployed', 'deploying', 'running'], monkeypatch)
+
         monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy._docker_pull_image', lambda self: 'experimental')
         monkeypatch.setattr('a2ml.api.auger.impl.cloud.project.AugerProjectApi.start', lambda self: None)
+        monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy.deploy_model_in_cloud', lambda *args: None)
+
         os.remove('models/model-87C81FE615DE46D.zip')
         # FIXME: let AugerPipelineFileApi do it's work
         def _create(self, model_id, redeploy=False):
@@ -60,6 +63,7 @@ class TestModel():
         interceptor(PAYLOAD, monkeypatch)
         monkeypatch.setattr('subprocess.check_output', lambda *a, **kw: b'iris_predicted.csv')
         monkeypatch.setattr('subprocess.check_call', lambda *a, **kw: b'iris_predicted.csv')
+        monkeypatch.setattr('a2ml.api.auger.impl.mparts.deploy.ModelDeploy.deploy_model_in_cloud', lambda *args: None)
 
         result = AugerModel(ctx).predict(filename='iris.csv', model_id='87C81FE615DE46D', 
             threshold=None, locally="docker", data=None, columns=None, predicted_at=None, output=None,
@@ -70,11 +74,11 @@ class TestModel():
 
 
     @pytest.mark.skip(reason="not implemented on server-side currently")
-    def test_predict_remoteley(self, log, project, ctx, authenticated, monkeypatch):
+    def test_predict_remotely(self, log, project, ctx, authenticated, monkeypatch):
         result = runner.invoke(cli, ['model', 'predict', 'iris.csv'])
         pass
 
     @pytest.mark.skip(reason="not implemented on server-side currently")
-    def test_actual_remoteley(self, log, project, ctx, authenticated, monkeypatch):
+    def test_actual_remotely(self, log, project, ctx, authenticated, monkeypatch):
         result = runner.invoke(cli, ['model', 'actuals', 'iris.csv'])
         pass
