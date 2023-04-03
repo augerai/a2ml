@@ -1,7 +1,7 @@
 import click
 from a2ml.api.a2ml_model import A2MLModel
 from a2ml.api.utils.context import pass_context
-
+from a2ml.api.utils.formatter import print_table
 
 @click.group('model', short_help='Model management')
 @pass_context
@@ -131,8 +131,38 @@ def get_info(ctx, model_id, provider, locally):
 
     ctx.log('Model information for %s: %s' % (model_id, result))
 
+@click.command(short_help='List Deployed models')
+@click.option('--endpoints', is_flag=True, default=False,
+    help='List endpoints.')
+@click.option('--provider', '-p', type=click.Choice(['auger','azure']), required=False,
+    help='Cloud AutoML Provider.')
+@pass_context
+def list_cmd(ctx, endpoints, provider):
+    """List Projects"""
+    res = A2MLModel(ctx, provider).list(endpoints=endpoints)
+
+    models = []
+    res = res.get('data', {}).get('models', [])
+    res.sort(key=lambda t: t['created_at'], reverse=True)
+    for item in res[:10]:
+        if endpoints:
+            models.append({
+                'ID': item.get('id'),
+                'Name': item.get('name'),
+            })            
+        else:        
+            trial = item.get('trial', {})
+            models.append({
+                'ID': item.get('id'),
+                'Algorithm': trial.get('hyperparameter', {}).get('algorithm_name'),
+                'Score': trial.get('score_name') + ':' + '{0:.3f}'.format(trial.get('score_value')),
+                'dataset': item.get('datasource_manifest_name')
+            })
+    print_table(ctx.log, models)
+
 @pass_context
 def add_commands(ctx):
+    cmdl.add_command(list_cmd, name='list')
     cmdl.add_command(deploy)
     cmdl.add_command(predict)
     cmdl.add_command(actuals)
