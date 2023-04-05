@@ -45,7 +45,8 @@ install_requires = [
     'jsonpickle',
     'websockets',
     'liac-arff==2.4.0',
-    'xlrd==1.2.0'
+    'xlrd==1.2.0',
+    'multiprocess',
 ]
 
 extras = {

@@ -236,6 +236,9 @@ class ModelHelper(object):
                         scorer._kwargs['pos_label'] = options.get('minority_target_class_pos')
                         #logging.info("Use minority class to calculate score: %s"%scorer._kwargs)
 
+                if scoring and (scoring.startswith('f1') or scoring.startswith('recall') or scoring.startswith('precision')):
+                    scorer._kwargs['zero_division']=0
+
                 if y_pred is not None:
                     all_scores[scoring] = scorer._sign * scorer._score_func(y_test, y_pred, **scorer._kwargs)
                 else:
