@@ -96,14 +96,14 @@ def average_precision_score_weighted_score(y_true, y_pred):
 def AUC_weighted_score(y_true, y_pred):
     return roc_auc_score(y_true, y_pred, average='weighted')
 
-def precision_none_score(y_true, y_pred):
-    return list(precision_score(y_true, y_pred, average=None))
+def precision_none_score(y_true, y_pred, zero_division=None):
+    return list(precision_score(y_true, y_pred, average=None, zero_division=zero_division))
 
-def recall_none_score(y_true, y_pred):
-    return list(recall_score(y_true, y_pred, average=None))
+def recall_none_score(y_true, y_pred, zero_division=None):
+    return list(recall_score(y_true, y_pred, average=None, zero_division=zero_division))
 
-def f1_none_score(y_true, y_pred):
-    return list(f1_score(y_true, y_pred, average=None))
+def f1_none_score(y_true, y_pred, zero_division=None):
+    return list(f1_score(y_true, y_pred, average=None, zero_division=zero_division))
 
 cohen_kappa_score = make_scorer(kappa)
 matthews_corrcoef = make_scorer(matthews)

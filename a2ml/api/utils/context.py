@@ -150,6 +150,10 @@ class Context(object):
 
         # return new
 
+    def info(self, msg, *args, **kwargs):
+        log.info('%s%s' %(self.name, msg), *args, **kwargs)
+        self.publish_log('info', '%s%s' %(self.name, msg), *args, **kwargs)
+
     def log(self, msg, *args, **kwargs):
         log.info('%s%s' %(self.name, msg), *args, **kwargs)
         self.publish_log('info', '%s%s' %(self.name, msg), *args, **kwargs)
