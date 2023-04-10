@@ -384,10 +384,6 @@ class ModelReview(object):
             if item.get('bucket_info'):
                 columns.extend(item.get('bucket_info').keys())
             columns.append('EA_actuals')
-            sort_idx = columns.index(sort_name)
-            sort_idx_1 = None
-            if sort_name_1:
-                sort_idx_1 = columns.index(sort_name_1)
 
             score_names = item.get('score_names', [])
             if isinstance(score_names, str):
@@ -421,6 +417,11 @@ class ModelReview(object):
 
                     for score_name in score_names:
                         columns.append('CA_' + class_name + '_' + score_name)
+
+            sort_idx = columns.index(sort_name)
+            sort_idx_1 = None
+            if sort_name_1:
+                sort_idx_1 = columns.index(sort_name_1)
                     
             report_item = {
                 'name': item['name'],
