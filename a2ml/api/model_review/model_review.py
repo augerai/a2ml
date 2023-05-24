@@ -489,7 +489,7 @@ class ModelReview(object):
 
                 return records
                     
-            workers_count = multiprocess.cpu_count()-1
+            workers_count = 4#multiprocess.cpu_count()-1
             chunk_size = math.ceil(len(tag_values)/workers_count)
             n_chunks = math.ceil(len(tag_values)/chunk_size)
 
