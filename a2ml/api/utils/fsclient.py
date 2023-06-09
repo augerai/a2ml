@@ -19,9 +19,12 @@ def _get_fsclient_bypath(path):
     else:
         return LocalFSClient()
 
-def get_file_base_name(file_name):
+def get_file_base_name(file_name, last_ext=False):
     if '.' in file_name:
-        separator_index = file_name.index('.')
+        if last_ext:
+            separator_index = file_name.rindex('.')
+        else:
+            separator_index = file_name.index('.')    
         base_name = file_name[:separator_index]
         return base_name
     else:
