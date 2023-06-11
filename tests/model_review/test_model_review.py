@@ -676,7 +676,10 @@ def test_score_actuals_experiment_drill_down():
       }
     )
 
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 8, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 4, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 
+    'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 
+    'order_by': [['EA_actuals',True],[None,True]],    
+    'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 8, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 4, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
     assert res['experiment_score']
     assert res['experiment_count']
@@ -688,7 +691,10 @@ def test_score_actuals_experiment_drill_down():
 
     assert res['experiment_score']
     assert res['experiment_count']
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'], 'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 8, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 4, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 
+    'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'EA_tn', 'EA_fp', 'EA_fn', 'EA_tp', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_tn', 'CA_fp', 'CA_fn', 'CA_tp'],
+    'order_by': [['EA_actuals',True],[None,True]],
+    'records': [[4.6, 3.0, 1.4, 6, 0, 0, 0, 3, 0, 3, 0, 8, 0, 0, 0, 5, 0, 3, 0], [5.1, 3.5, 1.4, 3, 0.0, 0.0, 0.0, 3, 0, 0, 0, 4, 0.0, 0.0, 0.0, 4, 0, 0, 0]]}]
 
 def test_score_actuals_experiment_drill_down_multi():
     model_path = 'tests/fixtures/test_score_actuals/lucas-iris'
@@ -720,7 +726,10 @@ def test_score_actuals_experiment_drill_down_multi():
     )
 
     #print(res['drill_down_report'])
-    assert res['drill_down_report'] == [{'name': 'test_iris', 'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'cl1_pos_predict', 'EA_cl1_pos_sample', 'EA_cl1_precision', 'EA_cl1_recall', 'EA_cl1_f1', 'cl2_pos_predict', 'EA_cl2_pos_sample', 'EA_cl2_precision', 'EA_cl2_recall', 'EA_cl2_f1', 'cl3_pos_predict', 'EA_cl3_pos_sample', 'EA_cl3_precision', 'EA_cl3_recall', 'EA_cl3_f1', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_cl1_pos_sample', 'CA_cl1_precision', 'CA_cl1_recall', 'CA_cl1_f1', 'CA_cl2_pos_sample', 'CA_cl2_precision', 'CA_cl2_recall', 'CA_cl2_f1', 'CA_cl3_pos_sample', 'CA_cl3_precision', 'CA_cl3_recall', 'CA_cl3_f1'], 'records': [[4.6, 3.1, 1.5, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.0, 3.6, 1.4, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.4, 3.9, 1.7, 3, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.4, 2.9, 1.4, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1, 1.0, 1.0, 1.0, 0, 1, 0.0, 0.0, 0.0, 2, 1, 0.5, 1.0, 0.6666666666666666, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1.0, 1.0, 1.0, 1, 0.0, 0.0, 0.0, 1, 0.5, 1.0, 0.6666666666666666], [5.1, 3.5, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.9, 3.0, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.7, 3.2, 1.3, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0]]}]
+    assert res['drill_down_report'] == [{'name': 'test_iris', 
+    'columns': ['sepal_length', 'sepal_w', 'petal_l', 'EA_actuals', 'EA_precision', 'EA_recall', 'EA_f1', 'cl1_pos_predict', 'EA_cl1_pos_sample', 'EA_cl1_precision', 'EA_cl1_recall', 'EA_cl1_f1', 'cl2_pos_predict', 'EA_cl2_pos_sample', 'EA_cl2_precision', 'EA_cl2_recall', 'EA_cl2_f1', 'cl3_pos_predict', 'EA_cl3_pos_sample', 'EA_cl3_precision', 'EA_cl3_recall', 'EA_cl3_f1', 'CA_actuals', 'CA_precision', 'CA_recall', 'CA_f1', 'CA_cl1_pos_sample', 'CA_cl1_precision', 'CA_cl1_recall', 'CA_cl1_f1', 'CA_cl2_pos_sample', 'CA_cl2_precision', 'CA_cl2_recall', 'CA_cl2_f1', 'CA_cl3_pos_sample', 'CA_cl3_precision', 'CA_cl3_recall', 'CA_cl3_f1'], 
+    'order_by': [['EA_actuals',True],[None,True]],    
+    'records': [[4.6, 3.1, 1.5, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.0, 3.6, 1.4, 6, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 2, 2, 1.0, 1.0, 1.0, 6, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0, 2, 1.0, 1.0, 1.0], [5.4, 3.9, 1.7, 3, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 1, 1, 1.0, 1.0, 1.0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.4, 2.9, 1.4, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1, 1.0, 1.0, 1.0, 0, 1, 0.0, 0.0, 0.0, 2, 1, 0.5, 1.0, 0.6666666666666666, 3, 0.5, 0.6666666666666666, 0.5555555555555555, 1, 1.0, 1.0, 1.0, 1, 0.0, 0.0, 0.0, 1, 0.5, 1.0, 0.6666666666666666], [5.1, 3.5, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.9, 3.0, 1.4, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0], [4.7, 3.2, 1.3, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0, 1, 1.0, 1.0, 1.0]]}]
 
 def test_drill_down_report_order():
   sort_name, sort_name_1, reverse_order = ModelReview._parse_order_items(None)
@@ -796,6 +805,132 @@ def _test_score_actuals_experiment_drill_down_2():
     )
 
     print(res)
+
+def _test_score_actuals_big_model():
+    from a2ml.api.utils.context import Context
+
+    model_path = 'tests/fixtures/test_score_actuals/big_model_2'
+    actuals_path = os.path.join(model_path, 'actuals.csv.gz')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      Context(debug=True),
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params= {
+        "string_cols": [
+          "actual_experiment_title",
+          "job_code"
+        ],
+        "filter_query": "actual_experiment_title == '20230509_1'",
+        "bucket_info_files": {
+          'job': os.path.join(model_path, 'job.parquet'),
+          'skill': os.path.join(model_path, 'skill.parquet'),
+          'indemand': os.path.join(model_path, 'indemand.parquet'),
+        },
+        "drill_down_report": [
+          {
+            "name": "job",
+            "bucket_tag": "job_code",
+            "bucket_info": {
+              "title": "job_title"
+            },
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill",
+            "order_by": "indemand(DESC),actuals(DESC)",
+            "bucket_tag": "abbr",
+            "bucket_info": {
+              "type": "skill_type",
+              "title": "skill_title",
+              "indemand": "indemand"
+            },
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "indemand",
+            "bucket_key": "abbr",
+            "bucket_tag": "indemand",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill_type",
+            "order_by": "actuals(DESC)",
+            "bucket_tag": "skill_type",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          }
+        ]
+      }
+    )
+
+    #print(res)
+
+def _test_score_actuals_big_model1():
+    from a2ml.api.utils.context import Context
+
+    model_path = 'tests/fixtures/test_score_actuals/big_model1'
+    actuals_path = os.path.join(model_path, 'actuals.csv.gz')
+
+    remove_actual_files(model_path)
+
+    res = ModelReview({'model_path': model_path}).add_actuals(
+      Context(debug=True),
+      actuals_path=actuals_path,
+      return_count=True,
+      experiment_params= {
+        "string_cols": [
+          "actual_experiment_title",
+          "job_code"
+        ],
+        "filter_query": "actual_experiment_title == '20230320'",
+        "bucket_info_files": {
+          'job': os.path.join(model_path, 'job.parquet'),
+          'skill': os.path.join(model_path, 'skill.parquet'),
+          'indemand': os.path.join(model_path, 'indemand.parquet'),
+        },
+        "drill_down_report": [
+          {
+            "name": "job",
+            "bucket_tag": "job_code",
+            "bucket_info": {
+              "title": "job_title"
+            },
+            "class_names": "level0,level1,level2,level3,level4",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill",
+            "order_by": "indemand(DESC),actuals(DESC)",
+            "bucket_tag": "abbr",
+            "bucket_info": {
+              "type": "skill_type",
+              "title": "skill_title",
+              "indemand": "indemand"
+            },
+            "class_names": "level0,level1,level2,level3,level4",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "indemand",
+            "bucket_key": "abbr",
+            "bucket_tag": "indemand",
+            "class_names": "level0,level1,level2,level3,level4",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          },
+          {
+            "name": "skill_type",
+            "order_by": "actuals(DESC)",
+            "bucket_tag": "skill_type",
+            "class_names": "level0,level1,level2,level3,level4",
+            "score_names": "precision,recall,f1,tn,fp,fn,tp"
+          }
+        ]
+      }
+    )
+
+    #print(res)
 
 @vcr.use_cassette('model_review/score_actuals_no_target/predict.yaml')
 def test_score_iris_csv_wo_predicted():
