@@ -426,7 +426,7 @@ class ModelReview(object):
             report_item = {
                 'name': item['name'],
                 'columns': columns,
-                'order_by': [[sort_name, reverse_order], [sort_name_1, reverse_order]]
+                'order_by': [[sort_name, reverse_order], [sort_name_1, reverse_order]],
                 'records': []
             }
 
