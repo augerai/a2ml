@@ -55,6 +55,8 @@ jobs:
 
       - uses: azure/setup-kubectl@v3
       - uses: Azure/setup-helm@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: setup the kubectl config
         run : |
@@ -68,4 +70,4 @@ jobs:
           helm repo add augerai https://augerai.github.io/charts
           helm repo update
           helm repo list
-          #helm upgrade $RELEASE_NAME $REPO_NAME --namespace=$RELEASE_NAME --set=image.tag=$DOCKER_TAG --reuse-values --wait --atomic --kubeconfig $KUBECONFIG_FILE
+          helm upgrade $RELEASE_NAME $REPO_NAME --namespace=$RELEASE_NAME --set=image.tag=$DOCKER_TAG --reuse-values --wait --atomic --kubeconfig $KUBECONFIG_FILE
