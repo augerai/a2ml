@@ -84,10 +84,12 @@ class AugerExperimentApi(AugerBaseApi):
 
         if config.get('experiment/blocked_preprocessors'):
             options["blocked_preprocessors"] = config.get_list('experiment/blocked_preprocessors')
-        if config.get('experiment/allowed_preprocessors'):
+        if config.get('experiment/allowed_preprocessors') is not None:
             options["allowed_preprocessors"] = config.get_list('experiment/allowed_preprocessors')
         if config.get('experiment/preprocessors') is not None:
             options["preprocessors"] = config.get_list('experiment/preprocessors')
+        if config.get('experiment/preprocessors_space') is not None:
+            options["preprocessors_space"] = config.get_list('experiment/preprocessors_space')
 
         if config.get('experiment/exit_score'):
             options['exit_score'] = config.get('experiment/exit_score')
