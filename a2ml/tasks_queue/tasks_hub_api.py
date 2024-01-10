@@ -1,4 +1,5 @@
 import celery.signals
+from celery.exceptions import SoftTimeLimitExceeded
 import copy
 import logging
 import json
@@ -538,7 +539,8 @@ def predict_by_model_task(params):
 
     return res['predicted']
 
-@celeryApp.task(ignore_result=True)
+@celeryApp.task(ignore_result=True, 
+    soft_time_limit=2000, autoretry_for=(SoftTimeLimitExceeded,), retry_backoff=True)
 @process_task_result
 def score_actuals_by_model_task(params):
     ctx = None
