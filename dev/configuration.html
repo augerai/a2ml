@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -218,13 +220,13 @@
            <div itemprop="articleBody">
             
   <div class="section" id="configuration">
-<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">¶</a></h1>
 <div class="section" id="files">
-<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this heading">¶</a></h2>
 <p>To use the Python API or the command line interface for a specific PREDIT pipeline, configure the project first.</p>
 <p>This includes both general options that apply to all providers and provider specific options in separate YAML files.</p>
 <div class="section" id="all-providers">
-<h3>All Providers<a class="headerlink" href="#all-providers" title="Permalink to this headline">¶</a></h3>
+<h3>All Providers<a class="headerlink" href="#all-providers" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code></p></li>
@@ -331,10 +333,10 @@
 </div></blockquote>
 </div>
 <div class="section" id="provider-specfic">
-<h3>Provider Specfic<a class="headerlink" href="#provider-specfic" title="Permalink to this headline">¶</a></h3>
+<h3>Provider Specfic<a class="headerlink" href="#provider-specfic" title="Permalink to this heading">¶</a></h3>
 <p>Currently a2ml supports Auger, Azure, Google and External providers.</p>
 <div class="section" id="auger">
-<h4>Auger<a class="headerlink" href="#auger" title="Permalink to this headline">¶</a></h4>
+<h4>Auger<a class="headerlink" href="#auger" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code></p></li>
@@ -390,7 +392,7 @@
 </div></blockquote>
 </div>
 <div class="section" id="azure">
-<h4>Azure<a class="headerlink" href="#azure" title="Permalink to this headline">¶</a></h4>
+<h4>Azure<a class="headerlink" href="#azure" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code></p></li>
@@ -434,7 +436,7 @@
 </div></blockquote>
 </div>
 <div class="section" id="google">
-<h4>Google<a class="headerlink" href="#google" title="Permalink to this headline">¶</a></h4>
+<h4>Google<a class="headerlink" href="#google" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">google.yaml</span></code></p></li>
@@ -459,27 +461,27 @@
 </div></blockquote>
 </div>
 <div class="section" id="external">
-<h4>External<a class="headerlink" href="#external" title="Permalink to this headline">¶</a></h4>
+<h4>External<a class="headerlink" href="#external" title="Permalink to this heading">¶</a></h4>
 <p>No provider specific yml-file is required. You can pass this provider to model deploy and actuals calls.</p>
 </div>
 </div>
 </div>
 <div class="section" id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="auger-cloud">
-<h3>Auger Cloud<a class="headerlink" href="#auger-cloud" title="Permalink to this headline">¶</a></h3>
+<h3>Auger Cloud<a class="headerlink" href="#auger-cloud" title="Permalink to this heading">¶</a></h3>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-cloud.png" style="width: 50%;" /></a>
 <p>Create one account in the <a href="https://app.auger.ai/signup" target="_blank">Auger Cloud</a> and let the cloud manage all the provider connections.</p>
 </div>
 <div class="section" id="a2ml-local">
-<h3>A2ML Local<a class="headerlink" href="#a2ml-local" title="Permalink to this headline">¶</a></h3>
+<h3>A2ML Local<a class="headerlink" href="#a2ml-local" title="Permalink to this heading">¶</a></h3>
 <div class="section" id="direct-provider-connection">
-<h4>Direct Provider Connection<a class="headerlink" href="#direct-provider-connection" title="Permalink to this headline">¶</a></h4>
+<h4>Direct Provider Connection<a class="headerlink" href="#direct-provider-connection" title="Permalink to this heading">¶</a></h4>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png"><img alt="A2ML client direct providers" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-direct.png" style="width: 50%;" /></a>
 <p>Directly configure the provider(s) and connect to them from the a2ml client.</p>
 </div>
 <div class="section" id="server-provider-connection">
-<h4>Server Provider Connection<a class="headerlink" href="#server-provider-connection" title="Permalink to this headline">¶</a></h4>
+<h4>Server Provider Connection<a class="headerlink" href="#server-provider-connection" title="Permalink to this heading">¶</a></h4>
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png"><img alt="A2ML cloud" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/a2ml-client-server.png" style="width: 50%;" /></a>
 <p>Host a server which manages provider connections. The a2ml client would then point to the server.</p>
 </div>

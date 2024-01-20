@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -212,13 +214,13 @@
            <div itemprop="articleBody">
             
   <div class="section" id="authentication">
-<h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this heading">¶</a></h1>
 <p>Depending on the <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> of A2ML, authentication will be with the A2ML Cloud or directly to providers.</p>
 <div class="section" id="a2ml-cloud">
-<h2>A2ML Cloud<a class="headerlink" href="#a2ml-cloud" title="Permalink to this headline">¶</a></h2>
+<h2>A2ML Cloud<a class="headerlink" href="#a2ml-cloud" title="Permalink to this heading">¶</a></h2>
 <p>Authenticating with <a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a> will soon allow you to have one account which manages all provider credentials. All providers can then be run without individual configuration.</p>
 <div class="section" id="cli-login">
-<h3>CLI Login<a class="headerlink" href="#cli-login" title="Permalink to this headline">¶</a></h3>
+<h3>CLI Login<a class="headerlink" href="#cli-login" title="Permalink to this heading">¶</a></h3>
 <p>You can login to the A2ML Cloud with the <code class="docutils literal notranslate"><span class="pre">a2ml</span> <span class="pre">auth</span> <span class="pre">login</span></code> command.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>auth<span class="w"> </span>login
 </pre></div>
@@ -226,7 +228,7 @@
 <p>You will be prompted for your A2ML service user and password.</p>
 </div>
 <div class="section" id="download-credentials">
-<h3>Download Credentials<a class="headerlink" href="#download-credentials" title="Permalink to this headline">¶</a></h3>
+<h3>Download Credentials<a class="headerlink" href="#download-credentials" title="Permalink to this heading">¶</a></h3>
 <p>A2ML credentials can be downloaded as an <code class="docutils literal notranslate"><span class="pre">auger.json</span></code> file from your organization's <a class="reference external" href="https://app.auger.ai">https://app.auger.ai</a>/&lt;project_name&gt;/<strong>settings</strong>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUGER_CREDENTIALS</span><span class="o">=</span>~/auger.json
 </pre></div>
@@ -245,13 +247,13 @@
 </div>
 </div>
 <div class="section" id="individual-providers">
-<h2>Individual Providers<a class="headerlink" href="#individual-providers" title="Permalink to this headline">¶</a></h2>
+<h2>Individual Providers<a class="headerlink" href="#individual-providers" title="Permalink to this heading">¶</a></h2>
 <p><a href="https://app.auger.ai/signup" target="_blank">A2ML Cloud</a> can manage the usage of Google Cloud AutoML or Azure AutoML for you. If set up on your own you must configure the underlying AutoML service corrrectly to be accessed from the server you are running.</p>
 <p>To connect directly to any or all providers configure each individually.</p>
 <div class="section" id="azure-provider">
-<h3>Azure Provider<a class="headerlink" href="#azure-provider" title="Permalink to this headline">¶</a></h3>
+<h3>Azure Provider<a class="headerlink" href="#azure-provider" title="Permalink to this heading">¶</a></h3>
 <div class="section" id="id1">
-<h4>CLI Login<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<h4>CLI Login<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <p>The Azure AutoML service allows browser login. Run any <code class="docutils literal notranslate"><span class="pre">a2ml</span></code> command and a login URL will open in the default browser.</p>
 <p>To explicitly login to azure run.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>auth<span class="w"> </span>login<span class="w"> </span>-p<span class="w"> </span>azure
@@ -259,7 +261,7 @@
 </div>
 </div>
 <div class="section" id="json-file">
-<h4>JSON File<a class="headerlink" href="#json-file" title="Permalink to this headline">¶</a></h4>
+<h4>JSON File<a class="headerlink" href="#json-file" title="Permalink to this heading">¶</a></h4>
 <p>To login programmatically without the browser use the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal" target="_blank">service principal credentials</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -293,7 +295,7 @@
 </div>
 </div>
 <div class="section" id="google-cloud-provider">
-<h3>Google Cloud Provider<a class="headerlink" href="#google-cloud-provider" title="Permalink to this headline">¶</a></h3>
+<h3>Google Cloud Provider<a class="headerlink" href="#google-cloud-provider" title="Permalink to this heading">¶</a></h3>
 <p>If you haven't run Google Cloud AutoML, set up a service account and save the credentials to a JSON file which you store in your project directory.  Then set up the <code class="docutils literal notranslate"><span class="pre">GOOGLE_APPLICATION</span> <span class="pre">CREDENTIALS</span></code> environment variable to point to the saved file.  For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span><span class="s2">&quot;/Users/user/a2ml/automl.json&quot;</span>
 </pre></div>

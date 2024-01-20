@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -218,13 +220,13 @@
            <div itemprop="articleBody">
             
   <div class="section" id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
 <p>Please see <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> and <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> before starting.</p>
 <div class="section" id="microsoft-azure-cli">
-<h2>Microsoft Azure CLI<a class="headerlink" href="#microsoft-azure-cli" title="Permalink to this headline">¶</a></h2>
+<h2>Microsoft Azure CLI<a class="headerlink" href="#microsoft-azure-cli" title="Permalink to this heading">¶</a></h2>
 <p>The following code shows how a2ml can be used with <strong>Microsoft Azure</strong> and <strong>Auger</strong> AutoML providers to perform a regression task against the <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> dataset.</p>
 <div class="section" id="dataset">
-<h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
+<h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this heading">¶</a></h3>
 <p><a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> is a baseball dataset from kaggle. The moneyball dataset can be used to build many different models as described in more <a href="https://towardsdatascience.com/moneyball-linear-regression-76034259af5e" target="_blank">detail</a>.
 The goal of this exercise is to find a highly accurate model to predict the number of runs scored<strong>(RS)</strong> a MLB team will have.</p>
 <p>The dataset will be imported to Microsoft Azure and Auger AutoML providers without any data wrangling.</p>
@@ -277,7 +279,7 @@ The goal of this exercise is to find a highly accurate model to predict the numb
 </table>
 </div>
 <div class="section" id="project-setup">
-<h3>Project Setup<a class="headerlink" href="#project-setup" title="Permalink to this headline">¶</a></h3>
+<h3>Project Setup<a class="headerlink" href="#project-setup" title="Permalink to this heading">¶</a></h3>
 <p>Inside of a terminal create a new a2ml project.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>new<span class="w"> </span>moneyball_project
 <span class="o">[</span>config<span class="o">]</span><span class="w"> </span>Created<span class="w"> </span>project<span class="w"> </span>folder<span class="w"> </span>moneyball_project
@@ -309,7 +311,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 <p><em>The highlighted lines are where manual changes have been made.</em></p>
 </div>
 <div class="section" id="import">
-<h3>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
+<h3>Import<a class="headerlink" href="#import" title="Permalink to this heading">¶</a></h3>
 <p>To import the local <a href="https://www.kaggle.com/wduckett/moneyball-mlb-stats-19622012/download" target="_blank">Moneyball</a> baseball dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ a2ml import
 [azure] Creating moneyball_proj
@@ -363,7 +365,7 @@ Could not load the run context. Logging offline
 </div>
 </div>
 <div class="section" id="train">
-<h3>Train<a class="headerlink" href="#train" title="Permalink to this headline">¶</a></h3>
+<h3>Train<a class="headerlink" href="#train" title="Permalink to this heading">¶</a></h3>
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>R2</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#azure-yaml" title="Permalink to this code">¶</a></div>
@@ -411,7 +413,7 @@ Created<span class="w"> </span>a<span class="w"> </span>worker<span class="w"> <
 </div>
 </div>
 <div class="section" id="evaluate">
-<h3>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this headline">¶</a></h3>
+<h3>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this heading">¶</a></h3>
 <p>To view the realtime model results of a train.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>evaluate
 
@@ -441,7 +443,7 @@ Created<span class="w"> </span>a<span class="w"> </span>worker<span class="w"> <
 </div>
 </div>
 <div class="section" id="deploy">
-<h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">¶</a></h3>
+<h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this heading">¶</a></h3>
 <p>To deploy a specific model copy the <strong>model id</strong> from the leaderboard output and run.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>deploy<span class="w"> </span>AutoML_feca2e53-618b-4407-a17c-f119ba9d7578_9
 
@@ -489,7 +491,7 @@ Options:
 </div>
 </div>
 <div class="section" id="predict">
-<h3>Predict<a class="headerlink" href="#predict" title="Permalink to this headline">¶</a></h3>
+<h3>Predict<a class="headerlink" href="#predict" title="Permalink to this heading">¶</a></h3>
 <p>To use the deployed model(s), pass a file of new observations with the target omitted.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -516,10 +518,10 @@ Options:
 </div>
 </div>
 <div class="section" id="microsoft-azure-api">
-<h2>Microsoft Azure API<a class="headerlink" href="#microsoft-azure-api" title="Permalink to this headline">¶</a></h2>
+<h2>Microsoft Azure API<a class="headerlink" href="#microsoft-azure-api" title="Permalink to this heading">¶</a></h2>
 <p>The following code shows how a2ml can be used with <strong>Microsoft Azure</strong> and <strong>Auger</strong> AutoML providers to perform a classification task against the <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset.</p>
 <div class="section" id="id1">
-<h3>Dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3>Dataset<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <p>The <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset contains images of hand-written digits: 10 classes where each class refers to a digit. The goal of this exercise is to find a highly accurate model to predict the digit based on its pixel attributes.</p>
 <p>The data will be loaded from <a href="https://scikit-learn.org/stable/datasets/index.html#optical-recognition-of-handwritten-digits-dataset" target="_blank">scikit-learn</a> and saved as a csv to import into Microsoft Azure and Auger AutoML providers.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_digits</span>
@@ -547,7 +549,7 @@ Options:
 <a class="reference internal image-reference" href="https://d2uakhpezbykml.cloudfront.net/images/digits_ds.png"><img alt="digits dataset" class="align-center" src="https://d2uakhpezbykml.cloudfront.net/images/digits_ds.png" style="width: 100%;" /></a>
 </div>
 <div class="section" id="id2">
-<h3>Project Setup<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3>Project Setup<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <p>Inside of a terminal create a new a2ml project.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>new<span class="w"> </span>digits_proj
 <span class="o">[</span>config<span class="o">]</span><span class="w"> </span>Created<span class="w"> </span>project<span class="w"> </span>folder<span class="w"> </span>digits_proj
@@ -579,7 +581,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 <p><em>The highlighted lines are where manual changes have been made.</em></p>
 </div>
 <div class="section" id="id3">
-<h3>Import<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3>Import<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <p>To import the local <a href="https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits" target="_blank">digits</a> dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">a2ml.api.a2ml</span> <span class="kn">import</span> <span class="n">A2ML</span>
 <span class="kn">from</span> <span class="nn">a2ml.api.utils.context</span> <span class="kn">import</span> <span class="n">Context</span>
@@ -602,7 +604,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 <p>Results for each provider are returned.</p>
 </div>
 <div class="section" id="id4">
-<h3>Train<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3>Train<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <p>Before training, update <code class="docutils literal notranslate"><span class="pre">azure.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">auger.yaml</span></code> to select a metric to evaluate models with.  <strong>accuracy</strong> will be used in this example.</p>
 <div class="literal-block-wrapper docutils container" id="digits-proj-azure-yaml">
 <div class="code-block-caption"><span class="caption-text">azure.yaml</span><a class="headerlink" href="#digits-proj-azure-yaml" title="Permalink to this code">¶</a></div>
@@ -651,7 +653,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 </div>
 </div>
 <div class="section" id="id5">
-<h3>Evaluate<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3>Evaluate<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <p>To view the realtime model results of a train.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">a2ml</span> <span class="n">evaluate</span><span class="p">()</span>
 
@@ -686,7 +688,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 <p><em>Notice the status will indicate when training is completed</em></p>
 </div>
 <div class="section" id="id6">
-<h3>Deploy<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3>Deploy<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
 <p>To deploy a specific model copy the <strong>model id</strong> from the leaderboard.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">azure model</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
@@ -714,7 +716,7 @@ auger.yaml<span class="w">  </span>azure.yaml<span class="w"> </span>config.yaml
 </div>
 </div>
 <div class="section" id="id7">
-<h3>Predict<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3>Predict<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <p>To use the deployed model(s), pass a file of new observations with the target omitted.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 

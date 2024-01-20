@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -204,17 +206,17 @@
            <div itemprop="articleBody">
             
   <div class="section" id="a2ml-cli">
-<h1>A2ML CLI<a class="headerlink" href="#a2ml-cli" title="Permalink to this headline">¶</a></h1>
+<h1>A2ML CLI<a class="headerlink" href="#a2ml-cli" title="Permalink to this heading">¶</a></h1>
 <p>The command line is a convenient way to start an A2ML project even if you plan to use the API.</p>
 <div class="section" id="creating-a-new-a2ml-project">
-<h2>Creating a New A2ML Project<a class="headerlink" href="#creating-a-new-a2ml-project" title="Permalink to this headline">¶</a></h2>
+<h2>Creating a New A2ML Project<a class="headerlink" href="#creating-a-new-a2ml-project" title="Permalink to this heading">¶</a></h2>
 <p>Create a new A2ML project with the <code class="docutils literal notranslate"><span class="pre">new</span></code> command by supplying a project name. A2ML will create a directory which has a default set of configuration files that can be more specifically configured.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span>new<span class="w"> </span>test_app
 </pre></div>
 </div>
 </div>
 <div class="section" id="configuring-your-a2ml-project">
-<h2>Configuring Your A2ML Project<a class="headerlink" href="#configuring-your-a2ml-project" title="Permalink to this headline">¶</a></h2>
+<h2>Configuring Your A2ML Project<a class="headerlink" href="#configuring-your-a2ml-project" title="Permalink to this heading">¶</a></h2>
 <p>To use the Python API or the command line interface for a specific PREDIT pipeline, configure the project first.</p>
 <p>This includes both general options that apply to all vendors and vendor specific options in separate YAML files.</p>
 <p><strong>All Vendors</strong></p>
@@ -246,7 +248,7 @@
 </div>
 </div></blockquote>
 <div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h3>
 <p>Here is an example with options that apply to all AutoML providers:</p>
 <p><strong>config.yaml</strong></p>
 <div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./moneyball/train.csv</span>
@@ -304,7 +306,7 @@
 </div>
 </div>
 <div class="section" id="a2ml-cli-commands">
-<h2>A2ML CLI Commands<a class="headerlink" href="#a2ml-cli-commands" title="Permalink to this headline">¶</a></h2>
+<h2>A2ML CLI Commands<a class="headerlink" href="#a2ml-cli-commands" title="Permalink to this heading">¶</a></h2>
 <p>Below are the full set of commands provided by A2ML. Command line options are provided for each stage in the PREDIT Pipeline.</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>a2ml<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...

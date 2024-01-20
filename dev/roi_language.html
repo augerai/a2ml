@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -239,9 +241,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="roi-formulas-language">
-<h1>ROI formulas language<a class="headerlink" href="#roi-formulas-language" title="Permalink to this headline">¶</a></h1>
+<h1>ROI formulas language<a class="headerlink" href="#roi-formulas-language" title="Permalink to this heading">¶</a></h1>
 <div class="section" id="syntax">
-<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this heading">¶</a></h2>
 <p>ROI expression syntax is similar to Python, it has math and logial expressions, it can refer prediction, actual and feature values, it can call some builtin functions and constants.</p>
 <div class="line-block">
 <div class="line">All expressions are evaluated per one row of data (prediction, actual and corresponding feature values).</div>
@@ -265,19 +267,19 @@
 <p>Expressions can be nested with parentheses, the operators precedence <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#operator-precedence">same as in Python</a></p>
 </div>
 <div class="section" id="tuples">
-<h2>Tuples<a class="headerlink" href="#tuples" title="Permalink to this headline">¶</a></h2>
+<h2>Tuples<a class="headerlink" href="#tuples" title="Permalink to this heading">¶</a></h2>
 <p>Tuples can be defined as a several values inside a parentheses separated by comma</p>
 <p><code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">&quot;one&quot;)</span></code>
 <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">2,</span> <span class="pre">&quot;something&quot;,</span> <span class="pre">f(1,</span> <span class="pre">2))</span></code></p>
 </div>
 <div class="section" id="if-expression">
-<h2>If expression<a class="headerlink" href="#if-expression" title="Permalink to this headline">¶</a></h2>
+<h2>If expression<a class="headerlink" href="#if-expression" title="Permalink to this heading">¶</a></h2>
 <p>ROI syntax has one flow control expression</p>
 <p><code class="docutils literal notranslate"><span class="pre">if(P</span> <span class="pre">&gt;</span> <span class="pre">0.2,</span> <span class="pre">$1050,</span> <span class="pre">$0)</span></code></p>
 <p>in this case if prediction value is greater than 0.2 if expression returns 1050, else 0</p>
 </div>
 <div class="section" id="top-expression">
-<h2>Top expression<a class="headerlink" href="#top-expression" title="Permalink to this headline">¶</a></h2>
+<h2>Top expression<a class="headerlink" href="#top-expression" title="Permalink to this heading">¶</a></h2>
 <p>This expression allows to filter rows by some aggregates</p>
 <p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">2</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">per</span> <span class="pre">$symbol</span></code> - group all rows by <code class="docutils literal notranslate"><span class="pre">$symbol</span></code> and return top 2 by <code class="docutils literal notranslate"><span class="pre">P</span></code> rows per each group.</p>
 <p><code class="docutils literal notranslate"><span class="pre">top</span> <span class="pre">10</span> <span class="pre">by</span> <span class="pre">P</span> <span class="pre">from</span> <span class="pre">(bottom</span> <span class="pre">5</span> <span class="pre">by</span> <span class="pre">$spread</span> <span class="pre">per</span> <span class="pre">$symbol)</span></code> - first it finds 5 records with lowest <code class="docutils literal notranslate"><span class="pre">$spread</span></code> per each <code class="docutils literal notranslate"><span class="pre">$symbol</span></code>, then it returns top 10 by <code class="docutils literal notranslate"><span class="pre">P</span></code> from these records</p>
@@ -297,7 +299,7 @@
 </ul>
 </div>
 <div class="section" id="numbers">
-<h2>Numbers<a class="headerlink" href="#numbers" title="Permalink to this headline">¶</a></h2>
+<h2>Numbers<a class="headerlink" href="#numbers" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">123</span></code> integer numbers</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">123.456</span></code> float numbers</p></li>
@@ -306,13 +308,13 @@
 </ul>
 </div>
 <div class="section" id="string-literals">
-<h2>String literals<a class="headerlink" href="#string-literals" title="Permalink to this headline">¶</a></h2>
+<h2>String literals<a class="headerlink" href="#string-literals" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;some</span> <span class="pre">value&quot;</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="variables">
-<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> or <code class="docutils literal notranslate"><span class="pre">prediction</span></code> predicted value</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> or <code class="docutils literal notranslate"><span class="pre">actual</span></code> actual value</p></li>
@@ -320,9 +322,9 @@
 </ul>
 </div>
 <div class="section" id="builtin-operators">
-<h2>Builtin operators<a class="headerlink" href="#builtin-operators" title="Permalink to this headline">¶</a></h2>
+<h2>Builtin operators<a class="headerlink" href="#builtin-operators" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="math-operators">
-<h3>Math operators:<a class="headerlink" href="#math-operators" title="Permalink to this headline">¶</a></h3>
+<h3>Math operators:<a class="headerlink" href="#math-operators" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">+</span></code> addition</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-</span></code> subtraction and unary minus</p></li>
@@ -334,7 +336,7 @@
 </ul>
 </div>
 <div class="section" id="bitwise-operators">
-<h3>Bitwise operators:<a class="headerlink" href="#bitwise-operators" title="Permalink to this headline">¶</a></h3>
+<h3>Bitwise operators:<a class="headerlink" href="#bitwise-operators" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">|</span></code> or</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and</p></li>
@@ -345,7 +347,7 @@
 </ul>
 </div>
 <div class="section" id="logical-operators">
-<h3>Logical operators:<a class="headerlink" href="#logical-operators" title="Permalink to this headline">¶</a></h3>
+<h3>Logical operators:<a class="headerlink" href="#logical-operators" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">or</span></code> logical or</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">and</span></code> logical and</p></li>
@@ -353,7 +355,7 @@
 </ul>
 </div>
 <div class="section" id="comparison-operators">
-<h3>Comparison operators:<a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h3>
+<h3>Comparison operators:<a class="headerlink" href="#comparison-operators" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">==</span></code> equal</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">!=</span></code> not equal</p></li>
@@ -365,7 +367,7 @@
 </div>
 </div>
 <div class="section" id="builtin-constants">
-<h2>Builtin constants<a class="headerlink" href="#builtin-constants" title="Permalink to this headline">¶</a></h2>
+<h2>Builtin constants<a class="headerlink" href="#builtin-constants" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - None value</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">True</span></code> - True value</p></li>
@@ -373,91 +375,91 @@
 </ul>
 </div>
 <div class="section" id="builtin-functions">
-<h2>Builtin functions<a class="headerlink" href="#builtin-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Builtin functions<a class="headerlink" href="#builtin-functions" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="abs-x-number-number">
-<h3>abs(x : number) : number<a class="headerlink" href="#abs-x-number-number" title="Permalink to this headline">¶</a></h3>
+<h3>abs(x : number) : number<a class="headerlink" href="#abs-x-number-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the absolute value of a number</p>
 </div>
 <div class="section" id="ceil-x-float-integer">
-<h3>ceil(x : float) : integer<a class="headerlink" href="#ceil-x-float-integer" title="Permalink to this headline">¶</a></h3>
+<h3>ceil(x : float) : integer<a class="headerlink" href="#ceil-x-float-integer" title="Permalink to this heading">¶</a></h3>
 <p>Return the ceiling of <code class="docutils literal notranslate"><span class="pre">x</span></code>, the smallest integer greater than or equal to <code class="docutils literal notranslate"><span class="pre">x</span></code></p>
 </div>
 <div class="section" id="cos-x-number-float">
-<h3>cos(x : number) : float<a class="headerlink" href="#cos-x-number-float" title="Permalink to this headline">¶</a></h3>
+<h3>cos(x : number) : float<a class="headerlink" href="#cos-x-number-float" title="Permalink to this heading">¶</a></h3>
 <p>Return the arc cosine of <code class="docutils literal notranslate"><span class="pre">x</span></code>, in radians. The result is between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">pi</span></code>.</p>
 </div>
 <div class="section" id="exp-x-number-float">
-<h3>exp(x : number) : float<a class="headerlink" href="#exp-x-number-float" title="Permalink to this headline">¶</a></h3>
+<h3>exp(x : number) : float<a class="headerlink" href="#exp-x-number-float" title="Permalink to this heading">¶</a></h3>
 <p>Return <code class="docutils literal notranslate"><span class="pre">e</span></code> raised to the power <code class="docutils literal notranslate"><span class="pre">x</span></code>, where <code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">2.718281…</span></code> is the base of natural logarithms.</p>
 </div>
 <div class="section" id="floor-x-floor-float">
-<h3>floor(x : floor) : float<a class="headerlink" href="#floor-x-floor-float" title="Permalink to this headline">¶</a></h3>
+<h3>floor(x : floor) : float<a class="headerlink" href="#floor-x-floor-float" title="Permalink to this heading">¶</a></h3>
 <p>Return the floor of <code class="docutils literal notranslate"><span class="pre">x</span></code>, the largest integer less than or equal to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </div>
 <div class="section" id="if-boolean-predicate-true-expression-false-expression">
-<h3>if(&lt;boolean predicate&gt;, &lt;true expression&gt;, &lt;false expression&gt;)<a class="headerlink" href="#if-boolean-predicate-true-expression-false-expression" title="Permalink to this headline">¶</a></h3>
+<h3>if(&lt;boolean predicate&gt;, &lt;true expression&gt;, &lt;false expression&gt;)<a class="headerlink" href="#if-boolean-predicate-true-expression-false-expression" title="Permalink to this heading">¶</a></h3>
 <p>Evaludate predicate, if it's True returns result of true expression else result of false expression</p>
 </div>
 <div class="section" id="len-s-string-integer">
-<h3>len(s : string) : integer<a class="headerlink" href="#len-s-string-integer" title="Permalink to this headline">¶</a></h3>
+<h3>len(s : string) : integer<a class="headerlink" href="#len-s-string-integer" title="Permalink to this heading">¶</a></h3>
 <p>Return the length (the number of chars) of an string.</p>
 </div>
 <div class="section" id="log-x-number-base-number-float">
-<h3>log(x : number, [base : number]) : float<a class="headerlink" href="#log-x-number-base-number-float" title="Permalink to this headline">¶</a></h3>
+<h3>log(x : number, [base : number]) : float<a class="headerlink" href="#log-x-number-base-number-float" title="Permalink to this heading">¶</a></h3>
 <div class="line-block">
 <div class="line">With one argument, return the natural logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> (to base <code class="docutils literal notranslate"><span class="pre">e</span></code>).</div>
 <div class="line">With two arguments, return the logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code> to the given base, calculated as <code class="docutils literal notranslate"><span class="pre">log(x)/log(base)</span></code>.</div>
 </div>
 </div>
 <div class="section" id="log10-x-number-float">
-<h3>log10(x : number) : float<a class="headerlink" href="#log10-x-number-float" title="Permalink to this headline">¶</a></h3>
+<h3>log10(x : number) : float<a class="headerlink" href="#log10-x-number-float" title="Permalink to this heading">¶</a></h3>
 <p>Return the base-10 logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code>. This is usually more accurate than <code class="docutils literal notranslate"><span class="pre">log(x,</span> <span class="pre">10)</span></code>.</p>
 </div>
 <div class="section" id="log2-x-number-float">
-<h3>log2(x : number) : float<a class="headerlink" href="#log2-x-number-float" title="Permalink to this headline">¶</a></h3>
+<h3>log2(x : number) : float<a class="headerlink" href="#log2-x-number-float" title="Permalink to this heading">¶</a></h3>
 <p>Return the base-2 logarithm of <code class="docutils literal notranslate"><span class="pre">x</span></code>. This is usually more accurate than <code class="docutils literal notranslate"><span class="pre">log(x,</span> <span class="pre">2)</span></code>.</p>
 </div>
 <div class="section" id="max-arg1-number-arg2-number-args-number">
-<h3>max(arg1 : number, arg2 : number, <a href="#id1"><span class="problematic" id="id2">*</span></a>args) : number<a class="headerlink" href="#max-arg1-number-arg2-number-args-number" title="Permalink to this headline">¶</a></h3>
+<h3>max(arg1 : number, arg2 : number, <a href="#id1"><span class="problematic" id="id2">*</span></a>args) : number<a class="headerlink" href="#max-arg1-number-arg2-number-args-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the largest of two or more arguments.</p>
 </div>
 <div class="section" id="min-arg1-number-arg2-number-args-number">
-<h3>min(arg1 : number, arg2 : number, <a href="#id3"><span class="problematic" id="id4">*</span></a>args) : number<a class="headerlink" href="#min-arg1-number-arg2-number-args-number" title="Permalink to this headline">¶</a></h3>
+<h3>min(arg1 : number, arg2 : number, <a href="#id3"><span class="problematic" id="id4">*</span></a>args) : number<a class="headerlink" href="#min-arg1-number-arg2-number-args-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the smallest of two or more arguments.</p>
 </div>
 <div class="section" id="randint-a-integer-b-integer-integer">
-<h3>randint(a : integer, b : integer) : integer<a class="headerlink" href="#randint-a-integer-b-integer-integer" title="Permalink to this headline">¶</a></h3>
+<h3>randint(a : integer, b : integer) : integer<a class="headerlink" href="#randint-a-integer-b-integer-integer" title="Permalink to this heading">¶</a></h3>
 <p>Return a random integer <code class="docutils literal notranslate"><span class="pre">N</span></code> such that <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&lt;=</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">b</span></code>.</p>
 </div>
 <div class="section" id="random-float">
-<h3>random() : float<a class="headerlink" href="#random-float" title="Permalink to this headline">¶</a></h3>
+<h3>random() : float<a class="headerlink" href="#random-float" title="Permalink to this heading">¶</a></h3>
 <p>Return the next random floating point number in the range <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0)</span></code>.</p>
 </div>
 <div class="section" id="round-number-float-ndigits-integer-integer">
-<h3>round(number : float [, ndigits : integer]) : integer<a class="headerlink" href="#round-number-float-ndigits-integer-integer" title="Permalink to this headline">¶</a></h3>
+<h3>round(number : float [, ndigits : integer]) : integer<a class="headerlink" href="#round-number-float-ndigits-integer-integer" title="Permalink to this heading">¶</a></h3>
 <p>Return <code class="docutils literal notranslate"><span class="pre">number</span></code> rounded to <code class="docutils literal notranslate"><span class="pre">ndigits</span></code> precision after the decimal point. If <code class="docutils literal notranslate"><span class="pre">ndigits</span></code> is omitted or is <code class="docutils literal notranslate"><span class="pre">None</span></code>, it returns the nearest integer to its input.</p>
 </div>
 <div class="section" id="sin-x-number-number">
-<h3>sin(x : number) : number<a class="headerlink" href="#sin-x-number-number" title="Permalink to this headline">¶</a></h3>
+<h3>sin(x : number) : number<a class="headerlink" href="#sin-x-number-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the sine of <code class="docutils literal notranslate"><span class="pre">x</span></code> radians.</p>
 </div>
 <div class="section" id="sqrt-x-number-number">
-<h3>sqrt(x : number) : number<a class="headerlink" href="#sqrt-x-number-number" title="Permalink to this headline">¶</a></h3>
+<h3>sqrt(x : number) : number<a class="headerlink" href="#sqrt-x-number-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the square root of <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </div>
 <div class="section" id="tan-x-number-number">
-<h3>tan(x : number) : number<a class="headerlink" href="#tan-x-number-number" title="Permalink to this headline">¶</a></h3>
+<h3>tan(x : number) : number<a class="headerlink" href="#tan-x-number-number" title="Permalink to this heading">¶</a></h3>
 <p>Return the tangent of <code class="docutils literal notranslate"><span class="pre">x</span></code> radians.</p>
 </div>
 </div>
 <div class="section" id="builtin-agg-functions">
-<h2>Builtin agg functions<a class="headerlink" href="#builtin-agg-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Builtin agg functions<a class="headerlink" href="#builtin-agg-functions" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="agg-max-expression-number">
-<h3>agg_max(expression) : number<a class="headerlink" href="#agg-max-expression-number" title="Permalink to this headline">¶</a></h3>
+<h3>agg_max(expression) : number<a class="headerlink" href="#agg-max-expression-number" title="Permalink to this heading">¶</a></h3>
 <p>Max value in the group</p>
 </div>
 <div class="section" id="agg-min-expression-number">
-<h3>agg_min(expression) : number<a class="headerlink" href="#agg-min-expression-number" title="Permalink to this headline">¶</a></h3>
+<h3>agg_min(expression) : number<a class="headerlink" href="#agg-min-expression-number" title="Permalink to this heading">¶</a></h3>
 <p>Min value in the group</p>
 </div>
 </div>

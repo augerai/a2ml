@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -204,10 +206,10 @@
            <div itemprop="articleBody">
             
   <div class="section" id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h1>
 <p>Learn how to get involved in the <a href="https://github.com/augerai/a2ml/blob/master/CONTRIBUTING.md" target="_blank">A2ML project</a>.</p>
 <div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h2>
 <p>Documents are generated using <a href="https://www.sphinx-doc.org/en/master/usage/quickstart.html" target="_blank">sphinx</a>. To generate new docs locally you will want to navigate to the /docs directory located in the root of this project.</p>
 <p>There is currently an index.rst file which is the entry point. This file loads all other document files.</p>
 <p>There are currently two top level directories with documentation.</p>
@@ -219,7 +221,7 @@
 </div></blockquote>
 <p>To edit the files in there directly using <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html" target="_blank">restructured text</a> syntax or you can add files for new sections.  Any new sections will need to have the path added in index.rst file.</p>
 <div class="section" id="building-documentation">
-<h3>Building Documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h3>
+<h3>Building Documentation<a class="headerlink" href="#building-documentation" title="Permalink to this heading">¶</a></h3>
 <p>First, install documentation-related dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>develop-docs
 </pre></div>
@@ -231,14 +233,14 @@
 <p>This will create new files inside of the /build directory.  If you notice that your changes aren't showing up try deleting all the contents inside build/ and running make html to force rebuild.</p>
 </div>
 <div class="section" id="viewing-documentation-in-the-browser">
-<h3>Viewing Documentation in the Browser<a class="headerlink" href="#viewing-documentation-in-the-browser" title="Permalink to this headline">¶</a></h3>
+<h3>Viewing Documentation in the Browser<a class="headerlink" href="#viewing-documentation-in-the-browser" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>open<span class="w"> </span>./build/html/index.html
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="implementing-a2ml-for-another-automl-provider">
-<h2>Implementing A2ML for Another AutoML Provider<a class="headerlink" href="#implementing-a2ml-for-another-automl-provider" title="Permalink to this headline">¶</a></h2>
+<h2>Implementing A2ML for Another AutoML Provider<a class="headerlink" href="#implementing-a2ml-for-another-automl-provider" title="Permalink to this heading">¶</a></h2>
 <p>The A2ML Model class in A2ML.PY abstracts out the PREDIT (ITEDPR) pipeline.</p>
 <p>Implementations are provided for</p>
 <blockquote>

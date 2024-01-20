@@ -31,7 +31,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -122,13 +124,31 @@
 <li class="toctree-l1"><a class="reference internal" href="mlram.html">MLRAM</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">A2ML API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#a2ml-api-package">a2ml.api package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-module-a2ml-predit-api">a2ml module - A2ML PREDIT API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a2ml-dataset-module">a2ml_dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_experiment">a2ml_experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_model">a2ml_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_project">a2ml_project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-module-a2ml-predit-api">a2ml module - A2ML PREDIT API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.a2ml.A2ML"><code class="docutils literal notranslate"><span class="pre">A2ML</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#a2ml-dataset-module">a2ml_dataset module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.a2ml_dataset.A2MLDataset"><code class="docutils literal notranslate"><span class="pre">A2MLDataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_experiment">a2ml_experiment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.a2ml_experiment.A2MLExperiment"><code class="docutils literal notranslate"><span class="pre">A2MLExperiment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_model">a2ml_model module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.a2ml_model.A2MLModel"><code class="docutils literal notranslate"><span class="pre">A2MLModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.a2ml_project">a2ml_project module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.a2ml_project.A2MLProject"><code class="docutils literal notranslate"><span class="pre">A2MLProject</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.utils.context">context module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-a2ml.api.utils.context">context module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a2ml.api.utils.context.Context"><code class="docutils literal notranslate"><span class="pre">Context</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -208,11 +228,11 @@
            <div itemprop="articleBody">
             
   <div class="section" id="a2ml-api">
-<h1>A2ML API<a class="headerlink" href="#a2ml-api" title="Permalink to this headline">¶</a></h1>
+<h1>A2ML API<a class="headerlink" href="#a2ml-api" title="Permalink to this heading">¶</a></h1>
 <div class="section" id="a2ml-api-package">
-<h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this headline">¶</a></h2>
+<h2>a2ml.api package<a class="headerlink" href="#a2ml-api-package" title="Permalink to this heading">¶</a></h2>
 <div class="section" id="a2ml-module-a2ml-predit-api">
-<h3>a2ml module - A2ML PREDIT API<a class="headerlink" href="#a2ml-module-a2ml-predit-api" title="Permalink to this headline">¶</a></h3>
+<h3>a2ml module - A2ML PREDIT API<a class="headerlink" href="#a2ml-module-a2ml-predit-api" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.a2ml.A2ML">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml.</span></span><span class="sig-name descname"><span class="pre">A2ML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml.A2ML" title="Permalink to this definition">¶</a></dt>
@@ -299,7 +319,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>str</em><em>|</em><em>pandas.DataFrame</em>) -- Input data for preprocess. Can be path to file(local or s3) or Pandas Dataframe</p></li>
-<li><p><strong>preprocessors</strong> (<em>array of dicts</em>) -- <p>List of preprocessors with parameters</p>
+<li><p><strong>preprocessors</strong> (<em>array</em><em> of </em><em>dicts</em>) -- <p>List of preprocessors with parameters</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
     <span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;text_cols&#39;</span><span class="p">:</span> <span class="p">[]}}</span>
 <span class="p">]</span>
@@ -769,7 +789,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 
 </div>
 <div class="section" id="a2ml-dataset-module">
-<h3>a2ml_dataset module<a class="headerlink" href="#a2ml-dataset-module" title="Permalink to this headline">¶</a></h3>
+<h3>a2ml_dataset module<a class="headerlink" href="#a2ml-dataset-module" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.a2ml_dataset.A2MLDataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_dataset.</span></span><span class="sig-name descname"><span class="pre">A2MLDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_dataset.A2MLDataset" title="Permalink to this definition">¶</a></dt>
@@ -988,7 +1008,7 @@ url = A2MLDataset(ctx).upload('../dataset.csv')</p>
 
 </div>
 <div class="section" id="module-a2ml.api.a2ml_experiment">
-<span id="a2ml-experiment-module"></span><h3>a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this headline">¶</a></h3>
+<span id="a2ml-experiment-module"></span><h3>a2ml_experiment module<a class="headerlink" href="#module-a2ml.api.a2ml_experiment" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.a2ml_experiment.A2MLExperiment">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_experiment.</span></span><span class="sig-name descname"><span class="pre">A2MLExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_experiment.A2MLExperiment" title="Permalink to this definition">¶</a></dt>
@@ -1220,7 +1240,7 @@ url = A2MLDataset(ctx).upload('../dataset.csv')</p>
 
 </div>
 <div class="section" id="module-a2ml.api.a2ml_model">
-<span id="a2ml-model-module"></span><h3>a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this headline">¶</a></h3>
+<span id="a2ml-model-module"></span><h3>a2ml_model module<a class="headerlink" href="#module-a2ml.api.a2ml_model" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.a2ml_model.A2MLModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_model.</span></span><span class="sig-name descname"><span class="pre">A2MLModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_model.A2MLModel" title="Permalink to this definition">¶</a></dt>
@@ -1715,7 +1735,7 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 
 </div>
 <div class="section" id="module-a2ml.api.a2ml_project">
-<span id="a2ml-project-module"></span><h3>a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this headline">¶</a></h3>
+<span id="a2ml-project-module"></span><h3>a2ml_project module<a class="headerlink" href="#module-a2ml.api.a2ml_project" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.a2ml_project.A2MLProject">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.a2ml_project.</span></span><span class="sig-name descname"><span class="pre">A2MLProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.a2ml_project.A2MLProject" title="Permalink to this definition">¶</a></dt>
@@ -1952,10 +1972,10 @@ accuracy(float): Average accuracy of model(based on used metric) for review sens
 
 </div>
 <div class="section" id="submodules">
-<h3>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h3>
+<h3>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h3>
 </div>
 <div class="section" id="module-a2ml.api.utils.context">
-<span id="context-module"></span><h3>context module<a class="headerlink" href="#module-a2ml.api.utils.context" title="Permalink to this headline">¶</a></h3>
+<span id="context-module"></span><h3>context module<a class="headerlink" href="#module-a2ml.api.utils.context" title="Permalink to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="a2ml.api.utils.context.Context">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">a2ml.api.utils.context.</span></span><span class="sig-name descname"><span class="pre">Context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auger'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#a2ml.api.utils.context.Context" title="Permalink to this definition">¶</a></dt>
