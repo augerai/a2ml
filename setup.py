@@ -45,7 +45,7 @@ install_requires = [
     'jsonpickle',
     'websockets',
     'liac-arff==2.4.0',
-    'xlrd==1.2.0',
+    'xlrd==2.0.1',
     'multiprocess',
 ]
 
@@ -87,13 +87,13 @@ extras = {
         'google-cloud-automl'
     ],
     'predict': [
-        'auger.ai.predict[all]==1.1.001'
+        'auger.ai.predict[all]==1.1.012'
     ],
     'predict_no_cat_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.1.001'
+        'auger.ai.predict[no_cat_lgbm]==1.1.012'
     ],
     'predict_no_lgbm': [
-        'auger.ai.predict[no_cat_lgbm]==1.1.001',
+        'auger.ai.predict[no_cat_lgbm]==1.1.012',
         'catboost'
     ]    
 }
