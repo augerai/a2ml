@@ -1,2 +1,2 @@
-sphinx~=4.4.0
+sphinx
 git+https://github.com/augerai/sphinx_rtd_theme.git@bump-version#2ab38df0d303163e0e6c2bac80d907e9915000cb'
