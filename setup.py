@@ -33,7 +33,7 @@ install_requires = [
     'joblib',
     'ruamel.yaml',
     'pyarrow',
-    'scipy==1.9.1',
+    'scipy==1.9.3',
     'asyncio',
     'boto3',
     'auger-hub-api-client==0.7.4',
