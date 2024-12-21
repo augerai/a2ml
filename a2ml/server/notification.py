@@ -1,5 +1,3 @@
-import aioredis
-import asyncio
 import json
 import redis
 
@@ -62,7 +60,7 @@ class AsyncReceiver:
         self.last_msg_id = last_msg_id
 
     async def _open(self):
-        self.connection = await aioredis.create_redis(
+        self.connection = await redis.create_redis(
             'redis://' + config.notificator_redis_host + ':' + str(config.notificator_redis_port)
         )
 

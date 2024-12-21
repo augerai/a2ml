@@ -24,12 +24,12 @@ docker-build:
 		--tag augerai/a2ml:${DOCKER_TAG} .
 
 docker-clean:
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 
 docker-clean-full: docker-clean docker-test-clean docker-minio-clean
 
 docker-up:
-	docker-compose up
+	docker compose up
 
 docker-minio-clean:
 	rm -rf tmp/docker
@@ -49,10 +49,10 @@ docker-tag:
 	docker tag augerai/a2ml:latest augerai/a2ml:${DOCKER_TAG}
 
 docker-test-clean: docker-minio-clean
-	docker-compose -f docker-compose.test.yml down -v --remove-orphans
+	docker compose -f docker-compose.test.yml down -v --remove-orphans
 
 docker-test: docker-build
-	docker-compose -f docker-compose.test.yml run --rm a2ml
+	docker compose -f docker-compose.test.yml run --rm a2ml
 
 build: clean
 	python setup.py -q bdist_wheel sdist
