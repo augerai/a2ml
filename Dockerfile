@@ -1,4 +1,4 @@
-FROM python:3.9-slim as base
+FROM python:3.11-slim as base
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
@@ -19,15 +19,15 @@ RUN mkdir -p $WORKDIR/a2ml && \
   echo "__version__ = '99.99.99'" > $WORKDIR/a2ml/__init__.py
 
 RUN pip install ".[all]"
-RUN find /usr/local/lib/python3.9 \
+RUN find /usr/local/lib/python3.11 \
   -name '*.pxd' -o \
   -name '*.pyd' -o \
   -name '*.pyc' -delete \
-  && find /usr/local/lib/python3.9 \
+  && find /usr/local/lib/python3.11 \
   -path '*/tests/*' -delete \
-  && find /usr/local/lib/python3.9 \
+  && find /usr/local/lib/python3.11 \
   -name '__pycache__' | xargs rm -r \
-  && find /usr/local/lib/python3.9 \
+  && find /usr/local/lib/python3.11 \
   -name '*.so*' | grep -v libgfortran | grep -v scipy | xargs strip
 
 FROM base as runtime
@@ -37,7 +37,7 @@ ENV PYTHONUNBUFFERED=1 PYTHONHASHSEED=random PYTHONDONTWRITEBYTECODE=1
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
-COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
+COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
 COPY --from=builder /usr/local/bin/celery /usr/local/bin/celery
 
 COPY LICENSE README.md setup.py setup.cfg $WORKDIR/

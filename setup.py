@@ -66,7 +66,6 @@ extras = {
     ],
     'server': [
         'anyio==3.7.1',
-        'aioredis',
         'celery==5.2.7',
         'fastapi==0.85',
         'gevent',

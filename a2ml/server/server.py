@@ -1,22 +1,39 @@
-from fastapi import FastAPI, Request, WebSocket
-from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
-from fastapi.encoders import jsonable_encoder
-
 import asyncio
-import uuid
-import websockets
 import sys
+import uuid
 
-from a2ml.tasks_queue.tasks_api import new_project_task, list_projects_task, delete_project_task, select_project_task, \
-    new_dataset_task, list_datasets_task, delete_dataset_task, select_dataset_task, \
-    list_experiments_task, leaderboard_experiment_task, history_experiment_task, \
-    start_experiment_task, stop_experiment_task, \
-    actuals_model_task, actuals_task, deploy_model_task, predict_model_task, \
-    deploy_task, evaluate_task, import_data_task, predict_task, train_task, review_task
-
+import websockets
+from fastapi import FastAPI, Request, WebSocket
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 from a2ml.server.config import Config
 from a2ml.server.notification import AsyncReceiver
+from a2ml.tasks_queue.tasks_api import (
+    actuals_model_task,
+    actuals_task,
+    delete_dataset_task,
+    delete_project_task,
+    deploy_model_task,
+    deploy_task,
+    evaluate_task,
+    history_experiment_task,
+    import_data_task,
+    leaderboard_experiment_task,
+    list_datasets_task,
+    list_experiments_task,
+    list_projects_task,
+    new_dataset_task,
+    new_project_task,
+    predict_model_task,
+    predict_task,
+    review_task,
+    select_dataset_task,
+    select_project_task,
+    start_experiment_task,
+    stop_experiment_task,
+    train_task,
+)
 
 app = FastAPI()
 config = Config()
